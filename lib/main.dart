@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gunisigi/app/app_shell.dart';
+import 'package:kadro/app/app_shell.dart';
+import 'package:kadro/app/theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,12 +12,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Günışığı',
+      title: 'Kadro',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light,
+      darkTheme:
+          AppTheme.dark, // Telefon karanlık moddaysa otomatik bu kullanılır
       home: const AppShell(), // Hangi sayfanın gösterileceğine AppShell karar veriyor
     );
   }

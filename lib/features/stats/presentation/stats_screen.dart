@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:gunisigi/shared/widgets/page_header.dart';
+import 'package:kadro/shared/widgets/page_header.dart';
 
-/// İstatistik sayfası. Şimdilik örnek sayılar var; grafikler Faz 10'da gelecek.
+/// İstatistik sayfası. Soru çözme gelene kadar boş; grafikler Faz 10'da gelecek.
 class StatsScreen extends StatelessWidget {
   const StatsScreen({super.key});
 
@@ -13,23 +13,23 @@ class StatsScreen extends StatelessWidget {
         PageHeader(
           icon: Icons.bar_chart,
           title: 'İstatistiklerin',
-          subtitle: 'Kayıtların çoğaldıkça burası dolacak. Şimdilik örnek sayılar var.',
+          subtitle: 'Soru çözdükçe ders bazında netlerin burada görünecek.',
         ),
         SizedBox(height: 16),
         // İki kart yan yana; Expanded ikisine eşit genişlik verir (flex: 1 + flex: 1)
         Row(
           children: [
             Expanded(
-              child: _StatCard(label: 'Toplam kayıt', value: '12'),
+              child: _StatCard(label: 'Çözülen soru', value: '0'),
             ),
             SizedBox(width: 12),
             Expanded(
-              child: _StatCard(label: 'Seri', value: '3 gün'),
+              child: _StatCard(label: 'Doğru oranı', value: '–'),
             ),
           ],
         ),
         SizedBox(height: 12),
-        _StatCard(label: 'En sık ruh hali', value: '😊 Mutlu'),
+        _StatCard(label: 'En zayıf ders', value: 'Henüz veri yok'),
       ],
     );
   }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart'; // Temel Flutter arayüz kütüphanesi
-import 'package:gunisigi/app/widgets/app_navigation_bar.dart'; // Alttaki sekme menüsü (Material: navigation bar)
-import 'package:gunisigi/app/widgets/app_top_bar.dart'; // Üstteki başlık barı (Material: top app bar)
-import 'package:gunisigi/features/history/presentation/history_screen.dart';
-import 'package:gunisigi/features/home/presentation/home_screen.dart';
-import 'package:gunisigi/features/settings/presentation/settings_screen.dart';
-import 'package:gunisigi/features/stats/presentation/stats_screen.dart';
+import 'package:kadro/app/widgets/app_navigation_bar.dart'; // Alttaki sekme menüsü (Material: navigation bar)
+import 'package:kadro/app/widgets/app_top_bar.dart'; // Üstteki başlık barı (Material: top app bar)
+import 'package:kadro/features/exams/presentation/exams_screen.dart';
+import 'package:kadro/features/home/presentation/home_screen.dart';
+import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
+import 'package:kadro/features/profile/presentation/profile_screen.dart';
+import 'package:kadro/features/stats/presentation/stats_screen.dart';
 
 /// Uygulama kabuğu (shell): üst bar + seçili sekmenin ekranı + alt menü.
 /// Web'deki layout component'inin karşılığıdır.
@@ -21,21 +22,24 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int _selectedIndex = 0; // Seçili olan alt menü sekmesinin sıra numarası (0: Ana Sayfa ile başlar)
 
-  // Alt menüdeki sekmelerle aynı sırada sayfalar: 0 Ana Sayfa, 1 Geçmiş, 2 İstatistik, 3 Ayarlar.
+  // Alt menüdeki sekmelerle aynı sırada sayfalar:
+  // 0 Ana Sayfa, 1 Dersler, 2 Denemeler, 3 İstatistik, 4 Profil.
   // Basit bir "route tablosu": index = rota, değer = gösterilecek sayfa.
   static const List<Widget> _pages = [
     HomeScreen(),
-    HistoryScreen(),
+    LessonsScreen(),
+    ExamsScreen(),
     StatsScreen(),
-    SettingsScreen(),
+    ProfileScreen(),
   ];
 
   // Her sayfanın üst barda görünecek başlığı (yine aynı sırada)
   static const List<String> _titles = [
-    'Günışığı 🌅',
-    'Geçmiş',
+    'Kadro',
+    'Dersler',
+    'Denemeler',
     'İstatistik',
-    'Ayarlar',
+    'Profil',
   ];
 
   @override

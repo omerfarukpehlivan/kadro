@@ -1,6 +1,6 @@
-# 🌅 Günışığı
+# 🎯 Kadro
 
-**Minik İyilikler Günlüğü.** Her gün sana iyi gelen 3 şeyi ve o günkü ruh halini kaydettiğin, sade ve sıcak bir mobil günlük uygulaması.
+**KPSS Lisans hazırlık uygulaması.** Konu testi çöz, bilgi kartlarıyla tekrar et, yanlışlarını biriktirip yeniden çöz, süreli denemelerle netini takip et.
 
 ![Flutter](https://img.shields.io/badge/Flutter-3.47-02569B?logo=flutter&logoColor=white)
 ![Dart](https://img.shields.io/badge/Dart-3.13-0175C2?logo=dart&logoColor=white)
@@ -11,24 +11,41 @@
 
 ## 📖 Proje hakkında
 
-Günışığı, Angular ile web geliştirme deneyimi olan bir geliştiricinin **Flutter ve mobil uygulama geliştirmeyi sıfırdan öğrenmek** için yaptığı bir projedir. Her özellik, öğrenme rehberindeki bir faza karşılık gelir. Amaç hem çalışan bir uygulama çıkarmak hem de her adımda Flutter'ın neden öyle çalıştığını anlamaktır.
+Kadro, Angular ile web geliştirme deneyimi olan bir geliştiricinin **Flutter ve mobil uygulama geliştirmeyi sıfırdan öğrenmek** için yaptığı bir projedir. Hedef kitle KPSS Lisans (Genel Yetenek - Genel Kültür) adayları. Her özellik, öğrenme rehberindeki bir faza karşılık gelir.
 
 Yol haritası ve fazların detayı: [`docs/flutter-ogrenme-rehberi.md`](docs/flutter-ogrenme-rehberi.md)
 
-## ✨ Şu an neler var
+> Proje "Günışığı" adlı bir günlük uygulaması olarak başladı ve KPSS uygulamasına dönüştü. Eski hali Git geçmişinde.
 
-- Material 3 ve amber tonlarından üretilen tema
-- Üst bar (top app bar) ve alt menüden (navigation bar) oluşan uygulama kabuğu (`AppShell`)
-- Alt menüyle 4 sayfa arasında geçiş, üst bar başlığı sayfaya göre değişiyor
-- Sayfalar arasında ortak kullanılan `PageHeader` widget'ı
-- Sayfa geçişlerini kontrol eden widget testi
+## 📚 Sınav kapsamı
 
-| Sekme | Ne gösteriyor |
-|---|---|
-| 🏠 **Ana Sayfa** | Karşılama, günlük seri rozeti ve kayıt ekleme butonu |
-| 🕘 **Geçmiş** | Önceki günlerin kayıt kartları *(şimdilik örnek veri)* |
-| 📊 **İstatistik** | Toplam kayıt, seri ve en sık ruh hali *(şimdilik örnek veri)* |
-| ⚙️ **Ayarlar** | Tema, hatırlatma ve uygulama bilgisi *(şimdilik sadece görünüm)* |
+| Bölüm | Dersler | Soru |
+|---|---|---|
+| Genel Yetenek | Türkçe (30), Matematik (30) | 60 |
+| Genel Kültür | Tarih (27), Coğrafya (18), Vatandaşlık (9), Güncel Bilgiler (6) | 60 |
+| **Toplam** | 130 dakika · 4 yanlış 1 doğruyu götürür | **120** |
+
+## ✨ Çalışma türleri
+
+| Tür | Ne yapar | Durum |
+|---|---|---|
+| 📝 **Konu testi** | Ders → konu seç, test çöz, her sorudan sonra açıklamayı gör | ⏳ |
+| 🃏 **Bilgi kartları** | Önünde soru, arkasında cevap; hızlı tekrar | ⏳ |
+| 📕 **Yanlış defteri** | Yanlış yapılan sorular birikir, sonra yalnızca onlar çözülür | ⏳ |
+| ⏱️ **Deneme sınavı** | 120 soru, 130 dakika, sonunda ders bazında net | ⏳ |
+| 📊 **İstatistik** | Ders bazında doğru oranı ve en zayıf konular | ⏳ |
+| 🔥 **Günlük hedef** | Günlük soru hedefi, seri ve hatırlatma | ⏳ |
+
+## 🧱 Şu an neler var
+
+- Alt menülü uygulama kabuğu (`AppShell`): **Ana Sayfa · Dersler · Denemeler · İstatistik · Profil**
+- Ana sayfada günlük hedef kartı ve çalışma türleri
+- Dersler sekmesinde 6 ders, Genel Yetenek ve Genel Kültür olarak gruplu
+- Denemeler sekmesinde sınav düzeni
+- Lacivert tonlarında açık ve koyu tema
+- Widget testi ve ders listesi için unit test
+
+Sorular henüz eklenmedi; ekranlar iskelet halinde.
 
 ## 🗂️ Proje yapısı
 
@@ -36,20 +53,23 @@ Kod **feature-first** düzende: her özellik kendi klasöründe, ortak parçalar
 
 ```text
 lib/
-├── main.dart                     # Giriş noktası: tema ve MaterialApp
+├── main.dart                         # Giriş noktası: MaterialApp
 ├── app/
-│   ├── app_shell.dart            # Uygulama kabuğu: üst bar + sayfa + alt menü
+│   ├── app_shell.dart                # Uygulama kabuğu: üst bar + sayfa + alt menü
+│   ├── theme.dart                    # Açık ve koyu tema
 │   └── widgets/
 │       ├── app_top_bar.dart          # Üst bar (top app bar)
 │       └── app_navigation_bar.dart   # Alt menü (navigation bar)
 ├── features/
-│   ├── home/presentation/        # Ana Sayfa
-│   ├── history/presentation/     # Geçmiş
-│   ├── stats/presentation/       # İstatistik
-│   └── settings/presentation/    # Ayarlar
+│   ├── home/presentation/            # Ana Sayfa
+│   ├── lessons/
+│   │   ├── data/                     # KPSS dersleri ve soru sayıları
+│   │   └── presentation/             # Dersler
+│   ├── exams/presentation/           # Denemeler
+│   ├── stats/presentation/           # İstatistik
+│   └── profile/presentation/         # Profil
 └── shared/
-    └── widgets/
-        └── page_header.dart      # Sayfa başlığı bloğu
+    └── widgets/                      # PageHeader, SectionTitle
 ```
 
 ## 🧭 Sayfa geçişi nasıl çalışıyor
@@ -59,24 +79,25 @@ lib/
 ```dart
 static const List<Widget> _pages = [
   HomeScreen(),
-  HistoryScreen(),
+  LessonsScreen(),
+  ExamsScreen(),
   StatsScreen(),
-  SettingsScreen(),
+  ProfileScreen(),
 ];
 
 // build() içinde
 body: _pages[_selectedIndex],
 ```
 
-Alt menüde bir sekmeye dokunulunca `setState` ile numara güncelleniyor, `build()` yeniden çalışıyor ve ortadaki sayfa değişiyor. Üst bar ve alt menü `Scaffold`'un kendi yuvalarında durduğu için yerinde kalıyor. Angular'daki layout component + `<router-outlet>` yapısının basit bir karşılığı. İleride (Faz 5) bunun yerine `go_router` kullanılacak.
+Alt menüde bir sekmeye dokunulunca `setState` ile numara güncelleniyor, `build()` yeniden çalışıyor ve ortadaki sayfa değişiyor. Üst bar ve alt menü `Scaffold`'un kendi yuvalarında durduğu için yerinde kalıyor. Angular'daki layout component + `<router-outlet>` yapısının basit bir karşılığı. Faz 5'te bunun yerine `go_router` kullanılacak.
 
 ## 🚀 Çalıştırma
 
 **Gerekenler:** [Flutter SDK](https://docs.flutter.dev/get-started/install) ve bir Android emülatörü ya da gerçek cihaz.
 
 ```bash
-git clone https://github.com/omerfarukpehlivan/gunisigi.git
-cd gunisigi
+git clone https://github.com/omerfarukpehlivan/kadro.git
+cd kadro
 flutter pub get
 flutter run
 ```
@@ -93,24 +114,28 @@ flutter test           # testleri çalıştır
 
 ## 🗺️ Yol haritası
 
-| Faz | Konu | Durum |
-|---|---|---|
-| 1 | Dart temelleri | 🚧 |
-| 2 | İlk proje ve widget mantığı | ✅ |
-| 3 | Layout ve güzel bir arayüz | 🚧 |
-| 4 | Etkileşim ve state (form, kayıt ekleme) | ⏳ |
-| 5 | Navigasyon (`go_router`) | ⏳ |
-| 6 | Kod organizasyonu | ⏳ |
-| 7 | Kalıcı veri (yerel depolama) | ⏳ |
-| 8 | State management | ⏳ |
-| 9 | İnternetten veri (API) | ⏳ |
-| 10 | İstatistik ve grafik | ⏳ |
-| 11 | Bildirimler | ⏳ |
-| 12 | Cilalama | ⏳ |
-| 13 | Test | ⏳ |
-| 14 | Yayın | ⏳ |
+| Faz | Konu | KPSS'de karşılığı | Durum |
+|---|---|---|---|
+| 1 | Dart temelleri | `Question` sınıfı, net hesabı | 🚧 |
+| 2 | İlk proje ve widget mantığı | Ana sayfa | ✅ |
+| 3 | Layout ve arayüz | Ders listesi, statik soru ekranı | 🚧 |
+| 4 | Etkileşim ve state | Soru çözme, bilgi kartı | ⏳ |
+| 5 | Navigasyon | Ders → konu → test | 🚧 |
+| 6 | Kod organizasyonu | Sorular JSON dosyalarında | ⏳ |
+| 7 | Kalıcı veri | Yanlış defteri, ilerleme | ⏳ |
+| 8 | State management | Günlük hedef, deneme sayacı | ⏳ |
+| 9 | İnternetten veri | Uzaktan soru bankası | ⏳ |
+| 10 | İstatistik ve grafik | Ders bazında netler | ⏳ |
+| 11 | Bildirimler | Günlük hatırlatma | ⏳ |
+| 12 | Cilalama | Animasyon, ikon, tablet | ⏳ |
+| 13 | Test | Net hesabı testleri | 🚧 |
+| 14 | Yayın | Play Store | ⏳ |
 
 ✅ tamamlandı · 🚧 devam ediyor · ⏳ sırada
+
+## ⚖️ İçerik
+
+Uygulamadaki sorular özgündür. ÖSYM'nin çıkmış sorularının telif hakkı ÖSYM'ye aittir ve bu projede kullanılmaz.
 
 ## 🔁 Angular'dan Flutter'a kısa sözlük
 
@@ -122,6 +147,7 @@ flutter test           # testleri çalıştır
 | `input()` / `output()` | Constructor parametresi / callback (`ValueChanged<T>`) |
 | `<ng-content>` | `child` / `children` |
 | `<router-outlet>` | `Navigator`, `go_router` |
+| `@for` | Liste içinde `for` |
 | `display: flex` | `Row`, `Column` |
 | CSS değişkenleriyle tema | `ThemeData` + `Theme.of(context)` |
 

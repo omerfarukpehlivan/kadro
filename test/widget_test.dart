@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:gunisigi/main.dart';
+import 'package:kadro/main.dart';
 
 void main() {
   testWidgets('Alt menüden sayfalar arasında geçiş yapılır', (
@@ -8,17 +8,17 @@ void main() {
   ) async {
     // Uygulamayı çiz: ilk açılışta ana sayfa görünür.
     await tester.pumpWidget(const MyApp());
-    expect(find.text('Günaydın'), findsOneWidget);
+    expect(find.text('Hoş geldin'), findsOneWidget);
 
-    // Alt menüde "Geçmiş"e dokun ve animasyonların bitmesini bekle.
-    await tester.tap(find.text('Geçmiş'));
+    // Alt menüde "Dersler"e dokun ve animasyonların bitmesini bekle.
+    await tester.tap(find.text('Dersler'));
     await tester.pumpAndSettle();
-    expect(find.text('Günaydın'), findsNothing);
-    expect(find.text('Geçmiş kayıtların'), findsOneWidget);
+    expect(find.text('Hoş geldin'), findsNothing);
+    expect(find.text('Türkçe'), findsOneWidget);
 
-    // "Ayarlar"a geç.
-    await tester.tap(find.text('Ayarlar').last);
+    // "Profil"e geç.
+    await tester.tap(find.text('Profil'));
     await tester.pumpAndSettle();
-    expect(find.text('Uygulama ayarları'), findsOneWidget);
+    expect(find.text('Profilin'), findsOneWidget);
   });
 }

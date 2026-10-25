@@ -1,109 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/shared/widgets/page_header.dart';
+import 'package:kadro/shared/widgets/section_title.dart';
 
-/// Ana sayfanın sadece kendi iç içeriğini tutan saf görünüm bileşeni.
+/// Ana sayfa: günlük hedef ve çalışma türleri.
 /// Kapsayıcı Scaffold, üst bar ve alt menü `AppShell` içinde yönetilir.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-          padding: const EdgeInsets.all(0), // Kaydırılabilir alana padding
-          child: Column( // 2 parçayı dikeyde tutan ana kolon
-
-            children: [
-              // 📌 1. BÖLÜM: <div class="padding"> <div class="flex-column">
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-
-                  children: [
-                    const Icon(Icons.wb_sunny_rounded, size: 80, color: Colors.amber),
-                    const Text('Günaydın', style: TextStyle(fontSize: 24)),
-                    const SizedBox(height: 8),
-                    // Badge (Rozet)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      constraints: const BoxConstraints(
-                        minWidth: 80,  // En az 80px olsun
-                        maxWidth: 200, // En fazla 200px olsun, aşarsa alt satıra geçsin
-                      ),
-
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.4), // Gölge rengi ve şeffaflığı (%10 siyah)
-                            blurRadius: 10,   // Bulanıklık derecesi (CSS'teki blur)
-                            spreadRadius: 2,  // Gölgenin yayılma genişliği
-                            offset: const Offset(0, 4), // X ve Y kayması (X: 0, Y: 4px aşağı)
-                          ),
-                        ],
-                      ),
-                      child: const Text('🔥 3 Günlük Seri'),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      constraints: const BoxConstraints(
-                        minWidth: 80,  // En az 80px olsun
-                        maxWidth: 200, // En fazla 200px olsun, aşarsa alt satıra geçsin
-                      ),
-
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade100,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.4), // Gölge rengi ve şeffaflığı (%10 siyah)
-                            blurRadius: 10,   // Bulanıklık derecesi (CSS'teki blur)
-                            spreadRadius: 2,  // Gölgenin yayılma genişliği
-                            offset: const Offset(0, 4), // X ve Y kayması (X: 0, Y: 4px aşağı)
-                          ),
-                        ],
-                      ),
-                      child: const Text('🔥 Tebrikler'),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    ElevatedButton(onPressed: () {}, child: const Text('Ekle')),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24), // İki bölüm arasındaki dikey boşluk
-
-              // 📌 2. BÖLÜM: <div class="padding"> <div class="flex-row">
-
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Color(0xFFAB00FF), // Kenarlık rengi
-                      width: 1,           // Kenarlık kalınlığı
-                    ),
-                  ),
-
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.favorite, color: Color(0xFF003CFF)),
-                      SizedBox(width: 8),
-                      Text('Örnek metin', style: TextStyle(fontSize: 18)),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: const [
+        PageHeader(
+          icon: Icons.school,
+          title: 'Hoş geldin',
+          subtitle:
+              'KPSS Lisans hazırlığın burada. Bugün nereden devam edelim?',
+        ),
+        SizedBox(height: 16),
+        // Şimdilik sabit değerler; soru çözme gelince gerçek sayı olacak (Faz 4 ve 7)
+        _DailyGoalCard(solved: 0, goal: 30),
+        SizedBox(height: 16),
+        SectionTitle('Çalışma türleri'),
+        _StudyTypeTile(
+          icon: Icons.quiz_outlined,
+          title: 'Konu testi',
+          description: 'Bir konu seç, 10-20 soruluk test çöz.',
+        ),
+        _StudyTypeTile(
+          icon: Icons.style_outlined,
+          title: 'Bilgi kartları',
+          description: 'Önünde soru, arkasında cevap. Hızlı tekrar için.',
+        ),
+        _StudyTypeTile(
+          icon: Icons.bookmark_border,
+          title: 'Yanlış defteri',
+          description: 'Yanlış yaptığın soruları tekrar çöz.',
+        ),
+        _StudyTypeTile(
+          icon: Icons.timer_outlined,
+          title: 'Deneme sınavı',
+          description: '120 soru, 130 dakika. Gerçek sınav düzeni.',
+        ),
+      ],
     );
+  }
+}
 
+/// Bugün kaç soru çözüldüğünü ve hedefe ne kadar kaldığını gösteren kart.
+class _DailyGoalCard extends StatelessWidget {
+  final int solved;
+  final int goal;
 
+  const _DailyGoalCard({required this.solved, required this.goal});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Bugünkü hedefin', style: textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text('$solved / $goal soru', style: textTheme.headlineSmall),
+            const SizedBox(height: 12),
+            // İlerleme çubuğu: value 0.0 ile 1.0 arasında (CSS'te width: %x gibi)
+            LinearProgressIndicator(value: solved / goal),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Bir çalışma türünü tanıtan satır. Henüz hiçbiri açılmıyor.
+class _StudyTypeTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String description;
+
+  const _StudyTypeTile({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Card(
+      child: ListTile(
+        leading: Icon(icon, color: colorScheme.primary),
+        title: Text(title),
+        subtitle: Text(description),
+        trailing: Text(
+          'Yakında',
+          style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
+        ),
+      ),
+    );
   }
 }

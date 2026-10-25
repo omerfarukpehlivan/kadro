@@ -1,29 +1,70 @@
-# 📱 Flutter Öğrenme Rehberi: "Günışığı" Uygulaması
+# 📱 Flutter Öğrenme Rehberi: "Kadro" KPSS Uygulaması
 
 > **Not:** Bu doküman Peyoto projesinden bağımsızdır. Web tarafında junior seviyedeki bir geliştiricinin Flutter'ı sıfırdan, gerçek bir uygulama yaparak öğrenmesi için hazırlanmış kişisel bir yol haritasıdır.
+>
+> Proje önce "Günışığı" adlı bir günlük uygulaması olarak başladı, Faz 3 civarında KPSS hazırlık uygulaması **Kadro**'ya dönüştü. Eski hali Git geçmişinde duruyor.
 
 ---
 
-## 🌅 Proje Fikri: Günışığı, Minik İyilikler Günlüğü
+## 🎯 Proje Fikri: Kadro, KPSS Lisans Hazırlık Uygulaması
 
-**Tek cümleyle:** Her gün sana iyi gelen **3 küçük şeyi** yazdığın, ruh halini seçtiğin, seri (streak) tuttuğun ve her sabah umut veren bir sözle karşılandığın sade bir günlük uygulaması.
+**Tek cümleyle:** KPSS Lisans (GY-GK) adaylarının konu testi çözdüğü, bilgi kartlarıyla tekrar yaptığı, yanlışlarını biriktirip yeniden çözdüğü ve süreli denemelerle netini takip ettiği bir çalışma uygulaması.
 
 **Neden bu fikir?**
 
-- **Öğrenmeyi zorlamaz:** Temel yapı "liste + form + detay sayfası". Her yeni Flutter konusu bu iskelete tek tek eklenir.
-- **Her konuyu kapsar:** UI, state, navigasyon, yerel veritabanı, API, grafik, bildirim, test, yayın.
-- **İç açıcı:** Kullandıkça kendine iyi gelir; bitirdiğinde telefonunda gerçekten kullanacağın bir uygulaman olur.
-- **Portfolyoya uygun:** Küçük ama "bitmiş" bir ürün, yarım kalmış büyük bir projeden daha değerlidir.
+- **Gerçek bir ihtiyaç:** Bitirdiğinde sen ya da çevrendeki adaylar gerçekten kullanabilir.
+- **Her Flutter konusunu kapsar:** Liste, form ve seçim (soru çözme), navigasyon (ders → konu → test), yerel veritabanı (yanlış defteri), state management (günlük hedef), zamanlayıcı (deneme), grafik (netler), bildirim (hatırlatma), test (net hesabı), yayın.
+- **Büyümeye açık:** Önce tek ders, tek test türü; sonra yeni çalışma türleri tek tek eklenir.
+- **Portfolyoya uygun:** Küçük ama "bitmiş" ve işe yarayan bir ürün, yarım kalmış büyük bir projeden daha değerlidir.
 
-**Ana ekranlar (nihai hali):**
+**Sınav bilgisi (KPSS Lisans GY-GK):**
 
-| Ekran | İçerik |
+| Bölüm | Ders | Soru |
+|---|---|---|
+| Genel Yetenek | Türkçe | 30 |
+| Genel Yetenek | Matematik (geometri dahil) | 30 |
+| Genel Kültür | Tarih | 27 |
+| Genel Kültür | Coğrafya | 18 |
+| Genel Kültür | Vatandaşlık | 9 |
+| Genel Kültür | Güncel Bilgiler | 6 |
+| **Toplam** | | **120 soru · 130 dakika · 4 yanlış 1 doğruyu götürür** |
+
+> Soru dağılımı ve süre her yıl ÖSYM kılavuzunda yayımlanır. Değişiklik olursa `lib/features/lessons/data/kpss_lessons.dart` dosyasını güncelle.
+
+**Çalışma türleri (nihai hali):**
+
+| Çalışma türü | İçerik |
 |---|---|
-| Ana sayfa | Günün sözü, bugünkü kayıt kartı, seri sayacı 🔥 |
-| Yeni kayıt | Ruh hali seçimi (😞 😐 🙂 😊 🤩) + 3 güzel şey |
-| Geçmiş | Önceki günlerin listesi, dokununca detay |
-| İstatistik | Haftalık ruh hali grafiği, toplam gün |
-| Ayarlar | Tema (açık/koyu), hatırlatma saati |
+| Konu testi | Ders → konu seç, 10-20 soruluk test; her sorudan sonra doğru cevap ve açıklama |
+| Bilgi kartları | Önünde soru, arkasında cevap; "Biliyorum" / "Tekrar et" |
+| Yanlış defteri | Yanlış yapılan sorular otomatik birikir, sonra yalnızca onlar çözülür |
+| Deneme sınavı | 120 soru, 130 dakika, sonunda ders bazında net |
+| İstatistik | Ders bazında doğru oranı, en zayıf konular, deneme netlerinin gelişimi |
+| Günlük hedef ve seri | "Bugün 30 soru" hedefi, üst üste çalışılan gün sayısı, hatırlatma bildirimi |
+
+**Alt menü:** Ana Sayfa · Dersler · Denemeler · İstatistik · Profil
+
+---
+
+## ⚖️ Soru İçeriği ve Telif
+
+ÖSYM'nin çıkmış sorularının telif hakkı ÖSYM'ye aittir. Kendi çalışman için kullanabilirsin ama uygulamayı yayınlarsan izinsiz dağıtmış olursun. Bu yüzden:
+
+- Soruları **kendin yaz** ya da kaynağını belirterek özgün sorular hazırla.
+- Başlangıçta her ders için 10-20 soru yeterli. Uygulamanın asıl öğrettiği şey içerik değil, içeriği gösteren yapı.
+- Sorular Faz 6'da bir JSON dosyasına taşınacak. Örnek biçim:
+
+```json
+{
+  "id": "cografya-001",
+  "lesson": "cografya",
+  "topic": "Türkiye'nin yer şekilleri",
+  "text": "Türkiye'nin en yüksek dağı hangisidir?",
+  "options": ["Erciyes", "Ağrı Dağı", "Süphan", "Uludağ", "Kaçkar"],
+  "answerIndex": 1,
+  "explanation": "Ağrı Dağı 5137 metre ile Türkiye'nin en yüksek dağıdır."
+}
+```
 
 ---
 
@@ -33,16 +74,16 @@
 |---|---|---|
 | **Flutter SDK** | Flutter + Dart dilinin kendisi | [docs.flutter.dev/get-started/install/windows](https://docs.flutter.dev/get-started/install/windows) |
 | **Git** | Flutter kurulumu ve sürüm kontrolü için gerekli | Muhtemelen zaten kurulu |
-| **Android Studio** | Android SDK, emülatör ve build araçları | Kodu burada yazmak zorunda değilsin, SDK için şart |
-| **VS Code** | Kod editörü (önerilen) | Eklentiler: **Flutter** ve **Dart** (Dart-Code) |
+| **Android Studio** | Android SDK, emülatör ve build araçları | Flutter ve Dart eklentileriyle kod da burada yazılabilir |
+| **VS Code** | Kod editörü (opsiyonel) | Eklentiler: **Flutter** ve **Dart** (Dart-Code) |
 | **Gerçek Android telefon** (opsiyonel) | Emülatörden çok daha hızlı | Geliştirici seçenekleri > USB hata ayıklama |
 
 > ⚠️ **iOS:** iPhone için uygulama derlemek Mac gerektirir. Windows'ta Android + Web + Windows masaüstü hedeflerini kullanabilirsin. Öğrenme için bu fazlasıyla yeterli.
 
 ### Kurulum adımları
 
-1. Flutter SDK zip'ini indir, **boşluk ve Türkçe karakter içermeyen** bir klasöre çıkar (örn. `C:\dev\flutter`).
-2. `C:\dev\flutter\bin` yolunu **PATH** ortam değişkenine ekle.
+1. Flutter SDK zip'ini indir, **boşluk ve Türkçe karakter içermeyen** bir klasöre çıkar (örn. `D:\dev\flutter`).
+2. `D:\dev\flutter\bin` yolunu **PATH** ortam değişkenine ekle.
 3. Android Studio'yu kur; ilk açılışta **Android SDK**, **SDK Command-line Tools** ve **Android Emulator** bileşenlerini seç.
 4. Android Studio > Device Manager'dan bir emülatör oluştur (örn. Pixel, güncel Android sürümü).
 5. Lisansları kabul et ve her şeyi kontrol et:
@@ -59,9 +100,9 @@ Tüm satırlarda ✅ görene kadar (iOS/Xcode satırı hariç) `flutter doctor` 
 
 ---
 
-## 🤖 Bölüm 0.5: AI Agent Kuralları (Projeyi Oluşturur Oluşturmaz)
+## 🤖 Bölüm 0.5: AI Agent Kuralları
 
-`flutter create gunisigi` komutundan hemen sonra, ilk satır kodu yazmadan önce bu kurulumu yap. Amaç: AI asistanı (Claude Code) bu projede tutarlı, temiz ve **senin öğrenmeni engellemeyen** kod yazsın.
+Projeyi oluşturduktan hemen sonra, ilk satır kodu yazmadan önce bu kurulum yapıldı. Amaç: AI asistanı (Claude Code) bu projede tutarlı, temiz ve **senin öğrenmeni engellemeyen** kod yazsın.
 
 ### Neyi neden böyle seçtik?
 
@@ -71,7 +112,7 @@ Tüm satırlarda ✅ görene kadar (iOS/Xcode satırı hariç) `flutter doctor` 
 |---|---|---|
 | `.clinerules`, `.cursorrules` | **`CLAUDE.md` + `.claude/skills/`** | Claude Code `CLAUDE.md` dosyasını her oturumda otomatik okur. Cursor/Cline kullanırsan aynı içeriği onların dosyasına da kopyalarsın. |
 | 6 ayrı kural dosyası | **Kısa tek `CLAUDE.md` + 2 skill** | Her zaman geçerli kurallar `CLAUDE.md`'ye, belirli anlarda çalışan iş akışları skill'e. Az ve net kural daha iyi uygulanır. |
-| `data / domain / presentation` (Clean Architecture) | **Önce `data / presentation`**, `domain` gerekirse sonra | Günlük uygulaması için domain katmanı tören olur; önce farkı hissetmen lazım. |
+| `data / domain / presentation` (Clean Architecture) | **Önce `data / presentation`**, `domain` gerekirse sonra | Önce farkı hissetmen lazım. Net hesabı gibi iş mantığı büyüyünce domain katmanı düşünülebilir. |
 | Baştan `freezed` + `json_serializable` + `riverpod_generator` | **Faz 8'e kadar yok** | Kod üretimini anlamadan kullanırsan sihir gibi gelir. Önce `toJson/fromJson`'u elle yaz, sonra otomatiğe geç. |
 | "Sabit renk/font yok, `Theme.of(context)` kullan" | **Aynen ✅** | Koyu tema eklerken hayat kurtarır. |
 | "Overflow önle: `Expanded`/`Flexible`" | **Aynen ✅**, ama sabit ölçü tamamen yasak değil | İkon, avatar gibi öğelerde sabit boyut normaldir. |
@@ -80,10 +121,10 @@ Tüm satırlarda ✅ görene kadar (iOS/Xcode satırı hariç) `flutter doctor` 
 | Teslim öncesi `flutter analyze` + `dart format` | **Aynen ✅**, `flutter test` eklendi | |
 | *(şablonda yok)* | **Öğrenme modu kuralı eklendi** | AI her şeyi yazarsa sen öğrenemezsin. En önemli kural bu. |
 
-### Kurulacak dosyalar
+### Kurulan dosyalar
 
 ```text
-gunisigi/
+kadro/
 ├── CLAUDE.md                          # her oturumda okunan kurallar
 ├── analysis_options.yaml              # linter kuralları
 └── .claude/
@@ -92,127 +133,15 @@ gunisigi/
         └── flutter-feature/SKILL.md   # yeni feature iskeleti
 ```
 
-#### 1. `CLAUDE.md`
-
-```markdown
-# Günışığı: Flutter öğrenme projesi
-
-Ben web tarafında junior bir geliştiriciyim ve Flutter'ı bu projeyle öğreniyorum.
-Rehber: docs/flutter-ogrenme-rehberi.md (hangi fazda olduğumu oradan takip et).
-
-## Öğrenme modu (en önemli kural)
-- Benden açıkça "yaz" denmedikçe bütün bir feature'ı yazma. Önce yaklaşımı ve
-  kullanılacak widget'ları anlat, iskeleti göster, gövdeyi bana bırak.
-- Yazdığın her yeni kavramı (widget, paket, Dart özelliği) 1-2 cümleyle açıkla;
-  biliyorsam Angular/web karşılığını söyle.
-- Hatamı düzeltirken sadece düzeltme; nedenini söyle.
-- Henüz gelmediğim bir fazın konusunu (ör. Faz 4'teyken Riverpod) önermeden kullanma.
-
-## Mimari
-- Feature-first: lib/app/ (tema, router), lib/core/ (ortak yardımcılar),
-  lib/shared/widgets/ (tekrar kullanılan widget'lar),
-  lib/features/<feature>/{data, presentation}.
-- Widget dosyalarında iş mantığı, veritabanı veya API çağrısı yok; bunlar
-  repository / provider'da.
-- Büyük build metotlarını ayrı StatelessWidget sınıflarına böl
-  (_buildX() helper metotları yerine). Yeni widget yazmadan önce
-  lib/shared/widgets/ içinde benzeri var mı bak.
-- Mümkün olan her yerde const constructor.
-
-## Arayüz
-- Renk ve yazı stili her zaman Theme.of(context).colorScheme ve .textTheme'den;
-  Color(0xFF...) ve sabit fontSize yalnızca lib/app/theme.dart içinde.
-- Row/Column içindeki dinamik metin ve listelerde Expanded/Flexible kullan;
-  kart, liste gibi içerik alanlarına sabit yükseklik verme.
-
-## Paketler
-- Yeni paket eklemeden önce pubspec.yaml'ı oku; aynı işi yapan varsa onu kullan.
-- Paketi her zaman `flutter pub add <paket>` ile ekle, sürümü elle yazma.
-- Yeni paket eklemeden önce bana sor.
-
-## Async ve hata yönetimi
-- await'ten sonra BuildContext kullanmadan önce: if (!context.mounted) return;
-- Veritabanı ve API çağrıları repository katmanında try/catch ile sarılır;
-  UI'a anlamlı bir hata durumu döner, ham exception değil.
-- print yok; gerekirse debugPrint.
-
-## Kod üretimi (Faz 8 ve sonrası)
-- *.g.dart, *.freezed.dart dosyalarını asla elle düzenleme.
-- freezed/json_serializable/riverpod_generator kullanan bir dosyayı değiştirince:
-  dart run build_runner build --delete-conflicting-outputs
-
-## Teslim
-- "Bitti" demeden önce flutter-verify skill'ini çalıştır.
-```
-
-#### 2. `.claude/skills/flutter-verify/SKILL.md`
-
-```markdown
----
-name: flutter-verify
-description: Flutter kodunda değişiklik yaptıktan sonra, işi teslim etmeden önce analiz, format ve testleri çalıştırır.
----
-
-Sırasıyla çalıştır:
-
-1. `dart format lib test`
-2. `flutter analyze`: hata veya uyarı varsa düzelt ve tekrar çalıştır; 0 sorun olana kadar.
-3. `flutter test`: test klasöründe test varsa. Kırılan test varsa nedenini bul ve düzelt;
-   testi silerek veya gevşeterek geçirme.
-
-Sonunda bana kısa bir rapor ver: kaç dosya formatlandı, analiz sonucu, kaç test geçti.
-Düzelttiğin her analiz uyarısını bir cümleyle açıkla (öğreniyorum).
-```
-
-#### 3. `.claude/skills/flutter-feature/SKILL.md`
-
-```markdown
----
-name: flutter-feature
-description: Yeni bir feature (ekran) eklenirken klasör iskeletini kurar ve yaklaşımı açıklar.
----
-
-1. Feature adını snake_case olarak al (ör. new_entry).
-2. lib/features/<ad>/data/ ve lib/features/<ad>/presentation/ klasörlerini oluştur.
-3. presentation/<ad>_screen.dart içinde boş bir ekran (Scaffold + AppBar) oluştur.
-4. Ekranı router'a ekle.
-5. Ekranda hangi widget'ların gerekeceğini ve lib/shared/widgets/ içinden hangilerinin
-   tekrar kullanılabileceğini listele. Gövdeyi yazma; CLAUDE.md'deki öğrenme modu geçerli.
-```
-
-#### 4. `analysis_options.yaml`
-
-`flutter create` bu dosyayı `flutter_lints` ile oluşturur. `avoid_print` ve `use_build_context_synchronously` o sette zaten açık; `const` kuralları ise güncel sürümlerde varsayılan değil, elle açıyoruz:
-
-```yaml
-include: package:flutter_lints/flutter.yaml
-
-analyzer:
-  exclude:
-    - "**/*.g.dart"
-    - "**/*.freezed.dart"
-
-linter:
-  rules:
-    prefer_const_constructors: true
-    prefer_const_literals_to_create_immutables: true
-    prefer_const_declarations: true
-    avoid_print: true
-    use_build_context_synchronously: true
-    prefer_single_quotes: true
-    require_trailing_commas: true
-```
+`CLAUDE.md` ve skill dosyalarının güncel hali proje kökünde. Kurallar projeyle büyür: Faz 6'da klasör yapısı kesinleşince, Faz 8'de Riverpod gelince `CLAUDE.md`'yi güncelle. AI bir hatayı ikinci kez yaparsa o hatayı bir kural cümlesi olarak ekle.
 
 ### Kurulum görevleri
 
-- [ ] `flutter create gunisigi` ve proje klasörünü VS Code'da aç
-- [ ] `CLAUDE.md` dosyasını oluştur
-- [ ] İki skill dosyasını oluştur
-- [ ] `analysis_options.yaml` dosyasını güncelle
-- [ ] `flutter analyze` çalıştır; hazır sayaç kodunda çıkan const uyarılarını **kendin** düzelt (ilk Flutter alıştırman)
-- [ ] İlk commit: `git commit -m "chore: proje iskeleti ve agent kuralları"`
-
-> Bu dosyalar da projeyle büyür. Faz 6'da klasör yapısı kesinleşince, Faz 8'de Riverpod gelince `CLAUDE.md`'yi güncelle. AI bir hatayı ikinci kez yaparsa o hatayı bir kural cümlesi olarak ekle.
+- [x] `flutter create` ile projeyi oluştur ve Android Studio'da aç
+- [x] `CLAUDE.md` dosyasını oluştur
+- [x] İki skill dosyasını oluştur
+- [x] `analysis_options.yaml` dosyasını güncelle
+- [x] İlk commit: `chore: proje iskeleti ve agent kurallari`
 
 ---
 
@@ -228,12 +157,16 @@ Angular/web bildiğin için bu eşleştirmeler işini çok kolaylaştırır:
 | `package.json` / npm | `pubspec.yaml` / `flutter pub add` |
 | npmjs.com | [pub.dev](https://pub.dev) |
 | Angular Router | `Navigator` / **go_router** |
+| Layout component + `<router-outlet>` | `Scaffold` + `AppShell` (`ShellRoute`) |
 | Service + RxJS / Signals | **Provider** / **Riverpod** |
 | `HttpClient` | `http` / `dio` paketi |
 | Promise / async-await | `Future` / async-await (neredeyse aynı) |
 | Observable | `Stream` |
+| `setInterval` | `Timer.periodic` (deneme sayacı) |
 | localStorage | `shared_preferences` |
 | `ng serve` + hot reload | `flutter run` + **Hot Reload** (`r`) |
+
+**Mobil isimlendirme:** Web'deki üst menü mobilde alttaki **navigation bar** olur; üstteki bar menü değil, ekranın başlığını gösteren **top app bar**'dır. Mobilde "footer" kavramı yoktur.
 
 **En önemli fikir:** Flutter'da *her şey widget'tır*. Ekran bir widget, buton bir widget, boşluk (`SizedBox`) bile bir widget.
 
@@ -243,7 +176,7 @@ Angular/web bildiğin için bu eşleştirmeler işini çok kolaylaştırır:
 
 Her faz bir öncekinin üzerine kurulur. Her fazın sonunda **çalışan bir uygulaman** olur. Bir fazı bitirmeden diğerine geçme; her faz sonunda Git commit at.
 
-Tahmini süreler, günde 1-2 saat çalışma içindir.
+Tahmini süreler, günde 1-2 saat çalışma içindir. `[x]` işaretli maddeler projede yapıldı.
 
 ---
 
@@ -252,14 +185,14 @@ Tahmini süreler, günde 1-2 saat çalışma içindir.
 **Amaç:** Flutter'a geçmeden dili tanımak. Kurulum gerekmez, tarayıcıda [dartpad.dev](https://dartpad.dev) yeterli.
 
 - [ ] Değişkenler: `var`, `final`, `const`, tipler (`int`, `double`, `String`, `bool`)
-- [ ] **Null safety:** `String?`, `!`, `??`, `?.` (Flutter'da en çok hata buradan çıkar)
-- [ ] Koleksiyonlar: `List`, `Map`, `Set`; `map`, `where`, `forEach`
-- [ ] Fonksiyonlar: isimli parametreler `{required String title}`, ok fonksiyonları `=>`
+- [ ] **Null safety:** `String?`, `!`, `??`, `?.` (Flutter'da en çok hata buradan çıkar). Boş bırakılan soru için `int? selectedIndex` iyi bir örnek.
+- [ ] Koleksiyonlar: `List`, `Map`, `Set`; `map`, `where`, `fold`, `forEach`
+- [ ] Fonksiyonlar: isimli parametreler `{required String text}`, ok fonksiyonları `=>`
 - [ ] Sınıflar: constructor, isimli constructor, `factory`, getter
-- [ ] `enum` (ruh hali için kullanacağız)
+- [ ] `enum` (cevap durumu için: doğru, yanlış, boş)
 - [ ] `Future`, `async` / `await`
 
-**Mini görev:** DartPad'de `Entry` (kayıt) sınıfı yaz: `date`, `mood`, `items` (3 maddelik liste). 3 örnek kayıt oluştur ve konsola yazdır.
+**Mini görev:** DartPad'de bir `Question` sınıfı yaz: `text`, `options` (5 şık), `answerIndex`. 5 soru oluştur, bir de "kullanıcının cevapları" listesi yap (bazıları `null`, yani boş). Doğru, yanlış ve boş sayısını bul, **net**'i hesapla (`doğru - yanlış / 4`) ve konsola yazdır.
 
 ---
 
@@ -268,20 +201,17 @@ Tahmini süreler, günde 1-2 saat çalışma içindir.
 **Amaç:** Projeyi oluşturmak, yapıyı tanımak, ilk ekranı çizmek.
 
 ```bash
-flutter create gunisigi
-```
-
-```bash
 flutter run
 ```
 
-- [ ] Proje klasörlerini incele: `lib/main.dart`, `pubspec.yaml`, `android/`, `test/`
-- [ ] Hazır sayaç uygulamasını çalıştır, **Hot Reload** (`r`) ve **Hot Restart** (`R`) farkını gör
-- [ ] `main.dart` içini temizle, kendi `MaterialApp` + `Scaffold` + `AppBar` yapını kur
-- [ ] **StatelessWidget** ile "Günaydın ☀️" yazan statik bir ana sayfa yap
-- [ ] Temel widget'lar: `Text`, `Icon`, `Image`, `Container`, `Padding`, `SizedBox`, `Center`
+- [x] Proje klasörlerini incele: `lib/main.dart`, `pubspec.yaml`, `android/`, `test/`
+- [x] Hazır sayaç uygulamasını çalıştır, **Hot Reload** (`r`) ve **Hot Restart** (`R`) farkını gör
+- [x] `main.dart` içini temizle, kendi `MaterialApp` + `Scaffold` + `AppBar` yapını kur
+- [x] **StatelessWidget** ile statik bir ana sayfa yap
+- [x] Temel widget'lar: `Text`, `Icon`, `Container`, `Padding`, `SizedBox`, `Center`
+- [ ] `Image` ile bir görsel göster (ör. uygulama logosu)
 
-**Çıktı:** Başlığı "Günışığı" olan, ortasında karşılama mesajı bulunan tek sayfalık uygulama.
+**Çıktı:** Başlığı "Kadro" olan, karşılama mesajı bulunan ana sayfa.
 
 ---
 
@@ -289,86 +219,97 @@ flutter run
 
 **Amaç:** Flexbox bilgini Flutter'a taşımak, uygulamayı göze hoş göstermek.
 
-- [ ] `Row`, `Column`, `Expanded`, `Stack` ile yerleşim
-- [ ] `Card`, `ListTile`, `ListView.builder` ile sahte (hardcoded) kayıt listesi
-- [ ] `ThemeData` ile renk paleti: sıcak tonlar (gün doğumu turuncusu, krem, yumuşak sarı)
+- [x] `Row`, `Column`, `Expanded` ile yerleşim
+- [x] `Card`, `ListTile` ile ders listesi (Genel Yetenek / Genel Kültür grupları)
+- [x] `ThemeData` ile renk paleti (`lib/app/theme.dart`, açık ve koyu tema)
+- [x] Kendi widget'larını çıkar: `PageHeader`, `SectionTitle`
+- [ ] `Stack` ile bir şey dene (ör. ders kartının köşesine "yeni" rozeti)
+- [ ] `ListView.builder` ile uzun bir liste (bir dersin 20 konusu)
 - [ ] `google_fonts` paketi ile yazı tipi (`flutter pub add google_fonts`)
-- [ ] **Kendi widget'larını çıkar:** `MoodChip`, `EntryCard`, `StreakBadge` (Angular'daki reusable component mantığı aynen geçerli)
+- [ ] Soru ekranının **görünümünü** çiz: üstte soru metni, altta A-E şıkları (`OptionTile` widget'ı). Henüz tıklanmasın.
 
-**Çıktı:** Sahte verilerle dolu, şık bir ana sayfa ve geçmiş listesi.
+**Çıktı:** Sahte verilerle dolu ana sayfa, ders listesi ve statik bir soru ekranı.
 
 ---
 
 ### 🟡 Faz 4: Etkileşim ve State (4-5 gün)
 
-**Amaç:** Kullanıcının bir şey yapabilmesi.
+**Amaç:** Kullanıcının soru çözebilmesi.
 
-- [ ] **StatefulWidget** ve `setState` mantığı
-- [ ] "Yeni kayıt" formu: `TextField` / `TextFormField`, `TextEditingController`
-- [ ] Ruh hali seçimi: 5 emojiden birine dokununca seçili görünsün
-- [ ] Form doğrulama (`Form` + `validator`): 3 madde boş geçilemesin
-- [ ] Kaydet'e basınca liste güncellensin (şimdilik bellekte, uygulama kapanınca silinir)
-- [ ] `SnackBar` ile "Kaydedildi 🌼" bildirimi
+- [x] **StatefulWidget** ve `setState` mantığı (alt menüde seçili sekme)
+- [ ] Soru ekranı: şıka dokununca seçili görünsün
+- [ ] "Kontrol et": doğru şık yeşil, yanlış şık kırmızı, altında açıklama
+- [ ] "Sonraki soru" ile test ilerlesin; üstte "3 / 10" göstergesi
+- [ ] Test sonunda özet: doğru, yanlış, boş ve **net**
+- [ ] Bilgi kartı: dokununca ön yüzden arka yüze dönsün (`AnimatedSwitcher`)
+- [ ] `SnackBar` ile kısa geri bildirim ("Yanlış defterine eklendi")
 
-**Çıktı:** Kayıt eklenebilen, canlı güncellenen bir liste.
+**Çıktı:** Bellekteki örnek sorularla çözülebilen bir konu testi ve bilgi kartları.
 
 ---
 
 ### 🟡 Faz 5: Navigasyon (2-3 gün)
 
-**Amaç:** Birden fazla sayfa arasında gezinmek.
+**Amaç:** Ders → konu → test akışı.
 
-- [ ] Önce temel: `Navigator.push` / `Navigator.pop`
+- [x] Alt menü: `NavigationBar` (Ana Sayfa, Dersler, Denemeler, İstatistik, Profil), şimdilik `setState` + sayfa listesiyle
+- [ ] Önce temel: `Navigator.push` / `Navigator.pop` ile dersten konu listesine geçiş
 - [ ] Sonra **go_router** paketine geç (Angular Router'a çok benzer)
-- [ ] Rotalar: `/`, `/new`, `/history`, `/entry/:id`, `/settings`
-- [ ] Alt menü: `NavigationBar` (Ana sayfa, Geçmiş, İstatistik, Ayarlar)
-- [ ] Sayfalar arası veri taşıma (detay sayfasına kayıt id'si gönderme)
+- [ ] Rotalar: `/`, `/lessons`, `/lessons/:lessonId`, `/quiz/:topicId`, `/exams`, `/stats`, `/profile`
+- [ ] `AppShell`'i `ShellRoute` (ya da `StatefulShellRoute`) ile bağla; alt menü rotaya göre seçilsin
+- [ ] Sayfalar arası veri taşıma (test ekranına konu id'si gönderme)
 
-**Çıktı:** Alt menülü, çok sayfalı uygulama.
+**Çıktı:** Bir derse dokununca konuları, konuya dokununca testi açan uygulama.
 
 ---
 
-### 🟡 Faz 6: Kod Organizasyonu (1-2 gün)
+### 🟡 Faz 6: Kod Organizasyonu ve İçerik (2-3 gün)
 
-**Amaç:** Proje büyümeden düzeni kurmak.
+**Amaç:** Proje büyümeden düzeni kurmak, soruları koddan ayırmak.
 
 ```text
 lib/
 ├── main.dart
-├── app/            # MaterialApp, tema, router
-├── models/         # Entry, Mood
-├── data/           # repository: veriye erişim
+├── app/            # AppShell, tema, router
+├── core/           # net hesabı gibi ortak yardımcılar
 ├── features/
 │   ├── home/
-│   ├── new_entry/
-│   ├── history/
+│   ├── lessons/      # dersler ve konular
+│   ├── quiz/         # konu testi ekranı
+│   ├── flashcards/   # bilgi kartları
+│   ├── mistakes/     # yanlış defteri
+│   ├── exams/        # deneme sınavı
 │   ├── stats/
-│   └── settings/
+│   └── profile/
 └── shared/
-    └── widgets/    # MoodChip, EntryCard, StreakBadge...
+    └── widgets/    # PageHeader, SectionTitle, OptionTile...
 ```
 
-- [ ] Dosyaları bu yapıya taşı; her feature içinde `data/` (repository, kaynak) ve `presentation/` (ekran, widget, provider) alt klasörleri olsun
-- [ ] Bu fazda `CLAUDE.md` içindeki klasör kuralını güncelle (bkz. Bölüm 0.5)
-- [ ] `Entry` modeline `toJson()` / `fromJson()` ekle (bir sonraki faz için şart)
+- [ ] Her feature içinde `data/` (model, repository) ve `presentation/` (ekran, widget) olsun
+- [ ] Modeller: `Lesson`, `Topic`, `Question`, `QuizResult`
+- [ ] `Question`'a `toJson()` / `fromJson()` ekle
+- [ ] Soruları `assets/questions/*.json` dosyalarına taşı, `pubspec.yaml`'da `assets` olarak tanımla, `rootBundle.loadString` ile oku
+- [ ] Her ders için en az 10 özgün soru yaz (bkz. Soru İçeriği ve Telif)
+- [ ] `CLAUDE.md` içindeki klasör kuralını güncelle
 - [ ] `flutter analyze` çalıştır, uyarıları temizle
 
 ---
 
 ### 🟠 Faz 7: Kalıcı Veri (Yerel Depolama) (4-5 gün)
 
-**Amaç:** Uygulama kapansa da kayıtlar kaybolmasın.
+**Amaç:** Uygulama kapansa da ilerleme kaybolmasın.
 
-- [ ] **shared_preferences** ile basit ayarlar: tema tercihi, kullanıcı adı
-- [ ] Kayıtlar için bir yerel veritabanı seç ve öğren:
+- [ ] **shared_preferences** ile basit ayarlar: günlük hedef (ör. 30 soru), tema tercihi
+- [ ] Çözülen soruları kaydetmek için bir yerel veritabanı seç ve öğren:
   - **sqflite**: SQL biliyorsan en tanıdık olanı (öneri)
   - **Hive CE**: anahtar-değer tabanlı, kurulumu çok basit
-- [ ] `EntryRepository` sınıfı: `getAll()`, `add()`, `update()`, `delete()`
+- [ ] `AttemptRepository`: hangi soru, hangi şık, doğru mu, ne zaman
+- [ ] **Yanlış defteri:** yanlış cevaplanan sorular listesi; doğru çözülünce defterden çıksın
+- [ ] Defterden kaydırarak çıkarma (`Dismissible`) + onay dialog'u
 - [ ] UI'ı doğrudan veritabanına değil, repository'ye bağla
 - [ ] Yükleniyor durumu: `FutureBuilder` + `CircularProgressIndicator`
-- [ ] Kayıt silme: listede kaydırarak silme (`Dismissible`) + onay dialog'u
 
-**Çıktı:** Kapatıp açınca verileri hatırlayan gerçek bir uygulama. 🎉 *Burası ilk büyük kilometre taşın.*
+**Çıktı:** Kapatıp açınca ilerlemeyi ve yanlışları hatırlayan gerçek bir uygulama. 🎉 *Burası ilk büyük kilometre taşın.*
 
 ---
 
@@ -376,47 +317,50 @@ lib/
 
 **Amaç:** `setState` ile her yere veri taşıma derdinden kurtulmak.
 
-- [ ] Sorunu hisset: ana sayfadaki seri sayacı, yeni kayıt eklenince neden güncellenmiyor?
+- [ ] Sorunu hisset: testte soru çözünce ana sayfadaki "bugünkü hedef" neden kendiliğinden güncellenmiyor?
 - [ ] **Riverpod** (`flutter_riverpod`) öğren. Angular servislerine en yakın mantık budur.
   - `Provider`, `NotifierProvider`, `FutureProvider`
   - `ConsumerWidget`, `ref.watch` vs `ref.read`
-- [ ] `EntriesNotifier`: tüm kayıt listesini yönetsin
-- [ ] Seri (streak) hesabını ayrı bir provider'a koy (art arda kaç gün yazılmış)
+- [ ] `AttemptsNotifier`: çözülen soruları yönetsin
+- [ ] Bugün çözülen soru sayısı ve seri (art arda çalışılan gün) ayrı provider'larda
+- [ ] **Deneme sınavı:** 130 dakikalık geri sayım (`Timer.periodic`), süre bitince sınav otomatik bitsin
 - [ ] Tema (açık/koyu) ayarını provider ile tüm uygulamaya yay
 
 > Alternatif: Riverpod zor gelirse önce daha basit olan `provider` paketiyle başla, sonra geç.
 
-**Çıktı:** Her ekranın otomatik senkron olduğu, temiz state yapısı.
+**Çıktı:** Her ekranın otomatik senkron olduğu, temiz state yapısı ve çalışan bir deneme sınavı.
 
 ---
 
 ### 🔵 Faz 9: İnternetten Veri (API) (3-4 gün)
 
-**Amaç:** "Günün sözü" özelliği.
+**Amaç:** Soru bankasını uygulamayı güncellemeden büyütebilmek.
 
-- [ ] `http` (veya `dio`) paketiyle ücretsiz bir alıntı API'sine istek at (örn. ZenQuotes, ya da kendi JSON listen)
-- [ ] JSON'u modele çevir (`Quote.fromJson`)
+- [ ] Soru JSON'larını internette bir yere koy (ör. kendi GitHub deposunda ayrı bir klasör ya da Firebase)
+- [ ] `http` (veya `dio`) paketiyle indir, `Question.fromJson` ile modele çevir
 - [ ] 3 durumu ele al: **yükleniyor**, **hata** (internet yok), **başarılı**
-- [ ] Söz günde bir kez çekilsin, yerelde saklansın (önbellek mantığı)
-- [ ] İnternet yoksa yerel, gömülü Türkçe söz listesinden göster
+- [ ] İndirilen soruları yerelde sakla; internet yoksa uygulamaya gömülü sorularla çalış
+- [ ] **Güncel Bilgiler** dersi için ayrı, sık güncellenen bir dosya
 - [ ] Android internet izni: `android/app/src/main/AndroidManifest.xml` içinde `INTERNET` izni (release build için şart)
 
-**Çıktı:** Her sabah değişen, çevrimdışı da çalışan söz kartı.
+**Çıktı:** Yeni soru eklemek için uygulama güncellemesi gerektirmeyen, çevrimdışı da çalışan soru bankası.
 
 ---
 
 ### 🔵 Faz 10: İstatistik ve Grafik (2-3 gün)
 
-- [ ] **fl_chart** paketi ile son 7 günün ruh hali çizgi grafiği
-- [ ] Toplam kayıt, en uzun seri, en sık ruh hali kartları
-- [ ] Ay görünümü: yazılan günleri renkli gösteren takvim (`table_calendar` paketi)
+- [ ] **fl_chart** ile ders bazında doğru oranı (bar grafik)
+- [ ] Son 7 günde çözülen soru sayısı (çizgi grafik)
+- [ ] En zayıf 3 konu kartı
+- [ ] Deneme netlerinin gelişimi
+- [ ] (Opsiyonel) Çalışılan günleri gösteren takvim (`table_calendar`)
 
 ---
 
 ### 🔵 Faz 11: Bildirimler (2-3 gün)
 
-- [ ] **flutter_local_notifications** ile her akşam hatırlatma: "Bugün sana iyi gelen 3 şey neydi? 🌙"
-- [ ] Ayarlardan bildirim saatini seçme (`showTimePicker`)
+- [ ] **flutter_local_notifications** ile günlük hatırlatma: "Bugünkü 30 sorunu çözdün mü?"
+- [ ] Profil'den bildirim saatini seçme (`showTimePicker`)
 - [ ] Android 13+ bildirim izni isteme
 
 ---
@@ -425,21 +369,24 @@ lib/
 
 **Amaç:** "Ödev projesi" görüntüsünden "gerçek uygulama" görüntüsüne geçiş.
 
-- [ ] Koyu tema
-- [ ] Animasyonlar: `AnimatedContainer`, `Hero` (listeden detaya geçiş), kayıt eklenince küçük bir kutlama
-- [ ] Boş durum ekranları: "Henüz kayıt yok, ilk güzel anını yaz ✨"
+- [ ] Koyu temayı her ekranda kontrol et
+- [ ] Animasyonlar: doğru cevapta küçük bir kutlama, `Hero` ile kart geçişleri
+- [ ] Boş durum ekranları: "Yanlış defterin boş, harika gidiyorsun!"
 - [ ] Uygulama ikonu: `flutter_launcher_icons`
 - [ ] Açılış ekranı: `flutter_native_splash`
-- [ ] Farklı ekran boyutlarında test (küçük telefon, tablet)
-- [ ] Erişilebilirlik: yazı boyutu büyütülünce taşma var mı?
+- [ ] Tablette alt menü yerine yanda `NavigationRail`
+- [ ] Erişilebilirlik: yazı boyutu büyütülünce taşma var mı? Uzun soru metinleri kaydırılabiliyor mu?
 
 ---
 
 ### 🟣 Faz 13: Test (2-3 gün)
 
-- [ ] **Unit test:** seri (streak) hesaplama fonksiyonu (en kritik iş mantığı)
-- [ ] **Unit test:** `Entry.fromJson` / `toJson`
-- [ ] **Widget test:** form boşken kaydet butonu hata gösteriyor mu?
+- [x] **Unit test:** ders listesinin toplam 120 soru olduğu
+- [x] **Widget test:** alt menüden sekmeler arası geçiş
+- [ ] **Unit test:** net hesabı (4 yanlış 1 doğruyu götürür; boşlar etkilemez)
+- [ ] **Unit test:** seri hesabı ve `Question.fromJson` / `toJson`
+- [ ] **Widget test:** şık seçilmeden "Kontrol et" butonu pasif mi?
+- [ ] **Widget test:** deneme süresi bitince sınav bitiyor mu? (`fakeAsync`)
 - [ ] Testleri çalıştır:
 
 ```bash
@@ -450,7 +397,9 @@ flutter test
 
 ### 🏁 Faz 14: Yayın (2-3 gün)
 
-- [ ] Uygulama adı, paket adı (`com.seninadin.gunisigi`), sürüm numarası
+- [x] Uygulama adı ve paket adı: **Kadro**, `com.omer.kadro`
+- [ ] Sürüm numarası (`pubspec.yaml` → `version`)
+- [ ] Soruların tamamının özgün olduğunu kontrol et (ÖSYM sorusu yok)
 - [ ] İmzalama anahtarı (keystore) oluştur. **Bu dosyayı ve şifresini asla kaybetme ve Git'e ekleme.**
 - [ ] Release build al:
 
@@ -458,7 +407,7 @@ flutter test
 flutter build appbundle --release
 ```
 
-- [ ] Kendi telefonuna kur ve en az bir hafta gerçekten kullan, hataları not al
+- [ ] Kendi telefonuna kur ve en az bir hafta gerçekten çalış, hataları not al
 - [ ] (Opsiyonel) Google Play Console hesabı açıp yayınla (tek seferlik ücretli). Alternatif: APK'yı GitHub Releases'e koy.
 - [ ] GitHub README: ekran görüntüleri, özellik listesi, kullanılan paketler
 
@@ -468,12 +417,14 @@ flutter build appbundle --release
 
 İstersen proje bittikten sonra:
 
+- [ ] **Aralıklı tekrar:** bilgi kartları için Leitner kutuları (bilinen kart daha seyrek gelsin)
+- [ ] **Konu özetleri:** her konu için kısa, Markdown ile yazılmış anlatım (`flutter_markdown`)
 - [ ] **Bulut senkronizasyonu:** Firebase (Auth + Firestore) ya da kendi Node.js backend'in
 - [ ] **Giriş sistemi:** e-posta / Google ile giriş
-- [ ] **Çoklu dil:** Türkçe + İngilizce (`flutter_localizations`, `intl`)
-- [ ] **Fotoğraf ekleme:** `image_picker` ile güne bir fotoğraf
-- [ ] **Ana ekran widget'ı:** telefon ana ekranında seri sayacı (`home_widget`)
+- [ ] **Ana ekran widget'ı:** telefonda günlük hedef ve seri (`home_widget`)
+- [ ] **Diğer sınavlar:** Önlisans, Ortaöğretim, Eğitim Bilimleri
 - [ ] **CI:** GitHub Actions ile her push'ta `flutter analyze` + `flutter test`
+- [ ] **Native tekrar:** uygulamanın küçük bir parçasını Kotlin + Jetpack Compose ile yeniden yaz
 
 ---
 
@@ -484,9 +435,9 @@ flutter build appbundle --release
 | 3 | `google_fonts` | Yazı tipi |
 | 5 | `go_router` | Navigasyon |
 | 7 | `shared_preferences` | Basit ayarlar |
-| 7 | `sqflite` veya `hive_ce` | Kayıtlar |
+| 7 | `sqflite` veya `hive_ce` | Çözülen sorular, yanlış defteri |
 | 8 | `flutter_riverpod` | State management |
-| 9 | `http` veya `dio` | API istekleri |
+| 9 | `http` veya `dio` | Soru bankası indirme |
 | 10 | `fl_chart`, `table_calendar` | Grafik, takvim |
 | 11 | `flutter_local_notifications` | Hatırlatma |
 | 12 | `flutter_launcher_icons`, `flutter_native_splash` | İkon, açılış ekranı |
@@ -497,7 +448,7 @@ Paket eklemek için:
 flutter pub add go_router
 ```
 
-> Paket seçerken pub.dev'de **Likes**, **Pub Points**, **son güncelleme tarihi** ve **Flutter Favorite** rozetine bak.
+> Paket seçerken pub.dev'de **Likes**, **Pub Points**, **son güncelleme tarihi** ve **Flutter Favorite** rozetine bak. Yeni paket eklemeden önce `CLAUDE.md` gereği önce konuş.
 
 ---
 
@@ -506,22 +457,24 @@ flutter pub add go_router
 - **Resmi dokümantasyon:** [docs.flutter.dev](https://docs.flutter.dev) (özellikle "Learn" ve "Cookbook" bölümleri)
 - **Dart dili turu:** [dart.dev/language](https://dart.dev/language)
 - **DartPad:** [dartpad.dev](https://dartpad.dev) (kurulumsuz deneme)
+- **Material Design 3 bileşenleri:** [m3.material.io/components](https://m3.material.io/components)
 - **Widget of the Week:** Flutter'ın resmi YouTube kanalındaki kısa widget videoları
 - **Riverpod:** [riverpod.dev](https://riverpod.dev)
 - **Paketler:** [pub.dev](https://pub.dev)
+- **KPSS kılavuzu:** [osym.gov.tr](https://www.osym.gov.tr) (soru dağılımı ve süre için)
 
 ---
 
 ## 💡 Altın Kurallar
 
 1. **Her fazın sonunda çalışan bir uygulama olsun.** Yarım bırakılmış 5 özellik yerine bitmiş 1 özellik.
-2. **Her faz sonunda commit at.** `git commit -m "faz 4: kayıt ekleme formu"`
+2. **Her faz sonunda commit at.** `git commit -m "faz 4: konu testi ekrani"`
 3. **Kopyala-yapıştır değil, yaz.** Kodu elle yazmak öğrenmenin yarısıdır.
 4. **Hata mesajını sonuna kadar oku.** Flutter hata mesajları genellikle çözümü de söyler.
 5. **`flutter doctor` ve `flutter analyze` en iyi arkadaşın.**
 6. **Takılınca 30 dakika kuralı:** 30 dakika uğraş, çözemezsen dokümantasyona, sonra topluluğa / yapay zekaya sor.
-7. **Kendine iyi davran.** Bu uygulamanın konusu da bu zaten. 🌅
+7. **Uygulamayı kendin kullan.** Her gün 10 soru çözerek test et; en iyi hata raporu kullanıcıdan gelir.
 
 ---
 
-**Toplam tahmini süre:** Günde 1-2 saatle yaklaşık **8-10 hafta** (bonus fazlar hariç).
+**Toplam tahmini süre:** Günde 1-2 saatle yaklaşık **10-12 hafta** (bonus fazlar hariç).

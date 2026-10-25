@@ -9,7 +9,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   const AppTopBar({
     super.key, // Üst sınıfa (StatelessWidget) benzersiz kimlik anahtarını iletir
-    this.title = 'Günışığı 🌅', // Dışarıdan başlık verilmezse kullanılacak varsayılan metin
+    this.title = 'Kadro', // Dışarıdan başlık verilmezse kullanılacak varsayılan metin
   });
 
   @override

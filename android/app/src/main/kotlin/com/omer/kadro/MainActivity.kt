@@ -1,4 +1,4 @@
-package com.omer.gunisigi
+package com.omer.kadro
 
 import io.flutter.embedding.android.FlutterActivity
 

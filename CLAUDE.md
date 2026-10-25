@@ -1,4 +1,8 @@
-﻿# Günışığı: Flutter öğrenme projesi
+﻿# Kadro: KPSS hazırlık uygulaması (Flutter öğrenme projesi)
+
+Kadro, KPSS Lisans (GY-GK) adayları için konu testi, bilgi kartı, yanlış defteri
+ve deneme sınavı içeren bir çalışma uygulaması. Paket adı: kadro, Android: com.omer.kadro.
+Sorular özgün olmalı; ÖSYM'nin çıkmış sorularını içerik olarak ekleme.
 
 Ben web tarafında junior bir geliştiriciyim ve Flutter'ı bu projeyle öğreniyorum.
 Rehber: docs/flutter-ogrenme-rehberi.md (hangi fazda olduğumu oradan takip et).
