@@ -18,7 +18,7 @@ Yol haritası ve fazların detayı: [`docs/flutter-ogrenme-rehberi.md`](docs/flu
 ## ✨ Şu an neler var
 
 - Material 3 ve amber tonlarından üretilen tema
-- Sabit üst bar ve alt menüden oluşan uygulama kabuğu (`MainLayout`)
+- Üst bar (top app bar) ve alt menüden (navigation bar) oluşan uygulama kabuğu (`AppShell`)
 - Alt menüyle 4 sayfa arasında geçiş, üst bar başlığı sayfaya göre değişiyor
 - Sayfalar arasında ortak kullanılan `PageHeader` widget'ı
 - Sayfa geçişlerini kontrol eden widget testi
@@ -38,10 +38,10 @@ Kod **feature-first** düzende: her özellik kendi klasöründe, ortak parçalar
 lib/
 ├── main.dart                     # Giriş noktası: tema ve MaterialApp
 ├── app/
-│   ├── main_layout.dart          # Uygulama kabuğu: üst bar + sayfa + alt menü
+│   ├── app_shell.dart            # Uygulama kabuğu: üst bar + sayfa + alt menü
 │   └── widgets/
-│       ├── app_navbar.dart       # Üst bar
-│       └── app_footer.dart       # Alt menü (NavigationBar)
+│       ├── app_top_bar.dart          # Üst bar (top app bar)
+│       └── app_navigation_bar.dart   # Alt menü (navigation bar)
 ├── features/
 │   ├── home/presentation/        # Ana Sayfa
 │   ├── history/presentation/     # Geçmiş
@@ -54,7 +54,7 @@ lib/
 
 ## 🧭 Sayfa geçişi nasıl çalışıyor
 
-`MainLayout` bir `StatefulWidget`. Seçili sekmenin numarasını (`_selectedIndex`) tutuyor ve `Scaffold`'un ortasına o numaradaki sayfayı koyuyor:
+`AppShell` bir `StatefulWidget`. Seçili sekmenin numarasını (`_selectedIndex`) tutuyor ve `Scaffold`'un ortasına o numaradaki sayfayı koyuyor:
 
 ```dart
 static const List<Widget> _pages = [

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart'; // Material Design bileşenleri
 
-/// Web'deki `<app-footer>` (Alt Navigasyon Menüsü) bileşeninin karşılığıdır.
-class AppFooter extends StatelessWidget {
+/// Alttaki sekme menüsü (Material Design: navigation bar).
+/// Web'deki ana menünün (navbar) mobil karşılığıdır; mobilde başparmağa yakın olsun diye altta durur.
+class AppNavigationBar extends StatelessWidget {
   final int selectedIndex; // Şu an hangi sekmenin (tab) aktif/seçili olduğu sıra numarası (0, 1, 2, 3)
   final ValueChanged<int> onDestinationSelected; // Kullanıcı bir sekmeye dokunduğunda çalışan bildirim fonksiyonu
 
-  const AppFooter({
+  const AppNavigationBar({
     super.key, // Widget kimlik anahtarı
     required this.selectedIndex, // Zorunlu parametre: Aktif sekme indeksi
     required this.onDestinationSelected, // Zorunlu parametre: Tıklama olayı bildirici fonksiyon
@@ -17,7 +18,7 @@ class AppFooter extends StatelessWidget {
       // Material 3 standart alt navigasyon çubuğu widget'ı
       selectedIndex:
           selectedIndex, // Aktif olan butonun görsel ışığını/vurgusunu yakar
-      onDestinationSelected: onDestinationSelected, // Tıklanınca yeni seçilen indeksi ana layout'a (MainLayout) bildirir
+      onDestinationSelected: onDestinationSelected, // Tıklanınca yeni seçilen indeksi uygulama kabuğuna (AppShell) bildirir
       destinations: const [
         // Alt menüdeki her bir sekme butonunun listesi
         NavigationDestination(

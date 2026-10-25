@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Ana sayfanın sadece kendi iç içeriğini tutan saf görünüm bileşeni.
-/// Kapsayıcı Scaffold, AppBar ve Footer `MainLayout` içinde yönetilir.
+/// Kapsayıcı Scaffold, üst bar ve alt menü `AppShell` içinde yönetilir.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 

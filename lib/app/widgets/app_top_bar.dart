@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart'; // Material Design renk, font ve widget kütüphanesi
 
-/// Web'deki `<app-navbar>` (Header) bileşeninin karşılığıdır.
+/// Üstteki başlık barı (Material Design: top app bar).
+/// Web'deki sayfa header'ının karşılığıdır; menü değil, o anki ekranın başlığını gösterir.
 /// PreferredSizeWidget arabirimi, Scaffold'un AppBar alanına özel yükseklik bilgisi sunar.
-class AppNavbar extends StatelessWidget implements PreferredSizeWidget {
+class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String
   title; // Header kısmında görüntülenecek olan başlık metni değişkeni
 
-  const AppNavbar({
+  const AppTopBar({
     super.key, // Üst sınıfa (StatelessWidget) benzersiz kimlik anahtarını iletir
     this.title = 'Günışığı 🌅', // Dışarıdan başlık verilmezse kullanılacak varsayılan metin
   });
