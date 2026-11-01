@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Kadro PRO abonelik ve ödüllü reklam tanıtım ekranı (Paywall).
 ///
@@ -43,7 +44,7 @@ class PaywallScreen extends ConsumerWidget {
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          Icons.workspace_premium,
+                          LucideIcons.crown,
                           size: 40,
                           color: colorScheme.primary,
                         ),
@@ -76,23 +77,23 @@ class PaywallScreen extends ConsumerWidget {
                 child: ListView(
                   children: const [
                     _ProFeatureTile(
-                      icon: Icons.all_inclusive,
+                      icon: LucideIcons.check,
                       title: 'Sınırsız Soru Çözümü & Deneme',
                       description:
                           'Tüm ders ve konularda sınırsızca test çözün.',
                     ),
                     _ProFeatureTile(
-                      icon: Icons.auto_stories_outlined,
+                      icon: LucideIcons.check,
                       title: 'Akıllı Yanlış Defteri',
                       description: 'Yanlış yapılan soruları tam öğrenene kadar pekiştirin.',
                     ),
                     _ProFeatureTile(
-                      icon: Icons.style_outlined,
+                      icon: LucideIcons.check,
                       title: 'Haftalık Güncel Bilgiler Kartları',
                       description: '2024 ve 2025 müfredatına uygun hap bilgiler cebinizde.',
                     ),
                     _ProFeatureTile(
-                      icon: Icons.block_outlined,
+                      icon: LucideIcons.check,
                       title: 'Reklamsız, Kesintisiz Çalışma',
                       description: 'Dikkatiniz dağılmadan doğrudan derslerinize odaklanın.',
                     ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Test tamamlandığında net ve başarı oranını gösteren karne ekranı.
 ///
@@ -26,7 +28,7 @@ class QuizResultScreen extends StatelessWidget {
             children: [
               // Sayfa başlığı ve başarı ikonu
               const PageHeader(
-                icon: Icons.emoji_events,
+                icon: LucideIcons.trophy,
                 title: 'Test Tamamlandı!',
                 subtitle: 'KPSS Genel Kültür konu testi sonucun aşağıda.',
               ),
@@ -43,7 +45,7 @@ class QuizResultScreen extends StatelessWidget {
                     child: _ResultStatItem(
                       label: 'Doğru',
                       count: result.correctCount,
-                      icon: Icons.check_circle_outline,
+                      icon: LucideIcons.check,
                       color: Theme.of(context).colorScheme.tertiary,
                     ),
                   ),
@@ -72,7 +74,7 @@ class QuizResultScreen extends StatelessWidget {
               // Ana sayfaya / listeye dönüş butonu
               FilledButton.icon(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.home),
+                icon: const Icon(LucideIcons.house),
                 label: const Text('Ana Sayfaya Dön'),
               ),
             ],
@@ -134,7 +136,7 @@ class _NetScoreCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ).animate().fadeIn(duration: 200.ms);
   }
 }
 

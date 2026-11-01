@@ -9,6 +9,8 @@ class StudyStatsState {
   final int totalWrong;
   final int dailyGoal;
   final Map<String, int> wrongByLesson;
+  final Map<String, int> solvedByLesson;
+  final Map<String, int> correctByLesson;
 
   const StudyStatsState({
     this.totalSolved = 0,
@@ -16,6 +18,8 @@ class StudyStatsState {
     this.totalWrong = 0,
     this.dailyGoal = 30,
     this.wrongByLesson = const {},
+    this.solvedByLesson = const {},
+    this.correctByLesson = const {},
   });
 
   /// Başarı / doğru oranı yüzdesi (0 - 100).
@@ -39,12 +43,22 @@ class StudyStatsState {
     return (maxLesson != null && maxWrong > 0) ? maxLesson : 'Henüz veri yok';
   }
 
+  /// Belirli bir ders için başarı yüzdesi (0 - 100).
+  int lessonAccuracyPercent(String lesson) {
+    final solved = solvedByLesson[lesson] ?? 0;
+    if (solved == 0) return 0;
+    final correct = correctByLesson[lesson] ?? 0;
+    return ((correct / solved) * 100).round();
+  }
+
   StudyStatsState copyWith({
     int? totalSolved,
     int? totalCorrect,
     int? totalWrong,
     int? dailyGoal,
     Map<String, int>? wrongByLesson,
+    Map<String, int>? solvedByLesson,
+    Map<String, int>? correctByLesson,
   }) {
     return StudyStatsState(
       totalSolved: totalSolved ?? this.totalSolved,
@@ -52,6 +66,8 @@ class StudyStatsState {
       totalWrong: totalWrong ?? this.totalWrong,
       dailyGoal: dailyGoal ?? this.dailyGoal,
       wrongByLesson: wrongByLesson ?? this.wrongByLesson,
+      solvedByLesson: solvedByLesson ?? this.solvedByLesson,
+      correctByLesson: correctByLesson ?? this.correctByLesson,
     );
   }
 }
@@ -74,11 +90,21 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       newWrongByLesson[lesson] = (newWrongByLesson[lesson] ?? 0) + 1;
     }
 
+    final newSolvedByLesson = Map<String, int>.from(state.solvedByLesson);
+    newSolvedByLesson[lesson] = (newSolvedByLesson[lesson] ?? 0) + 1;
+
+    final newCorrectByLesson = Map<String, int>.from(state.correctByLesson);
+    if (isCorrect) {
+      newCorrectByLesson[lesson] = (newCorrectByLesson[lesson] ?? 0) + 1;
+    }
+
     state = state.copyWith(
       totalSolved: state.totalSolved + 1,
       totalCorrect: isCorrect ? state.totalCorrect + 1 : state.totalCorrect,
       totalWrong: !isCorrect ? state.totalWrong + 1 : state.totalWrong,
       wrongByLesson: newWrongByLesson,
+      solvedByLesson: newSolvedByLesson,
+      correctByLesson: newCorrectByLesson,
     );
   }
 

@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -117,6 +118,36 @@ void main() {
         expect(find.text('1'), findsOneWidget); // Çözülen soru
         expect(find.text('%0'), findsOneWidget); // Doğru oranı
         expect(find.text('Tarih'), findsOneWidget); // En zayıf ders
+      },
+    );
+
+    testWidgets(
+      'StatsScreen üzerinde BarChart ve ders kodları başarıyla render edilmeli',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(home: StatsScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byType(BarChart), findsOneWidget);
+        expect(find.text('Ders Bazlı Başarı Oranı (%)'), findsOneWidget);
+        expect(find.text('TAR'), findsOneWidget);
+        expect(find.text('COĞ'), findsOneWidget);
+        expect(find.text('VAT'), findsOneWidget);
+        expect(find.text('GÜN'), findsOneWidget);
       },
     );
   });

@@ -37,7 +37,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-10** | **Para Kazanma (Kadro PRO Paywall & Ödüllü Reklam) + Profil Ayarları** | Günlük 30 soru limiti dolunca çıkan *"Reklam İzle (+20 Soru) / Kadro PRO"* ekranı, `ProfileScreen`'de Açık/Koyu Tema ve Hedef seçimi | ✅ **Tamamlandı** (`114d2cd`) |
 | **TASK-11** | **Kurumsal Marka Teması (`FlexColorScheme` + `GoogleFonts`) & `LucideIcons` Kabuk Dönüşümü** | `design-system/kadro/MASTER.md` doğrultusunda Academic Indigo + Gold renk sistemi, `Plus Jakarta Sans` + `Inter` fontları, `AppTopBar` ve `AppNavigationBar` modernizasyonu | ✅ **Tamamlandı** |
 | **TASK-12** | **Bento Grid Ana Sayfa, Gamified Hedef Kartı & `flutter_animate` Mikro Etkileşimler** | `HomeScreen` Hero hedef kartı, Bento çalışma kartları, `LessonsScreen` ve `ExamsScreen` `LucideIcons` + `flutter_animate` geçişleri | ✅ **Tamamlandı** |
-| **TASK-13** | **Görsel Analitik (`StatsScreen` + `fl_chart` `BarChart`) & Karne/Paywall Marka Cilası** | `StatsScreen` içine ders bazlı başarı çubuğu grafiği (`BarChart`), `QuizResultScreen` ve `PaywallScreen` premium görsel dokunuşları | ⏳ **Sırada (Dalga 4)** |
+| **TASK-13** | **Görsel Analitik (`StatsScreen` + `fl_chart` `BarChart`) & Karne/Paywall Marka Cilası** | `StatsScreen` içine ders bazlı başarı çubuğu grafiği (`BarChart`), `QuizResultScreen` ve `PaywallScreen` premium görsel dokunuşları | ✅ **Tamamlandı** |
 
 ---
 
