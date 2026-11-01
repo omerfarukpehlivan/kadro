@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-/// Koç Tuğrul'un ruh hali (mood) ve görsel varyasyonları.
+/// Kadro Koçu'nun ruh hali (mood) ve görsel varyasyonları.
 enum MascotMood { coach, victory, detective, pro }
 
 extension MascotMoodExtension on MascotMood {
@@ -20,7 +20,7 @@ extension MascotMoodExtension on MascotMood {
   }
 }
 
-/// "Koç Tuğrul" maskot konuşma balonu ve rehberlik bileşeni.
+/// "Kadro Koçu" maskot konuşma balonu ve rehberlik bileşeni.
 ///
 /// Web/Angular karşılığı:
 /// Gamification bildirim bileşeni (Duolingo banner/speech bubble).
@@ -36,7 +36,7 @@ class MascotCoachBanner extends StatelessWidget {
     this.mood = MascotMood.coach,
     required this.title,
     required this.message,
-    this.badgeLabel = 'KOÇ TUĞRUL',
+    this.badgeLabel = 'KADRO KOÇU',
   });
 
   @override

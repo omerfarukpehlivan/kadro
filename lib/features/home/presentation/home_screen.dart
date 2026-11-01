@@ -10,7 +10,7 @@ import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-/// Ana sayfa: Koç Tuğrul konuşma balonu, günlük hedef ve 2x2 Tactile Bento Grid çalışma türleri.
+/// Ana sayfa: Kadro Koçu konuşma balonu, günlük hedef ve 2x2 Tactile Bento Grid çalışma türleri.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -22,12 +22,12 @@ class HomeScreen extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Koç Tuğrul maskot konuşma balonu
+        // Kadro Koçu maskot konuşma balonu
         MascotCoachBanner(
           mood: MascotMood.coach,
           title: 'Hoş geldin',
           message: stats.totalSolved == 0
-              ? 'Ben Koç Tuğrul! KPSS Genel Kültür maratonunda bugün ilk pençeyi hangi konuya atıyoruz?'
+              ? 'Ben Kadro Koçun! KPSS Genel Kültür maratonunda bugün ilk pençeyi hangi konuya atıyoruz?'
               : 'Harika uçuş! Bugün ${stats.totalSolved} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',
         ),
         const SizedBox(height: 16),

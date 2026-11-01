@@ -24,7 +24,7 @@ class PaywallScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Üst Vurgu 3D Kartı (Kraliyet Taçlı Tuğrul)
+              // Üst Vurgu 3D Kartı (Kraliyet Taçlı Kadro Koçu)
               TactileCard(
                 backgroundColor: colorScheme.primaryContainer,
                 borderColor: colorScheme.primary.withAlpha(120),

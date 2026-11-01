@@ -186,7 +186,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-/// PRO olmayan kullanıcılar için satın alma teşvik kartı (Kraliyet Taçlı Tuğrul ile).
+/// PRO olmayan kullanıcılar için satın alma teşvik kartı (Kraliyet Taçlı Kadro Koçu ile).
 class _ProBannerCard extends StatelessWidget {
   final VoidCallback onTap;
 
@@ -257,7 +257,7 @@ class _ProBannerCard extends StatelessWidget {
   }
 }
 
-/// Kadro PRO abonesi kullanıcılara gösterilen rozet kartı (Kraliyet Taçlı Tuğrul ile).
+/// Kadro PRO abonesi kullanıcılara gösterilen rozet kartı (Kraliyet Taçlı Kadro Koçu ile).
 class _ProBadgeCard extends StatelessWidget {
   const _ProBadgeCard();
 

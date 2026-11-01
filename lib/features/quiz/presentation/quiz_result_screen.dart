@@ -27,13 +27,13 @@ class QuizResultScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Zafer Tuğrul maskot konuşma balonu
+              // Zafer modunda Kadro Koçu maskot konuşma balonu
               MascotCoachBanner(
                 mood: MascotMood.victory,
                 badgeLabel: 'ZAFER KARNESİ',
                 title: 'Test Tamamlandı!',
                 message: result.successRate >= 70
-                    ? 'Muhteşem bir uçuş! Koç Tuğrul seninle gurur duyuyor, kadro kapıları açılıyor!'
+                    ? 'Muhteşem bir uçuş! Kadro Koçu seninle gurur duyuyor, kadro kapıları açılıyor!'
                     : 'Güzel mücadele! Yanlış Defteri\'ne düşen soruları birlikte inceleyip nete çevirelim.',
               ),
               const SizedBox(height: 20),

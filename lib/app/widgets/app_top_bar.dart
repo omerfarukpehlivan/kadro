@@ -7,7 +7,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Gamified üst başlık barı (Material Design: Top App Bar).
 ///
-/// Sol tarafta Koç Tuğrul avatarı ve ekran başlığını,
+/// Sol tarafta Kadro Koçu avatarı ve ekran başlığını,
 /// sağ tarafta canlı soru hedefi/seri rozetini ve PRO abonelik durumunu gösterir.
 class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
@@ -30,7 +30,7 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Küçük yuvarlak Koç Tuğrul avatarı (hata durumunda fallback ikon)
+          // Küçük yuvarlak Kadro Koçu avatarı (hata durumunda fallback ikon)
           ClipOval(
             child: Image.asset(
               'assets/images/mascot/tugrul_coach.png',

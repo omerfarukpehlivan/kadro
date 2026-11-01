@@ -58,7 +58,7 @@ void main() {
 
       expect(find.byType(TactileCard), findsNWidgets(2));
       expect(find.text('Dokunulabilir Kart'), findsOneWidget);
-      expect(find.text('KOÇ TUĞRUL'), findsOneWidget);
+      expect(find.text('KADRO KOÇU'), findsOneWidget);
       expect(find.text('Günün KPSS Tavsiyesi'), findsOneWidget);
       expect(
         find.text('Tarihte ilk Türk devletlerine odaklan!'),

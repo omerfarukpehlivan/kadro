@@ -57,7 +57,7 @@ class _MistakesScreenState extends State<MistakesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Üst Bilgi Kartı ve Tekrar Çöz Butonu (Dedektif Tuğrul ile)
+                  // Üst Bilgi Kartı ve Tekrar Çöz Butonu (Dedektif Koç ile)
                   _MistakeHeaderCard(
                     mistakeCount: mistakes.length,
                     onSolveAll: () => _solveMistakes(mistakes),
@@ -84,7 +84,7 @@ class _MistakesScreenState extends State<MistakesScreen> {
   }
 }
 
-/// Yanlış defteri boşken gösterilen Dedektif Tuğrul temiz durum görünümü.
+/// Yanlış defteri boşken gösterilen Dedektif Kadro Koçu temiz durum görünümü.
 class _EmptyMistakesView extends StatelessWidget {
   const _EmptyMistakesView();
 
@@ -145,7 +145,7 @@ class _EmptyMistakesView extends StatelessWidget {
   }
 }
 
-/// Yanlış sayısını, Dedektif Tuğrul avatarını ve 'Tüm Yanlışları Tekrar Çöz' butonunu içeren 3D kart.
+/// Yanlış sayısını, Dedektif Kadro Koçu avatarını ve 'Tüm Yanlışları Tekrar Çöz' butonunu içeren 3D kart.
 class _MistakeHeaderCard extends StatelessWidget {
   final int mistakeCount;
   final VoidCallback onSolveAll;

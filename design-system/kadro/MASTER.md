@@ -8,14 +8,14 @@
 
 **Project:** Kadro (`com.omer.kadro`)
 **Category:** Adult Gamified EdTech — KPSS Lisans Genel Kültür Hazırlık (Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler)
-**Design Paradigm:** Duolingo / Brilliant Style **"Tactile & Gamified"** + **Live Mascot Coach ("Tuğrul" — Anadolu Kartalı)**
+**Design Paradigm:** Duolingo / Brilliant Style **"Tactile & Gamified"** + **Live Mascot Coach ("Kadro Koçu" — Anadolu Kartalı)**
 **Stack:** Flutter 3.x + Material 3 (`flex_color_scheme`, `google_fonts`, `lucide_icons_flutter`, `flutter_animate`, `fl_chart`)
 
 ---
 
-## 1. Brand Mascot & Persona: "Tuğrul" (Anadolu Kartalı Koç)
+## 1. Brand Mascot & Persona: "Kadro Koçu" (Anadolu Kartalı)
 
-Kadro's brand identity centers on **Tuğrul**, a charismatic, sharp-eyed **Anatolian Eagle (Anadolu Kartalı)** mentor who guides KPSS candidates with determination, wisdom, and Seljuk/Anatolian heritage pride.
+Kadro's brand identity centers on **Kadro Koçu**, a charismatic, sharp-eyed **Anatolian Eagle (Anadolu Kartalı)** mentor who guides KPSS candidates with determination, wisdom, and Seljuk/Anatolian heritage pride.
 
 ### Mascot Moods & Asset Paths (`lib/shared/widgets/mascot_coach_banner.dart`)
 
@@ -40,7 +40,7 @@ Kadro's brand identity centers on **Tuğrul**, a charismatic, sharp-eyed **Anato
 | **Primary Container** | `#E0E7FF` | `#312E81` | `colorScheme.primaryContainer` | Mascot speech bubble accents, selected tiles, hero card surface |
 | **Secondary (Deep Slate)** | `#0F172A` | `#94A3B8` | `colorScheme.secondary` | Secondary actions, topic pills |
 | **Secondary Container** | `#F1F5F9` | `#1E293B` | `colorScheme.secondaryContainer` | Tactile card icon wells, neutral badges |
-| **Tertiary (Anatolian Gold / Streak Amber)** | `#D97706` | `#FBBF24` | `colorScheme.tertiary` | Daily goal flame/streak, Tuğrul PRO crown, exam timer warning |
+| **Tertiary (Anatolian Gold / Streak Amber)** | `#D97706` | `#FBBF24` | `colorScheme.tertiary` | Daily goal flame/streak, Kadro Koçu PRO crown, exam timer warning |
 | **Tertiary Container** | `#FEF3C7` | `#78350F` | `colorScheme.tertiaryContainer` | Streak pill background, `%45 · En Yüksek Ağırlık` badge |
 | **Error / Destructive** | `#DC2626` | `#F87171` | `colorScheme.error` | Wrong option feedback, mistake counter, critical timer (`< 5 min`) |
 | **Surface / Background** | `#F8FAFC` | `#0B0F19` | `colorScheme.surface` | Clean slate page background |
@@ -55,7 +55,7 @@ Instead of flat, lifeless default Material cards, Kadro uses **Tactile Cards** w
   - Top/Left/Right border: `1.5px` (`colorScheme.outlineVariant` or `colorScheme.primary.withAlpha(80)`)
   - Bottom 3D lip shadow: `BoxShadow(color: colorScheme.outlineVariant, offset: const Offset(0, 3), blurRadius: 0)` (creates the signature Duolingo/Brilliant 3D pressable card depth without muddy blur!).
 - **Speech Bubble (`MascotCoachBanner`):**
-  - Displays Tuğrul's avatar on the left (`68x68` rounded badge) and a speech-bubble container on the right with a small title badge (`'KOÇ TUĞRUL'`) and motivating message.
+  - Displays Kadro Koçu's avatar on the left (`68x68` rounded badge) and a speech-bubble container on the right with a small title badge (`'KADRO KOÇU'`) and motivating message.
 - **Gamified Top Stats Strip / Streak Pill:**
   - `AppTopBar` and `HomeScreen` feature gamified pill badges (`LucideIcons.flame` for daily target progress, `LucideIcons.crown` for PRO status).
 
