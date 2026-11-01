@@ -266,7 +266,7 @@ class _ProBadgeCard extends StatelessWidget {
           children: [
             CircleAvatar(
               backgroundColor: colorScheme.surface,
-              child: const Icon(Icons.workspace_premium, color: Colors.amber),
+              child: Icon(Icons.workspace_premium, color: colorScheme.primary),
             ),
             const SizedBox(width: 14),
             Expanded(
