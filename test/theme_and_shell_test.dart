@@ -56,7 +56,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(TactileCard), findsNWidgets(2));
+      expect(find.byType(TactileCard), findsOneWidget);
+      expect(find.byType(MascotCoachBanner), findsOneWidget);
       expect(find.text('Dokunulabilir Kart'), findsOneWidget);
       expect(find.text('KADRO KOÇU'), findsOneWidget);
       expect(find.text('Günün KPSS Tavsiyesi'), findsOneWidget);

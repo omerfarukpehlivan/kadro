@@ -30,23 +30,26 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
       title: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Küçük yuvarlak Kadro Koçu avatarı (hata durumunda fallback ikon)
-          ClipOval(
-            child: Image.asset(
-              'assets/images/mascot/tugrul_coach.png',
-              width: 30,
-              height: 30,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
+          // Kavisli kare Kadro Koçu avatarı (altın çerçeveli, hata durumunda fallback ikon)
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: colorScheme.tertiary, width: 1.5),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                'assets/images/mascot/tugrul_coach.png',
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
                   color: colorScheme.primaryContainer,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  LucideIcons.graduationCap,
-                  size: 18,
-                  color: colorScheme.onPrimaryContainer,
+                  child: Icon(
+                    LucideIcons.graduationCap,
+                    size: 18,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
                 ),
               ),
             ),
@@ -65,6 +68,7 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
           decoration: BoxDecoration(
             color: colorScheme.tertiaryContainer,
             borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: colorScheme.outlineVariant),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -101,6 +105,7 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
                   ? colorScheme.tertiary
                   : colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: colorScheme.outlineVariant),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
