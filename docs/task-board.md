@@ -54,7 +54,10 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-27** | **Bulut Raporlama & İlerleme Senkronizasyonu (`quiz_sessions`, `question_attempt_logs`, `user_topic_mastery`)** | Çözülen testlerin, soru bazlı doğru/yanlış ve süre loglarının, konu ustalık ısı haritasının ve kullanıcı XP/Seri verilerinin Supabase PostgreSQL tablolarına kaydedilmesi ve giriş yapıldığında buluttan geri yüklenmesi | ✅ **Tamamlandı** (`c9daabc`) |
 | **TASK-28** | **Çalışma Planlayıcı (`public.study_tasks`) & Konu Ustalık Matrisi (`public.user_topic_mastery`) Bulut Senkronizasyonu** | `StudyTask` serileştirmesi (`toMap`/`fromMap`), `CloudSyncRepository` üzerinden günlük görevlerin ve konu bazlı ustalık yüzdelerinin Supabase tablolarına senkronize edilmesi | ✅ **Tamamlandı** |
 | **TASK-29** | **Bulut Destekli Mini Oyunlar (`TrueFalseBlitz` & `ConceptMatch` Supabase) + Test Oturumu Detay Ekranı (`QuizSessionDetailScreen`)** | Mini oyunların Supabase `public.questions` (`true_false` & `matching`) tablosundan beslenmesi, oyun sonuçlarının arşive kaydedilmesi ve arşivdeki testlere tıklanınca detaylı karne analiz ekranının (`QuizSessionDetailScreen`) açılması | ✅ **Tamamlandı** |
-| **TASK-30** | **3 Adımlı Kişiselleştirilmiş KPSS Hedef Sihirbazı (`OnboardingScreen`) & Odak Ders Koçluğu** | Kadro Koçu eşliğinde Hedef KPSS Puanı (`80+`, `85+`, `90+`), Odak Ders ve Günlük Soru Hedefi seçimi (`OnboardingScreen`), seçilen odak derse göre otomatik çalışma görevi ataması ve `ProfileScreen` hedef kartı | ✅ **Tamamlandı** |
+| **TASK-30** | **3 Adımlı Kişiselleştirilmiş KPSS Hedef Sihirbazı (`OnboardingScreen`) & Odak Ders Koçluğu** | Kadro Koçu eşliğinde Hedef KPSS Puanı (`80+`, `85+`, `90+`), Odak Ders ve Günlük Soru Hedefi seçimi (`OnboardingScreen`), seçilen odak derse göre otomatik çalışma görevi ataması ve `ProfileScreen` hedef kartı | ✅ **Tamamlandı** (`c27bb9c`) |
+| **TASK-31** | **Yüksek Kontrastlı Renk Paleti (`AppTheme`), Opak Yüzeyli `TactileCard` & Ferah `MascotCoachBanner` Revizyonu** | `TactileCard` içindeki şeffaf zemin + `BoxShadow` renk sızması hatasının `Color.alphaBlend` ile giderilmesi, `AppTheme` içinde `secondary` rengin siyah (`#0F172A`) yerine canlı Zümrüt/Teal (`#0D9488`) yapılması, `on*Container` WCAG AAA kontrast çiftlerinin tanımlanması ve `MascotCoachBanner`'ın yüksek okunaklı yüzeye kavuşturulması | ⏳ **Sırada** |
+| **TASK-32** | **`HomeScreen` Bento Kartları & `LessonsScreen` / `LessonTopicsScreen` Kart Kontrast ve Renk Uyumu Düzeltmesi** | `HomeScreen` 2x2 Bento ve Mini Oyun kartlarındaki kirli yarı-saydam arka planların kaldırılıp saf opak kart zemini (`surface`) + yüksek kontrastlı `Container/onContainer` rozet çiftlerine geçilmesi, `LessonsScreen` ve `LessonTopicsScreen` kartlarının netleştirilmesi | ⏳ **Sırada** |
+| **TASK-33** | **`QuizScreen`, `FlashcardsScreen`, `StatsScreen`, `ProfileScreen` & Oyun Ekranları Kart Bütünlüğü ve Kontrast Cilası** | Tüm ekranlardaki düz `Card` ve `TactileCard` bileşenlerinde yazı (`onSurface` / `onSurfaceVariant` / `on*Container`) ve arka plan (`surface` / `*Container`) uyumunun %100 standartlaştırılması | ⏳ **Sırada** |
 
 ---
 
@@ -1737,4 +1740,248 @@ ADIM 4: Test ve Doğrulama
    - `ProfileScreen` üzerinden `'Hedef Sihirbazını Aç'` butonuna tıklanınca `OnboardingScreen` ekranının açıldığını,
    - 3 adım tamamlanıp `'Rotamı Oluştur'` butonuna basıldığında `userPreferencesProvider` üzerinde `targetKpssScore` ve `focusLesson` değerlerinin güncellendiğini doğrulayan widget testi ekle.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+## 🎨 11. Dalga 11: Yüksek Kontrastlı Kart Tasarımı, Yazı/Arka Plan Uyumu & Tema Mimarisi Revizyonu (`TASK-31`, `TASK-32`, `TASK-33`)
+
+Mevcut kartlarda tespit edilen **3 kritik görsel/kontrast hatasını** kökten çözen UI/UX revizyon dalgası:
+1. **`TactileCard` Yarı-Saydam Arka Plan + `BoxShadow` Sızması Hatası:** Flutter'da `BoxShadow(offset: Offset(0, 3.5), blurRadius: 0)` kartın tamamının arkasına dolu bir dikdörtgen çizer. Kartlara `.withAlpha(35)` / `.withAlpha(55)` gibi yarı-saydam arka plan verildiğinde, arkadaki koyu gölge rengi kartın içinden dışarı vurarak kart zeminini bulanık/kirli hale getiriyor ve üstte 3.5px'lik renk kırılması yaratıyor.
+2. **`AppTheme` Siyah `secondaryColor` (`#0F172A`) ve Eksik `on*Container` Çiftleri:** `secondaryColor` zifiri siyah olduğu için *"Deneme sınavı"* gibi `secondary` kullanan kartlarda yazı ve ikonlar koyu zemin üzerinde boğuluyor; açık/koyu temada `onPrimaryContainer`, `onSecondaryContainer`, `onTertiaryContainer`, `onErrorContainer` çiftleri açıkça tanımlanmadığı için rozet yazıları arka planla çakışıyor.
+3. **`MascotCoachBanner` Koyu Gradient Boğukluğu:** `[colorScheme.primary, colorScheme.secondary]` geçişi açık temada sağ tarafı siyaha, koyu temada ise soluk gri-eflatuna çevirerek konuşma balonundaki yazıların okunabilirliğini düşürüyor.
+
+---
+
+### 📦 TASK-31: Yüksek Kontrastlı Renk Paleti (`AppTheme`), Opak Yüzeyli `TactileCard` & Ferah `MascotCoachBanner` Revizyonu
+
+```text
+GÖREV: TASK-31 — AppTheme WCAG AAA Kontrast Renk Çiftleri, TactileCard Opak Harmanlama (Color.alphaBlend) ve Yüksek Okunaklı MascotCoachBanner Tasarımı
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...) yalnızca `lib/app/theme.dart` içinde tanımlanabilir. Diğer tüm dosyalarda yalnızca `Theme.of(context).colorScheme` kullan.
+
+ADIM 1: `lib/app/theme.dart` — Yüksek Kontrastlı EdTech Renk Sistemi (Light & Dark)
+1. `lib/app/theme.dart` dosyasındaki renk sabitlerini ve `light` / `dark` temalarını aşağıdaki gibi güncelle (tüm `Container` ve `onContainer` çiftleri %100 okunabilir yüksek kontrasta sahip olacak, `secondaryColor` siyah yerine canlı Zümrüt/Teal `#0D9488` olacak):
+   ```dart
+   // Marka Renk Sabitleri (Academic Indigo + Emerald Teal + Achievement Gold)
+   static const Color seedColor = Color(0xFF4F46E5); // Academic Royal Indigo
+   static const Color secondaryColor = Color(0xFF0D9488); // Vibrant Academic Teal
+   static const Color tertiaryColor = Color(0xFFD97706); // Achievement Amber Gold
+
+   static const Color darkPrimaryColor = Color(0xFF818CF8);
+   static const Color darkSecondaryColor = Color(0xFF2DD4BF);
+   static const Color darkTertiaryColor = Color(0xFFFBBF24);
+   ```
+2. `AppTheme.light` getter'ı içinde `baseLight.colorScheme.copyWith(...)` ve `scaffoldBackgroundColor` ile kart ve yazı kontrastını kesinleştir:
+   ```dart
+   static ThemeData get light {
+     final baseLight = FlexThemeData.light(
+       colors: const FlexSchemeColor(
+         primary: seedColor,
+         primaryContainer: Color(0xFFEEF2FF),
+         secondary: secondaryColor,
+         secondaryContainer: Color(0xFFCCFBF1),
+         tertiary: tertiaryColor,
+         tertiaryContainer: Color(0xFFFEF3C7),
+         appBarColor: Color(0xFFF8FAFC),
+         error: Color(0xFFDC2626),
+       ),
+       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+       blendLevel: 2,
+       subThemesData: _subThemesData,
+       visualDensity: FlexColorScheme.comfortablePlatformDensity,
+     );
+
+     final highContrastScheme = baseLight.colorScheme.copyWith(
+       primary: seedColor,
+       onPrimary: const Color(0xFFFFFFFF),
+       primaryContainer: const Color(0xFFE0E7FF),
+       onPrimaryContainer: const Color(0xFF1E1B4B),
+       secondary: secondaryColor,
+       onSecondary: const Color(0xFFFFFFFF),
+       secondaryContainer: const Color(0xFFCCFBF1),
+       onSecondaryContainer: const Color(0xFF134E4A),
+       tertiary: tertiaryColor,
+       onTertiary: const Color(0xFFFFFFFF),
+       tertiaryContainer: const Color(0xFFFEF3C7),
+       onTertiaryContainer: const Color(0xFF78350F),
+       error: const Color(0xFFDC2626),
+       onError: const Color(0xFFFFFFFF),
+       errorContainer: const Color(0xFFFEE2E2),
+       onErrorContainer: const Color(0xFF7F1D1D),
+       surface: const Color(0xFFFFFFFF),
+       onSurface: const Color(0xFF0F172A),
+       surfaceContainerLow: const Color(0xFFF8FAFC),
+       surfaceContainerHighest: const Color(0xFFF1F5F9),
+       onSurfaceVariant: const Color(0xFF475569),
+       outline: const Color(0xFF64748B),
+       outlineVariant: const Color(0xFFCBD5E1),
+     );
+
+     return baseLight.copyWith(
+       colorScheme: highContrastScheme,
+       scaffoldBackgroundColor: const Color(0xFFF1F5F9),
+       cardColor: const Color(0xFFFFFFFF),
+       textTheme: _buildTextTheme(baseLight.textTheme),
+     );
+   }
+   ```
+3. `AppTheme.dark` getter'ı içinde de koyu mod kartlarını arka plandan net ayır ve yazı kontrastını maksimuma çıkar:
+   ```dart
+   static ThemeData get dark {
+     final baseDark = FlexThemeData.dark(
+       colors: const FlexSchemeColor(
+         primary: darkPrimaryColor,
+         primaryContainer: Color(0xFF312E81),
+         secondary: darkSecondaryColor,
+         secondaryContainer: Color(0xFF134E4A),
+         tertiary: darkTertiaryColor,
+         tertiaryContainer: Color(0xFF78350F),
+         appBarColor: Color(0xFF0F172A),
+         error: Color(0xFFF87171),
+       ),
+       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
+       blendLevel: 4,
+       subThemesData: _subThemesData,
+       visualDensity: FlexColorScheme.comfortablePlatformDensity,
+     );
+
+     final highContrastDarkScheme = baseDark.colorScheme.copyWith(
+       primary: darkPrimaryColor,
+       onPrimary: const Color(0xFF0F172A),
+       primaryContainer: const Color(0xFF312E81),
+       onPrimaryContainer: const Color(0xFFE0E7FF),
+       secondary: darkSecondaryColor,
+       onSecondary: const Color(0xFF0F172A),
+       secondaryContainer: const Color(0xFF134E4A),
+       onSecondaryContainer: const Color(0xFFCCFBF1),
+       tertiary: darkTertiaryColor,
+       onTertiary: const Color(0xFF0F172A),
+       tertiaryContainer: const Color(0xFF78350F),
+       onTertiaryContainer: const Color(0xFFFEF3C7),
+       error: const Color(0xFFF87171),
+       onError: const Color(0xFF0F172A),
+       errorContainer: const Color(0xFF7F1D1D),
+       onErrorContainer: const Color(0xFFFEE2E2),
+       surface: const Color(0xFF1E293B),
+       onSurface: const Color(0xFFF8FAFC),
+       surfaceContainerLow: const Color(0xFF1E293B),
+       surfaceContainerHighest: const Color(0xFF334155),
+       onSurfaceVariant: const Color(0xFFCBD5E1),
+       outline: const Color(0xFF94A3B8),
+       outlineVariant: const Color(0xFF334155),
+     );
+
+     return baseDark.copyWith(
+       colorScheme: highContrastDarkScheme,
+       scaffoldBackgroundColor: const Color(0xFF0B0F19),
+       cardColor: const Color(0xFF1E293B),
+       textTheme: _buildTextTheme(baseDark.textTheme),
+     );
+   }
+   ```
+
+ADIM 2: `lib/shared/widgets/tactile_card.dart` — Gölge Sızmasını Önleyen %100 Opak Zemin Harmanlama
+1. `lib/shared/widgets/tactile_card.dart` içinde `build` metodunu güncelle:
+   - Eğer `backgroundColor` yarı-saydam (`alpha < 255`) verilmişse, arkadaki `BoxShadow`'un kart içinden görünmesini engellemek için `Color.alphaBlend(backgroundColor!, colorScheme.surface)` ile her zaman **%100 opak (`alpha == 255`)** bir zemin rengi elde et!
+   - `effectiveBorder` için de `Color.alphaBlend(borderColor ?? colorScheme.outlineVariant, colorScheme.surface)` kullanarak temiz ve keskin bir çerçeve + 3px alt dudak gölgesi oluştur:
+   ```dart
+   final rawBg = backgroundColor ?? colorScheme.surface;
+   final effectiveBg = rawBg.a < 1.0
+       ? Color.alphaBlend(rawBg, colorScheme.surface)
+       : rawBg;
+   final rawBorder = borderColor ?? colorScheme.outlineVariant;
+   final effectiveBorder = rawBorder.a < 1.0
+       ? Color.alphaBlend(rawBorder, colorScheme.surface)
+       : rawBorder;
+   ```
+   - `boxShadow` içinde `offset: const Offset(0, 3.0), blurRadius: 0` kullan.
+
+ADIM 3: `lib/shared/widgets/mascot_coach_banner.dart` — Yüksek Kontrastlı & Ferah Tactile Koç Sahnesi
+1. `MascotCoachBanner` (`lib/shared/widgets/mascot_coach_banner.dart`) içindeki koyu/bulanık `[primary, secondary]` gradient'i kaldır! Onun yerine hem açık hem koyu temada yazıların jilet gibi okunduğu **Tactile Koç Kartı** yapısına geç:
+   - Dış kapsayıcı: `TactileCard` (veya `BoxDecoration`) ile:
+     - `color: colorScheme.surface` (Açık temada saf beyaz `#FFFFFF`, Koyu temada `#1E293B`),
+     - `borderRadius: BorderRadius.circular(22)`,
+     - `border: Border.all(color: colorScheme.primary.withAlpha(110), width: 1.5)`,
+     - `boxShadow: [BoxShadow(color: Color.alphaBlend(colorScheme.primary.withAlpha(70), colorScheme.surface), offset: const Offset(0, 3.5), blurRadius: 0)]`.
+   - Sol tarafta `84x84` maskot çerçevesi (`color: colorScheme.primaryContainer`, çerçevesi `Border.all(color: colorScheme.primary.withAlpha(90), width: 2)`), sağ altında küçük yıldız rozeti (`colorScheme.tertiaryContainer` / `colorScheme.onTertiaryContainer`).
+   - Sağ tarafta:
+     - Üst rozet hapı (`badgeLabel`): Arka plan `colorScheme.primaryContainer`, yazı rengi `colorScheme.onPrimaryContainer` (`FontWeight.w800`).
+     - Başlık (`title`): `textTheme.titleLarge?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w800)` — **Kart zemini üzerinde %100 net okunur!**
+     - Konuşma Balonu (`message`): Arka plan `colorScheme.surfaceContainerHighest`, çerçeve `Border.all(color: colorScheme.outlineVariant)`, yazı rengi `colorScheme.onSurfaceVariant` (`textTheme.bodySmall?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w500, height: 1.4)`).
+
+ADIM 4: Doğrulama
+1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-32: `HomeScreen` Bento Kartları & `LessonsScreen` / `LessonTopicsScreen` Kart Kontrast ve Renk Uyumu Düzeltmesi
+
+```text
+GÖREV: TASK-32 — HomeScreen 2x2 Bento Kartları, Mini Oyun Kartları, LessonsScreen ve LessonTopicsScreen Kartlarının Temiz Yüzey + Yüksek Kontrastlı Rozet Çiftlerine Kavuşturulması
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. TASK-31 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `lib/features/home/presentation/home_screen.dart` (`_StudyTypeTile` & `_DailyGoalCard`)
+1. `_StudyTypeTile` sınıfına `final Color? onAccentContainerColor;` parametresi ekle:
+   - `HomeScreen` içinde 6 adet `_StudyTypeTile` çağrısında her kartın rozet/ikon kontrast çiftini tam eşleştir:
+     1. `'Konu testi'`: `accentColor: colorScheme.primary`, `accentContainerColor: colorScheme.primaryContainer`, `onAccentContainerColor: colorScheme.onPrimaryContainer`
+     2. `'Bilgi kartları'`: `accentColor: colorScheme.tertiary`, `accentContainerColor: colorScheme.tertiaryContainer`, `onAccentContainerColor: colorScheme.onTertiaryContainer`
+     3. `'Yanlış defteri'`: `accentColor: colorScheme.error`, `accentContainerColor: colorScheme.errorContainer`, `onAccentContainerColor: colorScheme.onErrorContainer`
+     4. `'Deneme sınavı'`: `accentColor: colorScheme.secondary`, `accentContainerColor: colorScheme.secondaryContainer`, `onAccentContainerColor: colorScheme.onSecondaryContainer`
+     5. `'60 Saniyede Pençe'`: `accentColor: colorScheme.tertiary`, `accentContainerColor: colorScheme.tertiaryContainer`, `onAccentContainerColor: colorScheme.onTertiaryContainer`
+     6. `'Kavram Eşleştir'`: `accentColor: colorScheme.primary`, `accentContainerColor: colorScheme.primaryContainer`, `onAccentContainerColor: colorScheme.onPrimaryContainer`
+2. `_StudyTypeTile.build` içinde:
+   - **Kart Arka Planı (`backgroundColor`):** Kirli yarı-saydam `effectiveAccentContainer.withAlpha(55)` yerine doğrudan **`colorScheme.surface`** (bembeyaz / koyu slate temiz kart yüzeyi) kullan!
+   - **Kart Çerçevesi (`borderColor`):** `effectiveAccent.withAlpha(110)` kullan.
+   - **Sol Üst İkon Kutusu:** Arka plan `effectiveAccentContainer`, ikon rengi `effectiveOnAccentContainer` (`onAccentContainerColor ?? colorScheme.onPrimaryContainer`).
+   - **Sağ Üst Rozet Hapı (`badgeText`):** Arka plan `effectiveAccentContainer`, yazı rengi **`effectiveOnAccentContainer`** (`FontWeight.w800`)! (Böylece açık zemin üzerine açık yazı veya koyu zemin üzerine koyu yazı gelmesi imkansız hale gelir!).
+   - **Kart Başlığı (`title`):** `color: colorScheme.onSurface`, `fontWeight: FontWeight.w800`.
+   - **Kart Açıklaması (`description`):** `color: colorScheme.onSurfaceVariant`, `fontWeight: FontWeight.w500`.
+   - **Alt Aksiyon Satırı (`actionText` + `chevronRight`):** `color: effectiveAccent`, `fontWeight: FontWeight.w800`.
+
+ADIM 2: `lib/features/lessons/presentation/lessons_screen.dart` & `lesson_topics_screen.dart`
+1. `lib/features/lessons/presentation/lessons_screen.dart` içindeki `_LessonCard` bileşeninde:
+   - `backgroundColor: colorScheme.primaryContainer.withAlpha(35)` satırını **`backgroundColor: colorScheme.surface`** olarak değiştir!
+   - `borderColor: colorScheme.outlineVariant` (veya `lesson.badgeText != null ? colorScheme.primary.withAlpha(120) : colorScheme.outlineVariant`) yap.
+   - Ders başlığı `color: colorScheme.onSurface`, alt bilgi `color: colorScheme.onSurfaceVariant` olsun.
+2. `lib/features/lessons/presentation/lesson_topics_screen.dart` içindeki `_TopicPathNode` bileşeninde:
+   - `backgroundColor` için `index == 0 ? colorScheme.primaryContainer.withAlpha(45) : colorScheme.surface` kullan (`TactileCard` bunu `Color.alphaBlend` ile opaklaştıracak).
+   - `'Test Çöz'` rozetinde arka plan `colorScheme.primaryContainer`, ikon ve yazı rengi `colorScheme.onPrimaryContainer` olsun (önceden `secondaryContainer` üzerine `primary` yazılıydı!).
+
+ADIM 3: Doğrulama
+1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-33: `QuizScreen`, `FlashcardsScreen`, `StatsScreen`, `ProfileScreen` & Oyun Ekranları Kart Bütünlüğü ve Kontrast Cilası
+
+```text
+GÖREV: TASK-33 — QuizScreen, FlashcardsScreen, StatsScreen, ProfileScreen, PaywallScreen ve Oyun Ekranlarındaki Kart/Rozet Kontrastlarının %100 Standartlaştırılması
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. TASK-32 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `QuizScreen` (`lib/features/quiz/presentation/quiz_screen.dart`) ve `OptionTile` (`lib/features/quiz/presentation/widgets/option_tile.dart`)
+1. `lib/features/quiz/presentation/quiz_screen.dart` içinde:
+   - `_QuestionCard`: Düz `Card` yerine `TactileCard(backgroundColor: colorScheme.surface, borderColor: colorScheme.outlineVariant, child: Text(text, style: theme.textTheme.bodyLarge?.copyWith(color: colorScheme.onSurface, height: 1.5, fontWeight: FontWeight.w600)))` kullan.
+   - `_ExplanationCard`: Düz `Card` yerine `TactileCard(backgroundColor: colorScheme.primaryContainer.withAlpha(80), borderColor: colorScheme.primary.withAlpha(120), ...)` kullan; başlık `colorScheme.onPrimaryContainer`, açıklama metni `colorScheme.onSurface` olsun.
+2. `lib/features/quiz/presentation/widgets/option_tile.dart` içinde:
+   - `OptionStatus.selected`: Arka plan ` Color.alphaBlend(colorScheme.primaryContainer.withAlpha(140), colorScheme.surface)`, çerçeve `colorScheme.primary`, şık harfi dairesi `colorScheme.primary` / `colorScheme.onPrimary`, şık metni `colorScheme.onSurface` (`FontWeight.w700`).
+   - `OptionStatus.correct`: Arka plan `Color.alphaBlend(colorScheme.secondaryContainer.withAlpha(160), colorScheme.surface)`, çerçeve `colorScheme.secondary`, şık harfi dairesi `colorScheme.secondary` / `colorScheme.onSecondary`, sağ ikon `colorScheme.secondary` (Teal/Zümrüt yeşil doğru şık vurgusu!).
+   - `OptionStatus.wrong`: Arka plan `Color.alphaBlend(colorScheme.errorContainer.withAlpha(160), colorScheme.surface)`, çerçeve `colorScheme.error`, şık harfi dairesi `colorScheme.error` / `colorScheme.onError`, sağ ikon `colorScheme.error`.
+
+ADIM 2: `StatsScreen` (`lib/features/stats/presentation/stats_screen.dart`) & `FlashcardsScreen` (`lib/features/flashcards/presentation/flashcards_screen.dart`)
+1. `lib/features/stats/presentation/stats_screen.dart` içinde:
+   - `_StatCard` ve `_LessonAccuracyChartCard` bileşenlerinde düz `Card` yerine diğer kartlarla birebir uyumlu `TactileCard(backgroundColor: colorScheme.surface, borderColor: colorScheme.outlineVariant, ...)` kullan; `_StatCard` içindeki `label` rengini `colorScheme.onSurfaceVariant`, `value` rengini `colorScheme.onSurface` (`FontWeight.w800`) yap.
+   - `_LeagueAndStreakCard` içindeki `'${stats.streakDays} Gün Seri'` rozetinde arka plan `colorScheme.tertiaryContainer`, ikon ve yazı rengi `colorScheme.onTertiaryContainer` olsun.
+2. `lib/features/flashcards/presentation/flashcards_screen.dart` içinde:
+   - `_FlashcardFace` bileşeninde düz `Card` yerine `TactileCard` kullan: Ön yüzde `backgroundColor: colorScheme.surface`, arka yüzde (`isBack == true`) `backgroundColor: colorScheme.primaryContainer.withAlpha(90)`, `borderColor: isBack ? colorScheme.primary : colorScheme.outlineVariant` ve ana metin rengi `colorScheme.onSurface` (`FontWeight.w700`) olsun.
+
+ADIM 3: `ProfileScreen` (`lib/features/profile/presentation/profile_screen.dart`) & `PaywallScreen` (`lib/features/profile/presentation/paywall_screen.dart`)
+1. `lib/features/profile/presentation/profile_screen.dart` içinde:
+   - `'Hedef'` ve `'Uygulama'` bölümlerindeki düz `Card` bileşenlerini `TactileCard(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), backgroundColor: colorScheme.surface, borderColor: colorScheme.outlineVariant, ...)` ile değiştir ki sayfadaki tüm kartlar aynı görsel dilde ve yüksek kontrastta olsun.
+   - `_ProBannerCard` içinde arka planı `colorScheme.primaryContainer.withAlpha(110)` (opak harmanlanmış), başlığı `colorScheme.onSurface`, alt metni `colorScheme.onSurfaceVariant` yap.
+
+ADIM 4: Doğrulama
+1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
