@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
-import 'package:kadro/shared/widgets/page_header.dart';
+import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Test tamamlandığında net ve başarı oranını gösteren karne ekranı.
@@ -26,19 +27,22 @@ class QuizResultScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Sayfa başlığı ve başarı ikonu
-              const PageHeader(
-                icon: LucideIcons.trophy,
+              // Zafer Tuğrul maskot konuşma balonu
+              MascotCoachBanner(
+                mood: MascotMood.victory,
+                badgeLabel: 'ZAFER KARNESİ',
                 title: 'Test Tamamlandı!',
-                subtitle: 'KPSS Genel Kültür konu testi sonucun aşağıda.',
+                message: result.successRate >= 70
+                    ? 'Muhteşem bir uçuş! Koç Tuğrul seninle gurur duyuyor, kadro kapıları açılıyor!'
+                    : 'Güzel mücadele! Yanlış Defteri\'ne düşen soruları birlikte inceleyip nete çevirelim.',
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
-              // Ana Net & Başarı Oranı Kartı
+              // Ana Net & Başarı Oranı 3D Kartı
               _NetScoreCard(result: result),
               const SizedBox(height: 16),
 
-              // Doğru, Yanlış ve Boş istatistikleri
+              // Doğru, Yanlış ve Boş istatistikleri (3D Tactile)
               Row(
                 children: [
                   Expanded(
@@ -85,7 +89,7 @@ class QuizResultScreen extends StatelessWidget {
   }
 }
 
-/// Büyük Net ve Başarı yüzdesini vurgulayan kart bileşeni.
+/// Büyük Net ve Başarı yüzdesini vurgulayan 3D Tactile kart bileşeni.
 class _NetScoreCard extends StatelessWidget {
   final QuizResult result;
 
@@ -96,51 +100,48 @@ class _NetScoreCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      elevation: 0,
-      color: colorScheme.primaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-        child: Column(
-          children: [
-            Text(
-              'Net Puanın',
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: colorScheme.onPrimaryContainer,
-              ),
+    return TactileCard(
+      backgroundColor: colorScheme.primaryContainer,
+      borderColor: colorScheme.primary.withAlpha(120),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      child: Column(
+        children: [
+          Text(
+            'Net Puanın',
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: colorScheme.onPrimaryContainer,
             ),
-            const SizedBox(height: 8),
-            Text(
-              result.net.toStringAsFixed(2),
-              style: theme.textTheme.displayMedium?.copyWith(
+          ),
+          const SizedBox(height: 8),
+          Text(
+            result.net.toStringAsFixed(2),
+            style: theme.textTheme.displayMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onPrimaryContainer,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '%${result.successRate} Başarı',
+              style: theme.textTheme.labelMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: colorScheme.onPrimaryContainer,
+                color: colorScheme.primary,
               ),
             ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                '%${result.successRate} Başarı',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     ).animate().fadeIn(duration: 200.ms);
   }
 }
 
-/// Doğru, Yanlış veya Boş sayılarını gösteren tekil istatistik kutusu.
+/// Doğru, Yanlış veya Boş sayılarını gösteren 3D istatistik kutusu.
 class _ResultStatItem extends StatelessWidget {
   final String label;
   final int count;
@@ -158,32 +159,30 @@ class _ResultStatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Card(
-      elevation: 0,
-      color: theme.colorScheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-        child: Column(
-          children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(height: 8),
-            Text(
-              '$count',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+    return TactileCard(
+      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+      borderColor: theme.colorScheme.outlineVariant,
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      borderRadius: 14,
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            '$count',
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

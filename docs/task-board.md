@@ -40,7 +40,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-13** | **Görsel Analitik (`StatsScreen` + `fl_chart` `BarChart`) & Karne/Paywall Marka Cilası** | `StatsScreen` içine ders bazlı başarı çubuğu grafiği (`BarChart`), `QuizResultScreen` ve `PaywallScreen` premium görsel dokunuşları | ✅ **Tamamlandı** (`d2fc73b`) |
 | **TASK-14** | **"Koç Tuğrul" (Anadolu Kartalı) Maskot Sistemi (`MascotCoachBanner`), 3D `TactileCard` & Gamified Üst Bar** | 4 farklı ifadeli (`coach`, `victory`, `detective`, `pro`) **Koç Tuğrul** konuşma balonlu maskot bileşeni, Duolingo/Brilliant tarzı 3D alt gölgeli `TactileCard` ve `AppTopBar` canlı seri/PRO rozetleri | ✅ **Tamamlandı** |
 | **TASK-15** | **Duolingo/Brilliant Tarzı 2x2 Tactile Bento Ana Sayfa & Görsel Ders Kartları** | `HomeScreen`'de düz liste yerine **Koç Tuğrul** konuşma balonu + **2x2 Tactile Bento Grid** çalışma kutuları, `LessonsScreen`'de soru ağırlık barlı 3D ders kartları | ✅ **Tamamlandı** |
-| **TASK-16** | **Canlı Koç Tuğrul Sahne Entegrasyonu (`QuizResultScreen`, `MistakesScreen`, `PaywallScreen`, `ProfileScreen`)** | Sınav karnesinde **Zafer Tuğrul (`victory`)**, Yanlış Defteri'nde **Dedektif Tuğrul (`detective`)**, Kadro PRO ekranında **Kraliyet Taçlı Tuğrul (`pro`)** ve 3D karne/özellik kartları | ⏳ **Sırada (Dalga 5)** |
+| **TASK-16** | **Canlı Koç Tuğrul Sahne Entegrasyonu (`QuizResultScreen`, `MistakesScreen`, `PaywallScreen`, `ProfileScreen`)** | Sınav karnesinde **Zafer Tuğrul (`victory`)**, Yanlış Defteri'nde **Dedektif Tuğrul (`detective`)**, Kadro PRO ekranında **Kraliyet Taçlı Tuğrul (`pro`)** ve 3D karne/özellik kartları | ✅ **Tamamlandı** |
 
 ---
 

@@ -5,6 +5,7 @@ import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
 
 /// Profil sekmesi: Kadro PRO durumu, hedef sınav ve uygulama tercihleri.
 class ProfileScreen extends ConsumerWidget {
@@ -185,7 +186,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-/// PRO olmayan kullanıcılar için satın alma teşvik kartı.
+/// PRO olmayan kullanıcılar için satın alma teşvik kartı (Kraliyet Taçlı Tuğrul ile).
 class _ProBannerCard extends StatelessWidget {
   final VoidCallback onTap;
 
@@ -196,58 +197,67 @@ class _ProBannerCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      elevation: 0,
-      color: colorScheme.primaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: colorScheme.surface,
-                child: Icon(Icons.star, color: colorScheme.primary),
+    return TactileCard(
+      onTap: onTap,
+      backgroundColor: colorScheme.primaryContainer,
+      borderColor: colorScheme.primary.withAlpha(120),
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: colorScheme.tertiary, width: 1.5),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                'assets/images/mascot/tugrul_pro.png',
+                width: 52,
+                height: 52,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(Icons.star, color: colorScheme.primary),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Kadro PRO\'ya Yükselt',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Sınırsız soru, akıllı yanlış defteri ve reklamsız çalışma.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                Icons.arrow_forward_ios,
-                size: 16,
-                color: colorScheme.onPrimaryContainer,
-              ),
-            ],
+            ),
           ),
-        ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Kadro PRO\'ya Yükselt',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Sınırsız soru, akıllı yanlış defteri ve reklamsız çalışma.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: 16,
+            color: colorScheme.onPrimaryContainer,
+          ),
+        ],
       ),
     );
   }
 }
 
-/// Kadro PRO abonesi kullanıcılara gösterilen rozet kartı.
+/// Kadro PRO abonesi kullanıcılara gösterilen rozet kartı (Kraliyet Taçlı Tuğrul ile).
 class _ProBadgeCard extends StatelessWidget {
   const _ProBadgeCard();
 
@@ -256,41 +266,53 @@ class _ProBadgeCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      elevation: 0,
-      color: colorScheme.secondaryContainer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: colorScheme.surface,
-              child: Icon(Icons.workspace_premium, color: colorScheme.primary),
+    return TactileCard(
+      backgroundColor: colorScheme.secondaryContainer,
+      borderColor: colorScheme.outlineVariant,
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: colorScheme.tertiary, width: 1.5),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Kadro PRO Üyesi 👑',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSecondaryContainer,
-                    ),
-                  ),
-                  Text(
-                    'Tüm özellikler ve sınırsız soru çözümü aktif.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSecondaryContainer,
-                    ),
-                  ),
-                ],
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                'assets/images/mascot/tugrul_pro.png',
+                width: 52,
+                height: 52,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    Icon(Icons.workspace_premium, color: colorScheme.primary),
               ),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Kadro PRO Üyesi 👑',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSecondaryContainer,
+                  ),
+                ),
+                Text(
+                  'Tüm özellikler ve sınırsız soru çözümü aktif.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSecondaryContainer,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

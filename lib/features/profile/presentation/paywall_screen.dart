@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Kadro PRO abonelik ve ödüllü reklam tanıtım ekranı (Paywall).
@@ -23,51 +24,60 @@ class PaywallScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Üst Vurgu Kartı
-              Card(
-                elevation: 0,
-                color: colorScheme.primaryContainer,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+              // Üst Vurgu 3D Kartı (Kraliyet Taçlı Tuğrul)
+              TactileCard(
+                backgroundColor: colorScheme.primaryContainer,
+                borderColor: colorScheme.primary.withAlpha(120),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 24,
+                  horizontal: 16,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 24,
-                    horizontal: 16,
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          LucideIcons.crown,
-                          size: 40,
-                          color: colorScheme.primary,
+                child: Column(
+                  children: [
+                    Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(
+                          color: colorScheme.tertiary,
+                          width: 2.5,
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'KPSS Hazırlığını Zirveye Taşı',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onPrimaryContainer,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset(
+                          'assets/images/mascot/tugrul_pro.png',
+                          width: 88,
+                          height: 88,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => Icon(
+                            LucideIcons.crown,
+                            size: 40,
+                            color: colorScheme.primary,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'Günlük soru limitine takılmadan, tam kapsamlı çalış.',
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onPrimaryContainer,
-                        ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'KPSS Hazırlığını Zirveye Taşı',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onPrimaryContainer,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Günlük soru limitine takılmadan, tam kapsamlı çalış.',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 20),

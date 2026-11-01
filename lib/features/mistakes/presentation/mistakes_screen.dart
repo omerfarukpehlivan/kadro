@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
 
 /// Kullanıcının testlerde yanlış çözdüğü soruları gösteren Yanlış Defteri ekranı.
 ///
@@ -56,7 +57,7 @@ class _MistakesScreenState extends State<MistakesScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Üst Bilgi Kartı ve Tekrar Çöz Butonu
+                  // Üst Bilgi Kartı ve Tekrar Çöz Butonu (Dedektif Tuğrul ile)
                   _MistakeHeaderCard(
                     mistakeCount: mistakes.length,
                     onSolveAll: () => _solveMistakes(mistakes),
@@ -83,7 +84,7 @@ class _MistakesScreenState extends State<MistakesScreen> {
   }
 }
 
-/// Yanlış defteri boşken gösterilen temiz durum görünümü.
+/// Yanlış defteri boşken gösterilen Dedektif Tuğrul temiz durum görünümü.
 class _EmptyMistakesView extends StatelessWidget {
   const _EmptyMistakesView();
 
@@ -98,13 +99,27 @@ class _EmptyMistakesView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundColor: colorScheme.tertiaryContainer,
-              child: Icon(
-                Icons.check_circle_outline,
-                size: 48,
-                color: colorScheme.onTertiaryContainer,
+            Container(
+              width: 110,
+              height: 110,
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: colorScheme.primary, width: 2),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: Image.asset(
+                  'assets/images/mascot/tugrul_detective.png',
+                  width: 110,
+                  height: 110,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Icon(
+                    Icons.check_circle_outline,
+                    size: 48,
+                    color: colorScheme.primary,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -130,7 +145,7 @@ class _EmptyMistakesView extends StatelessWidget {
   }
 }
 
-/// Yanlış sayısını ve 'Tüm Yanlışları Tekrar Çöz' butonunu içeren üst kart.
+/// Yanlış sayısını, Dedektif Tuğrul avatarını ve 'Tüm Yanlışları Tekrar Çöz' butonunu içeren 3D kart.
 class _MistakeHeaderCard extends StatelessWidget {
   final int mistakeCount;
   final VoidCallback onSolveAll;
@@ -145,64 +160,75 @@ class _MistakeHeaderCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      elevation: 0,
-      color: colorScheme.errorContainer.withAlpha(80),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: colorScheme.error.withAlpha(60)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.bookmark_remove_outlined,
-                  color: colorScheme.error,
-                  size: 28,
+    return TactileCard(
+      backgroundColor: colorScheme.errorContainer.withAlpha(80),
+      borderColor: colorScheme.error.withAlpha(90),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: colorScheme.error, width: 1.5),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '$mistakeCount Yanlış Soru',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onErrorContainer,
-                        ),
-                      ),
-                      Text(
-                        'Tekrar çözerek doğrula, defterden otomatik çıksın.',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.asset(
+                    'assets/images/mascot/tugrul_detective.png',
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Icon(
+                      Icons.bookmark_remove_outlined,
+                      color: colorScheme.error,
+                      size: 28,
+                    ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: onSolveAll,
-                icon: const Icon(Icons.quiz_outlined),
-                label: const Text('Tüm Yanlışları Tekrar Çöz'),
               ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$mistakeCount Yanlış Soru',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onErrorContainer,
+                      ),
+                    ),
+                    Text(
+                      'Tekrar çözerek doğrula, defterden otomatik çıksın.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: onSolveAll,
+              icon: const Icon(Icons.quiz_outlined),
+              label: const Text('Tüm Yanlışları Tekrar Çöz'),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-/// Yanlış defterindeki tek bir soru kartı.
+/// Yanlış defterindeki tek bir soru kartı (3D Tactile).
 class _MistakeQuestionCard extends StatelessWidget {
   final Question question;
   final VoidCallback onDelete;
@@ -214,15 +240,9 @@ class _MistakeQuestionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TactileCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -230,39 +250,83 @@ class _MistakeQuestionCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '${question.lesson} · ${question.topic}',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onSecondaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.secondaryContainer,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${question.lesson} · ${question.topic}',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSecondaryContainer,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete_outline, color: colorScheme.error),
-                  tooltip: 'Defterden Kaldır',
+                  // DİKKAT: Icons.delete_outline testler tarafından aranır
+                  icon: const Icon(Icons.delete_outline),
+                  color: colorScheme.error,
+                  tooltip: 'Defterden Sil',
                   onPressed: onDelete,
                 ),
               ],
             ),
             const SizedBox(height: 8),
+
+            // Soru Metni
             Text(
               question.text,
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodyMedium,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Doğru Cevap Kutusu
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colorScheme.tertiaryContainer.withAlpha(120),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: colorScheme.tertiary.withAlpha(100)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        color: colorScheme.onTertiaryContainer,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Doğru Cevap: ${question.options[question.correctIndex]}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onTertiaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (question.explanation.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      question.explanation,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onTertiaryContainer,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ),
           ],
         ),
