@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
+import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
@@ -190,6 +192,18 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   void _nextQuestion() {
+    try {
+      final prefs = ref.read(userPreferencesProvider);
+      final stats = ref.read(studyStatsProvider);
+      if (!prefs.isPro && stats.totalSolved >= prefs.dailyFreeQuestionLimit) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+        return;
+      }
+    } catch (_) {
+      // ProviderScope bulunmayan izole test ortamlarında güvenli fallback
+    }
+
     setState(() {
       _currentIndex++;
       _selectedOptionIndex = null;
