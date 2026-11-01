@@ -7,6 +7,7 @@ import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
+import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
 import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
@@ -68,15 +69,21 @@ const List<Question> defaultSampleQuestions = [
 /// Flutter bu widget'ın `build()` metodunu yeniden tetikleyerek (Change Detection gibi)
 /// arayüzü günceller.
 class QuizScreen extends ConsumerStatefulWidget {
-  final List<Question> questions;
+  final List<Question>? questions;
+  final String? lessonFilter;
+  final String? topicFilter;
   final MistakeRepository mistakeRepository;
+  final QuestionRepository questionRepository;
   final Duration? examDuration;
   final String? customTitle;
 
   const QuizScreen({
     super.key,
-    this.questions = defaultSampleQuestions,
+    this.questions,
+    this.lessonFilter,
+    this.topicFilter,
     this.mistakeRepository = const MistakeRepository(),
+    this.questionRepository = const QuestionRepository(),
     this.examDuration,
     this.customTitle,
   });
@@ -86,6 +93,8 @@ class QuizScreen extends ConsumerStatefulWidget {
 }
 
 class _QuizScreenState extends ConsumerState<QuizScreen> {
+  late List<Question> _questions;
+  bool _isLoading = false;
   int _currentIndex = 0;
   int? _selectedOptionIndex;
   bool _isAnswered = false;
@@ -94,12 +103,22 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   Timer? _timer;
   int _remainingSeconds = 0;
 
-  Question get _currentQuestion => widget.questions[_currentIndex];
-  bool get _isLastQuestion => _currentIndex == widget.questions.length - 1;
+  Question get _currentQuestion => _questions[_currentIndex];
+  bool get _isLastQuestion => _currentIndex == _questions.length - 1;
 
   @override
   void initState() {
     super.initState();
+    if (widget.questions != null && widget.questions!.isNotEmpty) {
+      _questions = widget.questions!;
+    } else {
+      _questions = defaultSampleQuestions;
+      if (widget.lessonFilter != null || widget.topicFilter != null) {
+        _isLoading = true;
+        _fetchFilteredQuestions();
+      }
+    }
+
     if (widget.examDuration != null) {
       _remainingSeconds = widget.examDuration!.inSeconds;
       // Timer.periodic: JavaScript/Web'deki setInterval() mantığı gibidir.
@@ -120,6 +139,20 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
         }
       });
     }
+  }
+
+  Future<void> _fetchFilteredQuestions() async {
+    final fetched = await widget.questionRepository.fetchQuestions(
+      lesson: widget.lessonFilter,
+      topic: widget.topicFilter,
+    );
+    if (!mounted) return;
+    setState(() {
+      if (fetched.isNotEmpty) {
+        _questions = fetched;
+      }
+      _isLoading = false;
+    });
   }
 
   @override
@@ -214,9 +247,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
   void _finishQuiz() {
     _timer?.cancel();
-    final emptyCount = widget.questions.length - (_correctCount + _wrongCount);
+    final emptyCount = _questions.length - (_correctCount + _wrongCount);
     final result = QuizResult(
-      totalQuestions: widget.questions.length,
+      totalQuestions: _questions.length,
       correctCount: _correctCount,
       wrongCount: _wrongCount,
       emptyCount: emptyCount,
@@ -227,7 +260,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
         id: DateTime.now().microsecondsSinceEpoch.toString(),
         title: widget.customTitle ?? '${_currentQuestion.lesson} Testi',
         lesson: _currentQuestion.lesson,
-        totalQuestions: widget.questions.length,
+        totalQuestions: _questions.length,
         correctCount: _correctCount,
         wrongCount: _wrongCount,
         emptyCount: emptyCount,
@@ -238,7 +271,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                 0,
                 widget.examDuration!.inSeconds,
               )
-            : widget.questions.length * 20,
+            : _questions.length * 20,
         completedAt: DateTime.now(),
       );
       ref.read(studyStatsProvider.notifier).recordQuizSession(sessionRecord);
@@ -253,6 +286,13 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: Text(widget.customTitle ?? 'Test')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     const labels = ['A', 'B', 'C', 'D', 'E'];
     final question = _currentQuestion;
 
@@ -290,13 +330,13 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           _QuestionMetaBar(
             topic: question.topic,
             questionNumber: _currentIndex + 1,
-            totalQuestions: widget.questions.length,
+            totalQuestions: _questions.length,
           ),
           const SizedBox(height: 8),
 
           // İlerleme Çubuğu (Progress Indicator)
           LinearProgressIndicator(
-            value: (_currentIndex + 1) / widget.questions.length,
+            value: (_currentIndex + 1) / _questions.length,
           ),
           const SizedBox(height: 16),
 

@@ -27,8 +27,15 @@ class LessonTopicsScreen extends StatelessWidget {
             lessonName: lesson.name,
             topic: topic,
             onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const QuizScreen()));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => QuizScreen(
+                    lessonFilter: lesson.name,
+                    topicFilter: topic,
+                    customTitle: '${lesson.name} · $topic',
+                  ),
+                ),
+              );
             },
           );
         },

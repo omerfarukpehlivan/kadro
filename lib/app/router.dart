@@ -22,8 +22,16 @@ class QuizRouteArgs {
   final List<Question>? questions;
   final Duration? examDuration;
   final String? customTitle;
+  final String? lessonFilter;
+  final String? topicFilter;
 
-  const QuizRouteArgs({this.questions, this.examDuration, this.customTitle});
+  const QuizRouteArgs({
+    this.questions,
+    this.examDuration,
+    this.customTitle,
+    this.lessonFilter,
+    this.topicFilter,
+  });
 }
 
 /// Uygulamanın merkezi yönlendirme (routing) tablosu.
@@ -96,9 +104,11 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
           if (state.extra is QuizRouteArgs) {
             final args = state.extra as QuizRouteArgs;
             return QuizScreen(
-              questions: args.questions ?? defaultSampleQuestions,
+              questions: args.questions,
               examDuration: args.examDuration,
               customTitle: args.customTitle,
+              lessonFilter: args.lessonFilter,
+              topicFilter: args.topicFilter,
             );
           } else if (state.extra is List<Question>) {
             return QuizScreen(questions: state.extra as List<Question>);

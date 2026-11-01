@@ -16,6 +16,38 @@
     "difficulty": "medium"
   },
   {
+    "id": "tar_002",
+    "lesson": "Tarih",
+    "topic": "Osmanlı Devleti Kültür ve Medeniyeti",
+    "text": "Osmanlı Devleti'nde Divan-ı Hümayun'da alınan kararların dine uygunluğunu denetleyen ve gerektiğinde fetva veren divan üyesi aşağıdakilerden hangisidir?",
+    "options": [
+      "Kazasker",
+      "Nişancı",
+      "Şeyhülislam",
+      "Defterdar",
+      "Sadrazam"
+    ],
+    "correctIndex": 2,
+    "explanation": "Şeyhülislam (Müfti), Divan-ı Hümayun'un asil üyesi olmamakla birlikte gerektiğinde divana katılır ve alınan kararların İslam hukukuna uygunluğuna dair fetva verirdi.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "tar_003",
+    "lesson": "Tarih",
+    "topic": "Kurtuluş Savaşı Hazırlık Dönemi",
+    "text": "Amasya Genelgesi'nde yer alan 'Milletin bağımsızlığını yine milletin azim ve kararı kurtaracaktır.' maddesi Türk inkılap tarihinde öncelikle aşağıdakilerden hangisinin habercisi ve temeli sayılmıştır?",
+    "options": [
+      "Kuvayımilliye'nin kurulmasının",
+      "Milli egemenliğe dayalı yeni bir devlet anlayışının",
+      "Manda ve himayenin kabul edilmesinin",
+      "Tekalif-i Milliye emirlerinin yayımlanmasının",
+      "Misak-ı Milli sınırlarının kesinleşmesinin"
+    ],
+    "correctIndex": 1,
+    "explanation": "'Milletin azim ve kararı' ifadesi, padişah veya tek bir otorite yerine millet iradesinin (milli egemenliğin) esas alınacağını açıkça ortaya koyan ilk belgedir.",
+    "difficulty": "medium"
+  },
+  {
     "id": "cog_001",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Fiziki Özellikleri",
@@ -30,6 +62,38 @@
     "correctIndex": 1,
     "explanation": "Karstik şekillerin (lapya, dolin, uvala, polye, mağara) oluşabilmesi için öncelikli şart kimyasal tortul kayaçların (kalker, jips, kaya tuzu gibi kolay eriyebilen taşların) bulunmasıdır. Akdeniz'de bu şekillerin yaygın olmasının ana nedeni kalkerli litolojik yapıdır.",
     "difficulty": "easy"
+  },
+  {
+    "id": "cog_002",
+    "lesson": "Coğrafya",
+    "topic": "Türkiye'nin İklimi ve Bitki Örtüsü",
+    "text": "Doğu Karadeniz'de Rize çevresinde turunçgil ve kivi, Çoruh vadisinde ise zeytin tarımının yapılabilmesi (mikroklima) öncelikle hangi coğrafi etkenle açıklanır?",
+    "options": [
+      "Yıllık ortalama güneşlenme süresinin çok yüksek olması",
+      "Dağları aşan hava kütlelerinin yamaç boyunca alçalırken föhn etkisi yaratması",
+      "Bölgenin ekvatora olan mutlak konumu",
+      "Kıyı boyunca sıcak su akıntısının etkili olması",
+      "Toprakların volkanik tüf bakımından zengin olması"
+    ],
+    "correctIndex": 1,
+    "explanation": "Dağ yamacından aşağıya doğru inen havanın sürtünme ve basınç etkisiyle her 100 metrede 1°C ısınması föhn rüzgarlarını oluşturur. Bu durum Rize ve Çoruh vadisinde kış ılıklığı ve mikroklima alanları meydana getirir.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "cog_003",
+    "lesson": "Coğrafya",
+    "topic": "Türkiye'de Nüfus ve Yerleşme",
+    "text": "Türkiye'de Doğu Anadolu ve Karadeniz gibi iç kesimlerden Marmara ve Ege kıyılarına yönelik yoğun iç göçlerin yaşanmasında aşağıdakilerden hangisi 'itici güç' (göç veren yerin olumsuzluğu) olarak gösterilemez?",
+    "options": [
+      "Tarımsal arazilerin miras yoluyla bölünmesi ve parçalanması",
+      "Tarımda makineleşmeyle birlikte kırsal iş gücü fazlalığının oluşması",
+      "Sanayi tesisleri, hizmet sektörü ve istihdam olanaklarının çeşitliliği",
+      "Sağlık ve eğitim gibi sosyal hizmetlerin yetersizliği",
+      "Erozyon ve iklim koşulları sebebiyle tarımsal verimin düşmesi"
+    ],
+    "correctIndex": 2,
+    "explanation": "Sanayi tesisleri ve iş imkanlarının çeşitliliği göç alan büyükşehirlerin 'çekici' faktörüdür; göç veren kırsal alanların 'itici' faktörü değildir.",
+    "difficulty": "medium"
   },
   {
     "id": "vat_001",
@@ -48,6 +112,38 @@
     "difficulty": "medium"
   },
   {
+    "id": "vat_002",
+    "lesson": "Vatandaşlık",
+    "topic": "Yasama",
+    "text": "1982 Anayasası'na göre kanun teklif etmeye yetkili makam veya merci aşağıdakilerden hangisidir?",
+    "options": [
+      "Cumhurbaşkanı",
+      "Bakanlar Kurulu",
+      "Milletvekilleri",
+      "Anayasa Mahkemesi",
+      "Danıştay"
+    ],
+    "correctIndex": 2,
+    "explanation": "2017 Anayasa değişiklikleriyle Bakanlar Kurulu kaldırılmıştır. Bütçe kanun teklifi hariç (bütçe teklifini Cumhurbaşkanı sunar), tüm kanun tekliflerini verme yetkisi münhasıran milletvekillerine aittir.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "vat_003",
+    "lesson": "Vatandaşlık",
+    "topic": "İdare Hukuku",
+    "text": "Aşağıdaki denetim ilişkilerinden hangisi 'idari vesayet' denetimine örnek oluşturur?",
+    "options": [
+      "İçişleri Bakanı'nın Emniyet Genel Müdürü'nü denetlemesi",
+      "Valinin il emniyet müdürüne emir vermesi",
+      "Kaymakamın ilçe milli eğitim müdürünü denetlemesi",
+      "İçişleri Bakanlığı'nın bir belediyenin kararlarını hukuka uygunluk yönünden denetlemesi",
+      "Fakülte dekanının bölüm başkanını denetlemesi"
+    ],
+    "correctIndex": 3,
+    "explanation": "Merkezi idarenin (İçişleri Bakanlığı), yerel yerinden yönetim kuruluşu olan belediyeyi denetlemesi 'idari vesayet'tir. Aynı kamu tüzel kişiliği içerisindeki üst-ast ilişkisi ise 'hiyerarşi'dir.",
+    "difficulty": "medium"
+  },
+  {
     "id": "gun_001",
     "lesson": "Güncel Bilgiler",
     "topic": "Uluslararası Kuruluşlar",
@@ -61,6 +157,38 @@
     ],
     "correctIndex": 1,
     "explanation": "Finlandiya 2023 yılında NATO'nun 31. üyesi olmuş; İsveç ise 7 Mart 2024 tarihinde resmi olarak katılım sürecini tamamlayarak NATO'nun 32. üyesi olmuştur.",
+    "difficulty": "medium"
+  },
+  {
+    "id": "gun_002",
+    "lesson": "Güncel Bilgiler",
+    "topic": "Bilim ve Teknoloji Gelişmeleri",
+    "text": "Ocak 2024'te Ax-3 misyonu kapsamında Uluslararası Uzay İstasyonu'na (ISS) giderek uzaya çıkan ilk Türk astronot aşağıdakilerden hangisidir?",
+    "options": [
+      "Alper Gezeravcı",
+      "Tuva Cihangir Atasever",
+      "Umut Yıldız",
+      "Canan Dağdeviren",
+      "Aziz Sancar"
+    ],
+    "correctIndex": 0,
+    "explanation": "Alper Gezeravcı, 18 Ocak 2024 tarihinde fırlatılan Axiom Mission 3 (Ax-3) ile Uluslararası Uzay İstasyonu'na giderek uzayda 13 farklı bilimsel deney gerçekleştiren ilk Türk astronot olmuştur.",
+    "difficulty": "easy"
+  },
+  {
+    "id": "gun_003",
+    "lesson": "Güncel Bilgiler",
+    "topic": "Kültür ve Sanat Gelişmeleri",
+    "text": "Türk Kültürü Uluslararası Teşkilatı (TÜRKSOY) tarafından 2024 yılı 'Türk Dünyası Kültür Başkenti' ilan edilen tarihi şehir aşağıdakilerden hangisidir?",
+    "options": [
+      "Semerkant (Özbekistan)",
+      "Anav (Türkmenistan)",
+      "Şuşa (Azerbaycan)",
+      "Bursa (Türkiye)",
+      "Almatı (Kazakistan)"
+    ],
+    "correctIndex": 1,
+    "explanation": "TÜRKSOY Daimi Konseyi kararıyla 2024 yılı Türk Dünyası Kültür Başkenti olarak Türkmenistan'ın kadim kenti Anav (Anew) seçilmiştir.",
     "difficulty": "medium"
   }
 ]
