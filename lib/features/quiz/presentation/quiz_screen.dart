@@ -197,15 +197,7 @@ class _QuizScreenState extends State<QuizScreen> {
           const SizedBox(height: 16),
 
           // Soru Metni Kartı
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                question.text,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-          ),
+          _QuestionCard(text: question.text),
           const SizedBox(height: 16),
 
           // Şıklar (A - E)
@@ -282,6 +274,38 @@ class _QuestionMetaBar extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Soru metnini gösteren kart bileşeni.
+class _QuestionCard extends StatelessWidget {
+  final String text;
+
+  const _QuestionCard({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Card(
+      elevation: 0,
+      color: colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(color: colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          text,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            height: 1.5,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ),
     );
   }
 }
