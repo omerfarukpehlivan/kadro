@@ -44,6 +44,8 @@ class HomeScreen extends ConsumerWidget {
                 icon: LucideIcons.target,
                 title: 'Konu testi',
                 description: 'Bir konu seç, 10-20 soruluk test çöz.',
+                badgeText: '10-20 Soru',
+                actionText: 'Başla',
                 accentColor: colorScheme.primary,
                 accentContainerColor: colorScheme.primaryContainer,
                 onTap: () {
@@ -59,6 +61,8 @@ class HomeScreen extends ConsumerWidget {
                 icon: LucideIcons.layers,
                 title: 'Bilgi kartları',
                 description: 'Önünde soru, arkasında cevap. Hızlı tekrar için.',
+                badgeText: 'Hızlı Tekrar',
+                actionText: 'Başla',
                 accentColor: colorScheme.tertiary,
                 accentContainerColor: colorScheme.tertiaryContainer,
                 onTap: () {
@@ -79,6 +83,8 @@ class HomeScreen extends ConsumerWidget {
                 icon: LucideIcons.bookmark,
                 title: 'Yanlış defteri',
                 description: 'Yanlış yaptığın soruları tekrar çöz.',
+                badgeText: 'Akıllı Havuz',
+                actionText: 'Başla',
                 accentColor: colorScheme.error,
                 accentContainerColor: colorScheme.errorContainer,
                 onTap: () {
@@ -95,6 +101,8 @@ class HomeScreen extends ConsumerWidget {
                 title: 'Deneme sınavı',
                 description:
                     '60 soru, 65 dakika. Gerçek Genel Kültür sınav düzeni.',
+                badgeText: '65 Dakika',
+                actionText: 'Başla',
                 accentColor: colorScheme.secondary,
                 accentContainerColor: colorScheme.secondaryContainer,
                 onTap: () {
@@ -116,7 +124,7 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-/// Bugün kaç soru çözüldüğünü ve hedefe ne kadar kaldığını gösteren 3D Tactile kart.
+/// Bugün kaç soru çözüldüğünü ve hedefe ne kadar kaldığını dairesel halka (gauge) ile gösteren dashboard kartı.
 class _DailyGoalCard extends StatelessWidget {
   final int solved;
   final int goal;
@@ -128,65 +136,114 @@ class _DailyGoalCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    final progress = goal == 0 ? 0.0 : (solved / goal).clamp(0.0, 1.0);
+    final percent = (progress * 100).round();
+
     return TactileCard(
-          backgroundColor: colorScheme.primaryContainer.withAlpha(90),
-          borderColor: colorScheme.primary.withAlpha(110),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          borderRadius: 22,
+          backgroundColor: colorScheme.surface,
+          borderColor: colorScheme.primary.withAlpha(90),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Bugünkü hedefin',
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+              // Sol: Metrikler ve yatay çubuk
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.tertiaryContainer,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            LucideIcons.flame,
+                            size: 14,
+                            color: colorScheme.onTertiaryContainer,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Hedef Takibi',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onTertiaryContainer,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
+                    const SizedBox(height: 8),
+                    Text(
+                      'Bugünkü hedefin',
+                      style: textTheme.labelLarge?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.tertiaryContainer,
-                      borderRadius: BorderRadius.circular(20),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$solved / $goal soru',
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                    child: Row(
+                    const SizedBox(height: 10),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        minHeight: 8,
+                        value: progress,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              // Sağ: Dairesel Halka / Gauge (80x80)
+              SizedBox(
+                width: 80,
+                height: 80,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      width: 76,
+                      height: 76,
+                      child: CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 8,
+                        backgroundColor: colorScheme.primaryContainer.withAlpha(
+                          90,
+                        ),
+                        color: colorScheme.primary,
+                        strokeCap: StrokeCap.round,
+                      ),
+                    ),
+                    Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
                           LucideIcons.flame,
-                          size: 16,
-                          color: colorScheme.onTertiaryContainer,
+                          size: 18,
+                          color: colorScheme.tertiary,
                         ),
-                        const SizedBox(width: 4),
                         Text(
-                          'Hedef Takibi',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onTertiaryContainer,
-                            fontWeight: FontWeight.bold,
+                          '%$percent',
+                          style: textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: colorScheme.primary,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '$solved / $goal soru',
-                style: textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 12),
-              // İlerleme çubuğu: hedefe göre 0.0 ile 1.0 arasına kenetlenir (clamp)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  minHeight: 10,
-                  value: goal == 0 ? 0.0 : (solved / goal).clamp(0.0, 1.0),
+                  ],
                 ),
               ),
             ],
@@ -198,7 +255,7 @@ class _DailyGoalCard extends StatelessWidget {
   }
 }
 
-/// 3D basılabilir dikey Bento çalışma kartı.
+/// 3D basılabilir, canlı rozetli ve aksiyon butonlu dikey Bento çalışma kartı.
 class _StudyTypeTile extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -206,6 +263,8 @@ class _StudyTypeTile extends StatelessWidget {
   final VoidCallback? onTap;
   final Color? accentColor;
   final Color? accentContainerColor;
+  final String badgeText;
+  final String actionText;
 
   const _StudyTypeTile({
     required this.icon,
@@ -214,6 +273,8 @@ class _StudyTypeTile extends StatelessWidget {
     this.onTap,
     this.accentColor,
     this.accentContainerColor,
+    required this.badgeText,
+    this.actionText = 'Başla',
   });
 
   @override
@@ -221,9 +282,15 @@ class _StudyTypeTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    final effectiveAccent = accentColor ?? colorScheme.primary;
+    final effectiveAccentContainer =
+        accentContainerColor ?? colorScheme.primaryContainer;
+
     return TactileCard(
       onTap: onTap,
       padding: const EdgeInsets.all(14),
+      backgroundColor: effectiveAccentContainer.withAlpha(55),
+      borderColor: effectiveAccent.withAlpha(95),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -231,21 +298,33 @@ class _StudyTypeTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: accentContainerColor ?? colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(14),
+                  color: effectiveAccentContainer,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  icon,
-                  color: accentColor ?? colorScheme.primary,
-                  size: 26,
-                ),
+                child: Icon(icon, color: effectiveAccent, size: 24),
               ),
-              Icon(
-                LucideIcons.chevronRight,
-                size: 18,
-                color: colorScheme.outline,
+              const SizedBox(width: 6),
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: effectiveAccentContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    badgeText,
+                    style: textTheme.labelSmall?.copyWith(
+                      color: effectiveAccent,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ),
             ],
           ),
@@ -262,6 +341,20 @@ class _StudyTypeTile extends StatelessWidget {
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Text(
+                actionText,
+                style: textTheme.labelMedium?.copyWith(
+                  color: effectiveAccent,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(LucideIcons.chevronRight, size: 16, color: effectiveAccent),
+            ],
           ),
         ],
       ),
