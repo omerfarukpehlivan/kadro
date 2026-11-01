@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart'; // IconData ve Icons için
+import 'package:flutter/material.dart'; // IconData için
+import 'package:lucide_icons_flutter/lucide_icons.dart'; // Modern çizgisel ikon seti
 
 /// KPSS Lisans Genel Kültür'deki bir ders.
 /// Şimdilik sabit bir liste; sorular ve konular eklendikçe burası bir
@@ -31,7 +32,7 @@ const List<Lesson> kpssLessons = [
     name: 'Tarih',
     section: 'Genel Kültür',
     questionCount: 27,
-    icon: Icons.account_balance,
+    icon: LucideIcons.bookOpen,
     badgeText: '27 Soru · Kritik',
     topics: [
       'İslamiyet Öncesi Türk Tarihi',
@@ -48,7 +49,7 @@ const List<Lesson> kpssLessons = [
     name: 'Coğrafya',
     section: 'Genel Kültür',
     questionCount: 18,
-    icon: Icons.public,
+    icon: LucideIcons.globe,
     badgeText: null,
     topics: [
       'Türkiye\'nin Coğrafi Konumu',
@@ -64,7 +65,7 @@ const List<Lesson> kpssLessons = [
     name: 'Vatandaşlık',
     section: 'Genel Kültür',
     questionCount: 9,
-    icon: Icons.gavel,
+    icon: LucideIcons.scale,
     badgeText: null,
     topics: [
       'Temel Hukuk Kavramları',
@@ -80,7 +81,7 @@ const List<Lesson> kpssLessons = [
     name: 'Güncel Bilgiler',
     section: 'Genel Kültür',
     questionCount: 6,
-    icon: Icons.newspaper,
+    icon: LucideIcons.sparkles,
     badgeText: 'Her Hafta Yeni',
     topics: [
       'Türkiye ve Dünya Gündemi',

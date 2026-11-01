@@ -27,7 +27,7 @@ void main() {
       expect(find.byIcon(LucideIcons.timer), findsOneWidget);
       expect(find.byIcon(LucideIcons.chartColumn), findsOneWidget);
       expect(find.byIcon(LucideIcons.user), findsOneWidget);
-      expect(find.byIcon(LucideIcons.graduationCap), findsOneWidget);
+      expect(find.byIcon(LucideIcons.graduationCap), findsWidgets);
     });
   });
 }

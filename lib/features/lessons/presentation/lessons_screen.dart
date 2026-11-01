@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 import 'package:kadro/features/lessons/presentation/lesson_topics_screen.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Dersler sekmesi: KPSS Genel Kültür dersleri (Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler).
 class LessonsScreen extends StatelessWidget {
@@ -14,7 +16,7 @@ class LessonsScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       children: [
         const PageHeader(
-          icon: Icons.menu_book,
+          icon: LucideIcons.bookOpen,
           title: 'KPSS Genel Kültür',
           subtitle: 'Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler konu testleri ve hap bilgiler.',
         ),
@@ -45,13 +47,25 @@ class _LessonCard extends StatelessWidget {
     return Stack(
       children: [
         Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: colorScheme.outlineVariant),
+          ),
           child: ListTile(
-            leading: CircleAvatar(child: Icon(lesson.icon)),
+            leading: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(lesson.icon, color: colorScheme.onPrimaryContainer),
+            ),
             title: Text(lesson.name),
             subtitle: Text(
               'Sınavda ${lesson.questionCount} soru · ${lesson.topics.length} konu',
             ),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(LucideIcons.chevronRight),
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -82,6 +96,6 @@ class _LessonCard extends StatelessWidget {
             ),
           ),
       ],
-    );
+    ).animate().fadeIn(duration: 200.ms);
   }
 }

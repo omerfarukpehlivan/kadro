@@ -77,6 +77,7 @@ void main() {
             child: const MaterialApp(home: HomeScreen()),
           ),
         );
+        await tester.pumpAndSettle();
         expect(find.text('0 / 30 soru'), findsOneWidget);
 
         // 2. QuizScreen aç ve yanlış cevap ver
@@ -102,6 +103,7 @@ void main() {
             child: const MaterialApp(home: HomeScreen()),
           ),
         );
+        await tester.pumpAndSettle();
         expect(find.text('1 / 30 soru'), findsOneWidget);
 
         // 4. İstatistik Ekranını çiz -> Çözülen 1, Doğru oranı %0, En zayıf Tarih olmalı
@@ -111,6 +113,7 @@ void main() {
             child: const MaterialApp(home: StatsScreen()),
           ),
         );
+        await tester.pumpAndSettle();
         expect(find.text('1'), findsOneWidget); // Çözülen soru
         expect(find.text('%0'), findsOneWidget); // Doğru oranı
         expect(find.text('Tarih'), findsOneWidget); // En zayıf ders
