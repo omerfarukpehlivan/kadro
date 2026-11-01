@@ -33,8 +33,11 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-06** | **Yanlış Defteri (`MistakesScreen`) & Bellek İçi Havuz** | Testte yanlış yapılan soruların `MistakeRepository` (in-memory) içine kaydedilmesi, Ana Sayfadan Yanlış Defteri'ni açıp yanlışları tekrar çözme | ✅ **Tamamlandı** |
 | **TASK-07** | **Süreli Genel Kültür Denemesi (`ExamSessionScreen`)** | `Timer.periodic` ile geri sayım sayacı, `ExamsScreen` ve `HomeScreen` üzerinden süreli deneme başlatma ve bitirme | ✅ **Tamamlandı** |
 | **TASK-08** | **Faz 5: `go_router` & `StatefulShellRoute` Navigasyon** | Tüm ekranların (`Home`, `Lessons`, `Topics`, `Quiz`, `Flashcards`, `Mistakes`, `Exams`, `Stats`, `Profile`) URL/rota tabanlı profesyonel navigasyona geçişi | ✅ **Tamamlandı** |
-| **TASK-09** | **Faz 8: `flutter_riverpod` + Canlı Hedef & İstatistik** | Çözülen soruların global state ile takibi; Ana Sayfa `Bugünkü hedefin (X / 30)` ve `StatsScreen` ekranının gerçek verilerle canlanması | ✅ **Tamamlandı** |
-| **TASK-10** | **Para Kazanma (Kadro PRO Paywall & Ödüllü Reklam) + Profil Ayarları** | Günlük 30 soru limiti dolunca çıkan *"Reklam İzle (+20 Soru) / Kadro PRO"* ekranı, `ProfileScreen`'de Açık/Koyu Tema ve Hedef seçimi | ✅ **Tamamlandı** |
+| **TASK-09** | **Faz 8: `flutter_riverpod` + Canlı Hedef & İstatistik** | Çözülen soruların global state ile takibi; Ana Sayfa `Bugünkü hedefin (X / 30)` ve `StatsScreen` ekranının gerçek verilerle canlanması | ✅ **Tamamlandı** (`4d46fcc`) |
+| **TASK-10** | **Para Kazanma (Kadro PRO Paywall & Ödüllü Reklam) + Profil Ayarları** | Günlük 30 soru limiti dolunca çıkan *"Reklam İzle (+20 Soru) / Kadro PRO"* ekranı, `ProfileScreen`'de Açık/Koyu Tema ve Hedef seçimi | ✅ **Tamamlandı** (`114d2cd`) |
+| **TASK-11** | **Kurumsal Marka Teması (`FlexColorScheme` + `GoogleFonts`) & `LucideIcons` Kabuk Dönüşümü** | `design-system/kadro/MASTER.md` doğrultusunda Academic Indigo + Gold renk sistemi, `Plus Jakarta Sans` + `Inter` fontları, `AppTopBar` ve `AppNavigationBar` modernizasyonu | ⏳ **Sırada (Dalga 4)** |
+| **TASK-12** | **Bento Grid Ana Sayfa, Gamified Hedef Kartı & `flutter_animate` Mikro Etkileşimler** | `HomeScreen` Hero hedef kartı, Bento çalışma kartları, `LessonsScreen` ve `ExamsScreen` `LucideIcons` + `flutter_animate` geçişleri | ⏳ **Sırada (Dalga 4)** |
+| **TASK-13** | **Görsel Analitik (`StatsScreen` + `fl_chart` `BarChart`) & Karne/Paywall Marka Cilası** | `StatsScreen` içine ders bazlı başarı çubuğu grafiği (`BarChart`), `QuizResultScreen` ve `PaywallScreen` premium görsel dokunuşları | ⏳ **Sırada (Dalga 4)** |
 
 ---
 
@@ -351,3 +354,164 @@ ADIM 4: Test ve Doğrulama
 
 
 
+---
+
+## 🎨 4. Dalga 4: Marka Kimliği & UI/UX Pro Max Dönüşümü (`TASK-11`, `TASK-12`, `TASK-13`)
+
+Uygulamayı "basit bir AI/başlangıç projesi" görünümünden çıkarıp kurumsal **Kadro** EdTech markasına dönüştürmek için [design-system/kadro/MASTER.md](file:///d:/projelerim/gunisigi/design-system/kadro/MASTER.md) ve `.agents/skills/ui-ux-pro-max/SKILL.md` rehberliğinde hazırlanan 3 sıralı görev paketi:
+
+---
+
+### 📦 TASK-11: Kurumsal Marka Teması (`FlexColorScheme` + `GoogleFonts`) & Uygulama Kabuğu (`LucideIcons`)
+
+```text
+GÖREV: TASK-11 — Kurumsal Marka Teması (FlexColorScheme + GoogleFonts) ve Uygulama Kabuğu (AppTopBar, AppNavigationBar, PageHeader) Modernizasyonu
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Yeni paket kurma (flex_color_scheme, google_fonts, lucide_icons_flutter zaten pubspec.yaml içinde kuruludur). Sabit Color(0xFF...) YALNIZCA lib/app/theme.dart içinde tanımlanabilir.
+
+ADIM 1: `lib/app/theme.dart` (`AppTheme`) Kurumsal Tema & Tipografi Dönüşümü
+1. `lib/app/theme.dart` dosyasını `flex_color_scheme` ve `google_fonts` kullanacak şekilde yeniden yaz:
+   - Gerekli importlar: `dart:io show Platform;`, `package:flex_color_scheme/flex_color_scheme.dart`, `package:flutter/material.dart`, `package:google_fonts/google_fonts.dart`.
+   - Marka renk sabitlerini `AppTheme` içinde tanımla:
+     - `static const Color seedColor = Color(0xFF4F46E5);` (Academic Royal Indigo)
+     - `static const Color secondaryColor = Color(0xFF0F172A);` (Deep Slate)
+     - `static const Color tertiaryColor = Color(0xFFD97706);` (Achievement Amber Gold)
+     - `static const Color darkPrimaryColor = Color(0xFF818CF8);`
+     - `static const Color darkSecondaryColor = Color(0xFF94A3B8);`
+     - `static const Color darkTertiaryColor = Color(0xFFFBBF24);`
+   - `_subThemesData` (`FlexSubThemesData`) tanımla:
+     - `interactionEffects: true`, `tintedDisabledControls: true`, `blendOnLevel: 10`, `useM2StyleDividerInM3: true`,
+     - `defaultRadius: 16.0`, `cardRadius: 16.0`, `filledButtonRadius: 12.0`, `outlinedButtonRadius: 12.0`, `inputDecoratorRadius: 12.0`,
+     - `cardElevation: 0.0`, `navigationBarSelectedLabelSchemeColor: SchemeColor.primary`, `navigationBarSelectedIconSchemeColor: SchemeColor.primary`, `navigationBarIndicatorSchemeColor: SchemeColor.primaryContainer`.
+   - `_buildTextTheme(TextTheme base)` yardımcı metodunu yaz:
+     - KRİTİK TEST GÜVENLİĞİ: `if (Platform.environment.containsKey('FLUTTER_TEST')) { return base; }` kontrolünü en başa koy (böylece `flutter test` çalışırken `google_fonts` dış ağdan HTTP ile font indirmeye çalışıp testleri yavaşlatmaz/uyarı basmaz).
+     - Test dışında: `final bodyTheme = GoogleFonts.interTextTheme(base);` oluştur ve `bodyTheme.copyWith(...)` ile `displayLarge`, `displayMedium`, `displaySmall`, `headlineLarge`, `headlineMedium`, `headlineSmall`, `titleLarge`, `titleMedium`, `titleSmall` stillerini `GoogleFonts.plusJakartaSans(...)` ile (mevcut font ağırlıklarını koruyarak, `titleLarge` ve `headline*` için `FontWeight.w700` kullanarak) döndür.
+   - `static ThemeData get light`: `FlexThemeData.light(...)` kullanarak `colors: const FlexSchemeColor(primary: seedColor, primaryContainer: Color(0xFFE0E7FF), secondary: secondaryColor, secondaryContainer: Color(0xFFF1F5F9), tertiary: tertiaryColor, tertiaryContainer: Color(0xFFFEF3C7), appBarColor: Color(0xFFF8FAFC), error: Color(0xFFDC2626))`, `surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold`, `blendLevel: 4`, `subThemesData: _subThemesData`, `visualDensity: FlexColorScheme.comfortablePlatformDensity` oluştur ve `.copyWith(textTheme: _buildTextTheme(baseLight.textTheme))` ile döndür.
+   - `static ThemeData get dark`: `FlexThemeData.dark(...)` kullanarak `colors: const FlexSchemeColor(primary: darkPrimaryColor, primaryContainer: Color(0xFF312E81), secondary: darkSecondaryColor, secondaryContainer: Color(0xFF1E293B), tertiary: darkTertiaryColor, tertiaryContainer: Color(0xFF78350F), appBarColor: Color(0xFF0B0F19), error: Color(0xFFF87171))`, `surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold`, `blendLevel: 8`, `subThemesData: _subThemesData`, `visualDensity: FlexColorScheme.comfortablePlatformDensity` oluştur ve `.copyWith(textTheme: _buildTextTheme(baseDark.textTheme))` ile döndür.
+
+ADIM 2: `AppTopBar`, `AppNavigationBar` ve `PageHeader` Modernizasyonu (`LucideIcons`)
+1. `lib/app/widgets/app_top_bar.dart`:
+   - Amatör görünüm veren `backgroundColor: Theme.of(context).colorScheme.inversePrimary` satırını KALDIR!
+   - Yerine `backgroundColor: colorScheme.surface`, `surfaceTintColor: colorScheme.surfaceTint`, `scrolledUnderElevation: 0.5`, `centerTitle: false` kullan.
+   - `title:` kısmında bir `Row(mainAxisSize: MainAxisSize.min, children: [...])` içinde:
+     - `Container(padding: const EdgeInsets.all(6), decoration: BoxDecoration(color: colorScheme.primaryContainer, borderRadius: BorderRadius.circular(8)), child: Icon(LucideIcons.graduationCap, size: 18, color: colorScheme.onPrimaryContainer))`
+     - `const SizedBox(width: 10)`
+     - `Text(title, style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700))`
+     (Böylece `find.widgetWithText(AppBar, 'Dersler')` ve `find.text('Kadro')` testleri %100 çalışmaya devam eder).
+2. `lib/app/widgets/app_navigation_bar.dart`:
+   - `package:lucide_icons_flutter/lucide_icons.dart` import et.
+   - 5 sekmenin ikonlarını `LucideIcons` ile güncelle (etiket metinlerini `'Ana Sayfa'`, `'Dersler'`, `'Denemeler'`, `'İstatistik'`, `'Profil'` olarak BİREBİR koru):
+     - Ana Sayfa: `icon: Icon(LucideIcons.house)`, `selectedIcon: Icon(LucideIcons.house)`
+     - Dersler: `icon: Icon(LucideIcons.bookOpen)`, `selectedIcon: Icon(LucideIcons.bookOpen)`
+     - Denemeler: `icon: Icon(LucideIcons.timer)`, `selectedIcon: Icon(LucideIcons.timer)`
+     - İstatistik: `icon: Icon(LucideIcons.chartColumn)`, `selectedIcon: Icon(LucideIcons.chartColumn)`
+     - Profil: `icon: Icon(LucideIcons.user)`, `selectedIcon: Icon(LucideIcons.user)`
+3. `lib/shared/widgets/page_header.dart`:
+   - `CircleAvatar` yerine modern yuvarlatılmış kare ikon kutusu kullan:
+     `Container(width: 48, height: 48, decoration: BoxDecoration(color: colorScheme.primaryContainer, borderRadius: BorderRadius.circular(14)), child: Icon(icon, color: colorScheme.onPrimaryContainer))`
+   - Başlık stilini `textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)` yap.
+
+ADIM 3: Test ve Doğrulama
+1. `test/theme_and_shell_test.dart` dosyasını oluştur:
+   - `AppTheme.light.colorScheme.primary` değerinin `AppTheme.seedColor` ile uyumlu olduğunu ve `AppTheme.dark.brightness == Brightness.dark` olduğunu test et.
+   - `MyApp` çizildiğinde `AppNavigationBar` içinde `LucideIcons.house` ve `LucideIcons.bookOpen` ikonlarının bulunduğunu doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-12: Bento Grid Ana Sayfa (`HomeScreen`), Gamified Hedef Kartı & `flutter_animate` Mikro Etkileşimler
+
+```text
+GÖREV: TASK-12 — Bento Grid Ana Sayfa, Gamified Günlük Hedef Kartı ve Lessons/Exams Ekranlarında LucideIcons + flutter_animate Dönüşümü
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. TASK-11 tamamlandıktan sonra bu görevi uygula.
+KRİTİK ANİMASYON KURALI: `flutter_animate` kullanırken asla sonsuz `.repeat()` kullanma ve animasyon sürelerini `200.ms` - `250.ms` arasında tut ki `flutter test` içindeki `pumpAndSettle()` çağrıları zaman aşımına uğramasın!
+
+ADIM 1: `HomeScreen` (`lib/features/home/presentation/home_screen.dart`) Hero Hedef Kartı & Bento Tasarımı
+1. `package:flutter_animate/flutter_animate.dart` ve `package:lucide_icons_flutter/lucide_icons.dart` import et.
+2. `PageHeader` ikonunu `LucideIcons.graduationCap` yap (`title: 'Hoş geldin'` metnini test uyumluluğu için BİREBİR koru).
+3. `_DailyGoalCard` bileşenini zenginleştir:
+   - Kartı `Card(color: colorScheme.primaryContainer.withAlpha(90), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: colorScheme.primary.withAlpha(60))), child: ...)` yap.
+   - Üst satırda (`Row`): Solda `'Bugünkü hedefin'` (`textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)`), sağda `Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: colorScheme.tertiaryContainer, borderRadius: BorderRadius.circular(20)), child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(LucideIcons.flame, size: 16, color: colorScheme.onTertiaryContainer), const SizedBox(width: 4), Text('Hedef Takibi', style: textTheme.labelSmall?.copyWith(color: colorScheme.onTertiaryContainer, fontWeight: FontWeight.bold))]))` göster.
+   - Ortada `Text('$solved / $goal soru', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700))` metnini BİREBİR koru (`test/study_stats_test.dart` bu metni arar!).
+   - Altta `ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(minHeight: 10, value: goal == 0 ? 0.0 : (solved / goal).clamp(0.0, 1.0)))` kullan.
+   - `_DailyGoalCard` çıkışına `.animate().fadeIn(duration: 200.ms).slideY(begin: 0.04, end: 0, duration: 200.ms)` ekle.
+4. `_StudyTypeTile` bileşenini modern Bento/Özellik kartı görünümüne kavuştur:
+   - 4 çalışma türünün ikonlarını `LucideIcons` yap (başlık metinlerini `'Konu testi'`, `'Bilgi kartları'`, `'Yanlış defteri'`, `'Deneme sınavı'` olarak BİREBİR koru):
+     - `'Konu testi'` -> `LucideIcons.target`
+     - `'Bilgi kartları'` -> `LucideIcons.layers`
+     - `'Yanlış defteri'` -> `LucideIcons.bookmark`
+     - `'Deneme sınavı'` -> `LucideIcons.timer`
+   - `_StudyTypeTile` içinde `Card` kenarlığını `RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: colorScheme.outlineVariant))` yap; `leading:` kısmında `Container(padding: const EdgeInsets.all(10), decoration: BoxDecoration(color: colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: colorScheme.primary))` ve `trailing:` kısmında `Icon(LucideIcons.chevronRight, color: colorScheme.outline)` kullan.
+   - Her `_StudyTypeTile` bileşenini `.animate().fadeIn(duration: 200.ms)` ile sar.
+
+ADIM 2: `kpssLessons`, `LessonsScreen` ve `ExamsScreen` Modernizasyonu
+1. `lib/features/lessons/data/kpss_lessons.dart`:
+   - `package:lucide_icons_flutter/lucide_icons.dart` import et ve 4 dersin ikonlarını güncelle:
+     - Tarih: `LucideIcons.bookOpen`
+     - Coğrafya: `LucideIcons.globe`
+     - Vatandaşlık: `LucideIcons.scale`
+     - Güncel Bilgiler: `LucideIcons.sparkles`
+2. `lib/features/lessons/presentation/lessons_screen.dart`:
+   - `PageHeader` ikonunu `LucideIcons.bookOpen` yap.
+   - `_LessonCard` içinde `Card` kenarlığına `side: BorderSide(color: colorScheme.outlineVariant)` ekle, `leading:` kısmını `Container(width: 44, height: 44, decoration: BoxDecoration(color: colorScheme.primaryContainer, borderRadius: BorderRadius.circular(12)), child: Icon(lesson.icon, color: colorScheme.onPrimaryContainer))` yap, `trailing:` ikonunu `Icon(LucideIcons.chevronRight)` yap ve kartı `.animate().fadeIn(duration: 200.ms)` ile sar.
+3. `lib/features/exams/presentation/exams_screen.dart`:
+   - `PageHeader` ikonunu `LucideIcons.timer` yap.
+   - Sınav düzeni kartındaki 3 `ListTile` ikonunu `LucideIcons.listOrdered`, `LucideIcons.clock`, `LucideIcons.calculator` ve başlat butonundaki ikonu `LucideIcons.play` olarak güncelle (tüm metinleri birebir koru).
+
+ADIM 3: Doğrulama
+1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp tüm testlerin 0 hata ile geçtiğini doğrula.
+```
+
+---
+
+### 📦 TASK-13: Görsel Analitik (`StatsScreen` + `fl_chart` `BarChart`) & Karne/Paywall Marka Cilası
+
+```text
+GÖREV: TASK-13 — StatsScreen Ders Bazlı Başarı Grafiği (fl_chart BarChart) ve QuizResultScreen / PaywallScreen Marka Cilası
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. TASK-12 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `StudyStatsState` (`lib/features/stats/data/study_stats_notifier.dart`) Ders Bazlı Başarı Verisi
+1. `StudyStatsState` içine mevcut alanları hiç bozmadan iki yeni harita alanı ekle:
+   - `final Map<String, int> solvedByLesson;` (varsayılan `this.solvedByLesson = const {}`)
+   - `final Map<String, int> correctByLesson;` (varsayılan `this.correctByLesson = const {}`)
+   - `copyWith` metoduna `solvedByLesson` ve `correctByLesson` parametrelerini ekle.
+   - Yardımcı metot ekle:
+     ```dart
+     int lessonAccuracyPercent(String lesson) {
+       final solved = solvedByLesson[lesson] ?? 0;
+       if (solved == 0) return 0;
+       final correct = correctByLesson[lesson] ?? 0;
+       return ((correct / solved) * 100).round();
+     }
+     ```
+2. `StudyStatsNotifier.recordAnswer({required String lesson, required bool isCorrect})` içinde:
+   - `solvedByLesson` içinde ilgili `lesson` sayacını 1 artır.
+   - `isCorrect` ise `correctByLesson` içinde ilgili `lesson` sayacını 1 artır.
+
+ADIM 2: `StatsScreen` (`lib/features/stats/presentation/stats_screen.dart`) `fl_chart` `BarChart` Entegrasyonu
+1. `package:fl_chart/fl_chart.dart`, `package:flutter_animate/flutter_animate.dart` ve `package:lucide_icons_flutter/lucide_icons.dart` import et.
+2. `PageHeader` ikonunu `LucideIcons.chartColumn` yap.
+3. Mevcut 3 `_StatCard` bileşenini (`'Çözülen soru'`, `'Doğru oranı'`, `'En zayıf ders'`) koru ve `_StatCard` içine opsiyonel `final IconData? icon;` parametresi ekleyerek kart başlığının yanına küçük bir `Icon` koy (`LucideIcons.check`, `LucideIcons.target`, `LucideIcons.flame`).
+4. 3 kartın altına `const SizedBox(height: 16)` ve `_LessonAccuracyChartCard(stats: stats)` (`StatelessWidget`) ekle:
+   - Kart içinde başlık olarak `Text('Ders Bazlı Başarı Oranı (%)', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700))` göster.
+   - Altında `SizedBox(height: 200, child: BarChart(...))` ile 4 Genel Kültür dersinin (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`) `stats.lessonAccuracyPercent(lesson)` değerlerini (0..100 arası, `maxY: 100`) gösteren 4 çubuk (`BarChartGroupData`) çiz:
+     - `x: 0` -> `stats.lessonAccuracyPercent('Tarih').toDouble()`
+     - `x: 1` -> `stats.lessonAccuracyPercent('Coğrafya').toDouble()`
+     - `x: 2` -> `stats.lessonAccuracyPercent('Vatandaşlık').toDouble()`
+     - `x: 3` -> `stats.lessonAccuracyPercent('Güncel Bilgiler').toDouble()`
+     - Çubuk rengi `colorScheme.primary`, genişliği `width: 22`, `borderRadius: BorderRadius.circular(6)`, arka plan çubuğu `backDrawRodData: BackgroundBarChartRodData(show: true, toY: 100, color: colorScheme.secondaryContainer)`.
+   - KRİTİK TEST KURALI: `titlesData` içindeki `bottomTitles` (`SideTitles`) kısmında derslerin tam adını (`'Tarih'`) YAZMA (`test/study_stats_test.dart` içindeki `expect(find.text('Tarih'), findsOneWidget)` testi grafikte de `'Tarih'` yazarsa 2 adet bulup kırılır!). Bunun yerine alt eksen etiketlerinde kısa kodları kullan:
+     - `0 -> 'TAR'`, `1 -> 'COĞ'`, `2 -> 'VAT'`, `3 -> 'GÜN'`.
+   - Sol/Üst/Sağ eksen başlıklarını (`leftTitles`, `topTitles`, `rightTitles`) ` const AxisTitles(sideTitles: SideTitles(showTitles: false))` ile gizle, `borderData: FlBorderData(show: false)` ve `gridData: const FlGridData(show: false)` yap.
+
+ADIM 3: `QuizResultScreen` ve `PaywallScreen` Marka Cilası
+1. `lib/features/quiz/presentation/quiz_result_screen.dart`:
+   - Başarı rozet ikonunu `LucideIcons.trophy` yap ve özet kartına `.animate().fadeIn(duration: 200.ms)` ekle (mevcut tüm metinleri ve buton etiketlerini birebir koru).
+2. `lib/features/profile/presentation/paywall_screen.dart`:
+   - Üst rozet ikonunu `LucideIcons.crown` yap ve özellik satırlarındaki onay ikonlarını `LucideIcons.check` ile güncelle (mevcut tüm metinleri ve buton etiketlerini birebir koru).
+
+ADIM 4: Test ve Doğrulama
+1. `test/study_stats_test.dart` dosyasına yeni bir `testWidgets` ekle:
+   - `StatsScreen` çizildiğinde `find.byType(BarChart)` bileşeninin ve `'Ders Bazlı Başarı Oranı (%)'`, `'TAR'`, `'COĞ'`, `'VAT'`, `'GÜN'` metinlerinin ekranda bulunduğunu doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```

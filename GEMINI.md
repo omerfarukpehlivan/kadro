@@ -40,7 +40,14 @@ Bu proje, **KPSS Lisans Genel Kültür (Tarih, Coğrafya, Vatandaşlık, Güncel
 
 ---
 
-## 🎨 Arayüz (UI/UX) Kuralları
+## 🎨 Arayüz (UI/UX) & Marka Kimliği Kuralları (`ui-ux-pro-max`)
+- **Tasarım Sistemi (`design-system/kadro/MASTER.md`):** Her ekran veya bileşen geliştirilirken öncelikle `design-system/kadro/MASTER.md` (ve varsa `design-system/kadro/pages/<ekran>.md`) kurallarına ve `.agents/skills/ui-ux-pro-max/SKILL.md` disiplinine uyulur.
+- **Onaylı Marka & UI Paketleri:**
+  - `flex_color_scheme`: Kurumsal Academic Indigo (`#4F46E5`) & Achievement Gold (`#D97706`) renk paleti ve global bileşen (`Card`, `FilledButton`, `NavigationBar`, `InputDecoration`) alt temaları.
+  - `google_fonts`: Başlıklarda `Plus Jakarta Sans`, gövde ve soru metinlerinde `Inter` tipografi ailesi.
+  - `lucide_icons_flutter`: Standart Android `Icons.*` yerine modern çizgisel `LucideIcons` ikon seti (testlerde özellikle aranan ikonlar hariç).
+  - `flutter_animate`: Kart geçişleri ve ekran açılışlarında mikro etkileşimler (testlerde `pumpAndSettle` zaman aşımını önlemek için animasyon süreleri `<= 300ms` tutulur ve sonsuz `.repeat()` kullanılmaz).
+  - `fl_chart`: İstatistik ve karne ekranlarında görsel grafikler (`BarChart` vb.).
 - **Tema Zorunluluğu:** Renk ve yazı stili her zaman `Theme.of(context).colorScheme` ve `.textTheme` üzerinden alınır. Sabit `Color(0xFF...)` ve sabit `fontSize` yalnızca `lib/app/theme.dart` içinde tanımlanabilir.
 - **Taşma (Overflow) Önleme:** `Row`/`Column` içindeki dinamik metin ve listelerde `Expanded`/`Flexible` kullan; kart ve liste içerik alanlarına sabit yükseklik (`height`) verme.
 
