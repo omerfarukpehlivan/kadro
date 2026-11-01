@@ -9,7 +9,8 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   const AppTopBar({
     super.key, // Üst sınıfa (StatelessWidget) benzersiz kimlik anahtarını iletir
-    this.title = 'Kadro', // Dışarıdan başlık verilmezse kullanılacak varsayılan metin
+    this.title =
+        'Kadro', // Dışarıdan başlık verilmezse kullanılacak varsayılan metin
   });
 
   @override
@@ -18,7 +19,7 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
       // Material Design standart üst bar widget'ı
       title: Text(title), // Başlık metnini çizer
       centerTitle:
-          false, // Başlığı üst barda tam ortalar (iOS tarzı şık görünüm)
+          false, // Başlığı sola hizalar (Android Material 3 standart görünümü)
       backgroundColor: Theme.of(context)
           .colorScheme
           .inversePrimary, // Temadaki uyumlu ana rengi çeker

@@ -14,7 +14,7 @@ void main() {
     await tester.tap(find.text('Dersler'));
     await tester.pumpAndSettle();
     expect(find.text('Hoş geldin'), findsNothing);
-    expect(find.text('Türkçe'), findsOneWidget);
+    expect(find.text('Tarih'), findsOneWidget);
 
     // "Profil"e geç.
     await tester.tap(find.text('Profil'));

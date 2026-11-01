@@ -26,13 +26,13 @@ class ExamsScreen extends StatelessWidget {
               ListTile(
                 leading: Icon(Icons.format_list_numbered),
                 title: Text('Soru sayısı'),
-                trailing: Text('120'),
+                trailing: Text('60'),
               ),
               Divider(height: 1),
               ListTile(
                 leading: Icon(Icons.schedule),
                 title: Text('Süre'),
-                trailing: Text('130 dakika'),
+                trailing: Text('65 dakika'),
               ),
               Divider(height: 1),
               ListTile(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 
@@ -11,37 +12,40 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: const [
-        PageHeader(
+      children: [
+        const PageHeader(
           icon: Icons.school,
           title: 'Hoş geldin',
-          subtitle:
-              'KPSS Lisans hazırlığın burada. Bugün nereden devam edelim?',
+          subtitle: 'KPSS Lisans Genel Kültür hazırlığın burada. Bugün nereden devam edelim?',
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         // Şimdilik sabit değerler; soru çözme gelince gerçek sayı olacak (Faz 4 ve 7)
-        _DailyGoalCard(solved: 0, goal: 30),
-        SizedBox(height: 16),
-        SectionTitle('Çalışma türleri'),
+        const _DailyGoalCard(solved: 0, goal: 30),
+        const SizedBox(height: 16),
+        const SectionTitle('Çalışma türleri'),
         _StudyTypeTile(
           icon: Icons.quiz_outlined,
           title: 'Konu testi',
           description: 'Bir konu seç, 10-20 soruluk test çöz.',
+          onTap: () {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => const QuizScreen()));
+          },
         ),
-        _StudyTypeTile(
+        const _StudyTypeTile(
           icon: Icons.style_outlined,
           title: 'Bilgi kartları',
           description: 'Önünde soru, arkasında cevap. Hızlı tekrar için.',
         ),
-        _StudyTypeTile(
+        const _StudyTypeTile(
           icon: Icons.bookmark_border,
           title: 'Yanlış defteri',
           description: 'Yanlış yaptığın soruları tekrar çöz.',
         ),
-        _StudyTypeTile(
+        const _StudyTypeTile(
           icon: Icons.timer_outlined,
           title: 'Deneme sınavı',
-          description: '120 soru, 130 dakika. Gerçek sınav düzeni.',
+          description: '60 soru, 65 dakika. Gerçek Genel Kültür sınav düzeni.',
         ),
       ],
     );
@@ -83,11 +87,13 @@ class _StudyTypeTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
+  final VoidCallback? onTap;
 
   const _StudyTypeTile({
     required this.icon,
     required this.title,
     required this.description,
+    this.onTap,
   });
 
   @override
@@ -97,13 +103,18 @@ class _StudyTypeTile extends StatelessWidget {
 
     return Card(
       child: ListTile(
+        onTap: onTap,
         leading: Icon(icon, color: colorScheme.primary),
         title: Text(title),
         subtitle: Text(description),
-        trailing: Text(
-          'Yakında',
-          style: textTheme.labelMedium?.copyWith(color: colorScheme.outline),
-        ),
+        trailing: onTap != null
+            ? Icon(Icons.chevron_right, color: colorScheme.outline)
+            : Text(
+                'Yakında',
+                style: textTheme.labelMedium?.copyWith(
+                  color: colorScheme.outline,
+                ),
+              ),
       ),
     );
   }

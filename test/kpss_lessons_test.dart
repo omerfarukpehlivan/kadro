@@ -1,23 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 
 void main() {
-  test('KPSS GY-GK dersleri toplam 120 soru', () {
+  test('KPSS Genel Kültür dersleri toplam 60 soru olmalı', () {
     // fold: listeyi tek bir değere indirger (JS'teki reduce)
     final total = kpssLessons.fold<int>(
       0,
       (sum, lesson) => sum + lesson.questionCount,
     );
-    expect(total, 120);
+    expect(total, 60);
   });
 
-  test('Genel Yetenek ve Genel Kültür 60\'ar soru', () {
-    int countOf(String section) => kpssLessons
-        .where((lesson) => lesson.section == section)
-        .fold<int>(0, (sum, lesson) => sum + lesson.questionCount);
-
-    expect(countOf('Genel Yetenek'), 60);
-    expect(countOf('Genel Kültür'), 60);
+  test('Toplam 4 Genel Kültür dersi bulunmalı ve tamamı Genel Kültür bölümünde olmalı', () {
+    expect(kpssLessons.length, 4);
+    for (final lesson in kpssLessons) {
+      expect(lesson.section, 'Genel Kültür');
+    }
   });
 }
