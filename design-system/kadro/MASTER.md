@@ -2,94 +2,85 @@
 
 > **LOGIC:** When building or refactoring any screen or widget in **Kadro**, check `design-system/kadro/pages/[page-name].md` first.
 > If that file exists, its rules **override** this Master file.
-> If not, strictly follow the brand design tokens, component specs, and rules below.
+> If not, strictly follow the brand design tokens, Mascot Coach specs, Tactile Gamified UI rules, and checklist below.
 
 ---
 
 **Project:** Kadro (`com.omer.kadro`)
-**Category:** Adult Professional EdTech — KPSS Lisans Genel Kültür Hazırlık (Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler)
-**Design Paradigm:** Modern Academic Bento + Gamified Progress + Subtle Micro-Interactions
+**Category:** Adult Gamified EdTech — KPSS Lisans Genel Kültür Hazırlık (Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler)
+**Design Paradigm:** Duolingo / Brilliant Style **"Tactile & Gamified"** + **Live Mascot Coach ("Tuğrul" — Anadolu Kartalı)**
 **Stack:** Flutter 3.x + Material 3 (`flex_color_scheme`, `google_fonts`, `lucide_icons_flutter`, `flutter_animate`, `fl_chart`)
 
 ---
 
-## 1. Brand Identity & Color Palette
+## 1. Brand Mascot & Persona: "Tuğrul" (Anadolu Kartalı Koç)
 
-Kadro uses **Academic Royal Indigo** (trust, focus, deep memory retention) paired with **Achievement Amber Gold** (streaks, daily goals, PRO badge, motivation) and **Emerald Success** (correct answers, net score growth).
+Kadro's brand identity centers on **Tuğrul**, a charismatic, sharp-eyed **Anatolian Eagle (Anadolu Kartalı)** mentor who guides KPSS candidates with determination, wisdom, and Seljuk/Anatolian heritage pride.
+
+### Mascot Moods & Asset Paths (`lib/shared/widgets/mascot_coach_banner.dart`)
+
+| Mood (`MascotMood`) | Asset Path | Screen Usage | Persona & Speech Bubble Tone |
+|---------------------|------------|--------------|------------------------------|
+| `MascotMood.coach` | `assets/images/mascot/tugrul_coach.png` | `HomeScreen`, `LessonsScreen` | Encouraging mentor: *"Hedefe pençe atma vakti! Bugün hangi dersten net topluyoruz?"* |
+| `MascotMood.victory` | `assets/images/mascot/tugrul_victory.png` | `QuizResultScreen`, `StatsScreen` | Proud celebrator holding trophy: *"Harika uçuş! Her çözdüğün test seni kadroya bir adım yaklaştırıyor."* |
+| `MascotMood.detective` | `assets/images/mascot/tugrul_detective.png` | `MistakesScreen`, `FlashcardsScreen` | Analytical scholar with glasses/magnifier: *"Hiçbir yanlış gözümden kaçmaz! Eksikleri birlikte kapatalım."* |
+| `MascotMood.pro` | `assets/images/mascot/tugrul_pro.png` | `PaywallScreen`, `ProfileScreen` | Royal eagle with gold crown & cape: *"Kadro PRO ile kanatlarını tam aç, günlük sınırları ortadan kaldır!"* |
+
+> **Test Resilience Rule:** Every `Image.asset(...)` displaying Tuğrul **MUST** include an `errorBuilder` fallback (rendering a styled `Icon(LucideIcons.award)` or `LucideIcons.graduationCap` inside a circular badge) so isolated widget tests never fail on asset decoding.
+
+---
+
+## 2. Color Palette (Academic Royal Indigo + Anatolian Gold + Emerald)
 
 > **CRITICAL FLUTTER RULE:** Raw `Color(0xFF...)` definitions are **ONLY** allowed inside `lib/app/theme.dart` (`AppTheme`). All screens and widgets **MUST** read colors dynamically from `Theme.of(context).colorScheme`.
 
-### Semantic Color Tokens (`AppTheme` -> `ColorScheme`)
-
 | Role | Light Hex | Dark Hex | Flutter `ColorScheme` Token | Usage |
 |------|-----------|----------|-----------------------------|-------|
-| **Primary (Academic Indigo)** | `#4F46E5` | `#818CF8` | `colorScheme.primary` | Primary CTAs, active nav indicator, progress bars, focused borders |
-| **Primary Container** | `#E0E7FF` | `#312E81` | `colorScheme.primaryContainer` | Hero cards, highlighted icon badges, selected option backgrounds |
-| **Secondary (Deep Slate)** | `#0F172A` | `#94A3B8` | `colorScheme.secondary` | Secondary actions, topic chips, subtle accents |
-| **Secondary Container** | `#F1F5F9` | `#1E293B` | `colorScheme.secondaryContainer` | Bento card surfaces, unselected pills |
-| **Tertiary (Achievement Amber)** | `#D97706` | `#FBBF24` | `colorScheme.tertiary` | Daily goal flame/streak, Kadro PRO crown, exam timer warning, badges |
-| **Tertiary Container** | `#FEF3C7` | `#78350F` | `colorScheme.tertiaryContainer` | Streak badge background, curriculum weight pill (`%45 · En Yüksek Ağırlık`) |
+| **Primary (Royal Indigo)** | `#4F46E5` | `#818CF8` | `colorScheme.primary` | Primary CTAs, tactile active borders, progress bars |
+| **Primary Container** | `#E0E7FF` | `#312E81` | `colorScheme.primaryContainer` | Mascot speech bubble accents, selected tiles, hero card surface |
+| **Secondary (Deep Slate)** | `#0F172A` | `#94A3B8` | `colorScheme.secondary` | Secondary actions, topic pills |
+| **Secondary Container** | `#F1F5F9` | `#1E293B` | `colorScheme.secondaryContainer` | Tactile card icon wells, neutral badges |
+| **Tertiary (Anatolian Gold / Streak Amber)** | `#D97706` | `#FBBF24` | `colorScheme.tertiary` | Daily goal flame/streak, Tuğrul PRO crown, exam timer warning |
+| **Tertiary Container** | `#FEF3C7` | `#78350F` | `colorScheme.tertiaryContainer` | Streak pill background, `%45 · En Yüksek Ağırlık` badge |
 | **Error / Destructive** | `#DC2626` | `#F87171` | `colorScheme.error` | Wrong option feedback, mistake counter, critical timer (`< 5 min`) |
-| **Surface / Background** | `#F8FAFC` | `#0B0F19` | `colorScheme.surface` | Clean slate page background (replaces default purple-tinted M3 surface) |
+| **Surface / Background** | `#F8FAFC` | `#0B0F19` | `colorScheme.surface` | Clean slate page background |
 
 ---
 
-## 2. Typography System (`google_fonts`)
+## 3. "Tactile & Gamified" UI Geometry (Duolingo / Brilliant Feel)
 
-Kadro pairs **Plus Jakarta Sans** (geometric, authoritative, modern EdTech display/headings) with **Inter** (high-legibility UI & long-form KPSS exam question reading).
-
-- **Heading / Display / Title Styles (`display*`, `headline*`, `title*`):** `GoogleFonts.plusJakartaSans` (`FontWeight.w700` / `FontWeight.w600`)
-- **Body / Label Styles (`body*`, `label*`):** `GoogleFonts.inter` (`FontWeight.w400` / `FontWeight.w500` / `FontWeight.w600`)
-- **Numeric Alignment:** Timer badges and stat counters should remain crisp and scannable.
-
----
-
-## 3. Iconography Discipline (`lucide_icons_flutter`)
-
-- **Standard Icon Set:** Prefer `LucideIcons` (`package:lucide_icons_flutter/lucide_icons.dart`) across navigation, headers, study cards, and analytics to replace generic default Android `Icons.*` and achieve a unified linear aesthetic (similar to Linear, Duolingo, Notion).
-- **No Emojis as UI Icons:** Never use raw text emojis (`🔥`, `👑`, `📚`) where a vector icon (`LucideIcons.flame`, `LucideIcons.crown`, `LucideIcons.bookOpen`) belongs.
+Instead of flat, lifeless default Material cards, Kadro uses **Tactile Cards** with crisp borders and a subtle 3D bottom lip:
+- **Tactile Container Style:**
+  - `borderRadius: BorderRadius.circular(18)`
+  - Top/Left/Right border: `1.5px` (`colorScheme.outlineVariant` or `colorScheme.primary.withAlpha(80)`)
+  - Bottom 3D lip shadow: `BoxShadow(color: colorScheme.outlineVariant, offset: const Offset(0, 3), blurRadius: 0)` (creates the signature Duolingo/Brilliant 3D pressable card depth without muddy blur!).
+- **Speech Bubble (`MascotCoachBanner`):**
+  - Displays Tuğrul's avatar on the left (`68x68` rounded badge) and a speech-bubble container on the right with a small title badge (`'KOÇ TUĞRUL'`) and motivating message.
+- **Gamified Top Stats Strip / Streak Pill:**
+  - `AppTopBar` and `HomeScreen` feature gamified pill badges (`LucideIcons.flame` for daily target progress, `LucideIcons.crown` for PRO status).
 
 ---
 
-## 4. Layout, Geometry & Bento Grid Rules
+## 4. Typography System (`google_fonts`)
 
-| Token | Value | Flutter Implementation |
-|-------|-------|------------------------|
-| **Screen Padding** | `16px` | `EdgeInsets.all(16)` |
-| **Card Border Radius** | `16px` | `BorderRadius.circular(16)` (configured globally via `FlexSubThemesData`) |
-| **Button / Input Radius** | `12px` | `BorderRadius.circular(12)` |
-| **Card Border** | `1px subtle` | ` outlineVariant` thin border, `elevation: 0` or `0.5` (no heavy muddy drop shadows) |
-| **AppTopBar** | Surface-blended | Uses `colorScheme.surface` with centered/clean brand typography — **NEVER** `colorScheme.inversePrimary`! |
-
-### Home Screen Pattern: Bento Grid + Hero Goal Card
-- **Hero Daily Goal Card:** Prominent top card showing daily question progress (`solved / goal soru`), percentage badge, and animated progress bar.
-- **2x2 Bento Study Grid:** The 4 core study modes (`Konu testi`, `Bilgi kartları`, `Yanlış defteri`, `Deneme sınavı`) are displayed in a responsive 2-column Bento layout (or structured feature cards with icon containers) rather than plain flat `ListTile` rows.
+- **Heading / Display / Title Styles (`display*`, `headline*`, `title*`):** `GoogleFonts.plusJakartaSans` (`FontWeight.w700` / `FontWeight.w800` for chunky, confident gamified headings).
+- **Body / Label Styles (`body*`, `label*`):** `GoogleFonts.inter` (`FontWeight.w400` / `FontWeight.w600`).
+- **Test Environment Guard:** In `AppTheme._buildTextTheme`, always check `if (Platform.environment.containsKey('FLUTTER_TEST')) return base;` so `flutter test` never triggers external HTTP font fetches.
 
 ---
 
 ## 5. Motion & Micro-Interactions (`flutter_animate`)
 
-- **Staggered Entrance:** Screen cards and list items use subtle fade + vertical slide (`fadeIn(duration: 250.ms).slideY(begin: 0.05, end: 0)`).
-- **Keep Animations Fast & Test-Safe:**
-  - Total animation durations **MUST NOT** exceed `300ms` so `tester.pumpAndSettle()` in `flutter test` completes rapidly without timeouts.
-  - **NEVER** use infinite looping animations (`.repeat()`) on screens tested with `pumpAndSettle()`, as infinite animations cause `pumpAndSettle()` to time out!
+- **Entrance Choreography:** Mascot banners and tactile cards enter with `fadeIn(duration: 200.ms).slideY(begin: 0.04, end: 0, duration: 200.ms)`.
+- **Test Safety:** Never exceed `250ms` and **NEVER** use infinite `.repeat()` animations (which cause `pumpAndSettle()` in `flutter test` to time out).
 
 ---
 
-## 6. Visual Analytics (`fl_chart`)
+## 6. Pre-Delivery Verification Checklist
 
-- **StatsScreen (`lib/features/stats/presentation/stats_screen.dart`):**
-  - Combines the 3 summary KPI cards (`Çözülen soru`, `Doğru oranı`, `En zayıf ders`) with a **Lesson Performance BarChart (`fl_chart`)** showing accuracy across the 4 KPSS Genel Kültür lessons (`TAR`, `COĞ`, `VAT`, `GÜN`).
-  - Uses short axis codes (`TAR`, `COĞ`, `VAT`, `GÜN`) on the chart's X-axis so full lesson names (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`) do not collide with widget text finders in unit/widget tests.
-
----
-
-## 7. Pre-Delivery Verification Checklist
-
-Before completing any UI task:
 - [ ] Zero raw `Color(0xFF...)` or `Colors.*` outside `lib/app/theme.dart`
 - [ ] Zero raw `fontSize:` outside `lib/app/theme.dart`
-- [ ] No infinite `.repeat()` animations that break `pumpAndSettle()`
+- [ ] All existing widget test texts (`'Hoş geldin'`, `'0 / 30 soru'`, `'Konu testi'`, `'Tarih'`, `'Kadro'` vb.) preserved
 - [ ] `dart format lib test` -> 0 changes needed
 - [ ] `flutter analyze` -> `No issues found!`
 - [ ] `flutter test` -> All tests pass (`0` failures)

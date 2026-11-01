@@ -35,9 +35,12 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-08** | **Faz 5: `go_router` & `StatefulShellRoute` Navigasyon** | Tüm ekranların (`Home`, `Lessons`, `Topics`, `Quiz`, `Flashcards`, `Mistakes`, `Exams`, `Stats`, `Profile`) URL/rota tabanlı profesyonel navigasyona geçişi | ✅ **Tamamlandı** |
 | **TASK-09** | **Faz 8: `flutter_riverpod` + Canlı Hedef & İstatistik** | Çözülen soruların global state ile takibi; Ana Sayfa `Bugünkü hedefin (X / 30)` ve `StatsScreen` ekranının gerçek verilerle canlanması | ✅ **Tamamlandı** (`4d46fcc`) |
 | **TASK-10** | **Para Kazanma (Kadro PRO Paywall & Ödüllü Reklam) + Profil Ayarları** | Günlük 30 soru limiti dolunca çıkan *"Reklam İzle (+20 Soru) / Kadro PRO"* ekranı, `ProfileScreen`'de Açık/Koyu Tema ve Hedef seçimi | ✅ **Tamamlandı** (`114d2cd`) |
-| **TASK-11** | **Kurumsal Marka Teması (`FlexColorScheme` + `GoogleFonts`) & `LucideIcons` Kabuk Dönüşümü** | `design-system/kadro/MASTER.md` doğrultusunda Academic Indigo + Gold renk sistemi, `Plus Jakarta Sans` + `Inter` fontları, `AppTopBar` ve `AppNavigationBar` modernizasyonu | ✅ **Tamamlandı** |
-| **TASK-12** | **Bento Grid Ana Sayfa, Gamified Hedef Kartı & `flutter_animate` Mikro Etkileşimler** | `HomeScreen` Hero hedef kartı, Bento çalışma kartları, `LessonsScreen` ve `ExamsScreen` `LucideIcons` + `flutter_animate` geçişleri | ✅ **Tamamlandı** |
-| **TASK-13** | **Görsel Analitik (`StatsScreen` + `fl_chart` `BarChart`) & Karne/Paywall Marka Cilası** | `StatsScreen` içine ders bazlı başarı çubuğu grafiği (`BarChart`), `QuizResultScreen` ve `PaywallScreen` premium görsel dokunuşları | ✅ **Tamamlandı** |
+| **TASK-11** | **Kurumsal Marka Teması (`FlexColorScheme` + `GoogleFonts`) & `LucideIcons` Kabuk Dönüşümü** | `design-system/kadro/MASTER.md` doğrultusunda Academic Indigo + Gold renk sistemi, `Plus Jakarta Sans` + `Inter` fontları, `AppTopBar` ve `AppNavigationBar` modernizasyonu | ✅ **Tamamlandı** (`7dffb02`) |
+| **TASK-12** | **Bento Grid Ana Sayfa, Gamified Hedef Kartı & `flutter_animate` Mikro Etkileşimler** | `HomeScreen` Hero hedef kartı, Bento çalışma kartları, `LessonsScreen` ve `ExamsScreen` `LucideIcons` + `flutter_animate` geçişleri | ✅ **Tamamlandı** (`f98fc6b`) |
+| **TASK-13** | **Görsel Analitik (`StatsScreen` + `fl_chart` `BarChart`) & Karne/Paywall Marka Cilası** | `StatsScreen` içine ders bazlı başarı çubuğu grafiği (`BarChart`), `QuizResultScreen` ve `PaywallScreen` premium görsel dokunuşları | ✅ **Tamamlandı** (`d2fc73b`) |
+| **TASK-14** | **"Koç Tuğrul" (Anadolu Kartalı) Maskot Sistemi (`MascotCoachBanner`), 3D `TactileCard` & Gamified Üst Bar** | 4 farklı ifadeli (`coach`, `victory`, `detective`, `pro`) **Koç Tuğrul** konuşma balonlu maskot bileşeni, Duolingo/Brilliant tarzı 3D alt gölgeli `TactileCard` ve `AppTopBar` canlı seri/PRO rozetleri | ⏳ **Sırada (Dalga 5)** |
+| **TASK-15** | **Duolingo/Brilliant Tarzı 2x2 Tactile Bento Ana Sayfa & Görsel Ders Kartları** | `HomeScreen`'de düz liste yerine **Koç Tuğrul** konuşma balonu + **2x2 Tactile Bento Grid** çalışma kutuları, `LessonsScreen`'de soru ağırlık barlı 3D ders kartları | ⏳ **Sırada (Dalga 5)** |
+| **TASK-16** | **Canlı Koç Tuğrul Sahne Entegrasyonu (`QuizResultScreen`, `MistakesScreen`, `PaywallScreen`, `ProfileScreen`)** | Sınav karnesinde **Zafer Tuğrul (`victory`)**, Yanlış Defteri'nde **Dedektif Tuğrul (`detective`)**, Kadro PRO ekranında **Kraliyet Taçlı Tuğrul (`pro`)** ve 3D karne/özellik kartları | ⏳ **Sırada (Dalga 5)** |
 
 ---
 
@@ -514,4 +517,176 @@ ADIM 4: Test ve Doğrulama
 1. `test/study_stats_test.dart` dosyasına yeni bir `testWidgets` ekle:
    - `StatsScreen` çizildiğinde `find.byType(BarChart)` bileşeninin ve `'Ders Bazlı Başarı Oranı (%)'`, `'TAR'`, `'COĞ'`, `'VAT'`, `'GÜN'` metinlerinin ekranda bulunduğunu doğrula.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+## 🦅 5. Dalga 5: "Koç Tuğrul" (Anadolu Kartalı) Maskot & Duolingo/Brilliant Tarzı "Tactile & Gamified" UX Dönüşümü (`TASK-14`, `TASK-15`, `TASK-16`)
+
+Uygulamanın arayüzünü standart alt alta liste görünümünden tamamen çıkarıp; **Anadolu Kartalı "Koç Tuğrul"** (`assets/images/mascot/tugrul_*.png`) maskotunun duruma göre değişen ifadeleri, konuşma balonları, Duolingo/Brilliant tarzı **3D alt gölgeli basılabilir kartlar (`TactileCard`)**, **2x2 Bento Grid** ve üst barda canlı **Seri/PRO rozetleri** ile benzersiz bir kullanıcı deneyimine dönüştüren 3 sıralı görev:
+
+---
+
+### 📦 TASK-14: "Koç Tuğrul" Maskot Sistemi (`MascotCoachBanner`), 3D `TactileCard` & Gamified `AppTopBar`
+
+```text
+GÖREV: TASK-14 — "Koç Tuğrul" Maskot Konuşma Balonu (MascotCoachBanner), 3D Basılabilir Kart (TactileCard) ve Gamified Üst Bar (AppTopBar)
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Sabit Color(0xFF...) veya sabit fontSize KULLANMA; tüm renkleri Theme.of(context).colorScheme ve yazı stillerini textTheme üzerinden al. `lib/shared/` altında `widgets/` dışında klasör açma!
+
+ADIM 1: `lib/shared/widgets/tactile_card.dart` (Duolingo / Brilliant Tarzı 3D Alt Gölgeli Kart)
+1. `lib/shared/widgets/tactile_card.dart` dosyasını oluştur (Web/CSS'teki `border: 2px solid; box-shadow: 0 4px 0` ile yapılan 3D fiziksel buton/kart hissiyatının Flutter karşılığı olduğunu doc comment ile açıkla):
+   - Sınıf: `class TactileCard extends StatelessWidget`
+   - Parametreler:
+     - `final Widget child;`
+     - `final VoidCallback? onTap;`
+     - `final EdgeInsetsGeometry padding;` (varsayılan `const EdgeInsets.all(16)`)
+     - `final Color? backgroundColor;`
+     - `final Color? borderColor;`
+     - `final double borderRadius;` (varsayılan `18.0`)
+   - `build` içinde:
+     - `final colorScheme = Theme.of(context).colorScheme;`
+     - `final effectiveBg = backgroundColor ?? colorScheme.surface;`
+     - `final effectiveBorder = borderColor ?? colorScheme.outlineVariant;`
+     - Dışta `Container` (`decoration: BoxDecoration(color: effectiveBg, borderRadius: BorderRadius.circular(borderRadius), border: Border.all(color: effectiveBorder, width: 1.5), boxShadow: [BoxShadow(color: effectiveBorder, offset: const Offset(0, 3.5), blurRadius: 0)])`),
+     - İçinde `Material(color: Colors.transparent, child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(borderRadius), child: Padding(padding: padding, child: child)))` döndür. (Not: `Colors.transparent` yerine `colorScheme.surface.withAlpha(0)` kullan ki hiçbir sabit `Colors.*` kuralı ihlal edilmesin!).
+
+ADIM 2: `lib/shared/widgets/mascot_coach_banner.dart` ("Koç Tuğrul" Konuşma Balonlu Maskot Bileşeni)
+1. `lib/shared/widgets/mascot_coach_banner.dart` dosyasını oluştur:
+   - `enum MascotMood { coach, victory, detective, pro }` tanımla ve her durum için asset yolunu döndüren bir getter/extension yaz:
+     - `MascotMood.coach` -> `'assets/images/mascot/tugrul_coach.png'`
+     - `MascotMood.victory` -> `'assets/images/mascot/tugrul_victory.png'`
+     - `MascotMood.detective` -> `'assets/images/mascot/tugrul_detective.png'`
+     - `MascotMood.pro` -> `'assets/images/mascot/tugrul_pro.png'`
+   - `class MascotCoachBanner extends StatelessWidget`:
+     - Parametreler: `final MascotMood mood;` (varsayılan `MascotMood.coach`), `final String title;`, `final String message;`, `final String badgeLabel;` (varsayılan `'KOÇ TUĞRUL'`).
+     - `build` içinde `TactileCard` kullanarak (`backgroundColor: colorScheme.primaryContainer.withAlpha(75)`, `borderColor: colorScheme.primary.withAlpha(90)`):
+       - Yan yana (`Row`, `crossAxisAlignment: CrossAxisAlignment.center`):
+         1. Solda `72x72` boyutunda dairesel/yuvarlatılmış (`BorderRadius.circular(20)`) çerçeveli maskot portresi:
+            ```dart
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: colorScheme.tertiary, width: 2),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: Image.asset(
+                  mood.assetPath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Icon(
+                    LucideIcons.award,
+                    color: colorScheme.primary,
+                    size: 36,
+                  ),
+                ),
+              ),
+            )
+            ```
+         2. `const SizedBox(width: 14)`
+         3. Sağda `Expanded` içinde konuşma balonu içeriği (`Column`, `crossAxisAlignment: CrossAxisAlignment.start`):
+            - Üstte küçük rozet: `Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: colorScheme.tertiaryContainer, borderRadius: BorderRadius.circular(8)), child: Text(badgeLabel, style: textTheme.labelSmall?.copyWith(color: colorScheme.onTertiaryContainer, fontWeight: FontWeight.w800)))`
+            - `const SizedBox(height: 4)`
+            - Başlık: `Text(title, style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800))`
+            - `const SizedBox(height: 4)`
+            - Konuşma metni: `Text(message, style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant))`
+
+ADIM 3: `lib/app/widgets/app_top_bar.dart` (`AppTopBar` — Canlı Seri Ateşi & PRO Rozeti)
+1. `AppTopBar` sınıfını `ConsumerWidget implements PreferredSizeWidget` yap (`flutter_riverpod`, `study_stats_notifier.dart`, `user_preferences_notifier.dart`, `paywall_screen.dart` import et).
+2. Sol tarafta (`title:`):
+   - Küçük yuvarlak **Koç Tuğrul** avatarı (`ClipOval` içinde `Image.asset('assets/images/mascot/tugrul_coach.png', width: 30, height: 30, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Icon(LucideIcons.graduationCap, size: 18, color: colorScheme.onPrimaryContainer))`) + `const SizedBox(width: 10)` + `Text(title, style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800))` (Böylece `find.widgetWithText(AppBar, 'Dersler')` ve `find.text('Kadro')` testleri %100 korunur!).
+3. Sağ tarafta (`actions:`):
+   - Günlük Hedef / Seri rozeti: `Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: colorScheme.tertiaryContainer, borderRadius: BorderRadius.circular(20)), child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(LucideIcons.flame, size: 16, color: colorScheme.onTertiaryContainer), const SizedBox(width: 4), Text('${stats.totalSolved}/${stats.dailyGoal}', style: textTheme.labelMedium?.copyWith(color: colorScheme.onTertiaryContainer, fontWeight: FontWeight.w800))]))`
+   - `const SizedBox(width: 8)`
+   - PRO rozet butonu (`InkWell` / `GestureDetector` ile tıklandığında `Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PaywallScreen()))`): `Container(margin: const EdgeInsets.only(right: 12), padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), decoration: BoxDecoration(color: prefs.isPro ? colorScheme.tertiary : colorScheme.primaryContainer, borderRadius: BorderRadius.circular(20)), child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(LucideIcons.crown, size: 15, color: prefs.isPro ? colorScheme.onTertiary : colorScheme.onPrimaryContainer), const SizedBox(width: 4), Text('PRO', style: textTheme.labelSmall?.copyWith(color: prefs.isPro ? colorScheme.onTertiary : colorScheme.onPrimaryContainer, fontWeight: FontWeight.w800))]))`
+
+ADIM 4: Test ve Doğrulama
+1. `test/theme_and_shell_test.dart` içine `MascotCoachBanner` ve `TactileCard` bileşenlerinin hatasız çizildiğini doğrulayan bir test ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-15: Duolingo/Brilliant Tarzı 2x2 Tactile Bento Ana Sayfa (`HomeScreen`) & Görsel Ders Kartları (`LessonsScreen`)
+
+```text
+GÖREV: TASK-15 — HomeScreen'de Koç Tuğrul Konuşma Balonu + 2x2 Tactile Bento Grid Çalışma Kartları ve LessonsScreen 3D Ağırlık Barlı Ders Kartları
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. TASK-14 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `HomeScreen` (`lib/features/home/presentation/home_screen.dart`) Tam UX Dönüşümü (Koç Tuğrul + 2x2 Tactile Grid)
+1. `HomeScreen` en üstündeki `PageHeader` yerine `MascotCoachBanner` kullan:
+   ```dart
+   MascotCoachBanner(
+     mood: MascotMood.coach,
+     title: 'Hoş geldin',
+     message: stats.totalSolved == 0
+         ? 'Ben Koç Tuğrul! KPSS Genel Kültür maratonunda bugün ilk pençeyi hangi konuya atıyoruz?'
+         : 'Harika uçuş! Bugün ${stats.totalSolved} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',
+   ),
+   ```
+   (DİKKAT: `title: 'Hoş geldin'` metnini BİREBİR koru, `test/widget_test.dart` ve `test/router_test.dart` bu metni arar!).
+2. `_DailyGoalCard` bileşenini `TactileCard` kullanacak şekilde güncelle:
+   - `TactileCard(backgroundColor: colorScheme.primaryContainer.withAlpha(90), borderColor: colorScheme.primary.withAlpha(110), child: ...)`
+   - İçindeki `'Bugünkü hedefin'`, `'Hedef Takibi'` ve `'$solved / $goal soru'` metinlerini BİREBİR koru (`test/study_stats_test.dart` `'$solved / $goal soru'` metnini arar!).
+3. **Sıradan alt alta liste görünümünü 2x2 Tactile Bento Grid yapısına dönüştür:**
+   - `_StudyTypeTile` bileşenini 3D basılabilir dikey Bento kartı (`TactileCard`) olarak tasarla:
+     - Üstte renkli ikon kutusu (`Container` `padding: const EdgeInsets.all(12)`, `decoration: BoxDecoration(color: accentContainerColor, borderRadius: BorderRadius.circular(14))` içinde `Icon(icon, color: accentColor, size: 26)` ve sağ üstte `Icon(LucideIcons.chevronRight, size: 18, color: colorScheme.outline)`),
+     - `const SizedBox(height: 12)`,
+     - Kalın başlık: `Text(title, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800))`,
+     - `const SizedBox(height: 4)`,
+     - Açıklama: `Text(description, style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant), maxLines: 2, overflow: TextOverflow.ellipsis)`.
+   - `HomeScreen` `ListView` içinde `const SectionTitle('Çalışma türleri')` altına iki `Row` (2x2 Grid) yerleştir:
+     - 1. `Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: _StudyTypeTile(icon: LucideIcons.target, title: 'Konu testi', ...)), const SizedBox(width: 12), Expanded(child: _StudyTypeTile(icon: LucideIcons.layers, title: 'Bilgi kartları', ...))])`
+     - `const SizedBox(height: 12)`
+     - 2. `Row(crossAxisAlignment: CrossAxisAlignment.start, children: [Expanded(child: _StudyTypeTile(icon: LucideIcons.bookmark, title: 'Yanlış defteri', ...)), const SizedBox(width: 12), Expanded(child: _StudyTypeTile(icon: LucideIcons.timer, title: 'Deneme sınavı', ...))])`
+   - (Başlıkları `'Konu testi'`, `'Bilgi kartları'`, `'Yanlış defteri'`, `'Deneme sınavı'` olarak BİREBİR koru!).
+
+ADIM 2: `LessonsScreen` (`lib/features/lessons/presentation/lessons_screen.dart`) ve `ExamsScreen` (`lib/features/exams/presentation/exams_screen.dart`) Tactile Dönüşümü
+1. `LessonsScreen`:
+   - Üstteki `PageHeader` yerine `const MascotCoachBanner(mood: MascotMood.coach, title: 'KPSS Genel Kültür', message: '60 soruluk sınavda Tarih (%45) ve Coğrafya (%30) lokomotifimiz. Hangi dersten başlıyoruz?')` kullan.
+   - `_LessonCard` içinde standart `Card` yerine `Padding(padding: const EdgeInsets.only(bottom: 12), child: TactileCard(...))` kullan ve her dersin sınavdaki ağırlığını (`lesson.questionCount / 60`) gösteren ince bir `ClipRRect(borderRadius: BorderRadius.circular(6), child: LinearProgressIndicator(minHeight: 6, value: lesson.questionCount / 60))` ilerleme çubuğu ekle (`lesson.name` ve `'Sınavda ${lesson.questionCount} soru · ${lesson.topics.length} konu'` metinlerini BİREBİR koru!).
+2. `ExamsScreen`:
+   - Üstteki `PageHeader` yerine `const MascotCoachBanner(mood: MascotMood.coach, title: 'Deneme sınavları', message: 'Gerçek sınav provası! 60 soru, 65 dakika ve 4 yanlış 1 doğruyu götürür.')` kullan.
+   - Sınav düzeni kartını `TactileCard` ile sar.
+
+ADIM 3: Doğrulama
+1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp tüm testlerin 0 hata ile geçtiğini doğrula.
+```
+
+---
+
+### 📦 TASK-16: Canlı Koç Tuğrul Sahne Entegrasyonu (`QuizResultScreen`, `MistakesScreen`, `PaywallScreen`, `ProfileScreen`)
+
+```text
+GÖREV: TASK-16 — Sınav Karnesinde "Zafer Tuğrul", Yanlış Defteri'nde "Dedektif Tuğrul" ve Kadro PRO'da "Kraliyet Taçlı Tuğrul" Sahne Entegrasyonu
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. TASK-15 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `QuizResultScreen` (`lib/features/quiz/presentation/quiz_result_screen.dart`) — "Zafer Tuğrul" (`MascotMood.victory`)
+1. `QuizResultScreen` üstündeki `PageHeader` yerine `MascotCoachBanner` kullan:
+   ```dart
+   MascotCoachBanner(
+     mood: MascotMood.victory,
+     badgeLabel: 'ZAFER KARNESİ',
+     title: 'Test Tamamlandı!',
+     message: result.successRate >= 70
+         ? 'Muhteşem bir uçuş! Koç Tuğrul seninle gurur duyuyor, kadro kapıları açılıyor!'
+         : 'Güzel mücadele! Yanlış Defteri\'ne düşen soruları birlikte inceleyip nete çevirelim.',
+   ),
+   ```
+   (DİKKAT: `title: 'Test Tamamlandı!'`, `'Net Puanın'`, `'Doğru'`, `'Yanlış'`, `'Boş'` ve `'Ana Sayfaya Dön'` metinlerini test uyumluluğu için BİREBİR koru!).
+2. `_NetScoreCard` ve `_ResultStatItem` bileşenlerini `TactileCard` kullanacak şekilde güncelle.
+
+ADIM 2: `MistakesScreen` (`lib/features/mistakes/presentation/mistakes_screen.dart`) — "Dedektif Tuğrul" (`MascotMood.detective`)
+1. `_EmptyMistakesView` içinde üstteki `CircleAvatar` yerine `110x110` boyutunda yuvarlatılmış **Dedektif Tuğrul** görseli (`Image.asset('assets/images/mascot/tugrul_detective.png', width: 110, height: 110, fit: BoxFit.cover, errorBuilder: ...)`), altında `'Yanlış defterin tertemiz!'` ve açıklama metnini göster (mevcut metinleri BİREBİR koru!).
+2. `_MistakeHeaderCard` içinde sol üstte `56x56` boyutunda **Dedektif Tuğrul** avatarı (`tugrul_detective.png`), yanında `'$mistakeCount Yanlış Soru'` ve `'Tekrar çözerek doğrula, defterden otomatik çıksın.'` metinlerini ve `'Tüm Yanlışları Tekrar Çöz'` butonunu koru. (DİKKAT: `_MistakeQuestionCard` içindeki silme butonunda `Icons.delete_outline` ikonunu BİREBİR koru çünkü `test/mistakes_screen_test.dart` `find.byIcon(Icons.delete_outline)` arar!).
+
+ADIM 3: `PaywallScreen` (`lib/features/profile/presentation/paywall_screen.dart`) & `ProfileScreen` (`lib/features/profile/presentation/profile_screen.dart`) — "Kraliyet PRO Tuğrul" (`MascotMood.pro`)
+1. `PaywallScreen` üst vurgu kartındaki (`Card`) `LucideIcons.crown` ikonu yerine `88x88` boyutunda altın çerçeveli **Kraliyet Taçlı PRO Tuğrul** (`assets/images/mascot/tugrul_pro.png` + `errorBuilder`) portresini yerleştir (`'KPSS Hazırlığını Zirveye Taşı'`, `'Kadro PRO\'ya Geç (Aylık 79,90 TL)'` ve `'Kısa Reklam İzle (+20 Soru Hakkı Kazan)'` metinlerini BİREBİR koru!).
+2. `ProfileScreen` içindeki `_ProBannerCard` ve `_ProBadgeCard` bileşenlerinde sol tarafa `52x52` boyutunda **PRO Tuğrul** (`assets/images/mascot/tugrul_pro.png` + `errorBuilder`) portresi ekle (mevcut tüm başlık ve buton metinlerini BİREBİR koru!).
+
+ADIM 4: Test ve Doğrulama
+1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp tüm testlerin 0 hata ile geçtiğini doğrula.
 ```
