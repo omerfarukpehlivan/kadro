@@ -1,7 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
+import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
+import 'package:kadro/main.dart';
 
 void main() {
   group('StudyPlannerNotifier ve StudyTask Testleri', () {
@@ -105,5 +108,40 @@ void main() {
       expect(state.tasks.single.id, 'task_2');
       expect(state.completedCount, 0);
     });
+  });
+
+  group('StudyPlanner Widget & Entegrasyon Testleri', () {
+    testWidgets(
+      'HomeScreen üzerinde Bugünün Çalışma Planı kartı ve StudyPlannerScreen entegrasyonu',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(const MyApp());
+        await tester.pumpAndSettle();
+
+        // 1. Ana sayfada Bugünün Çalışma Planı kartını doğrula
+        expect(find.text('Bugünün Çalışma Planı'), findsOneWidget);
+        expect(
+          find.text('İslamiyet Öncesi Türk Tarihi 15 Soru Çöz'),
+          findsOneWidget,
+        );
+        expect(find.text('Planlayıcıyı Aç & Görev Ekle'), findsOneWidget);
+
+        // 2. 'Tümünü Gör' butonuna bas ve StudyPlannerScreen ekranına geçişi doğrula
+        await tester.tap(find.text('Tümünü Gör'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(StudyPlannerScreen), findsOneWidget);
+        expect(find.text('Çalışma Planlayıcın'), findsOneWidget);
+        expect(find.text('Görev Listesi (3)'), findsOneWidget);
+
+        // 3. Hızlı şablonlardan '+ 20 Tarih Sorusu'na tıkla ve görev sayısının 4 olduğunu doğrula
+        await tester.tap(find.text('+ 20 Tarih Sorusu'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Görev Listesi (4)'), findsOneWidget);
+        await tester.drag(find.text('Görev Listesi (4)'), const Offset(0, -400));
+        await tester.pumpAndSettle();
+        expect(find.text('20 Tarih Sorusu Çöz'), findsOneWidget);
+      },
+    );
   });
 }

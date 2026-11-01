@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
+import 'package:kadro/features/planner/presentation/widgets/home_daily_plan_card.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
@@ -33,6 +34,9 @@ class HomeScreen extends ConsumerWidget {
         const SizedBox(height: 16),
         // Riverpod ile anlık güncellenen 3D Tactile günlük hedef kartı
         _DailyGoalCard(solved: stats.totalSolved, goal: stats.dailyGoal),
+        const SizedBox(height: 16),
+        // Akıllı KPSS Günlük Çalışma Planı Kompakt Kartı
+        const HomeDailyPlanCard(),
         const SizedBox(height: 16),
         const SectionTitle('Çalışma türleri'),
         // 2x2 Tactile Bento Grid

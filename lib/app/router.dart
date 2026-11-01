@@ -5,6 +5,7 @@ import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/home/presentation/home_screen.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
+import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
@@ -113,6 +114,10 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
       GoRoute(
         path: '/paywall',
         builder: (context, state) => const PaywallScreen(),
+      ),
+      GoRoute(
+        path: '/planner',
+        builder: (context, state) => const StudyPlannerScreen(),
       ),
     ],
   );
