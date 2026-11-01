@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/games/data/models/concept_match_set.dart';
+import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
@@ -60,6 +61,27 @@ class _ConceptMatchScreenState extends ConsumerState<ConceptMatchScreen> {
         ref
             .read(studyStatsProvider.notifier)
             .recordAnswer(lesson: _currentSet.lesson, isCorrect: true);
+
+        if (_matchedIds.length == _currentSet.pairs.length) {
+          ref
+              .read(studyStatsProvider.notifier)
+              .recordQuizSession(
+                QuizSessionRecord(
+                  id: DateTime.now().microsecondsSinceEpoch.toString(),
+                  title: 'Kavram Eşleştir · ${_currentSet.title}',
+                  lesson: _currentSet.lesson,
+                  totalQuestions: _currentSet.pairs.length,
+                  correctCount: _currentSet.pairs.length,
+                  wrongCount: 0,
+                  emptyCount: 0,
+                  netScore: _currentSet.pairs.length.toDouble(),
+                  earnedXp: 40,
+                  durationSeconds: _moves * 4,
+                  completedAt: DateTime.now(),
+                ),
+              );
+        }
+
         _selectedLeftId = null;
         _selectedRightId = null;
       } else {

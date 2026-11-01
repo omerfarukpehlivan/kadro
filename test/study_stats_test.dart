@@ -7,6 +7,8 @@ import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/features/stats/presentation/quiz_history_screen.dart';
+import 'package:kadro/features/stats/presentation/quiz_session_detail_screen.dart';
 import 'package:kadro/features/stats/presentation/stats_screen.dart';
 
 void main() {
@@ -197,6 +199,57 @@ void main() {
         expect(find.text('Ders Ustalık Isı Haritası'), findsOneWidget);
         expect(find.text('TAR · Tarih'), findsOneWidget);
         expect(find.text('Çözülen Testler Arşivi (0)'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'QuizHistoryScreen üzerinde oturum kartına tıklandığında QuizSessionDetailScreen açılmalı',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        final session = QuizSessionRecord(
+          id: 'test_sess_99',
+          title: 'Tarih Öncül Testi',
+          lesson: 'Tarih',
+          totalQuestions: 10,
+          correctCount: 8,
+          wrongCount: 2,
+          emptyCount: 0,
+          netScore: 7.5,
+          earnedXp: 130,
+          durationSeconds: 150,
+          completedAt: DateTime.now(),
+        );
+
+        container.read(studyStatsProvider.notifier).recordQuizSession(session);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(home: QuizHistoryScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Tarih Öncül Testi'), findsOneWidget);
+        expect(find.text('+130 XP'), findsOneWidget);
+
+        // Karta tıkla -> QuizSessionDetailScreen açılmalı
+        await tester.tap(find.text('Tarih Öncül Testi'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(QuizSessionDetailScreen), findsOneWidget);
+        expect(find.text('Test Oturumu Detayı'), findsOneWidget);
+        expect(find.text('Oturum Karnesi'), findsOneWidget);
+        expect(find.text('Aynı Dersten Yeni Test Çöz'), findsOneWidget);
       },
     );
   });

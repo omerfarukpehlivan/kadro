@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/games/data/models/true_false_item.dart';
+import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
@@ -72,6 +73,26 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
 
   void _finishGame() {
     _timer?.cancel();
+    if (_correctCount + _wrongCount > 0) {
+      final net = _correctCount - (_wrongCount / 4.0);
+      ref
+          .read(studyStatsProvider.notifier)
+          .recordQuizSession(
+            QuizSessionRecord(
+              id: DateTime.now().microsecondsSinceEpoch.toString(),
+              title: '60 Saniyede Pençe Düellosu',
+              lesson: 'Genel Kültür',
+              totalQuestions: _correctCount + _wrongCount,
+              correctCount: _correctCount,
+              wrongCount: _wrongCount,
+              emptyCount: 0,
+              netScore: net,
+              earnedXp: _earnedXp,
+              durationSeconds: widget.initialSeconds - _remainingSeconds,
+              completedAt: DateTime.now(),
+            ),
+          );
+    }
     setState(() => _isFinished = true);
   }
 

@@ -71,6 +71,25 @@ void main() {
       expect(fallbackQuestions.every((q) => q.lesson == 'Tarih'), true);
     });
 
+    test('fetchTrueFalseItems yerel örnekler ve ders filtrelemesi', () async {
+      final allTf = await repository.fetchTrueFalseItems();
+      expect(allTf.isNotEmpty, true);
+      expect(allTf.length >= 8, true);
+
+      final tarihTf = await repository.fetchTrueFalseItems(lesson: 'Tarih');
+      expect(tarihTf.isNotEmpty, true);
+      expect(tarihTf.every((item) => item.lesson == 'Tarih'), true);
+    });
+
+    test('fetchConceptMatchSets eşleştirme setlerini yüklemeli', () async {
+      final matchSets = await repository.fetchConceptMatchSets();
+      expect(matchSets.isNotEmpty, true);
+      expect(matchSets.length >= 3, true);
+      expect(matchSets.any((s) => s.lesson == 'Tarih'), true);
+      expect(matchSets.any((s) => s.lesson == 'Coğrafya'), true);
+      expect(matchSets.any((s) => s.lesson == 'Vatandaşlık'), true);
+    });
+
     test('Hatalı dosya yolunda Exception fırlatmalı', () async {
       const invalidRepo = QuestionRepository(
         assetPath: 'assets/non_existing.json',
