@@ -38,9 +38,12 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-11** | **Kurumsal Marka Teması (`FlexColorScheme` + `GoogleFonts`) & `LucideIcons` Kabuk Dönüşümü** | `design-system/kadro/MASTER.md` doğrultusunda Academic Indigo + Gold renk sistemi, `Plus Jakarta Sans` + `Inter` fontları, `AppTopBar` ve `AppNavigationBar` modernizasyonu | ✅ **Tamamlandı** (`7dffb02`) |
 | **TASK-12** | **Bento Grid Ana Sayfa, Gamified Hedef Kartı & `flutter_animate` Mikro Etkileşimler** | `HomeScreen` Hero hedef kartı, Bento çalışma kartları, `LessonsScreen` ve `ExamsScreen` `LucideIcons` + `flutter_animate` geçişleri | ✅ **Tamamlandı** (`f98fc6b`) |
 | **TASK-13** | **Görsel Analitik (`StatsScreen` + `fl_chart` `BarChart`) & Karne/Paywall Marka Cilası** | `StatsScreen` içine ders bazlı başarı çubuğu grafiği (`BarChart`), `QuizResultScreen` ve `PaywallScreen` premium görsel dokunuşları | ✅ **Tamamlandı** (`d2fc73b`) |
-| **TASK-14** | **"Koç Tuğrul" (Anadolu Kartalı) Maskot Sistemi (`MascotCoachBanner`), 3D `TactileCard` & Gamified Üst Bar** | 4 farklı ifadeli (`coach`, `victory`, `detective`, `pro`) **Koç Tuğrul** konuşma balonlu maskot bileşeni, Duolingo/Brilliant tarzı 3D alt gölgeli `TactileCard` ve `AppTopBar` canlı seri/PRO rozetleri | ✅ **Tamamlandı** |
-| **TASK-15** | **Duolingo/Brilliant Tarzı 2x2 Tactile Bento Ana Sayfa & Görsel Ders Kartları** | `HomeScreen`'de düz liste yerine **Koç Tuğrul** konuşma balonu + **2x2 Tactile Bento Grid** çalışma kutuları, `LessonsScreen`'de soru ağırlık barlı 3D ders kartları | ✅ **Tamamlandı** |
-| **TASK-16** | **Canlı Koç Tuğrul Sahne Entegrasyonu (`QuizResultScreen`, `MistakesScreen`, `PaywallScreen`, `ProfileScreen`)** | Sınav karnesinde **Zafer Tuğrul (`victory`)**, Yanlış Defteri'nde **Dedektif Tuğrul (`detective`)**, Kadro PRO ekranında **Kraliyet Taçlı Tuğrul (`pro`)** ve 3D karne/özellik kartları | ✅ **Tamamlandı** |
+| **TASK-14** | **"Kadro Koçu" (Anadolu Kartalı) Maskot Sistemi (`MascotCoachBanner`), 3D `TactileCard` & Gamified Üst Bar** | 4 farklı ifadeli (`coach`, `victory`, `detective`, `pro`) **Kadro Koçu** konuşma balonlu maskot bileşeni, Duolingo/Brilliant tarzı 3D alt gölgeli `TactileCard` ve `AppTopBar` canlı seri/PRO rozetleri | ✅ **Tamamlandı** (`f4cfe7c`) |
+| **TASK-15** | **Duolingo/Brilliant Tarzı 2x2 Tactile Bento Ana Sayfa & Görsel Ders Kartları** | `HomeScreen`'de düz liste yerine **Kadro Koçu** konuşma balonu + **2x2 Tactile Bento Grid** çalışma kutuları, `LessonsScreen`'de soru ağırlık barlı 3D ders kartları | ✅ **Tamamlandı** (`d6738a7`) |
+| **TASK-16** | **Canlı Kadro Koçu Sahne Entegrasyonu (`QuizResultScreen`, `MistakesScreen`, `PaywallScreen`, `ProfileScreen`)** | Sınav karnesinde **Zafer (`victory`)**, Yanlış Defteri'nde **Dedektif (`detective`)**, Kadro PRO ekranında **Kraliyet Taçlı (`pro`)** maskot sahneleri | ✅ **Tamamlandı** (`3dede1b`) |
+| **TASK-17** | **Havada Duran (Floating Pill) Alt Menü (`AppNavigationBar`) & Sinematik Gradient/Pop-Out `MascotCoachBanner`** | Standart alt bar yerine iOS/Linear tarzı havada asılı kapsül alt menü, `MascotCoachBanner` içinde Derin İndigo Gradient arka plan, dekoratif ışık halkaları ve `96x96` büyük Pop-Out maskot sahnesi | ⏳ **Sırada (Dalga 6)** |
+| **TASK-18** | **Super-App Ana Sayfa (`HomeScreen`) — Dairesel Hedef Halkası (`Circular Gauge`) & Canlı Rozetli Gradient Bento Kartları** | `_DailyGoalCard` içinde `84x84` dairesel ilerleme halkası (`CircularProgressIndicator` gauge) + mini metrik hapları, 2x2 Bento kartlarında duotone/gradient yüzey ve `'65 Dakika'` / `'Başla →'` aksiyon rozetleri | ⏳ **Sırada (Dalga 6)** |
+| **TASK-19** | **Duolingo Tarzı "Konu Yol Haritası (Learning Path / Skill Tree)" (`LessonTopicsScreen`) & Zengin Modül Kartları (`LessonsScreen`)** | `LessonTopicsScreen` içindeki düz `ListTile` listesini kaldırıp dikey bağlantılı düğümlerden (`01`, `02`, `03`...) oluşan **Duolingo Yol Haritası**'na dönüştürme ve `LessonsScreen` modül kartlarını zenginleştirme | ⏳ **Sırada (Dalga 6)** |
 
 ---
 
@@ -689,4 +692,274 @@ ADIM 3: `PaywallScreen` (`lib/features/profile/presentation/paywall_screen.dart`
 
 ADIM 4: Test ve Doğrulama
 1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp tüm testlerin 0 hata ile geçtiğini doğrula.
+```
+
+
+---
+
+## 🚀 6. Dalga 6: Premium "Super-App / EdTech" Görsel Dönüşümü (`TASK-17`, `TASK-18`, `TASK-19`)
+
+Mevcut arayüzdeki "düz/basic" hissiyatı tamamen ortadan kaldırmak için **Linear + Brilliant + Duolingo** hibriti olarak tasarlanan 3 büyük görsel sıçrama görevi:
+1. **Havada Duran (Floating Pill) Alt Menü & Sinematik Gradient + Pop-Out Maskot Sahnesi (`TASK-17`)**
+2. **Dairesel Hedef Halkası (`Circular Gauge`) + Canlı Rozetli & Aksiyonlu Gradient Bento Kartları (`TASK-18`)**
+3. **Duolingo Tarzı Dikey "Konu Yol Haritası (Learning Path / Skill Tree)" (`TASK-19`)**
+
+---
+
+### 📦 TASK-17: Havada Duran (Floating Pill) Alt Menü (`AppNavigationBar`) & Sinematik Gradient/Pop-Out `MascotCoachBanner`
+
+```text
+GÖREV: TASK-17 — Havada Duran (Floating Pill Dock) Alt Menü (AppNavigationBar), Kavisli/Modern AppTopBar ve Sinematik Gradient + Büyük Pop-Out Maskot Sahnesi (MascotCoachBanner)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...) veya Colors.* KULLANMA; tüm renkleri Theme.of(context).colorScheme üzerinden al.
+
+ADIM 1: `lib/app/widgets/app_navigation_bar.dart` — Havada Duran (Floating Pill/Dock) Alt Menü
+1. Ekranın en altına yapışık standart düz bar görüntüsünü kaldırıp, etrafında boşluk olan, yuvarlatılmış kapsül (`BorderRadius.circular(28)`) ve yumuşak gölgeli bir Floating Dock haline getir:
+   - `build` içinde:
+     ```dart
+     final colorScheme = Theme.of(context).colorScheme;
+
+     return SafeArea(
+       top: false,
+       child: Padding(
+         padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+         child: Container(
+           decoration: BoxDecoration(
+             color: colorScheme.surface,
+             borderRadius: BorderRadius.circular(28),
+             border: Border.all(
+               color: colorScheme.primary.withAlpha(45),
+               width: 1.5,
+             ),
+             boxShadow: [
+               BoxShadow(
+                 color: colorScheme.primary.withAlpha(28),
+                 blurRadius: 20,
+                 offset: const Offset(0, 8),
+               ),
+             ],
+           ),
+           child: ClipRRect(
+             borderRadius: BorderRadius.circular(26),
+             child: NavigationBar(
+               height: 66,
+               elevation: 0,
+               backgroundColor: colorScheme.surface,
+               indicatorColor: colorScheme.primaryContainer,
+               selectedIndex: selectedIndex,
+               onDestinationSelected: onDestinationSelected,
+               destinations: const [ ...mevcut 5 NavigationDestination birebir korunacak... ],
+             ),
+           ),
+         ),
+       ),
+     );
+     ```
+   - DİKKAT: İçerideki `NavigationBar` ve 5 `NavigationDestination` (`'Ana Sayfa'`, `'Dersler'`, `'Denemeler'`, `'İstatistik'`, `'Profil'` ve `LucideIcons`) BİREBİR korunmalıdır ki mevcut tüm router ve widget testleri sorunsuz geçsin!
+
+ADIM 2: `lib/shared/widgets/mascot_coach_banner.dart` — Sinematik Gradient Hero Sahnesi & `96x96` Pop-Out Maskot
+1. `MascotCoachBanner` bileşenindeki soluk tek renk arka planı ve küçük `72x72` kutuyu kaldır; yerine **Derin İndigo -> Kontrast Gradient (`LinearGradient`)**, arka planda dekoratif yarı saydam ışık halkaları (`Stack` + `Positioned`) ve **`96x96` boyutunda çift çerçeveli Pop-Out Maskot Sahnesi** kur:
+   - `build` içinde:
+     - Dış kapsayıcı olarak `Container` kullan:
+       - `decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [colorScheme.primary, colorScheme.secondary]), borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: colorScheme.primary.withAlpha(70), blurRadius: 18, offset: const Offset(0, 8))])`
+     - İçinde `ClipRRect(borderRadius: BorderRadius.circular(24), child: Stack(children: [...]))` kullan:
+       - 1. Arka plan dekoratif ışık halkası (sağ üst):
+         `Positioned(right: -24, top: -24, child: Container(width: 110, height: 110, decoration: BoxDecoration(shape: BoxShape.circle, color: colorScheme.onPrimary.withAlpha(22))))`
+       - 2. Arka plan dekoratif ışık halkası (sol alt):
+         `Positioned(left: -18, bottom: -28, child: Container(width: 90, height: 90, decoration: BoxDecoration(shape: BoxShape.circle, color: colorScheme.tertiary.withAlpha(45))))`
+       - 3. Ana içerik (`Padding(padding: const EdgeInsets.all(18), child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [...]))`):
+         - Solda **`92x92` Pop-Out Maskot Sahnesi (`Stack`)**:
+           - `Container(width: 92, height: 92, padding: const EdgeInsets.all(3), decoration: BoxDecoration(color: colorScheme.tertiary, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: colorScheme.surface.withAlpha(60), blurRadius: 12, offset: const Offset(0, 4))]), child: ClipRRect(borderRadius: BorderRadius.circular(21), child: Image.asset(mood.assetPath, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) => Container(color: colorScheme.primaryContainer, child: Icon(LucideIcons.award, color: colorScheme.primary, size: 42)))))`
+           - Sağ alt köşesinde parlayan mini rozet (`Positioned(right: 0, bottom: 0, child: Container(padding: const EdgeInsets.all(5), decoration: BoxDecoration(color: colorScheme.tertiaryContainer, shape: BoxShape.circle, border: Border.all(color: colorScheme.surface, width: 2)), child: Icon(LucideIcons.sparkles, size: 12, color: colorScheme.onTertiaryContainer)))`).
+         - `const SizedBox(width: 16)`
+         - Sağda `Expanded` içinde konuşma balonu ve metinler:
+           - Üstte altın/amber hap rozet (`badgeLabel`): `Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3), decoration: BoxDecoration(color: colorScheme.tertiary, borderRadius: BorderRadius.circular(20)), child: Text(badgeLabel, style: textTheme.labelSmall?.copyWith(color: colorScheme.onTertiary, fontWeight: FontWeight.w800)))`
+           - `const SizedBox(height: 6)`
+           - Başlık (`title`): `Text(title, style: textTheme.titleLarge?.copyWith(color: colorScheme.onPrimary, fontWeight: FontWeight.w800))`
+           - `const SizedBox(height: 6)`
+           - Konuşma baloncuğu kutusu (`message`):
+             `Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), decoration: BoxDecoration(color: colorScheme.surface.withAlpha(28), borderRadius: BorderRadius.circular(14), border: Border.all(color: colorScheme.onPrimary.withAlpha(45))), child: Text(message, style: textTheme.bodySmall?.copyWith(color: colorScheme.onPrimary, fontWeight: FontWeight.w500)))`
+
+ADIM 3: `lib/app/widgets/app_top_bar.dart` — Premium Üst Bar Cilası
+1. `AppTopBar` içindeki sol maskot avatarını `36x36` boyutunda, `border: Border.all(color: colorScheme.tertiary, width: 1.5)` altın çerçeveli yuvarlatılmış kare (`BorderRadius.circular(12)`) yap ve sağdaki seri/PRO rozetlerine ince kenarlık (`Border.all(color: colorScheme.outlineVariant)`) ekle.
+
+ADIM 4: Doğrulama
+1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-18: Super-App Ana Sayfa (`HomeScreen`) — Dairesel Hedef Halkası (`Circular Gauge`) & Zengin Rozetli Gradient Bento Kartları
+
+```text
+GÖREV: TASK-18 — HomeScreen Dairesel Hedef Halkası (Circular Gauge Dashboard) ve Aksiyon Rozetli/Gradient Bento Çalışma Kartları
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. TASK-17 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `_DailyGoalCard` (`lib/features/home/presentation/home_screen.dart`) — Dairesel Hedef Halkası (Circular Gauge)
+1. `_DailyGoalCard` bileşenini tekdüze yatay çubuk görünümünden çıkarıp **Sol: Metrikler & Hap Rozetler + Sağ: `84x84` Dairesel İlerleme Halkası (`CircularProgressIndicator` Gauge)** olan bir Super-App Dashboard kartına dönüştür:
+   - `final progress = goal == 0 ? 0.0 : (solved / goal).clamp(0.0, 1.0);`
+   - `final percent = (progress * 100).round();`
+   - `TactileCard` (`borderRadius: 22`, `backgroundColor: colorScheme.surface`, `borderColor: colorScheme.primary.withAlpha(90)`) içinde `Row(children: [...])`:
+     - **Sol (`Expanded`):**
+       - Üstte `Container` içinde `LucideIcons.flame` + `'Hedef Takibi'` rozeti (`colorScheme.tertiaryContainer`),
+       - `const SizedBox(height: 8)`,
+       - `Text('Bugünkü hedefin', style: textTheme.labelLarge?.copyWith(color: colorScheme.onSurfaceVariant))` (Birebir koru!),
+       - `const SizedBox(height: 2)`,
+       - `Text('$solved / $goal soru', style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800))` (DİKKAT: `'$solved / $goal soru'` metnini test uyumluluğu için BİREBİR koru!),
+       - `const SizedBox(height: 10)`,
+       - Altta `ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(minHeight: 8, value: progress))`
+     - `const SizedBox(width: 16)`,
+     - **Sağ (`SizedBox(width: 80, height: 80)` Dairesel Halka / Gauge):**
+       ```dart
+       SizedBox(
+         width: 80,
+         height: 80,
+         child: Stack(
+           alignment: Alignment.center,
+           children: [
+             SizedBox(
+               width: 76,
+               height: 76,
+               child: CircularProgressIndicator(
+                 value: progress,
+                 strokeWidth: 8,
+                 backgroundColor: colorScheme.primaryContainer.withAlpha(90),
+                 color: colorScheme.primary,
+                 strokeCap: StrokeCap.round,
+               ),
+             ),
+             Column(
+               mainAxisSize: MainAxisSize.min,
+               children: [
+                 Icon(LucideIcons.flame, size: 18, color: colorScheme.tertiary),
+                 Text(
+                   '%$percent',
+                   style: textTheme.labelLarge?.copyWith(
+                     fontWeight: FontWeight.w800,
+                     color: colorScheme.primary,
+                   ),
+                 ),
+               ],
+             ),
+           ],
+         ),
+       )
+       ```
+
+ADIM 2: `_StudyTypeTile` (`lib/features/home/presentation/home_screen.dart`) — Canlı Rozetli & Aksiyonlu Bento Kartları
+1. `_StudyTypeTile` sınıfına `final String badgeText;` ve `final String actionText;` (varsayılan `'Başla'`) parametreleri ekle:
+   - `HomeScreen` içindeki 4 çağrıda şu `badgeText` değerlerini ver:
+     - `'Konu testi'` -> `badgeText: '10-20 Soru'`
+     - `'Bilgi kartları'` -> `badgeText: 'Hızlı Tekrar'`
+     - `'Yanlış defteri'` -> `badgeText: 'Akıllı Havuz'`
+     - `'Deneme sınavı'` -> `badgeText: '65 Dakika'`
+2. `_StudyTypeTile.build` içinde:
+   - Kart arka planını `effectiveAccentContainer.withAlpha(55)` ve kenarlığını `effectiveAccent.withAlpha(95)` yaparak her bir Bento kartının kendine has canlı bir renk tonuna sahip olmasını sağla (düz beyaz kalmasın!).
+   - Üst satırda (`Row`): Solda `Container` içinde `Icon(icon, color: effectiveAccent, size: 24)`, sağda ise `Flexible` içinde canlı `badgeText` hap rozeti (`Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: effectiveAccentContainer, borderRadius: BorderRadius.circular(12)), child: Text(badgeText, style: textTheme.labelSmall?.copyWith(color: effectiveAccent, fontWeight: FontWeight.w800), overflow: TextOverflow.ellipsis))`) göster.
+   - Ortada `Text(title, ...)` ve `Text(description, maxLines: 2, ...)`.
+   - En altta (`const SizedBox(height: 10)` sonrası) bir aksiyon satırı ekle:
+     ```dart
+     Row(
+       children: [
+         Text(
+           actionText,
+           style: textTheme.labelMedium?.copyWith(
+             color: effectiveAccent,
+             fontWeight: FontWeight.w800,
+           ),
+         ),
+         const SizedBox(width: 4),
+         Icon(LucideIcons.chevronRight, size: 16, color: effectiveAccent),
+       ],
+     )
+     ```
+
+ADIM 3: Doğrulama
+1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-19: Duolingo Tarzı "Konu Yol Haritası (Learning Path / Skill Tree)" (`LessonTopicsScreen`) & Zengin Modül Kartları (`LessonsScreen`)
+
+```text
+GÖREV: TASK-19 — LessonTopicsScreen Ekranını Duolingo/Brilliant Tarzı Dikey "Konu Yol Haritası (Learning Path)" Yapısına Dönüştürme ve LessonsScreen Modül Kartlarını Zenginleştirme
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. TASK-18 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `lib/features/lessons/presentation/lesson_topics_screen.dart` — Duolingo Tarzı Dikey Yol Haritası (Learning Path)
+1. `LessonTopicsScreen` içindeki sıradan `Card` + `ListTile` listesini tamamen kaldır ve yerine **Üstte Ders Özeti Başlığı + Altta Dikey Bağlantı Çizgili Yol Haritası Düğümleri (`_TopicPathNode`)** kur (`package:kadro/shared/widgets/tactile_card.dart` ve `package:lucide_icons_flutter/lucide_icons.dart` import et):
+   - `AppBar(title: Text('${lesson.name} Konuları'))` başlığını BİREBİR koru (`test/widget_test.dart` `'Tarih Konuları'` metnini arar!).
+   - `body:` içinde `ListView.builder` (`padding: const EdgeInsets.all(16)`, `itemCount: lesson.topics.length`) kullan:
+     - Her eleman için `_TopicPathNode(index: index, totalCount: lesson.topics.length, lessonName: lesson.name, topic: lesson.topics[index], onTap: ...)` döndür.
+2. `_TopicPathNode extends StatelessWidget` bileşenini oluştur:
+   - `IntrinsicHeight` + `Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [...])` kullanarak:
+     - **1. Sol Sütun (Duolingo/Brilliant Yol Haritası Düğümü ve Dikey Bağlantı Çizgisi):**
+       ```dart
+       SizedBox(
+         width: 48,
+         child: Column(
+           children: [
+             Container(
+               width: 40,
+               height: 40,
+               decoration: BoxDecoration(
+                 color: index == 0
+                     ? colorScheme.primary
+                     : colorScheme.primaryContainer,
+                 shape: BoxShape.circle,
+                 border: Border.all(
+                   color: colorScheme.primary,
+                   width: 2,
+                 ),
+                 boxShadow: [
+                   BoxShadow(
+                     color: colorScheme.primary.withAlpha(45),
+                     offset: const Offset(0, 3),
+                     blurRadius: 0,
+                   ),
+                 ],
+               ),
+               alignment: Alignment.center,
+               child: Text(
+                 '${index + 1}',
+                 style: textTheme.labelLarge?.copyWith(
+                   color: index == 0
+                       ? colorScheme.onPrimary
+                       : colorScheme.onPrimaryContainer,
+                   fontWeight: FontWeight.w800,
+                 ),
+               ),
+             ),
+             if (index < totalCount - 1)
+               Expanded(
+                 child: Container(
+                   width: 3,
+                   margin: const EdgeInsets.symmetric(vertical: 4),
+                   decoration: BoxDecoration(
+                     color: colorScheme.primary.withAlpha(70),
+                     borderRadius: BorderRadius.circular(2),
+                   ),
+                 ),
+               ),
+           ],
+         ),
+       )
+       ```
+     - `const SizedBox(width: 12)`
+     - **2. Sağ Sütun (`Expanded` içinde 3D `TactileCard` Konu Modülü):**
+       - `Padding(padding: const EdgeInsets.only(bottom: 14), child: TactileCard(onTap: onTap, backgroundColor: index == 0 ? colorScheme.primaryContainer.withAlpha(65) : colorScheme.surface, borderColor: index == 0 ? colorScheme.primary : colorScheme.outlineVariant, child: ...))`
+       - Kart içinde:
+         - Üstte küçük adım rozeti: `Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text('ADIM ${index + 1}', style: textTheme.labelSmall?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w800)), Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: colorScheme.secondaryContainer, borderRadius: BorderRadius.circular(10)), child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(LucideIcons.play, size: 12, color: colorScheme.primary), const SizedBox(width: 4), Text('Test Çöz', style: textTheme.labelSmall?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.bold))]))])`
+         - `const SizedBox(height: 6)`
+         - Konu adı: `Text(topic, style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700))` (DİKKAT: `topic` metnini BİREBİR koru, `test/widget_test.dart` `'İslamiyet Öncesi Türk Tarihi'` metnini arar!).
+
+ADIM 2: `lib/features/lessons/presentation/lessons_screen.dart` — Zengin Akademi Modül Kartları
+1. `_LessonCard` içinde:
+   - Kartın arka planına hafif renkli ton (`colorScheme.primaryContainer.withAlpha(35)`) ve kenarlığına `colorScheme.primary.withAlpha(80)` ver.
+   - İlerleme çubuğunun (`LinearProgressIndicator`) altına `const SizedBox(height: 10)` ve bir alt bilgi/aksiyon satırı (`Row`) ekle:
+     - Solda `Icon(LucideIcons.layers, size: 14, color: colorScheme.primary)` + `' ${lesson.topics.length} Adımlı Yol Haritası'` (`textTheme.labelSmall`),
+     - Sağda `'Yol Haritasını Aç →'` (`textTheme.labelSmall?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w800)`).
+
+ADIM 3: Test ve Doğrulama
+1. `test/widget_test.dart` içinde `'Tarih'` kartına tıklanınca açılan `LessonTopicsScreen` ekranında `'ADIM 1'` ve `'Test Çöz'` yol haritası rozetlerinin de görüntülendiğini doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
