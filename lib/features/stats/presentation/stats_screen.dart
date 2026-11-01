@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/features/stats/presentation/quiz_history_screen.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-/// İstatistik sayfası: Riverpod üzerinden canlı soru ve başarı metriklerini gösterir.
+/// İstatistik sayfası: Riverpod üzerinden canlı soru, XP/Lig, Ustalık Haritası ve Test Geçmişini gösterir.
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
 
@@ -23,7 +25,12 @@ class StatsScreen extends ConsumerWidget {
           subtitle: 'Soru çözdükçe ders bazında netlerin burada görünecek.',
         ),
         const SizedBox(height: 16),
-        // İki kart yan yana; Expanded ikisine eşit genişlik verir (flex: 1 + flex: 1)
+
+        // 1. En Üst: Lig Kademesi ve Seri Kartı
+        _LeagueAndStreakCard(stats: stats),
+        const SizedBox(height: 16),
+
+        // 2. KPI Kartları (Çözülen Soru, Doğru Oranı)
         Row(
           children: [
             Expanded(
@@ -46,15 +53,304 @@ class StatsScreen extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 12),
+
+        // En zayıf ders kartı
         _StatCard(
           label: 'En zayıf ders',
           value: stats.weakestLesson,
           icon: LucideIcons.flame,
         ),
         const SizedBox(height: 16),
-        // Ders Bazlı Başarı Oranı Grafiği (fl_chart BarChart)
+
+        // 3. Ders Bazlı Başarı Oranı Grafiği (fl_chart BarChart)
         _LessonAccuracyChartCard(stats: stats),
+        const SizedBox(height: 16),
+
+        // 4. Ders Ustalık Isı Haritası
+        _MasteryHeatmapCard(stats: stats),
+        const SizedBox(height: 16),
+
+        // 5. Çözülen Testler Arşivi
+        _RecentSessionsCard(stats: stats),
       ],
+    );
+  }
+}
+
+/// Lig kademesi, XP puanı, gün serisi ve soru başına ortalama süre kartı.
+class _LeagueAndStreakCard extends StatelessWidget {
+  final StudyStatsState stats;
+
+  const _LeagueAndStreakCard({required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.primary.withAlpha(90),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: colorScheme.tertiaryContainer,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  LucideIcons.trophy,
+                  color: colorScheme.onTertiaryContainer,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    stats.leagueTier,
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  Text(
+                    '${stats.totalXp} XP',
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      LucideIcons.flame,
+                      size: 14,
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${stats.streakDays} Gün Seri',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSecondaryContainer,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Ort. ${stats.averageSecondsPerQuestion} sn/soru',
+                style: textTheme.labelSmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 4 dersin ustalık durumunu renkli ısı haritası haplarıyla gösteren kart.
+class _MasteryHeatmapCard extends StatelessWidget {
+  final StudyStatsState stats;
+
+  const _MasteryHeatmapCard({required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    final lessons = [
+      ('TAR · Tarih', 'Tarih'),
+      ('COĞ · Coğrafya', 'Coğrafya'),
+      ('VAT · Vatandaşlık', 'Vatandaşlık'),
+      ('GÜN · Güncel Bilgiler', 'Güncel Bilgiler'),
+    ];
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.outlineVariant,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                LucideIcons.shieldCheck,
+                color: colorScheme.primary,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Ders Ustalık Isı Haritası',
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...lessons.map((item) {
+            final displayName = item.$1;
+            final keyName = item.$2;
+            final label = stats.lessonMasteryLabel(keyName);
+
+            Color badgeBg;
+            Color badgeText;
+            if (label.startsWith('Usta')) {
+              badgeBg = colorScheme.tertiaryContainer;
+              badgeText = colorScheme.onTertiaryContainer;
+            } else if (label.startsWith('Gelişiyor')) {
+              badgeBg = colorScheme.primaryContainer;
+              badgeText = colorScheme.onPrimaryContainer;
+            } else if (label.startsWith('Kritik')) {
+              badgeBg = colorScheme.errorContainer;
+              badgeText = colorScheme.onErrorContainer;
+            } else {
+              badgeBg = colorScheme.surfaceContainerHighest;
+              badgeText = colorScheme.onSurfaceVariant;
+            }
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    displayName,
+                    style: textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: badgeBg,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      label,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: badgeText,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}
+
+/// Son çözülen test oturumlarını gösteren özet kartı.
+class _RecentSessionsCard extends StatelessWidget {
+  final StudyStatsState stats;
+
+  const _RecentSessionsCard({required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.outlineVariant,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Çözülen Testler Arşivi (${stats.sessionHistory.length})',
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const QuizHistoryScreen(),
+                    ),
+                  );
+                },
+                child: const Text('Tümünü Gör'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (stats.sessionHistory.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                'Henüz tamamlanmış bir test oturumu yok.',
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            )
+          else
+            ...stats.sessionHistory.take(3).map((s) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        s.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Net: ${s.netScore.toStringAsFixed(2)}  (+${s.earnedXp} XP)',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+        ],
+      ),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/home/presentation/home_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/features/stats/presentation/stats_screen.dart';
 
@@ -35,6 +36,11 @@ void main() {
         final notifier = container.read(studyStatsProvider.notifier);
 
         expect(container.read(studyStatsProvider).totalSolved, equals(0));
+        expect(container.read(studyStatsProvider).totalXp, equals(0));
+        expect(
+          container.read(studyStatsProvider).leagueTier,
+          equals('Bronz Kadro'),
+        );
         expect(
           container.read(studyStatsProvider).weakestLesson,
           equals('Henüz veri yok'),
@@ -45,6 +51,11 @@ void main() {
         expect(container.read(studyStatsProvider).totalSolved, equals(1));
         expect(container.read(studyStatsProvider).totalCorrect, equals(1));
         expect(container.read(studyStatsProvider).accuracyPercent, equals(100));
+        expect(container.read(studyStatsProvider).totalXp, equals(15));
+        expect(
+          container.read(studyStatsProvider).lessonMasteryLabel('Tarih'),
+          equals('Usta (%100)'),
+        );
 
         // 1 yanlış Tarih sorusu çöz
         notifier.recordAnswer(lesson: 'Tarih', isCorrect: false);
@@ -52,11 +63,47 @@ void main() {
         expect(container.read(studyStatsProvider).totalWrong, equals(1));
         expect(container.read(studyStatsProvider).accuracyPercent, equals(50));
         expect(
+          container.read(studyStatsProvider).totalXp,
+          equals(20),
+        ); // 15 + 5
+        expect(
+          container.read(studyStatsProvider).lessonMasteryLabel('Tarih'),
+          equals('Gelişiyor (%50)'),
+        );
+        expect(
           container.read(studyStatsProvider).weakestLesson,
           equals('Tarih'),
         );
       },
     );
+
+    test('recordQuizSession oturum kaydı ve XP güncellemesini sağlamalı', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final notifier = container.read(studyStatsProvider.notifier);
+
+      final session = QuizSessionRecord(
+        id: 'sess_1',
+        title: 'Tarih Deneme Testi',
+        lesson: 'Tarih',
+        totalQuestions: 10,
+        correctCount: 8,
+        wrongCount: 2,
+        emptyCount: 0,
+        netScore: 7.5,
+        earnedXp: 130,
+        durationSeconds: 120,
+        completedAt: DateTime.now(),
+      );
+
+      notifier.recordQuizSession(session);
+
+      final state = container.read(studyStatsProvider);
+      expect(state.sessionHistory.length, equals(1));
+      expect(state.sessionHistory.first.title, equals('Tarih Deneme Testi'));
+      expect(state.totalXp, equals(130));
+    });
 
     testWidgets(
       'QuizScreen soru çözüldüğünde HomeScreen ve StatsScreen canlı güncellenmeli',
@@ -122,7 +169,7 @@ void main() {
     );
 
     testWidgets(
-      'StatsScreen üzerinde BarChart ve ders kodları başarıyla render edilmeli',
+      'StatsScreen üzerinde BarChart, Lig ve Ustalık Isı Haritası render edilmeli',
       (WidgetTester tester) async {
         tester.view.physicalSize = const Size(1080, 2400);
         tester.view.devicePixelRatio = 1.0;
@@ -142,12 +189,14 @@ void main() {
         );
         await tester.pumpAndSettle();
 
+        expect(find.text('Bronz Kadro'), findsOneWidget);
+        expect(find.text('0 XP'), findsOneWidget);
+        expect(find.text('1 Gün Seri'), findsOneWidget);
         expect(find.byType(BarChart), findsOneWidget);
         expect(find.text('Ders Bazlı Başarı Oranı (%)'), findsOneWidget);
-        expect(find.text('TAR'), findsOneWidget);
-        expect(find.text('COĞ'), findsOneWidget);
-        expect(find.text('VAT'), findsOneWidget);
-        expect(find.text('GÜN'), findsOneWidget);
+        expect(find.text('Ders Ustalık Isı Haritası'), findsOneWidget);
+        expect(find.text('TAR · Tarih'), findsOneWidget);
+        expect(find.text('Çözülen Testler Arşivi (0)'), findsOneWidget);
       },
     );
   });

@@ -46,9 +46,12 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-19** | **Duolingo Tarzı "Konu Yol Haritası (Learning Path / Skill Tree)" (`LessonTopicsScreen`) & Zengin Modül Kartları (`LessonsScreen`)** | `LessonTopicsScreen` içindeki düz `ListTile` listesini kaldırıp dikey bağlantılı düğümlerden (`01`, `02`, `03`...) oluşan **Duolingo Yol Haritası**'na dönüştürme ve `LessonsScreen` modül kartlarını zenginleştirme | ✅ **Tamamlandı** (`02ac8cf`) |
 | **TASK-20** | **Akıllı KPSS Çalışma Planlayıcı Veri Katmanı (`StudyTask` Modeli & `StudyPlannerNotifier` Riverpod State)** | Ders etiketli (`Tarih`, `Coğrafya` vb.), tahmini süreli (`15-65 dk`) ve doğrudan aksiyon tipli (`quiz`, `flashcards`, `mistakes`, `custom`) görev modeli + Riverpod state yönetimi ve birim testleri | ✅ **Tamamlandı** (`62b378c`) |
 | **TASK-21** | **Hibrit Çalışma Planlayıcı Arayüzü (`HomeDailyPlanCard` + Tam Ekran `StudyPlannerScreen` + Hazır Şablonlar & "Başla ▶")** | `HomeScreen`'de anında tiklenebilen **"Bugünün Çalışma Planı"** kompakt widget'ı, tam ekran `StudyPlannerScreen` (`/planner`), tek tıkla hazır KPSS görev şablonları ve görevden doğrudan teste geçiren **"Başla ▶"** aksiyonu | ✅ **Tamamlandı** (`df884d2`) |
-| **TASK-22** | **Etkileşimli Oyun Modu 1: "60 Saniyede Pençe" Doğru / Yanlış Hızlı Düello (`TrueFalseBlitzScreen`)** | 60 saniye geri sayımlı, kombo çarpanlı (`2x`, `3x`, `5x Kombo!`) ve anlık çözüm açıklamalı KPSS Doğru/Yanlış hızlı düello modu | ✅ **Tamamlandı** |
-| **TASK-23** | **Etkileşimli Oyun Modu 2: "Kavram Eşleştirme Tahtası" (`ConceptMatchScreen`) & `HomeScreen` Oyun Vitrini** | Quizlet Match tarzı 4'e 4 Tarih/Coğrafya/Vatandaşlık kavram eşleştirme tahtası ve `HomeScreen` üzerine **"Etkileşimli Mini Oyunlar"** Bento vitrini | ✅ **Tamamlandı** |
-| **TASK-24** | **Güçlü Raporlama & Retention: Çözülen Testler Arşivi (`QuizSessionRecord`), Ustalık Isı Haritası & XP/Lig Sistemi** | Supabase şemasına uyumlu çözülen testler geçmişi (`QuizHistoryScreen`), Ders Ustalık Isı Haritası (`Usta`/`Gelişiyor`/`Kritik`), soru başına ortalama süre analizi ve `Bronz -> Müsteşar Ligi` XP sistemi | ⏳ **Sırada (Dalga 8)** |
+| **TASK-22** | **Etkileşimli Oyun Modu 1: "60 Saniyede Pençe" Doğru / Yanlış Hızlı Düello (`TrueFalseBlitzScreen`)** | 60 saniye geri sayımlı, kombo çarpanlı (`2x`, `3x`, `5x Kombo!`) ve anlık çözüm açıklamalı KPSS Doğru/Yanlış hızlı düello modu | ✅ **Tamamlandı** (`c7a463d`) |
+| **TASK-23** | **Etkileşimli Oyun Modu 2: "Kavram Eşleştirme Tahtası" (`ConceptMatchScreen`) & `HomeScreen` Oyun Vitrini** | Quizlet Match tarzı 4'e 4 Tarih/Coğrafya/Vatandaşlık kavram eşleştirme tahtası ve `HomeScreen` üzerine **"Etkileşimli Mini Oyunlar"** Bento vitrini | ✅ **Tamamlandı** (`5e32ae6`) |
+| **TASK-24** | **Güçlü Raporlama & Retention: Çözülen Testler Arşivi (`QuizSessionRecord`), Ustalık Isı Haritası & XP/Lig Sistemi** | Supabase şemasına uyumlu çözülen testler geçmişi (`QuizHistoryScreen`), Ders Ustalık Isı Haritası (`Usta`/`Gelişiyor`/`Kritik`), soru başına ortalama süre analizi ve `Bronz -> Müsteşar Ligi` XP sistemi | ✅ **Tamamlandı** |
+| **TASK-25** | **Supabase Kurulumu (`supabase_flutter`), Yapılandırma (`SupabaseConfig`) & Giriş / Kayıt Ekranı (`AuthScreen`)** | `supabase_flutter` entegrasyonu, `SupabaseConfig`, `AuthNotifier` (Giriş Yap / Kayıt Ol / Misafir Modu), `AuthScreen` (`/auth`) ve `ProfileScreen` hesap kartı | ⏳ **Sırada (Dalga 9)** |
+| **TASK-26** | **Bulut Soru & Oyun Havuzu Entegrasyonu (`QuestionRepository` +Ders/Konu Filtreleme + Offline Fallback)** | Soruların (`multiple_choice`, `true_false`, `matching`) seçilen ders/konuya göre Supabase `public.questions` tablosundan çekilmesi ve çevrimdışı durumda yerel JSON/sample yedeğine düşmesi | ⏳ **Sırada (Dalga 9)** |
+| **TASK-27** | **Bulut Raporlama & İlerleme Senkronizasyonu (`quiz_sessions`, `question_attempt_logs`, `user_topic_mastery`)** | Çözülen testlerin, soru bazlı doğru/yanlış ve süre loglarının, konu ustalık ısı haritasının ve kullanıcı XP/Seri verilerinin Supabase PostgreSQL tablolarına kaydedilmesi ve giriş yapıldığında buluttan geri yüklenmesi | ⏳ **Sırada (Dalga 9)** |
 
 ---
 
@@ -1310,5 +1313,226 @@ ADIM 3: `StatsScreen` (`lib/features/stats/presentation/stats_screen.dart`) & `Q
 
 ADIM 4: Test ve Doğrulama
 1. `test/study_stats_test.dart` içine XP, Lig (`leagueTier`), Ustalık Isı Haritası (`'Ders Ustalık Isı Haritası'`) ve `recordQuizSession` ile `'Çözülen Testler Arşivi'` testlerini ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+## ☁️ 9. Dalga 9: Doğrudan Supabase (`supabase_flutter`) Auth, Bulut Soru Havuzu & Analitik Raporlama Entegrasyonu (`TASK-25`, `TASK-26`, `TASK-27`)
+
+[docs/supabase_schema.sql](file:///d:/projelerim/gunisigi/docs/supabase_schema.sql) ile oluşturduğumuz Supabase PostgreSQL tablolarını (`profiles`, `questions`, `quiz_sessions`, `question_attempt_logs`, `user_topic_mastery`, `study_tasks`) doğrudan Flutter uygulamasına bağlayan 3 görev:
+
+---
+
+### 📦 TASK-25: Supabase Kurulumu (`supabase_flutter`), `SupabaseConfig` & Giriş / Kayıt Ekranı (`AuthScreen`)
+
+```text
+GÖREV: TASK-25 — supabase_flutter Kurulumu, SupabaseConfig, AuthNotifier ve Giriş / Kayıt Ekranı (AuthScreen)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Paketi `flutter pub add supabase_flutter` ile ekle. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. TASK-24 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `supabase_flutter` Kurulumu ve `lib/core/config/supabase_config.dart`
+1. Terminalden `flutter pub add supabase_flutter` komutunu çalıştır.
+2. `lib/core/config/supabase_config.dart` dosyasını oluştur:
+   ```dart
+   import 'package:supabase_flutter/supabase_flutter.dart';
+
+   /// Supabase proje bağlantı yapılandırması.
+   /// `--dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...` ile veya
+   /// doğrudan defaultValue içine proje URL/Key girilerek çalışır.
+   class SupabaseConfig {
+     SupabaseConfig._();
+
+     static const String url = String.fromEnvironment(
+       'SUPABASE_URL',
+       defaultValue: '',
+     );
+
+     static const String anonKey = String.fromEnvironment(
+       'SUPABASE_ANON_KEY',
+       defaultValue: '',
+     );
+
+     static bool _initialized = false;
+
+     /// URL ve Anon Key tanımlıysa ve Supabase başarıyla başlatıldıysa true döner.
+     static bool get isReady => _initialized && url.isNotEmpty && anonKey.isNotEmpty;
+
+     /// Uygulama açılışında (`main.dart`) güvenli şekilde Supabase'i başlatır.
+     /// Test ortamında veya anahtarlar henüz girilmediğinde hata fırlatmadan yerel modda devam eder.
+     static Future<void> initializeSafely() async {
+       if (url.isEmpty || anonKey.isEmpty || _initialized) return;
+       try {
+         await Supabase.initialize(url: url, anonKey: anonKey);
+         _initialized = true;
+       } catch (_) {
+         _initialized = false;
+       }
+     }
+
+     /// Güvenli SupabaseClient erişimi (hazır değilse null döner).
+     static SupabaseClient? get clientOrNull =>
+         isReady ? Supabase.instance.client : null;
+   }
+   ```
+3. `lib/main.dart` içinde `main()` fonksiyonunu `Future<void> main() async` yap:
+   - `WidgetsFlutterBinding.ensureInitialized();`
+   - `await SupabaseConfig.initializeSafely();`
+   - `runApp(const ProviderScope(child: MyApp()));`
+
+ADIM 2: `lib/features/auth/data/auth_notifier.dart` (Kullanıcı Oturum & Profil Yönetimi)
+1. `lib/features/auth/data/auth_notifier.dart` dosyasını oluştur:
+   - `class AuthUserState`:
+     - `final bool isAuthenticated;`
+     - `final String? userId;`
+     - `final String? email;`
+     - `final String displayName;`
+     - `final bool isLoading;`
+     - `final String? errorMessage;`
+     - `const AuthUserState({this.isAuthenticated = false, this.userId, this.email, this.displayName = 'Memur Adayı', this.isLoading = false, this.errorMessage});`
+     - `copyWith(...)`
+   - `class AuthNotifier extends Notifier<AuthUserState>`:
+     - `build()` içinde `SupabaseConfig.clientOrNull?.auth.currentUser` kontrolü yap; oturum açıksa `isAuthenticated: true`, `userId: user.id`, `email: user.email`, `displayName: user.userMetadata?['display_name'] ?? 'Memur Adayı'` döndür.
+     - `Future<bool> signIn({required String email, required String password})`:
+       - `SupabaseConfig.clientOrNull` null ise (yerel/demo modda veya testte): `email.trim().isNotEmpty && password.length >= 6` ise demo oturumu aç (`isAuthenticated: true, email: email.trim(), displayName: email.split('@').first`) ve `true` döndür.
+       - Supabase aktifse: `client.auth.signInWithPassword(email: email.trim(), password: password)` çağır, başarılıysa state'i güncelle ve `true` döndür; hata olursa `try/catch` içinde `errorMessage` güncelle ve `false` döndür.
+     - `Future<bool> signUp({required String email, required String password, required String displayName})`:
+       - Supabase aktifse `client.auth.signUp(email: email.trim(), password: password, data: {'display_name': displayName.trim()})` çağır; yerel/demo moddaysa doğrudan `isAuthenticated: true, email: email.trim(), displayName: displayName.trim()` yap.
+     - `Future<void> signOut()`:
+       - `await SupabaseConfig.clientOrNull?.auth.signOut();` ve `state = const AuthUserState();`
+   - `final authProvider = NotifierProvider<AuthNotifier, AuthUserState>(AuthNotifier.new);`
+
+ADIM 3: `lib/features/auth/presentation/auth_screen.dart` (`AuthScreen`) & `ProfileScreen` / `router.dart` Entegrasyonu
+1. `lib/features/auth/presentation/auth_screen.dart` (`AuthScreen extends ConsumerStatefulWidget`) oluştur:
+   - `AppBar(title: const Text('Giriş Yap / Kayıt Ol'))`
+   - Üstte `MascotCoachBanner(mood: MascotMood.coach, badgeLabel: 'BULUT HESABI', title: _isLogin ? 'Tekrar Hoş Geldin!' : 'Kadro Ailesine Katıl!', message: 'Çözdüğün tüm testler, doğru/yanlış analizlerin ve çalışma planın hesabında güvenle saklanır.')`
+   - Altında `TactileCard` içinde:
+     - Kayıt modundaysa (`!_isLogin`) `'Ad Soyad / Rumuz'` `TextField` (`_nameController`),
+     - `'E-posta Adresi'` `TextField` (`_emailController`),
+     - `'Şifre (En az 6 karakter)'` `TextField` (`_passwordController`, `obscureText: true`),
+     - Hata mesajı varsa (`authState.errorMessage != null`) hata metni,
+     - Ana aksiyon butonu (`FilledButton.icon`): `_isLogin ? 'Giriş Yap' : 'Hesap Oluştur'`,
+     - Mod değiştirme butonu (`TextButton`): `_isLogin ? 'Hesabın yok mu? Kayıt Ol' : 'Zaten hesabın var mı? Giriş Yap'`.
+   - Giriş veya kayıt başarılı olduğunda `if (mounted) Navigator.of(context).pop();`
+2. `lib/features/profile/presentation/profile_screen.dart` içinde:
+   - En üste (`PageHeader` altına) `_AccountCard` ekle:
+     - Kullanıcı giriş yapmamışsa (`!auth.isAuthenticated`): `'İlerlemeni Buluta Kaydet'` başlığı, `'Çözdüğün testleri ve doğru/yanlışlarını kaybetmemek için giriş yap.'` açıklaması ve `'Giriş Yap / Kayıt Ol'` (`FilledButton.tonal` -> `AuthScreen` açar) butonu.
+     - Giriş yapmışsa (`auth.isAuthenticated`): Kullanıcının `auth.displayName` ve `auth.email` bilgisi + `'Çıkış Yap'` (`TextButton` -> `ref.read(authProvider.notifier).signOut()`) butonu.
+3. `lib/app/router.dart` içine `/auth` (`AuthScreen`) rotasını ekle.
+
+ADIM 4: Test ve Doğrulama
+1. `test/auth_screen_test.dart` dosyasını oluştur:
+   - `ProfileScreen` üzerinden `'Giriş Yap / Kayıt Ol'` butonuna tıklanınca `AuthScreen` ekranının açıldığını,
+   - E-posta ve şifre girilip `'Giriş Yap'` butonuna basıldığında `authProvider` üzerinde `isAuthenticated == true` olduğunu doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-26: Bulut Soru & Oyun Havuzu Entegrasyonu (`QuestionRepository` + Ders/Konu Filtreleme + Offline Fallback)
+
+```text
+GÖREV: TASK-26 — QuestionRepository Supabase (`public.questions`) Entegrasyonu, Ders/Konu Bazlı Soru Filtreleme ve Zengin Yerel Yedek Havuz
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Widget içinde doğrudan Supabase/API çağrısı YAPMA; tüm veri çekme işlemleri `QuestionRepository` içinde `try/catch` ile yapılmalıdır. TASK-25 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `assets/data/questions/sample_questions.json` Zenginleştirmesi (4 Ders İçin Tam Kapsam)
+1. `assets/data/questions/sample_questions.json` dosyasına mevcut 5 Tarih sorusuna ek olarak Coğrafya (en az 3 soru), Vatandaşlık (en az 3 soru) ve Güncel Bilgiler (en az 3 soru) özgün KPSS sorularını ekle (böylece hem yerel yedekte hem testlerde 4 dersin tamamında sorular hazır olsun!).
+
+ADIM 2: `lib/features/quiz/data/question_repository.dart` — Supabase + Yerel Fallback & Ders/Konu Filtreleme
+1. `QuestionRepository` sınıfına yeni metotlar ekle (mevcut `Future<List<Question>> loadSampleQuestions()` imzasını BİREBİR koru ki mevcut tüm testler geçsin!):
+   - `Future<List<Question>> fetchQuestions({String? lesson, String? topic})`:
+     1. Önce `SupabaseConfig.clientOrNull` kontrol et:
+        - Eğer `client != null` ise `try` bloğu içinde `public.questions` tablosundan `question_type = 'multiple_choice'` olan kayıtları sorgula (`lesson` verilmişse `.eq('lesson', lesson)`, `topic` verilmişse `.eq('topic', topic)`).
+        - Dönen satırlardaki `interaction_data` JSONB içinden `options` ve `correctIndex` alanlarını okuyup `Question` nesnelerine dönüştür; eğer sonuç listesi boş değilse döndür!
+     2. Eğer Supabase aktif değilse, hata verirse veya ilgili derste bulutta henüz soru yoksa:
+        - `final localQuestions = await loadSampleQuestions();`
+        - Eğer `lesson != null` ise `localQuestions.where((q) => q.lesson == lesson).toList()` filtrele (eğer konu filtrelemesi boş dönerse dersin sorularını, o da boşsa tüm `localQuestions` listesini döndür ki ekran asla boş kalmasın!).
+2. `lib/features/lessons/presentation/lesson_topics_screen.dart` içinde bir konuya tıklandığında açılan `QuizScreen`'e seçilen dersin ve konunun adını geçir (`QuizScreen(lessonFilter: lesson.name, topicFilter: topic, customTitle: '${lesson.name} · $topic')`):
+   - `QuizScreen` (`lib/features/quiz/presentation/quiz_screen.dart`) içine opsiyonel `final String? lessonFilter;` ve `final String? topicFilter;` parametreleri ekle; dışarıdan `questions` verilmediğinde `questionRepository.fetchQuestions(lesson: widget.lessonFilter, topic: widget.topicFilter)` çağır!
+
+ADIM 3: Test ve Doğrulama
+1. `test/question_repository_test.dart` içine `fetchQuestions(lesson: 'Coğrafya')` çağrıldığında yalnızca `'Coğrafya'` dersine ait soruların döndüğünü doğrulayan birim testi ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-27: Bulut Raporlama & İlerleme Senkronizasyonu (`CloudSyncRepository` — `quiz_sessions`, `question_attempt_logs`, `user_topic_mastery`)
+
+```text
+GÖREV: TASK-27 — Çözülen Testlerin, Soru Bazlı Doğru/Yanlış Loglarının ve Konu Ustalık Verilerinin Supabase Tablolarına Kaydedilmesi ve Buluttan Yüklenmesi (CloudSyncRepository)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Tüm Supabase yazma/okuma işlemlerini `lib/features/stats/data/cloud_sync_repository.dart` içinde `try/catch` ile sar. TASK-26 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `lib/features/stats/data/cloud_sync_repository.dart` (`CloudSyncRepository`)
+1. `lib/features/stats/data/cloud_sync_repository.dart` dosyasını oluştur:
+   - `class CloudSyncRepository`:
+     - `const CloudSyncRepository();`
+     - **1. Test Oturumu Kaydetme (`saveQuizSession`):**
+       ```dart
+       Future<void> saveQuizSession(QuizSessionRecord session) async {
+         final client = SupabaseConfig.clientOrNull;
+         final userId = client?.auth.currentUser?.id;
+         if (client == null || userId == null) return;
+         try {
+           await client.from('quiz_sessions').insert({
+             'user_id': userId,
+             'session_title': session.title,
+             'session_mode': 'topic_quiz',
+             'lesson': session.lesson,
+             'total_questions': session.totalQuestions,
+             'correct_count': session.correctCount,
+             'wrong_count': session.wrongCount,
+             'empty_count': session.emptyCount,
+             'net_score': session.netScore,
+             'earned_xp': session.earnedXp,
+             'duration_seconds': session.durationSeconds,
+             'completed_at': session.completedAt.toIso8601String(),
+           });
+         } catch (e) {
+           debugPrint('Supabase saveQuizSession hatası: $e');
+         }
+       }
+       ```
+     - **2. Soru Bazlı Cevap & Süre Logu Kaydetme (`saveQuestionAttempt`):**
+       ```dart
+       Future<void> saveQuestionAttempt({
+         required String questionText,
+         required String lesson,
+         required String topic,
+         required bool isCorrect,
+         required int timeSpentSeconds,
+       }) async {
+         final client = SupabaseConfig.clientOrNull;
+         final userId = client?.auth.currentUser?.id;
+         if (client == null || userId == null) return;
+         try {
+           await client.from('question_attempt_logs').insert({
+             'user_id': userId,
+             'question_text': questionText,
+             'lesson': lesson,
+             'topic': topic,
+             'is_correct': isCorrect,
+             'time_spent_seconds': timeSpentSeconds,
+           });
+         } catch (e) {
+           debugPrint('Supabase saveQuestionAttempt hatası: $e');
+         }
+       }
+       ```
+     - **3. Kullanıcı Profil XP & Lig Güncelleme (`syncProfileStats`):**
+       - `public.profiles` tablosunda giriş yapmış kullanıcının `total_xp`, `league_tier`, `daily_goal_questions` ve `last_study_date` alanlarını `upsert` / `update` eder.
+     - **4. Buluttan Geçmiş Testleri Çekme (`fetchSessionHistory`):**
+       - Giriş yapmış kullanıcının `public.quiz_sessions` tablosundaki kayıtlarını `.order('completed_at', ascending: false).limit(50)` ile çekip `List<QuizSessionRecord>` olarak döndürür (`try/catch` içinde, hata veya oturum yoksa `[]` döner).
+
+ADIM 2: `StudyStatsNotifier` ve `AuthNotifier` ile Bulut Senkronizasyonu
+1. `StudyStatsNotifier` (`lib/features/stats/data/study_stats_notifier.dart`) içine `final CloudSyncRepository _cloudSync = const CloudSyncRepository();` ekle:
+   - `recordAnswer(...)` çağrıldığında arka planda `_cloudSync.saveQuestionAttempt(...)` ve `_cloudSync.syncProfileStats(...)` tetikle.
+   - `recordQuizSession(QuizSessionRecord session)` çağrıldığında arka planda `_cloudSync.saveQuizSession(session)` tetikle.
+   - `Future<void> loadFromCloud()` metodu ekle: `_cloudSync.fetchSessionHistory()` ile gelen geçmiş oturumları `sessionHistory` içine yükler.
+2. `AuthNotifier` içinde kullanıcı `signIn` olduğunda `ref.read(studyStatsProvider.notifier).loadFromCloud()` çağır.
+
+ADIM 3: Test ve Doğrulama
+1. `test/cloud_sync_test.dart` dosyasını oluştur:
+   - Supabase başlatılmamışken (`SupabaseConfig.isReady == false`) `CloudSyncRepository` metotlarının (`saveQuizSession`, `saveQuestionAttempt`, `fetchSessionHistory`) hiçbir hata fırlatmadan güvenli şekilde çalıştığını (offline-safe) doğrula.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```

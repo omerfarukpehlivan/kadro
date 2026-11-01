@@ -9,6 +9,7 @@ import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
 import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
+import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 
 /// Varsayılan olarak gösterilen 3 özgün KPSS Lisans Genel Kültür sorusu.
@@ -214,17 +215,39 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   void _finishQuiz() {
     _timer?.cancel();
     final emptyCount = widget.questions.length - (_correctCount + _wrongCount);
+    final result = QuizResult(
+      totalQuestions: widget.questions.length,
+      correctCount: _correctCount,
+      wrongCount: _wrongCount,
+      emptyCount: emptyCount,
+    );
+
+    try {
+      final sessionRecord = QuizSessionRecord(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        title: widget.customTitle ?? '${_currentQuestion.lesson} Testi',
+        lesson: _currentQuestion.lesson,
+        totalQuestions: widget.questions.length,
+        correctCount: _correctCount,
+        wrongCount: _wrongCount,
+        emptyCount: emptyCount,
+        netScore: result.net,
+        earnedXp: _correctCount * 15 + _wrongCount * 5,
+        durationSeconds: widget.examDuration != null
+            ? (widget.examDuration!.inSeconds - _remainingSeconds).clamp(
+                0,
+                widget.examDuration!.inSeconds,
+              )
+            : widget.questions.length * 20,
+        completedAt: DateTime.now(),
+      );
+      ref.read(studyStatsProvider.notifier).recordQuizSession(sessionRecord);
+    } catch (_) {
+      // ProviderScope bulunmayan izole test ortamlarında güvenli fallback
+    }
+
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => QuizResultScreen(
-          result: QuizResult(
-            totalQuestions: widget.questions.length,
-            correctCount: _correctCount,
-            wrongCount: _wrongCount,
-            emptyCount: emptyCount,
-          ),
-        ),
-      ),
+      MaterialPageRoute(builder: (context) => QuizResultScreen(result: result)),
     );
   }
 

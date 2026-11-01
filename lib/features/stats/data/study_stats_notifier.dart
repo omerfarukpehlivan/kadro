@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 
-/// Kullanıcının soru çözme istatistiklerini ve günlük hedefini tutan durum (state) modeli.
+/// Kullanıcının soru çözme istatistiklerini, XP/Lig düzeyini ve günlük hedefini tutan durum (state) modeli.
 ///
 /// Angular'daki `interface StudyStatsState` veya NgRx/Signal state nesnesinin karşılığıdır.
 class StudyStatsState {
@@ -11,6 +12,10 @@ class StudyStatsState {
   final Map<String, int> wrongByLesson;
   final Map<String, int> solvedByLesson;
   final Map<String, int> correctByLesson;
+  final int totalXp;
+  final int streakDays;
+  final int totalTimeSeconds;
+  final List<QuizSessionRecord> sessionHistory;
 
   const StudyStatsState({
     this.totalSolved = 0,
@@ -20,6 +25,10 @@ class StudyStatsState {
     this.wrongByLesson = const {},
     this.solvedByLesson = const {},
     this.correctByLesson = const {},
+    this.totalXp = 0,
+    this.streakDays = 1,
+    this.totalTimeSeconds = 0,
+    this.sessionHistory = const [],
   });
 
   /// Başarı / doğru oranı yüzdesi (0 - 100).
@@ -51,6 +60,28 @@ class StudyStatsState {
     return ((correct / solved) * 100).round();
   }
 
+  /// Toplam XP puanına göre hesaplanan Lig kademesi.
+  String get leagueTier {
+    if (totalXp >= 1000) return 'Müsteşar Ligi';
+    if (totalXp >= 500) return 'Altın Kadro';
+    if (totalXp >= 200) return 'Gümüş Kadro';
+    return 'Bronz Kadro';
+  }
+
+  /// Soru başına harcanan ortalama süre (saniye).
+  int get averageSecondsPerQuestion =>
+      totalSolved == 0 ? 0 : (totalTimeSeconds / totalSolved).round();
+
+  /// Ders ustalık seviyesi etiketi.
+  String lessonMasteryLabel(String lesson) {
+    final solved = solvedByLesson[lesson] ?? 0;
+    if (solved == 0) return 'Başlanmadı';
+    final acc = lessonAccuracyPercent(lesson);
+    if (acc >= 80) return 'Usta (%$acc)';
+    if (acc >= 50) return 'Gelişiyor (%$acc)';
+    return 'Kritik (%$acc)';
+  }
+
   StudyStatsState copyWith({
     int? totalSolved,
     int? totalCorrect,
@@ -59,6 +90,10 @@ class StudyStatsState {
     Map<String, int>? wrongByLesson,
     Map<String, int>? solvedByLesson,
     Map<String, int>? correctByLesson,
+    int? totalXp,
+    int? streakDays,
+    int? totalTimeSeconds,
+    List<QuizSessionRecord>? sessionHistory,
   }) {
     return StudyStatsState(
       totalSolved: totalSolved ?? this.totalSolved,
@@ -68,23 +103,27 @@ class StudyStatsState {
       wrongByLesson: wrongByLesson ?? this.wrongByLesson,
       solvedByLesson: solvedByLesson ?? this.solvedByLesson,
       correctByLesson: correctByLesson ?? this.correctByLesson,
+      totalXp: totalXp ?? this.totalXp,
+      streakDays: streakDays ?? this.streakDays,
+      totalTimeSeconds: totalTimeSeconds ?? this.totalTimeSeconds,
+      sessionHistory: sessionHistory ?? this.sessionHistory,
     );
   }
 }
 
-/// Soru istatistiklerini ve günlük hedef ilerlemesini yöneten Riverpod Notifier'ı.
-///
-/// Angular'daki `BehaviorSubject` veya `writable signal` barındıran Singleton
-/// servis mantığı ile birebir örtüşür. State değiştiğinde arayüzü dinleyen tüm
-/// ConsumerWidget'lar otomatik güncellenir.
+/// Soru istatistiklerini, oturum arşivini ve XP/Lig durumunu yöneten Riverpod Notifier'ı.
 class StudyStatsNotifier extends Notifier<StudyStatsState> {
   @override
   StudyStatsState build() {
     return const StudyStatsState();
   }
 
-  /// Her soru onaylandığında istatistikleri günceller.
-  void recordAnswer({required String lesson, required bool isCorrect}) {
+  /// Her soru onaylandığında istatistikleri ve XP/süre puanını günceller.
+  void recordAnswer({
+    required String lesson,
+    required bool isCorrect,
+    int timeSpentSeconds = 20,
+  }) {
     final newWrongByLesson = Map<String, int>.from(state.wrongByLesson);
     if (!isCorrect) {
       newWrongByLesson[lesson] = (newWrongByLesson[lesson] ?? 0) + 1;
@@ -98,6 +137,8 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       newCorrectByLesson[lesson] = (newCorrectByLesson[lesson] ?? 0) + 1;
     }
 
+    final earnedXp = isCorrect ? 15 : 5;
+
     state = state.copyWith(
       totalSolved: state.totalSolved + 1,
       totalCorrect: isCorrect ? state.totalCorrect + 1 : state.totalCorrect,
@@ -105,6 +146,16 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       wrongByLesson: newWrongByLesson,
       solvedByLesson: newSolvedByLesson,
       correctByLesson: newCorrectByLesson,
+      totalXp: state.totalXp + earnedXp,
+      totalTimeSeconds: state.totalTimeSeconds + timeSpentSeconds,
+    );
+  }
+
+  /// Tamamlanan bir test oturumunu arşive kaydeder ve XP kazancını ekler.
+  void recordQuizSession(QuizSessionRecord session) {
+    state = state.copyWith(
+      totalXp: state.totalXp + session.earnedXp,
+      sessionHistory: [session, ...state.sessionHistory],
     );
   }
 
