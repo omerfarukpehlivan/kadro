@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/app/theme.dart';
 import 'package:kadro/main.dart';
+import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 void main() {
@@ -28,6 +30,40 @@ void main() {
       expect(find.byIcon(LucideIcons.chartColumn), findsOneWidget);
       expect(find.byIcon(LucideIcons.user), findsOneWidget);
       expect(find.byIcon(LucideIcons.graduationCap), findsWidgets);
+      expect(find.text('PRO'), findsOneWidget);
+    });
+  });
+
+  group('TactileCard ve MascotCoachBanner Testleri', () {
+    testWidgets('TactileCard ve MascotCoachBanner hatasız render edilir', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: Column(
+              children: [
+                TactileCard(child: Text('Dokunulabilir Kart')),
+                MascotCoachBanner(
+                  title: 'Günün KPSS Tavsiyesi',
+                  message: 'Tarihte ilk Türk devletlerine odaklan!',
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(TactileCard), findsNWidgets(2));
+      expect(find.text('Dokunulabilir Kart'), findsOneWidget);
+      expect(find.text('KOÇ TUĞRUL'), findsOneWidget);
+      expect(find.text('Günün KPSS Tavsiyesi'), findsOneWidget);
+      expect(
+        find.text('Tarihte ilk Türk devletlerine odaklan!'),
+        findsOneWidget,
+      );
     });
   });
 }
