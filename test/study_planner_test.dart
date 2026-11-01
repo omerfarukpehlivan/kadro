@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
@@ -138,7 +137,10 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Görev Listesi (4)'), findsOneWidget);
-        await tester.drag(find.text('Görev Listesi (4)'), const Offset(0, -400));
+        await tester.drag(
+          find.text('Görev Listesi (4)'),
+          const Offset(0, -400),
+        );
         await tester.pumpAndSettle();
         expect(find.text('20 Tarih Sorusu Çöz'), findsOneWidget);
       },

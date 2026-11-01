@@ -133,7 +133,6 @@ class HomeDailyPlanCard extends ConsumerWidget {
                           child: Text(
                             task.lessonTag,
                             style: textTheme.labelSmall?.copyWith(
-                              fontSize: 10,
                               color: colorScheme.onSecondaryContainer,
                               fontWeight: FontWeight.w700,
                             ),
