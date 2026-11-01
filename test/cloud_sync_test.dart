@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/core/config/supabase_config.dart';
+import 'package:kadro/features/planner/data/models/study_task.dart';
+import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
@@ -99,5 +101,117 @@ void main() {
       await statsNotifier.loadFromCloud();
       expect(container.read(studyStatsProvider).sessionHistory.length, 1);
     });
+
+    test('StudyTask JSON ve Supabase toMap / fromMap serileştirmesi', () {
+      const task = StudyTask(
+        id: 'task_abc',
+        title: 'Vatandaşlık Temel Haklar Testi',
+        lessonTag: 'Vatandaşlık',
+        estimatedMinutes: 30,
+        actionType: StudyTaskActionType.quiz,
+        isCompleted: true,
+      );
+
+      final map = task.toMap('user_xyz');
+      expect(map['user_id'], 'user_xyz');
+      expect(map['title'], 'Vatandaşlık Temel Haklar Testi');
+      expect(map['lesson_tag'], 'Vatandaşlık');
+      expect(map['estimated_minutes'], 30);
+      expect(map['action_type'], 'quiz');
+      expect(map['is_completed'], true);
+
+      final fromMapTask = StudyTask.fromMap({'id': 'task_remote_1', ...map});
+
+      expect(fromMapTask.id, 'task_remote_1');
+      expect(fromMapTask.title, task.title);
+      expect(fromMapTask.lessonTag, task.lessonTag);
+      expect(fromMapTask.estimatedMinutes, task.estimatedMinutes);
+      expect(fromMapTask.actionType, StudyTaskActionType.quiz);
+      expect(fromMapTask.isCompleted, true);
+    });
+
+    test('CloudSyncRepository study_tasks ve user_topic_mastery metotları offline modda güvenli çalışmalı', () async {
+      const task = StudyTask(
+        id: 'task_1',
+        title: 'Tarih Soru Çöz',
+        lessonTag: 'Tarih',
+      );
+
+      // Görev ekleme, güncelleme ve silme işlemleri hata fırlatmadan tamamlanmalı
+      await expectLater(repository.insertStudyTask(task), completes);
+      await expectLater(
+        repository.updateStudyTaskCompletion(
+          title: 'Tarih Soru Çöz',
+          isCompleted: true,
+        ),
+        completes,
+      );
+      await expectLater(
+        repository.deleteStudyTaskByTitle('Tarih Soru Çöz'),
+        completes,
+      );
+
+      final tasks = await repository.fetchStudyTasks();
+      expect(tasks, isEmpty);
+
+      // Konu ustalık matrisi upsert çağrısı
+      await expectLater(
+        repository.upsertTopicMastery(
+          lesson: 'Tarih',
+          topic: 'İlk Türk Devletleri',
+          totalSolved: 10,
+          totalCorrect: 8,
+          totalTimeSeconds: 150,
+        ),
+        completes,
+      );
+    });
+
+    test(
+      'StudyPlannerNotifier offline modda görev ekleme, toggle ve silme',
+      () async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        final plannerNotifier = container.read(studyPlannerProvider.notifier);
+
+        final initialCount = container.read(studyPlannerProvider).totalCount;
+
+        plannerNotifier.addTask(
+          title: 'Güncel Bilgiler 10 Soru',
+          lessonTag: 'Güncel Bilgiler',
+          estimatedMinutes: 15,
+          actionType: StudyTaskActionType.quiz,
+        );
+
+        expect(
+          container.read(studyPlannerProvider).totalCount,
+          initialCount + 1,
+        );
+
+        final addedTask = container.read(studyPlannerProvider).tasks.last;
+        expect(addedTask.title, 'Güncel Bilgiler 10 Soru');
+        expect(addedTask.isCompleted, false);
+
+        // Toggle
+        plannerNotifier.toggleTask(addedTask.id);
+        expect(
+          container
+              .read(studyPlannerProvider)
+              .tasks
+              .firstWhere((t) => t.id == addedTask.id)
+              .isCompleted,
+          true,
+        );
+
+        // Remove
+        plannerNotifier.removeTask(addedTask.id);
+        expect(container.read(studyPlannerProvider).totalCount, initialCount);
+
+        // loadTasksFromCloud çağrısı offline modda yerel listeyi bozmamalı
+        await plannerNotifier.loadTasksFromCloud();
+        expect(container.read(studyPlannerProvider).totalCount, initialCount);
+      },
+    );
   });
 }

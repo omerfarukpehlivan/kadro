@@ -1,5 +1,8 @@
+import 'dart:async' show unawaited;
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/config/supabase_config.dart';
+import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 
 /// Kullanıcı kimlik doğrulama durumu.
@@ -52,6 +55,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
     if (user != null) {
       Future.microtask(() {
         ref.read(studyStatsProvider.notifier).loadFromCloud();
+        ref.read(studyPlannerProvider.notifier).loadTasksFromCloud();
       });
       return AuthUserState(
         isAuthenticated: true,
@@ -80,6 +84,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
           isLoading: false,
         );
         ref.read(studyStatsProvider.notifier).loadFromCloud();
+        unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
         return true;
       } else {
         state = state.copyWith(
@@ -107,6 +112,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
           isLoading: false,
         );
         ref.read(studyStatsProvider.notifier).loadFromCloud();
+        unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
         return true;
       }
       state = state.copyWith(
@@ -160,6 +166,8 @@ class AuthNotifier extends Notifier<AuthUserState> {
           displayName: displayName.trim(),
           isLoading: false,
         );
+        ref.read(studyStatsProvider.notifier).loadFromCloud();
+        unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
         return true;
       }
       state = state.copyWith(

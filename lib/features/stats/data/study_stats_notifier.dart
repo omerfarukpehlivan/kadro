@@ -156,10 +156,11 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
     );
 
     // Supabase arka plan senkronizasyonu
+    final effectiveTopic = (topic == null || topic.isEmpty) ? 'Genel' : topic;
     _cloudSync.saveQuestionAttempt(
       questionText: questionText ?? '$lesson Sorusu',
       lesson: lesson,
-      topic: topic ?? 'Genel',
+      topic: effectiveTopic,
       isCorrect: isCorrect,
       timeSpentSeconds: timeSpentSeconds,
     );
@@ -167,6 +168,13 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       totalXp: state.totalXp,
       leagueTier: state.leagueTier,
       dailyGoalQuestions: state.dailyGoal,
+    );
+    _cloudSync.upsertTopicMastery(
+      lesson: lesson,
+      topic: effectiveTopic,
+      totalSolved: newSolvedByLesson[lesson] ?? 1,
+      totalCorrect: newCorrectByLesson[lesson] ?? (isCorrect ? 1 : 0),
+      totalTimeSeconds: state.totalTimeSeconds,
     );
   }
 

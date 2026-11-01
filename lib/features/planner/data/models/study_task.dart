@@ -41,4 +41,33 @@ class StudyTask {
       actionType: actionType ?? this.actionType,
     );
   }
+
+  /// Supabase `study_tasks` tablosuna uygun Map çıktısı üretir.
+  Map<String, dynamic> toMap(String userId) {
+    return {
+      'user_id': userId,
+      'title': title,
+      'lesson_tag': lessonTag,
+      'estimated_minutes': estimatedMinutes,
+      'action_type': actionType.name,
+      'is_completed': isCompleted,
+    };
+  }
+
+  /// Supabase `study_tasks` tablosundan veya JSON çıktısından StudyTask nesnesi üretir.
+  factory StudyTask.fromMap(Map<String, dynamic> map) {
+    final actionName = (map['action_type'] as String?) ?? 'custom';
+    final actionType = StudyTaskActionType.values.firstWhere(
+      (e) => e.name == actionName,
+      orElse: () => StudyTaskActionType.custom,
+    );
+    return StudyTask(
+      id: (map['id'] ?? '').toString(),
+      title: (map['title'] as String?) ?? '',
+      lessonTag: (map['lesson_tag'] as String?) ?? 'Genel',
+      estimatedMinutes: (map['estimated_minutes'] as num?)?.toInt() ?? 25,
+      actionType: actionType,
+      isCompleted: (map['is_completed'] as bool?) ?? false,
+    );
+  }
 }

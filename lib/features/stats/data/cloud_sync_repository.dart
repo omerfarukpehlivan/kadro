@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:kadro/core/config/supabase_config.dart';
+import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 
-/// Kullanıcının çözdüğü test oturumlarını, soru loglarını ve profil istatistiklerini
+/// Kullanıcının çözdüğü test oturumlarını, soru loglarını, profil istatistiklerini,
+/// konu ustalık matrisini ve çalışma planlayıcı görevlerini
 /// Supabase PostgreSQL veritabanı ile senkronize eden veri erişim katmanı.
 ///
 /// Web/Angular Karşılığı: `CloudSyncService` / Repository Katmanı.
@@ -111,6 +113,110 @@ class CloudSyncRepository {
     } catch (e) {
       debugPrint('Supabase fetchSessionHistory hatası: $e');
       return const [];
+    }
+  }
+
+  /// Giriş yapmış kullanıcının buluttaki çalışma planı görevlerini çeker.
+  Future<List<StudyTask>> fetchStudyTasks() async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return const [];
+
+    try {
+      final List<dynamic> response = await client
+          .from('study_tasks')
+          .select()
+          .eq('user_id', userId)
+          .order('created_at', ascending: true);
+
+      return response
+          .map((row) => StudyTask.fromMap(row as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      debugPrint('Supabase fetchStudyTasks hatası: $e');
+      return const [];
+    }
+  }
+
+  /// Yeni çalışma görevini Supabase `public.study_tasks` tablosuna ekler.
+  Future<void> insertStudyTask(StudyTask task) async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return;
+
+    try {
+      await client.from('study_tasks').insert(task.toMap(userId));
+    } catch (e) {
+      debugPrint('Supabase insertStudyTask hatası: $e');
+    }
+  }
+
+  /// Çalışma görevinin tamamlanma durumunu günceller.
+  Future<void> updateStudyTaskCompletion({
+    required String title,
+    required bool isCompleted,
+  }) async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return;
+
+    try {
+      await client
+          .from('study_tasks')
+          .update({'is_completed': isCompleted})
+          .eq('user_id', userId)
+          .eq('title', title);
+    } catch (e) {
+      debugPrint('Supabase updateStudyTaskCompletion hatası: $e');
+    }
+  }
+
+  /// Başlığına göre görevi siler.
+  Future<void> deleteStudyTaskByTitle(String title) async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return;
+
+    try {
+      await client
+          .from('study_tasks')
+          .delete()
+          .eq('user_id', userId)
+          .eq('title', title);
+    } catch (e) {
+      debugPrint('Supabase deleteStudyTaskByTitle hatası: $e');
+    }
+  }
+
+  /// Çözülen konu bazlı başarı matrisini `public.user_topic_mastery` tablosuna kaydeder/günceller (upsert).
+  Future<void> upsertTopicMastery({
+    required String lesson,
+    required String topic,
+    required int totalSolved,
+    required int totalCorrect,
+    required int totalTimeSeconds,
+  }) async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return;
+
+    try {
+      final masteryPercent = totalSolved == 0
+          ? 0
+          : ((totalCorrect / totalSolved) * 100).round();
+
+      await client.from('user_topic_mastery').upsert({
+        'user_id': userId,
+        'lesson': lesson,
+        'topic': topic,
+        'total_solved': totalSolved,
+        'total_correct': totalCorrect,
+        'total_time_seconds': totalTimeSeconds,
+        'mastery_percent': masteryPercent,
+        'last_studied_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'user_id,lesson,topic');
+    } catch (e) {
+      debugPrint('Supabase upsertTopicMastery hatası: $e');
     }
   }
 }

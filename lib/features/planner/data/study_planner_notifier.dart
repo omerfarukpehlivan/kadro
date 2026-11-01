@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
+import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 
 /// Çalışma planlayıcı durum sınıfı (Immutable State).
 ///
@@ -26,6 +29,8 @@ class StudyPlannerState {
 ///
 /// Web/Angular benzetmesi: Injectable Service + State Machine.
 class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
+  final CloudSyncRepository _cloudSync = const CloudSyncRepository();
+
   @override
   StudyPlannerState build() {
     return const StudyPlannerState(
@@ -57,14 +62,27 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
 
   /// Görevin tamamlandı/tamamlanmadı durumunu değiştirir.
   void toggleTask(String id) {
+    StudyTask? updatedTask;
+
     state = state.copyWith(
       tasks: state.tasks.map((task) {
         if (task.id == id) {
-          return task.copyWith(isCompleted: !task.isCompleted);
+          final toggled = task.copyWith(isCompleted: !task.isCompleted);
+          updatedTask = toggled;
+          return toggled;
         }
         return task;
       }).toList(),
     );
+
+    if (updatedTask != null) {
+      unawaited(
+        _cloudSync.updateStudyTaskCompletion(
+          title: updatedTask!.title,
+          isCompleted: updatedTask!.isCompleted,
+        ),
+      );
+    }
   }
 
   /// Yeni bir KPSS çalışma görevi ekler.
@@ -86,20 +104,46 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     );
 
     state = state.copyWith(tasks: [...state.tasks, newTask]);
+    unawaited(_cloudSync.insertStudyTask(newTask));
   }
 
   /// Görevi listeden siler.
   void removeTask(String id) {
+    StudyTask? removedTask;
+    for (final t in state.tasks) {
+      if (t.id == id) {
+        removedTask = t;
+        break;
+      }
+    }
+
     state = state.copyWith(
       tasks: state.tasks.where((task) => task.id != id).toList(),
     );
+
+    if (removedTask != null) {
+      unawaited(_cloudSync.deleteStudyTaskByTitle(removedTask.title));
+    }
   }
 
   /// Tamamlanmış tüm görevleri listeden temizler.
   void clearCompleted() {
+    final completedTasks = state.tasks.where((t) => t.isCompleted).toList();
     state = state.copyWith(
       tasks: state.tasks.where((task) => !task.isCompleted).toList(),
     );
+
+    for (final task in completedTasks) {
+      unawaited(_cloudSync.deleteStudyTaskByTitle(task.title));
+    }
+  }
+
+  /// Buluttaki kayıtlı görevleri yükler.
+  Future<void> loadTasksFromCloud() async {
+    final remoteTasks = await _cloudSync.fetchStudyTasks();
+    if (remoteTasks.isNotEmpty) {
+      state = state.copyWith(tasks: remoteTasks);
+    }
   }
 }
 
