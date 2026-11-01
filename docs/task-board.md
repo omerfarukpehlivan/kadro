@@ -41,9 +41,11 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-14** | **"Kadro Koçu" (Anadolu Kartalı) Maskot Sistemi (`MascotCoachBanner`), 3D `TactileCard` & Gamified Üst Bar** | 4 farklı ifadeli (`coach`, `victory`, `detective`, `pro`) **Kadro Koçu** konuşma balonlu maskot bileşeni, Duolingo/Brilliant tarzı 3D alt gölgeli `TactileCard` ve `AppTopBar` canlı seri/PRO rozetleri | ✅ **Tamamlandı** (`f4cfe7c`) |
 | **TASK-15** | **Duolingo/Brilliant Tarzı 2x2 Tactile Bento Ana Sayfa & Görsel Ders Kartları** | `HomeScreen`'de düz liste yerine **Kadro Koçu** konuşma balonu + **2x2 Tactile Bento Grid** çalışma kutuları, `LessonsScreen`'de soru ağırlık barlı 3D ders kartları | ✅ **Tamamlandı** (`d6738a7`) |
 | **TASK-16** | **Canlı Kadro Koçu Sahne Entegrasyonu (`QuizResultScreen`, `MistakesScreen`, `PaywallScreen`, `ProfileScreen`)** | Sınav karnesinde **Zafer (`victory`)**, Yanlış Defteri'nde **Dedektif (`detective`)**, Kadro PRO ekranında **Kraliyet Taçlı (`pro`)** maskot sahneleri | ✅ **Tamamlandı** (`3dede1b`) |
-| **TASK-17** | **Havada Duran (Floating Pill) Alt Menü (`AppNavigationBar`) & Sinematik Gradient/Pop-Out `MascotCoachBanner`** | Standart alt bar yerine iOS/Linear tarzı havada asılı kapsül alt menü, `MascotCoachBanner` içinde Derin İndigo Gradient arka plan, dekoratif ışık halkaları ve `96x96` büyük Pop-Out maskot sahnesi | ✅ **Tamamlandı** |
-| **TASK-18** | **Super-App Ana Sayfa (`HomeScreen`) — Dairesel Hedef Halkası (`Circular Gauge`) & Canlı Rozetli Gradient Bento Kartları** | `_DailyGoalCard` içinde `84x84` dairesel ilerleme halkası (`CircularProgressIndicator` gauge) + mini metrik hapları, 2x2 Bento kartlarında duotone/gradient yüzey ve `'65 Dakika'` / `'Başla →'` aksiyon rozetleri | ✅ **Tamamlandı** |
-| **TASK-19** | **Duolingo Tarzı "Konu Yol Haritası (Learning Path / Skill Tree)" (`LessonTopicsScreen`) & Zengin Modül Kartları (`LessonsScreen`)** | `LessonTopicsScreen` içindeki düz `ListTile` listesini kaldırıp dikey bağlantılı düğümlerden (`01`, `02`, `03`...) oluşan **Duolingo Yol Haritası**'na dönüştürme ve `LessonsScreen` modül kartlarını zenginleştirme | ✅ **Tamamlandı** |
+| **TASK-17** | **Havada Duran (Floating Pill) Alt Menü (`AppNavigationBar`) & Sinematik Gradient/Pop-Out `MascotCoachBanner`** | Standart alt bar yerine iOS/Linear tarzı havada asılı kapsül alt menü, `MascotCoachBanner` içinde Derin İndigo Gradient arka plan, dekoratif ışık halkaları ve `96x96` büyük Pop-Out maskot sahnesi | ✅ **Tamamlandı** (`7442b77`) |
+| **TASK-18** | **Super-App Ana Sayfa (`HomeScreen`) — Dairesel Hedef Halkası (`Circular Gauge`) & Canlı Rozetli Gradient Bento Kartları** | `_DailyGoalCard` içinde `84x84` dairesel ilerleme halkası (`CircularProgressIndicator` gauge) + mini metrik hapları, 2x2 Bento kartlarında duotone/gradient yüzey ve `'65 Dakika'` / `'Başla →'` aksiyon rozetleri | ✅ **Tamamlandı** (`5739510`) |
+| **TASK-19** | **Duolingo Tarzı "Konu Yol Haritası (Learning Path / Skill Tree)" (`LessonTopicsScreen`) & Zengin Modül Kartları (`LessonsScreen`)** | `LessonTopicsScreen` içindeki düz `ListTile` listesini kaldırıp dikey bağlantılı düğümlerden (`01`, `02`, `03`...) oluşan **Duolingo Yol Haritası**'na dönüştürme ve `LessonsScreen` modül kartlarını zenginleştirme | ✅ **Tamamlandı** (`02ac8cf`) |
+| **TASK-20** | **Akıllı KPSS Çalışma Planlayıcı Veri Katmanı (`StudyTask` Modeli & `StudyPlannerNotifier` Riverpod State)** | Ders etiketli (`Tarih`, `Coğrafya` vb.), tahmini süreli (`15-65 dk`) ve doğrudan aksiyon tipli (`quiz`, `flashcards`, `mistakes`, `custom`) görev modeli + Riverpod state yönetimi ve birim testleri | ⏳ **Sırada (Dalga 7)** |
+| **TASK-21** | **Hibrit Çalışma Planlayıcı Arayüzü (`HomeDailyPlanCard` + Tam Ekran `StudyPlannerScreen` + Hazır Şablonlar & "Başla ▶")** | `HomeScreen`'de anında tiklenebilen **"Bugünün Çalışma Planı"** kompakt widget'ı, tam ekran `StudyPlannerScreen` (`/planner`), tek tıkla hazır KPSS görev şablonları ve görevden doğrudan teste geçiren **"Başla ▶"** aksiyonu | ⏳ **Sırada (Dalga 7)** |
 
 ---
 
@@ -961,5 +963,140 @@ ADIM 2: `lib/features/lessons/presentation/lessons_screen.dart` — Zengin Akade
 
 ADIM 3: Test ve Doğrulama
 1. `test/widget_test.dart` içinde `'Tarih'` kartına tıklanınca açılan `LessonTopicsScreen` ekranında `'ADIM 1'` ve `'Test Çöz'` yol haritası rozetlerinin de görüntülendiğini doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+## 📅 7. Dalga 7: Akıllı KPSS Çalışma Planlayıcı (Smart Study Planner — `TASK-20` & `TASK-21`)
+
+Sıradan bir To-Do listesi yerine, KPSS Genel Kültür çalışmasıyla doğrudan entegre olan **Altın Oran (Akıllı KPSS Planlayıcı)** mimarisi:
+- **Ders Etiketi & Süre Rozeti:** Her görevin bir ders etiketi (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`, `Genel`) ve tahmini süresi (`15 dk`, `25 dk`, `40 dk`, `65 dk`) vardır.
+- **Tek Tıkla "Başla ▶" Entegrasyonu:** Görevin yanındaki `"Başla"` butonuna basıldığında görev türüne göre doğrudan `QuizScreen`, `FlashcardsScreen` veya `MistakesScreen` açılır!
+- **Hibrit Erişim:** Ana sayfada (`HomeScreen`) **"Bugünün Çalışma Planı"** kompakt widget'ı üzerinden anında tik atılabilir; `"Tümünü Gör / + Ekle"` ile tam ekran `StudyPlannerScreen` (`/planner`) açılır.
+
+---
+
+### 📦 TASK-20: Akıllı KPSS Çalışma Planlayıcı Veri Katmanı (`StudyTask` & `StudyPlannerNotifier`)
+
+```text
+GÖREV: TASK-20 — Akıllı KPSS Çalışma Planlayıcı Veri Modeli (StudyTask) ve Riverpod State Yönetimi (StudyPlannerNotifier)
+ÖNEMLİ: GEMINI.md ve .agents/skills/flutter-feature/SKILL.md kurallarına birebir uy. Feature-first klasör yapısını (`lib/features/planner/data/...`) kullan.
+
+ADIM 1: `lib/features/planner/data/models/study_task.dart` (Görev Modeli)
+1. `lib/features/planner/data/models/study_task.dart` dosyasını oluştur:
+   - Görevin uygulama içindeki hangi çalışma ekranını tetikleyeceğini belirten `enum` tanımla:
+     ```dart
+     enum StudyTaskActionType { quiz, flashcards, mistakes, custom }
+     ```
+   - `class StudyTask` modelini oluştur:
+     - `final String id;`
+     - `final String title;`
+     - `final String lessonTag;` (`'Tarih'`, `'Coğrafya'`, `'Vatandaşlık'`, `'Güncel Bilgiler'`, `'Genel'`)
+     - `final int estimatedMinutes;`
+     - `final bool isCompleted;`
+     - `final StudyTaskActionType actionType;`
+     - `const StudyTask({required this.id, required this.title, required this.lessonTag, this.estimatedMinutes = 25, this.isCompleted = false, this.actionType = StudyTaskActionType.custom});`
+     - `StudyTask copyWith({String? id, String? title, String? lessonTag, int? estimatedMinutes, bool? isCompleted, StudyTaskActionType? actionType})` metodunu yaz.
+
+ADIM 2: `lib/features/planner/data/study_planner_notifier.dart` (Riverpod Notifier & State)
+1. `lib/features/planner/data/study_planner_notifier.dart` dosyasını oluştur:
+   - `class StudyPlannerState`:
+     - `final List<StudyTask> tasks;`
+     - `const StudyPlannerState({this.tasks = const []});`
+     - Yardımcı getter'lar:
+       - `int get totalCount => tasks.length;`
+       - `int get completedCount => tasks.where((t) => t.isCompleted).length;`
+       - `int get remainingCount => totalCount - completedCount;`
+       - `int get totalEstimatedMinutes => tasks.fold(0, (sum, t) => sum + t.estimatedMinutes);`
+       - `double get completionProgress => totalCount == 0 ? 0.0 : (completedCount / totalCount).clamp(0.0, 1.0);`
+     - `StudyPlannerState copyWith({List<StudyTask>? tasks})`
+   - `class StudyPlannerNotifier extends Notifier<StudyPlannerState>`:
+     - `build()` içinde kullanıcının ilk açılışta hemen deneyimleyebileceği 3 başlangıç KPSS görevi döndür:
+       1. `StudyTask(id: 'task_1', title: 'İslamiyet Öncesi Türk Tarihi 15 Soru Çöz', lessonTag: 'Tarih', estimatedMinutes: 20, actionType: StudyTaskActionType.quiz)`
+       2. `StudyTask(id: 'task_2', title: 'Türkiye Coğrafi Konumu Hap Kart Tekrarı', lessonTag: 'Coğrafya', estimatedMinutes: 15, actionType: StudyTaskActionType.flashcards)`
+       3. `StudyTask(id: 'task_3', title: 'Yanlış Defterindeki Soruları Temizle', lessonTag: 'Genel', estimatedMinutes: 15, actionType: StudyTaskActionType.mistakes)`
+     - Metotlar:
+       - `void toggleTask(String id)`: İlgili `id`'ye sahip görevin `isCompleted` değerini tersine çevirir (`!task.isCompleted`).
+       - `void addTask({required String title, required String lessonTag, int estimatedMinutes = 25, StudyTaskActionType actionType = StudyTaskActionType.custom})`: Boş olmayan `title.trim()` ile yeni bir `StudyTask` (`id: DateTime.now().microsecondsSinceEpoch.toString()`) oluşturup listenin başına veya sonuna ekler.
+       - `void removeTask(String id)`: İlgili `id`'ye sahip görevi listeden çıkarır.
+       - `void clearCompleted()`: Tamamlanmış (`isCompleted == true`) görevleri listeden temizler.
+   - Global provider:
+     `final studyPlannerProvider = NotifierProvider<StudyPlannerNotifier, StudyPlannerState>(StudyPlannerNotifier.new);`
+
+ADIM 3: Birim Testleri ve Doğrulama
+1. `test/study_planner_test.dart` dosyasını oluştur:
+   - Başlangıçta 3 varsayılan görevin geldiğini (`totalCount == 3`, `completedCount == 0`),
+   - `toggleTask('task_1')` çağrıldığında `completedCount == 1` olduğunu,
+   - `addTask` ve `removeTask` metotlarının doğru çalıştığını test et.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-21: Hibrit Çalışma Planlayıcı Arayüzü (`HomeDailyPlanCard` + `StudyPlannerScreen` + Hazır Şablonlar & "Başla ▶")
+
+```text
+GÖREV: TASK-21 — Ana Sayfa Kompakt Çalışma Planı Kartı (HomeDailyPlanCard), Tam Ekran Akıllı Planlayıcı (StudyPlannerScreen) ve Router Entegrasyonu
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...) veya Colors.* KULLANMA; tüm renkleri Theme.of(context).colorScheme üzerinden al. TASK-20 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `lib/features/planner/presentation/study_planner_screen.dart` (Tam Ekran Akıllı KPSS Planlayıcı)
+1. `StudyPlannerScreen extends ConsumerWidget` oluştur:
+   - `AppBar`: `title: const Text('Çalışma Planlayıcın')`, sağda (`actions:`) tamamlanan görev varsa (`planner.completedCount > 0`) `TextButton.icon(onPressed: () => ref.read(studyPlannerProvider.notifier).clearCompleted(), icon: const Icon(LucideIcons.trash2, size: 16), label: const Text('Tamamlananları Sil'))`.
+   - `body:` `ListView(padding: const EdgeInsets.all(16), children: [...])`:
+     1. **Üst Koç Sahnesi:**
+        ```dart
+        const MascotCoachBanner(
+          mood: MascotMood.coach,
+          badgeLabel: 'GÜNLÜK KAMP PLANI',
+          title: 'Bugünkü Görevlerin',
+          message: 'Planlı çalışan kadroyu kapar! Görevlerini tikle veya Başla butonuyla doğrudan çalışmaya geç.',
+        ),
+        ```
+     2. **Plan İlerleme & Süre Özeti Kartı (`_PlannerSummaryCard`):**
+        - `TactileCard` içinde: Solda `'${planner.completedCount} / ${planner.totalCount} Görev Tamamlandı'`, sağda `Container` rozet içinde `LucideIcons.clock` + `'Toplam ${planner.totalEstimatedMinutes} dk'` ve altta `ClipRRect` içinde `LinearProgressIndicator(minHeight: 8, value: planner.completionProgress)`.
+     3. **Tek Tıkla Hazır KPSS Görev Şablonları (`_QuickTemplatesStrip`):**
+        - Başlık: `const SectionTitle('Hızlı Görev Şablonları (Tek Tıkla Ekle)')`
+        - Yatay kaydırılabilir (`SingleChildScrollView(scrollDirection: Axis.horizontal)`) 4 adet `ActionChip`:
+          - `'+ 20 Tarih Sorusu'` (`lessonTag: 'Tarih'`, `estimatedMinutes: 25`, `actionType: StudyTaskActionType.quiz`)
+          - `'+ Coğrafya Hap Kart'` (`lessonTag: 'Coğrafya'`, `estimatedMinutes: 15`, `actionType: StudyTaskActionType.flashcards`)
+          - `'+ Vatandaşlık Testi'` (`lessonTag: 'Vatandaşlık'`, `estimatedMinutes: 20`, `actionType: StudyTaskActionType.quiz`)
+          - `'+ Yanlışları Temizle'` (`lessonTag: 'Genel'`, `estimatedMinutes: 15`, `actionType: StudyTaskActionType.mistakes`)
+        - Tıklandığında `ref.read(studyPlannerProvider.notifier).addTask(...)` çağırır.
+     4. **Görev Listesi (`_PlannerTaskTile`):**
+        - Liste boşsa şık bir boş durum (`'Bugün için planlanmış görev kalmadı! Şablonlardan veya + Görev Ekle butonundan yeni hedef ekleyebilirsin.'`) göster.
+        - Her `StudyTask` için `Padding(padding: const EdgeInsets.only(bottom: 12), child: TactileCard(...))`:
+          - Sol: Dokunulunca `toggleTask(task.id)` yapan dairesel/kare onay ikonu (`task.isCompleted ? LucideIcons.circleCheck : LucideIcons.squareCheck`).
+          - Orta (`Expanded`):
+            - Üstte ders rozeti (`task.lessonTag`) + süre rozeti (`'${task.estimatedMinutes} dk'`),
+            - Altta görev başlığı (`Text(task.title, style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700, decoration: task.isCompleted ? TextDecoration.lineThrough : null))`).
+          - Sağ:
+            - Görev tamamlanmadıysa ve aksiyonu varsa küçük `'Başla'` butonu (`FilledButton.tonal` veya `InkWell` rozet: `StudyTaskActionType.quiz` -> `QuizScreen`, `flashcards` -> `FlashcardsScreen`, `mistakes` -> `MistakesScreen` açar),
+            - Silme ikonu (`IconButton(icon: Icon(LucideIcons.trash2, size: 18, color: colorScheme.error), onPressed: () => ref.read(studyPlannerProvider.notifier).removeTask(task.id))`).
+   - **`floatingActionButton:`** `FloatingActionButton.extended(onPressed: () => _showAddTaskSheet(context, ref), icon: const Icon(LucideIcons.plus), label: const Text('Görev Ekle'))`.
+   - **`_showAddTaskSheet` (`ModalBottomSheet` — Ayrı bir `_AddTaskBottomSheet extends ConsumerStatefulWidget` sınıfı olarak yaz):**
+     - Görev başlığı `TextField` (`hintText: 'Örn: Osmanlı Yükselme Dönemi 2 Test'`),
+     - Ders seçimi (`Wrap` içinde `ChoiceChip`: `'Tarih'`, `'Coğrafya'`, `'Vatandaşlık'`, `'Güncel Bilgiler'`, `'Genel'`),
+     - Süre seçimi (`Wrap` içinde `ChoiceChip`: `15`, `25`, `40`, `65` dk),
+     - `'Plana Ekle'` (`FilledButton`): Tıklanınca `addTask` çağırır ve `Navigator.of(context).pop()` yapar.
+
+ADIM 2: `lib/features/planner/presentation/widgets/home_daily_plan_card.dart` (Ana Sayfa Kompakt Plan Widget'ı)
+1. `HomeDailyPlanCard extends ConsumerWidget` oluştur:
+   - `TactileCard` içinde:
+     - Üst satır (`Row`):
+       - Solda `Icon(LucideIcons.listTodo, color: colorScheme.primary)` + `const SizedBox(width: 8)` + `Expanded(child: Text('Bugünün Çalışma Planı', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)))`,
+       - Sağda `'${planner.completedCount}/${planner.totalCount}'` rozeti ve `'Tümünü Gör'` (`TextButton` -> `StudyPlannerScreen` ekranını açar).
+     - Orta kısım: `planner.tasks.take(3)` ile ilk 3 görevi kompakt satırlar halinde listele (her satırda tik atma `InkWell` + görev başlığı + ders/süre etiketi).
+     - Alt satır: `OutlinedButton.icon(onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StudyPlannerScreen())), icon: const Icon(LucideIcons.calendarCheck, size: 16), label: const Text('Planlayıcıyı Aç & Görev Ekle'))`.
+
+ADIM 3: `HomeScreen` ve `router.dart` Entegrasyonu
+1. `lib/features/home/presentation/home_screen.dart` içinde `_DailyGoalCard` altına `const SizedBox(height: 16)` ve `const HomeDailyPlanCard()` ekle (mevcut tüm başlıkları ve Bento kartlarını BİREBİR koru!).
+2. `lib/app/router.dart` içine `/planner` (`builder: (context, state) => const StudyPlannerScreen()`) rotasını ekle.
+
+ADIM 4: Widget Testi ve Doğrulama
+1. `test/study_planner_test.dart` içine widget testleri ekle:
+   - `HomeScreen` üzerinde `'Bugünün Çalışma Planı'` kartının ve varsayılan görevlerin göründüğünü,
+   - `'Planlayıcıyı Aç & Görev Ekle'` butonuna tıklanınca `StudyPlannerScreen` ekranının açıldığını ve hızlı şablon (`'+ 20 Tarih Sorusu'`) tıklanınca görev sayısının 4'e çıktığını doğrula.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
