@@ -35,9 +35,11 @@ void main() {
       await tester.tap(find.text('Tarih'));
       await tester.pumpAndSettle();
 
-      // Tarih Konuları sayfasının açıldığını ve ilk konuyu doğrula
+      // Tarih Konuları sayfasının açıldığını ve yol haritası düğümlerini doğrula
       expect(find.text('Tarih Konuları'), findsOneWidget);
       expect(find.text('İslamiyet Öncesi Türk Tarihi'), findsOneWidget);
+      expect(find.text('ADIM 1'), findsOneWidget);
+      expect(find.text('Test Çöz'), findsWidgets);
     },
   );
 }

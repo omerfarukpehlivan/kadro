@@ -51,6 +51,8 @@ class _LessonCard extends StatelessWidget {
             ),
           );
         },
+        backgroundColor: colorScheme.primaryContainer.withAlpha(35),
+        borderColor: colorScheme.primary.withAlpha(80),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -124,6 +126,37 @@ class _LessonCard extends StatelessWidget {
                 minHeight: 6,
                 value: lesson.questionCount / 60,
               ),
+            ),
+            const SizedBox(height: 10),
+            // Alt bilgi ve aksiyon satırı
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      LucideIcons.layers,
+                      size: 14,
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${lesson.topics.length} Adımlı Yol Haritası',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'Yol Haritasını Aç →',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
