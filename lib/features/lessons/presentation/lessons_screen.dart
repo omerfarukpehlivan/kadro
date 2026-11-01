@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 import 'package:kadro/features/lessons/presentation/lesson_topics_screen.dart';
-import 'package:kadro/shared/widgets/page_header.dart';
+import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Dersler sekmesi: KPSS Genel Kültür dersleri (Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler).
@@ -15,25 +16,21 @@ class LessonsScreen extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        const PageHeader(
-          icon: LucideIcons.bookOpen,
+        const MascotCoachBanner(
+          mood: MascotMood.coach,
           title: 'KPSS Genel Kültür',
-          subtitle: 'Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler konu testleri ve hap bilgiler.',
+          message: '60 soruluk sınavda Tarih (%45) ve Coğrafya (%30) lokomotifimiz. Hangi dersten başlıyoruz?',
         ),
         const SizedBox(height: 16),
         const SectionTitle('Genel Kültür Dersleri · 60 soru'),
-        // Liste içinde for: her ders için bir kart üretir (Angular'daki @for gibi)
+        // Liste içinde for: her ders için 3D Tactile kart üretir
         for (final lesson in kpssLessons) _LessonCard(lesson: lesson),
       ],
     );
   }
 }
 
-/// Tek bir dersin kartı.
-///
-/// Stack widget'ı Web'deki `position: relative` kapsayıcısı gibidir;
-/// içindeki Positioned ise `position: absolute` gibi çalışarak bileşenleri
-/// üst üste katmanlar halinde hizalar.
+/// Tek bir dersin 3D basılabilir ağırlık barlı kartı.
 class _LessonCard extends StatelessWidget {
   final Lesson lesson;
 
@@ -44,58 +41,93 @@ class _LessonCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Stack(
-      children: [
-        Card(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: colorScheme.outlineVariant),
-          ),
-          child: ListTile(
-            leading: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(lesson.icon, color: colorScheme.onPrimaryContainer),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TactileCard(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => LessonTopicsScreen(lesson: lesson),
             ),
-            title: Text(lesson.name),
-            subtitle: Text(
-              'Sınavda ${lesson.questionCount} soru · ${lesson.topics.length} konu',
-            ),
-            trailing: const Icon(LucideIcons.chevronRight),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => LessonTopicsScreen(lesson: lesson),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    lesson.icon,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
                 ),
-              );
-            },
-          ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            lesson.name,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          if (lesson.badgeText != null) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.tertiaryContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                lesson.badgeText!,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onTertiaryContainer,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Sınavda ${lesson.questionCount} soru · ${lesson.topics.length} konu',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(LucideIcons.chevronRight, color: colorScheme.outline),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // Sınavdaki soru ağırlığını (questionCount / 60) gösteren ince çubuk
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                minHeight: 6,
+                value: lesson.questionCount / 60,
+              ),
+            ),
+          ],
         ),
-        // Eğer dersin rozet metni (badgeText) varsa sağ üst köşeye rozet konduruyoruz
-        if (lesson.badgeText != null)
-          Positioned(
-            top: 6,
-            right: 12,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: colorScheme.tertiaryContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                lesson.badgeText!,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onTertiaryContainer,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-      ],
+      ),
     ).animate().fadeIn(duration: 200.ms);
   }
 }
