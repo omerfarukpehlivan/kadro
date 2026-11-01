@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// Geçmiş, İstatistik ve Ayarlar sayfaları bunu ortak kullanır
 /// (Angular'da shared modüldeki tekrar kullanılan bir component gibi).
 class PageHeader extends StatelessWidget {
-  final IconData icon; // Icons.history gibi bir ikon tanımı
+  final IconData icon; // İkon tanımı
   final String title;
   final String subtitle;
 
@@ -22,9 +22,13 @@ class PageHeader extends StatelessWidget {
 
     return Row(
       children: [
-        CircleAvatar(
-          radius: 24,
-          backgroundColor: colorScheme.primaryContainer,
+        Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(14),
+          ),
           child: Icon(icon, color: colorScheme.onPrimaryContainer),
         ),
         const SizedBox(width: 16),
@@ -33,7 +37,12 @@ class PageHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: textTheme.titleLarge),
+              Text(
+                title,
+                style: textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               Text(
                 subtitle,
                 // copyWith: temadaki stili alıp sadece rengini değiştirir

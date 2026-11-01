@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart'; // Material Design bileşenleri
+import 'package:lucide_icons_flutter/lucide_icons.dart'; // Modern çizgisel ikon seti
 
 /// Alttaki sekme menüsü (Material Design: navigation bar).
 /// Web'deki ana menünün (navbar) mobil karşılığıdır; mobilde başparmağa yakın olsun diye altta durur.
@@ -20,38 +21,31 @@ class AppNavigationBar extends StatelessWidget {
           selectedIndex, // Aktif olan butonun görsel ışığını/vurgusunu yakar
       onDestinationSelected: onDestinationSelected, // Tıklanınca yeni seçilen indeksi uygulama kabuğuna (AppShell) bildirir
       destinations: const [
-        // Alt menüdeki her bir sekme butonunun listesi
+        // Alt menüdeki her bir sekme butonunun listesi (LucideIcons ile modernleştirildi)
         NavigationDestination(
-          // 1. Buton: Ana Sayfa
-          icon: Icon(
-            Icons.home_outlined,
-          ), // Seçili değilken gösterilecek çizgi ikon
-          selectedIcon: Icon(Icons.home), // Seçildiğinde gösterilecek dolu ikon
-          label: 'Ana Sayfa', // İkonun altındaki etiket metni
+          icon: Icon(LucideIcons.house),
+          selectedIcon: Icon(LucideIcons.house),
+          label: 'Ana Sayfa',
         ),
         NavigationDestination(
-          // 2. Buton: Dersler
-          icon: Icon(Icons.menu_book_outlined), // Çizgi kitap ikonu
-          selectedIcon: Icon(Icons.menu_book), // Dolu kitap ikonu
-          label: 'Dersler', // Etiket metni
+          icon: Icon(LucideIcons.bookOpen),
+          selectedIcon: Icon(LucideIcons.bookOpen),
+          label: 'Dersler',
         ),
         NavigationDestination(
-          // 3. Buton: Denemeler
-          icon: Icon(Icons.timer_outlined), // Çizgi kronometre ikonu
-          selectedIcon: Icon(Icons.timer), // Dolu kronometre ikonu
-          label: 'Denemeler', // Etiket metni
+          icon: Icon(LucideIcons.timer),
+          selectedIcon: Icon(LucideIcons.timer),
+          label: 'Denemeler',
         ),
         NavigationDestination(
-          // 4. Buton: İstatistik
-          icon: Icon(Icons.bar_chart_outlined), // Çizgi grafik ikonu
-          selectedIcon: Icon(Icons.bar_chart), // Dolgulu grafik ikonu
-          label: 'İstatistik', // Etiket metni
+          icon: Icon(LucideIcons.chartColumn),
+          selectedIcon: Icon(LucideIcons.chartColumn),
+          label: 'İstatistik',
         ),
         NavigationDestination(
-          // 5. Buton: Profil
-          icon: Icon(Icons.person_outline), // Çizgi kişi ikonu
-          selectedIcon: Icon(Icons.person), // Dolu kişi ikonu
-          label: 'Profil', // Etiket metni
+          icon: Icon(LucideIcons.user),
+          selectedIcon: Icon(LucideIcons.user),
+          label: 'Profil',
         ),
       ],
     );

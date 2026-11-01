@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart'; // Material Design renk, font ve widget kütüphanesi
+import 'package:lucide_icons_flutter/lucide_icons.dart'; // Modern çizgisel ikon seti
 
 /// Üstteki başlık barı (Material Design: top app bar).
 /// Web'deki sayfa header'ının karşılığıdır; menü değil, o anki ekranın başlığını gösterir.
@@ -15,14 +16,37 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return AppBar(
-      // Material Design standart üst bar widget'ı
-      title: Text(title), // Başlık metnini çizer
-      centerTitle:
-          false, // Başlığı sola hizalar (Android Material 3 standart görünümü)
-      backgroundColor: Theme.of(context)
-          .colorScheme
-          .inversePrimary, // Temadaki uyumlu ana rengi çeker
+      centerTitle: false, // Başlığı sola hizalar
+      backgroundColor:
+          colorScheme.surface, // Kurumsal tema: yüzeyle bütünleşik arka plan
+      surfaceTintColor: colorScheme.surfaceTint,
+      scrolledUnderElevation: 0.5,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              LucideIcons.graduationCap,
+              size: 18,
+              color: colorScheme.onPrimaryContainer,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
     );
   }
 
