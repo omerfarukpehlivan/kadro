@@ -1,42 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
+import 'package:kadro/features/quiz/data/models/quiz_result.dart';
+import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
 import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
 
-/// Etkileşimli Soru Ekranı (Faz 4).
+/// Varsayılan olarak gösterilen 3 özgün KPSS Lisans Genel Kültür sorusu.
+const List<Question> defaultSampleQuestions = [
+  Question(
+    id: 'tar_001',
+    lesson: 'Tarih',
+    topic: 'İlk Türk Devletleri',
+    text: 'Uygurların yerleşik hayata geçmesiyle birlikte Türk kültür ve devlet yapısında önemli değişimler yaşanmıştır.\n\nAşağıdakilerden hangisi bu değişimlerin doğrudan bir sonucu olarak gösterilemez?',
+    options: [
+      'Tapınak ve saray mimarisinin gelişmesi',
+      'Kalıcı yazılı eserlerin ve kütüphanelerin ortaya çıkması',
+      'Hükümdarlığın kut inancına dayandırılması geleneğinin sona ermesi',
+      'Minyatür ve fresk gibi süsleme sanatlarının yaygınlaşması',
+      'Tarım faaliyetlerinin temel geçim kaynağı hâline gelmesi',
+    ],
+    correctIndex: 2,
+    explanation: 'Kut inancı (hükümdarlığın tanrısal kaynaklı olduğuna inanılması) Türk devlet geleneğinde varlığını sürdürmüştür. Yerleşik hayat bu inancı sona erdirmemiştir.',
+  ),
+  Question(
+    id: 'cog_001',
+    lesson: 'Coğrafya',
+    topic: 'Türkiye\'nin Fiziki Özellikleri',
+    text: 'Türkiye\'de karstik şekiller en yaygın olarak Akdeniz Bölgesi\'nde, özellikle Teke ve Taşeli platolarında görülür.\n\nBu durumun ortaya çıkmasında bölgenin hangi temel özelliği en fazla etkili olmuştur?',
+    options: [
+      'Yıllık yağış miktarının fazla olması',
+      'Kolay eriyebilen kalkerli (kireçtaşı) kayaç yapısına sahip olması',
+      'Ortalama yükseltisinin fazla olması',
+      'Bitki örtüsünün maki olması',
+      'Fay hatlarının yoğun bulunması',
+    ],
+    correctIndex: 1,
+    explanation: 'Karstik şekillerin oluşabilmesi için kimyasal tortul kayaçların (kalker, jips gibi eriyebilen taşların) bulunması şarttır. Akdeniz\'deki temel etken kalkerli kayaç yapısıdır.',
+  ),
+  Question(
+    id: 'vat_001',
+    lesson: 'Vatandaşlık',
+    topic: 'Temel Hak ve Ödevler',
+    text: '1982 Anayasası\'na göre aşağıdakilerden hangisi \'Kişinin Hakları ve Ödevleri\' (Koruyucu / Negatif Statü Hakları) arasında yer alır?',
+    options: [
+      'Din ve vicdan hürriyeti',
+      'Çalışma ve sözleşme hürriyeti',
+      'Dilekçe hakkı',
+      'Eğitim ve öğrenim hakkı ve ödevi',
+      'Vergi ödevi',
+    ],
+    correctIndex: 0,
+    explanation: 'Din ve vicdan hürriyeti kişinin temel hak ve ödevleri (koruyucu/negatif statü) arasındadır. Çalışma ve eğitim sosyal-ekonomik haklar; dilekçe ve vergi ise siyasi haklardır.',
+  ),
+];
+
+/// Etkileşimli ve Çoklu Sorulu Test Ekranı (Faz 4).
 ///
 /// StatefulWidget, Flutter'da iç durumu (state) değişebilen bileşenlerdir.
 /// Angular'daki Component state / Signal yapısına benzer. `setState()` çağrıldığında
 /// Flutter bu widget'ın `build()` metodunu yeniden tetikleyerek (Change Detection gibi)
 /// arayüzü günceller.
 class QuizScreen extends StatefulWidget {
-  final Question question;
+  final List<Question> questions;
 
-  const QuizScreen({
-    super.key,
-    this.question = const Question(
-      id: 'tar_001',
-      lesson: 'Tarih',
-      topic: 'İlk Türk Devletleri',
-      text: 'Uygurların yerleşik hayata geçmesiyle birlikte Türk kültür ve devlet yapısında önemli değişimler yaşanmıştır.\n\nAşağıdakilerden hangisi bu değişimlerin doğrudan bir sonucu olarak gösterilemez?',
-      options: [
-        'Tapınak ve saray mimarisinin gelişmesi',
-        'Kalıcı yazılı eserlerin ve kütüphanelerin ortaya çıkması',
-        'Hükümdarlığın kut inancına dayandırılması geleneğinin sona ermesi',
-        'Minyatür ve fresk gibi süsleme sanatlarının yaygınlaşması',
-        'Tarım faaliyetlerinin temel geçim kaynağı hâline gelmesi',
-      ],
-      correctIndex: 2,
-      explanation: 'Kut inancı Türk devlet geleneğinde varlığını sürdürmüştür. Yerleşik hayat bu inancı sona erdirmemiştir.',
-    ),
-  });
+  const QuizScreen({super.key, this.questions = defaultSampleQuestions});
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen> {
+  int _currentIndex = 0;
   int? _selectedOptionIndex;
   bool _isAnswered = false;
+  int _correctCount = 0;
+  int _wrongCount = 0;
+
+  Question get _currentQuestion => widget.questions[_currentIndex];
+  bool get _isLastQuestion => _currentIndex == widget.questions.length - 1;
 
   /// Şıkkın mevcut durumuna (normal, seçili, doğru, yanlış) karar veren metot.
   OptionStatus _getOptionStatus(int index) {
@@ -46,7 +86,7 @@ class _QuizScreenState extends State<QuizScreen> {
           : OptionStatus.normal;
     }
 
-    if (index == widget.question.correctIndex) {
+    if (index == _currentQuestion.correctIndex) {
       return OptionStatus.correct;
     }
 
@@ -58,7 +98,6 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _onOptionTap(int index) {
-    // Cevap onaylandıktan sonra şık değiştirilemesin
     if (_isAnswered) return;
 
     setState(() {
@@ -69,10 +108,15 @@ class _QuizScreenState extends State<QuizScreen> {
   void _submitAnswer() {
     if (_selectedOptionIndex == null || _isAnswered) return;
 
-    final isCorrect = widget.question.isCorrect(_selectedOptionIndex);
+    final isCorrect = _currentQuestion.isCorrect(_selectedOptionIndex);
 
     setState(() {
       _isAnswered = true;
+      if (isCorrect) {
+        _correctCount++;
+      } else {
+        _wrongCount++;
+      }
     });
 
     if (!isCorrect) {
@@ -85,26 +129,83 @@ class _QuizScreenState extends State<QuizScreen> {
     }
   }
 
+  void _nextQuestion() {
+    setState(() {
+      _currentIndex++;
+      _selectedOptionIndex = null;
+      _isAnswered = false;
+    });
+  }
+
+  void _finishQuiz() {
+    final emptyCount = widget.questions.length - (_correctCount + _wrongCount);
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => QuizResultScreen(
+          result: QuizResult(
+            totalQuestions: widget.questions.length,
+            correctCount: _correctCount,
+            wrongCount: _wrongCount,
+            emptyCount: emptyCount,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     const labels = ['A', 'B', 'C', 'D', 'E'];
-    final question = widget.question;
+    final question = _currentQuestion;
+
+    // Alt butonun fonksiyonu, ikonu ve metnini duruma göre belirliyoruz
+    final VoidCallback? buttonAction;
+    final IconData buttonIcon;
+    final String buttonLabel;
+
+    if (!_isAnswered) {
+      buttonAction = _selectedOptionIndex != null ? _submitAnswer : null;
+      buttonIcon = Icons.check_circle_outline;
+      buttonLabel = 'Cevabı Onayla';
+    } else if (!_isLastQuestion) {
+      buttonAction = _nextQuestion;
+      buttonIcon = Icons.arrow_forward;
+      buttonLabel = 'Sonraki Soru';
+    } else {
+      buttonAction = _finishQuiz;
+      buttonIcon = Icons.emoji_events_outlined;
+      buttonLabel = 'Testi Bitir ve Sonucu Gör';
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text('${question.lesson} Testi')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // 1. Üst Bilgi Rozeti (Konu ve Soru Sayısı)
+          // Konu Başlığı ve Soru Sayacı (Meta Bar)
           _QuestionMetaBar(
             topic: question.topic,
-            questionNumber: 1,
-            totalQuestions: 1,
+            questionNumber: _currentIndex + 1,
+            totalQuestions: widget.questions.length,
+          ),
+          const SizedBox(height: 8),
+
+          // İlerleme Çubuğu (Progress Indicator)
+          LinearProgressIndicator(
+            value: (_currentIndex + 1) / widget.questions.length,
           ),
           const SizedBox(height: 16),
 
-          // 2. Soru Metni Kartı
-          _QuestionCard(text: question.text),
+          // Soru Metni Kartı
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                question.text,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ),
+          ),
           const SizedBox(height: 16),
 
           // Şıklar (A - E)
@@ -123,13 +224,11 @@ class _QuizScreenState extends State<QuizScreen> {
             const SizedBox(height: 16),
           ],
 
-          // Onay Butonu
+          // Aksiyon Butonu (Onayla / Sonraki Soru / Testi Bitir)
           FilledButton.icon(
-            onPressed: (_selectedOptionIndex != null && !_isAnswered)
-                ? _submitAnswer
-                : null,
-            icon: Icon(_isAnswered ? Icons.check : Icons.check_circle_outline),
-            label: Text(_isAnswered ? 'Cevaplandı' : 'Cevabı Onayla'),
+            onPressed: buttonAction,
+            icon: Icon(buttonIcon),
+            label: Text(buttonLabel),
           ),
         ],
       ),
@@ -137,7 +236,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 }
 
-/// Soru konusunu ve soru numarasını gösteren üst şerit.
+/// Sorunun ait olduğu konuyu ve testteki sırasını gösteren meta bilgi çubuğu.
 class _QuestionMetaBar extends StatelessWidget {
   final String topic;
   final int questionNumber;
@@ -170,50 +269,19 @@ class _QuestionMetaBar extends StatelessWidget {
                 color: colorScheme.onSecondaryContainer,
                 fontWeight: FontWeight.w600,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ),
         const SizedBox(width: 8),
         Text(
           'Soru $questionNumber / $totalQuestions',
-          style: theme.textTheme.labelLarge?.copyWith(
-            color: colorScheme.outline,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
             fontWeight: FontWeight.bold,
           ),
         ),
       ],
-    );
-  }
-}
-
-/// Soru metnini içeren kart bileşeni.
-class _QuestionCard extends StatelessWidget {
-  final String text;
-
-  const _QuestionCard({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Card(
-      elevation: 0,
-      color: colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Text(
-          text,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            height: 1.5,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
     );
   }
 }
