@@ -17,4 +17,14 @@ void main() {
       expect(lesson.section, 'Genel Kültür');
     }
   });
+
+  test('Her Genel Kültür dersinin en az 6 konusu bulunmalı', () {
+    for (final lesson in kpssLessons) {
+      expect(
+        lesson.topics.length >= 6,
+        true,
+        reason: '${lesson.name} dersinde en az 6 konu olmalı.',
+      );
+    }
+  });
 }

@@ -21,4 +21,23 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Profilin'), findsOneWidget);
   });
+
+  testWidgets(
+    'Dersler sekmesinde Tarih kartına tıklanınca Tarih Konuları ekranı açılır',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(const MyApp());
+
+      // Alt menüden Dersler sekmesine geç
+      await tester.tap(find.text('Dersler'));
+      await tester.pumpAndSettle();
+
+      // Tarih kartına tıkla
+      await tester.tap(find.text('Tarih'));
+      await tester.pumpAndSettle();
+
+      // Tarih Konuları sayfasının açıldığını ve ilk konuyu doğrula
+      expect(find.text('Tarih Konuları'), findsOneWidget);
+      expect(find.text('İslamiyet Öncesi Türk Tarihi'), findsOneWidget);
+    },
+  );
 }

@@ -9,6 +9,8 @@ class Lesson {
   final String section; // 'Genel Kültür'
   final int questionCount; // Sınavda bu dersten kaç soru çıkıyor
   final IconData icon;
+  final List<String> topics;
+  final String? badgeText;
 
   const Lesson({
     required this.id,
@@ -16,6 +18,8 @@ class Lesson {
     required this.section,
     required this.questionCount,
     required this.icon,
+    required this.topics,
+    this.badgeText,
   });
 }
 
@@ -28,6 +32,16 @@ const List<Lesson> kpssLessons = [
     section: 'Genel Kültür',
     questionCount: 27,
     icon: Icons.account_balance,
+    badgeText: '27 Soru · Kritik',
+    topics: [
+      'İslamiyet Öncesi Türk Tarihi',
+      'İlk Türk-İslam Devletleri',
+      'Osmanlı Kültür ve Uygarlığı',
+      'Osmanlı Dağılma Dönemi',
+      'Kurtuluş Savaşı Hazırlık ve Cepheler',
+      'Atatürk İlke ve İnkılapları',
+      'Çağdaş Türk ve Dünya Tarihi',
+    ],
   ),
   Lesson(
     id: 'cografya',
@@ -35,6 +49,15 @@ const List<Lesson> kpssLessons = [
     section: 'Genel Kültür',
     questionCount: 18,
     icon: Icons.public,
+    badgeText: null,
+    topics: [
+      'Türkiye\'nin Coğrafi Konumu',
+      'Türkiye\'nin Yer Şekilleri ve İklimi',
+      'Türkiye\'de Nüfus ve Yerleşme',
+      'Türkiye\'de Tarım ve Hayvancılık',
+      'Madenler ve Enerji Kaynakları',
+      'Sanayi, Ticaret ve Ulaşım',
+    ],
   ),
   Lesson(
     id: 'vatandaslik',
@@ -42,6 +65,15 @@ const List<Lesson> kpssLessons = [
     section: 'Genel Kültür',
     questionCount: 9,
     icon: Icons.gavel,
+    badgeText: null,
+    topics: [
+      'Temel Hukuk Kavramları',
+      '1982 Anayasası ve Temel İlkeler',
+      'Temel Hak ve Ödevler',
+      'Yasama, Yürütme ve Yargı',
+      'İdare Hukuku',
+      'Uluslararası Kuruluşlar',
+    ],
   ),
   Lesson(
     id: 'guncel',
@@ -49,5 +81,14 @@ const List<Lesson> kpssLessons = [
     section: 'Genel Kültür',
     questionCount: 6,
     icon: Icons.newspaper,
+    badgeText: 'Her Hafta Yeni',
+    topics: [
+      'Türkiye ve Dünya Gündemi',
+      'Kültür, Sanat ve Edebiyat',
+      'Bilim ve Teknoloji Gelişmeleri',
+      'Spor ve Olimpiyatlar',
+      'UNESCO Miras Listesi',
+      'Önemli Günler ve Zirveler',
+    ],
   ),
 ];
