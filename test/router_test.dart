@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/app/router.dart';
 import 'package:kadro/main.dart';
@@ -19,7 +20,9 @@ void main() {
       'createAppRouter alt sekmeler arası rota geçişlerini desteklemeli',
       (WidgetTester tester) async {
         final testRouter = createAppRouter(initialLocation: '/');
-        await tester.pumpWidget(MaterialApp.router(routerConfig: testRouter));
+        await tester.pumpWidget(
+          ProviderScope(child: MaterialApp.router(routerConfig: testRouter)),
+        );
         await tester.pumpAndSettle();
 
         // Dersler sekmesine git

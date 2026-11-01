@@ -1,35 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 
-/// İstatistik sayfası. Soru çözme gelene kadar boş; grafikler Faz 10'da gelecek.
-class StatsScreen extends StatelessWidget {
+/// İstatistik sayfası: Riverpod üzerinden canlı soru ve başarı metriklerini gösterir.
+class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stats = ref.watch(studyStatsProvider);
+
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: const [
-        PageHeader(
+      children: [
+        const PageHeader(
           icon: Icons.bar_chart,
           title: 'İstatistiklerin',
           subtitle: 'Soru çözdükçe ders bazında netlerin burada görünecek.',
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         // İki kart yan yana; Expanded ikisine eşit genişlik verir (flex: 1 + flex: 1)
         Row(
           children: [
             Expanded(
-              child: _StatCard(label: 'Çözülen soru', value: '0'),
+              child: _StatCard(
+                label: 'Çözülen soru',
+                value: '${stats.totalSolved}',
+              ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
-              child: _StatCard(label: 'Doğru oranı', value: '–'),
+              child: _StatCard(
+                label: 'Doğru oranı',
+                value: stats.totalSolved == 0
+                    ? '–'
+                    : '%${stats.accuracyPercent}',
+              ),
             ),
           ],
         ),
-        SizedBox(height: 12),
-        _StatCard(label: 'En zayıf ders', value: 'Henüz veri yok'),
+        const SizedBox(height: 12),
+        _StatCard(label: 'En zayıf ders', value: stats.weakestLesson),
       ],
     );
   }

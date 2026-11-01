@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
 import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
+import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 
 /// Varsayılan olarak gösterilen 3 özgün KPSS Lisans Genel Kültür sorusu.
 const List<Question> defaultSampleQuestions = [
@@ -62,7 +64,7 @@ const List<Question> defaultSampleQuestions = [
 /// Angular'daki Component state / Signal yapısına benzer. `setState()` çağrıldığında
 /// Flutter bu widget'ın `build()` metodunu yeniden tetikleyerek (Change Detection gibi)
 /// arayüzü günceller.
-class QuizScreen extends StatefulWidget {
+class QuizScreen extends ConsumerStatefulWidget {
   final List<Question> questions;
   final MistakeRepository mistakeRepository;
   final Duration? examDuration;
@@ -77,10 +79,10 @@ class QuizScreen extends StatefulWidget {
   });
 
   @override
-  State<QuizScreen> createState() => _QuizScreenState();
+  ConsumerState<QuizScreen> createState() => _QuizScreenState();
 }
 
-class _QuizScreenState extends State<QuizScreen> {
+class _QuizScreenState extends ConsumerState<QuizScreen> {
   int _currentIndex = 0;
   int? _selectedOptionIndex;
   bool _isAnswered = false;
@@ -156,6 +158,15 @@ class _QuizScreenState extends State<QuizScreen> {
     if (_selectedOptionIndex == null || _isAnswered) return;
 
     final isCorrect = _currentQuestion.isCorrect(_selectedOptionIndex);
+
+    // Riverpod çalışma istatistikleri provider'ına kaydediyoruz
+    try {
+      ref
+          .read(studyStatsProvider.notifier)
+          .recordAnswer(lesson: _currentQuestion.lesson, isCorrect: isCorrect);
+    } catch (_) {
+      // ProviderScope bulunmayan izole test ortamlarında güvenli fallback
+    }
 
     setState(() {
       _isAnswered = true;

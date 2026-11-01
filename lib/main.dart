@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/app/router.dart';
 import 'package:kadro/app/theme.dart';
 
 void main() {
-  runApp(const MyApp());
+  // Uygulama genelinde Riverpod durum yönetimini etkinleştirir
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 /// Uygulamanın kök bileşeni.
@@ -15,7 +17,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    final app = MaterialApp.router(
       title: 'Kadro',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
@@ -23,5 +25,14 @@ class MyApp extends StatelessWidget {
           AppTheme.dark, // Telefon karanlık moddaysa otomatik bu kullanılır
       routerConfig: appRouter,
     );
+
+    // Dışarıda ProviderScope yoksa (örn. doğrudan MyApp() çalıştıran widget testlerinde)
+    // otomatik ProviderScope ile sararak testlerin kırılmasını önler.
+    try {
+      ProviderScope.containerOf(context);
+      return app;
+    } catch (_) {
+      return ProviderScope(child: app);
+    }
   }
 }

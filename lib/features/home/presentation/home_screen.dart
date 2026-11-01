@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 
 /// Ana sayfa: günlük hedef ve çalışma türleri.
 /// Kapsayıcı Scaffold, üst bar ve alt menü `AppShell` içinde yönetilir.
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stats = ref.watch(studyStatsProvider);
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -21,8 +25,8 @@ class HomeScreen extends StatelessWidget {
           subtitle: 'KPSS Lisans Genel Kültür hazırlığın burada. Bugün nereden devam edelim?',
         ),
         const SizedBox(height: 16),
-        // Şimdilik sabit değerler; soru çözme gelince gerçek sayı olacak (Faz 4 ve 7)
-        const _DailyGoalCard(solved: 0, goal: 30),
+        // Riverpod ile anlık güncellenen günlük hedef kartı
+        _DailyGoalCard(solved: stats.totalSolved, goal: stats.dailyGoal),
         const SizedBox(height: 16),
         const SectionTitle('Çalışma türleri'),
         _StudyTypeTile(
@@ -95,8 +99,10 @@ class _DailyGoalCard extends StatelessWidget {
             const SizedBox(height: 8),
             Text('$solved / $goal soru', style: textTheme.headlineSmall),
             const SizedBox(height: 12),
-            // İlerleme çubuğu: value 0.0 ile 1.0 arasında (CSS'te width: %x gibi)
-            LinearProgressIndicator(value: solved / goal),
+            // İlerleme çubuğu: hedefe göre 0.0 ile 1.0 arasına kenetlenir (clamp)
+            LinearProgressIndicator(
+              value: goal == 0 ? 0.0 : (solved / goal).clamp(0.0, 1.0),
+            ),
           ],
         ),
       ),
