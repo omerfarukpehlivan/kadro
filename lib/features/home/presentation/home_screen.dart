@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
+import 'package:kadro/features/games/presentation/concept_match_screen.dart';
+import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/planner/presentation/widgets/home_daily_plan_card.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
@@ -116,6 +118,51 @@ class HomeScreen extends ConsumerWidget {
                         examDuration: Duration(minutes: 65),
                         customTitle: 'Genel Kültür Denemesi',
                       ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        const SectionTitle('Etkileşimli Mini Oyunlar'),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: _StudyTypeTile(
+                icon: LucideIcons.zap,
+                title: '60 Saniyede Pençe',
+                description: 'Doğru / Yanlış hızlı düello ile kombo yap.',
+                badgeText: 'Kombo XP',
+                actionText: 'Düelloya Gir',
+                accentColor: colorScheme.tertiary,
+                accentContainerColor: colorScheme.tertiaryContainer,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const TrueFalseBlitzScreen(),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _StudyTypeTile(
+                icon: LucideIcons.puzzle,
+                title: 'Kavram Eşleştir',
+                description:
+                    'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.',
+                badgeText: 'Hafıza Oyunu',
+                actionText: 'Eşleştir',
+                accentColor: colorScheme.primary,
+                accentContainerColor: colorScheme.primaryContainer,
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const ConceptMatchScreen(),
                     ),
                   );
                 },

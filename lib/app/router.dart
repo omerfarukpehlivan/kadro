@@ -2,6 +2,8 @@ import 'package:go_router/go_router.dart';
 import 'package:kadro/app/app_shell.dart';
 import 'package:kadro/features/exams/presentation/exams_screen.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
+import 'package:kadro/features/games/presentation/concept_match_screen.dart';
+import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
 import 'package:kadro/features/home/presentation/home_screen.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
@@ -118,6 +120,14 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
       GoRoute(
         path: '/planner',
         builder: (context, state) => const StudyPlannerScreen(),
+      ),
+      GoRoute(
+        path: '/true-false',
+        builder: (context, state) => const TrueFalseBlitzScreen(),
+      ),
+      GoRoute(
+        path: '/concept-match',
+        builder: (context, state) => const ConceptMatchScreen(),
       ),
     ],
   );

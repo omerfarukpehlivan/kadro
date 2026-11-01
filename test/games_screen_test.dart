@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/app/theme.dart';
+import 'package:kadro/features/games/presentation/concept_match_screen.dart';
 import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
+import 'package:kadro/main.dart';
 
 void main() {
   group('TrueFalseBlitzScreen Widget Testleri', () {
@@ -80,5 +82,55 @@ void main() {
       expect(find.text('Tekrar Oyna'), findsOneWidget);
       expect(find.text('Ana Sayfaya Dön'), findsOneWidget);
     });
+  });
+
+  group('ConceptMatchScreen ve HomeScreen Vitrin Testleri', () {
+    testWidgets(
+      'ConceptMatchScreen doğru kavram eşleşmesini ve hamle sayacını doğrular',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ConceptMatchScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Kavram Eşleştir'), findsOneWidget);
+        expect(find.text('0 / 4 Eşleşti'), findsOneWidget);
+        expect(find.text('Hamle: 0'), findsOneWidget);
+
+        // Soldan 'Lozan Antlaşması' ve sağdan 'Kapitülasyonların Kaldırılması' seçelim
+        await tester.tap(find.text('Lozan Antlaşması'));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Kapitülasyonların Kaldırılması'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('1 / 4 Eşleşti'), findsOneWidget);
+        expect(find.text('Hamle: 1'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'HomeScreen üzerinde Etkileşimli Mini Oyunlar vitrini görüntülenir',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(const MyApp());
+        await tester.pumpAndSettle();
+
+        // Sayfayı aşağı kaydırıp mini oyunlar vitrinini bulalım
+        await tester.scrollUntilVisible(
+          find.text('Etkileşimli Mini Oyunlar'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+
+        expect(find.text('Etkileşimli Mini Oyunlar'), findsOneWidget);
+        expect(find.text('60 Saniyede Pençe'), findsOneWidget);
+        expect(find.text('Kavram Eşleştir'), findsOneWidget);
+      },
+    );
   });
 }
