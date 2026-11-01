@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/features/auth/data/auth_notifier.dart';
+import 'package:kadro/features/auth/presentation/auth_screen.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Profil sekmesi: Kadro PRO durumu, hedef sınav ve uygulama tercihleri.
 class ProfileScreen extends ConsumerWidget {
@@ -110,6 +113,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final prefs = ref.watch(userPreferencesProvider);
     final stats = ref.watch(studyStatsProvider);
+    final auth = ref.watch(authProvider);
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -119,6 +123,10 @@ class ProfileScreen extends ConsumerWidget {
           title: 'Profilin',
           subtitle: 'Hedef sınavın, abonelik durumun ve uygulama ayarların.',
         ),
+        const SizedBox(height: 16),
+
+        // Bulut Hesap Durumu Kartı (Giriş yapılmışsa kullanıcı bilgisi, yapılmamışsa giriş butonu)
+        _AccountCard(auth: auth),
         const SizedBox(height: 16),
 
         // PRO Durum Kartı (PRO değilse tanıtım banner'ı, PRO ise üyelik kartı)
@@ -182,6 +190,123 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Kullanıcının Supabase bulut oturum durumunu gösteren hesap kartı.
+class _AccountCard extends ConsumerWidget {
+  final AuthUserState auth;
+
+  const _AccountCard({required this.auth});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    if (!auth.isAuthenticated) {
+      return TactileCard(
+        backgroundColor: colorScheme.surface,
+        borderColor: colorScheme.primary.withAlpha(80),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    LucideIcons.cloud,
+                    color: colorScheme.onPrimaryContainer,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'İlerlemeni Buluta Kaydet',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Çözdüğün testleri ve doğru/yanlışlarını kaybetmemek için giriş yap.',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            FilledButton.tonal(
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const AuthScreen()));
+              },
+              child: const Text('Giriş Yap / Kayıt Ol'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.outlineVariant,
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 22,
+            backgroundColor: colorScheme.primaryContainer,
+            child: Icon(
+              LucideIcons.userCheck,
+              color: colorScheme.onPrimaryContainer,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  auth.displayName,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (auth.email != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    auth.email!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () => ref.read(authProvider.notifier).signOut(),
+            child: const Text('Çıkış Yap'),
+          ),
+        ],
+      ),
     );
   }
 }

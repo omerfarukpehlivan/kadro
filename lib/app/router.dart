@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:kadro/app/app_shell.dart';
+import 'package:kadro/features/auth/presentation/auth_screen.dart';
 import 'package:kadro/features/exams/presentation/exams_screen.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/games/presentation/concept_match_screen.dart';
@@ -129,6 +130,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
         path: '/concept-match',
         builder: (context, state) => const ConceptMatchScreen(),
       ),
+      GoRoute(path: '/auth', builder: (context, state) => const AuthScreen()),
     ],
   );
 }

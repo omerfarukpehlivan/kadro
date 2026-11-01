@@ -46,8 +46,14 @@ class AppTheme {
   static TextTheme _buildTextTheme(TextTheme base) {
     // KRİTİK TEST GÜVENLİĞİ: Test ortamında HTTP ile dış ağdan font indirmeyi önler.
     // Web ortamında (kIsWeb) Platform.environment çağrısı desteklenmediğinden short-circuit yapılır.
-    if (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST')) {
-      return base;
+    if (!kIsWeb) {
+      try {
+        if (Platform.environment.containsKey('FLUTTER_TEST')) {
+          return base;
+        }
+      } catch (_) {
+        // Platform.environment desteklenmeyen ortamlarda normal akışa devam edilir.
+      }
     }
 
     final bodyTheme = GoogleFonts.interTextTheme(base);
