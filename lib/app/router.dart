@@ -8,6 +8,7 @@ import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
 import 'package:kadro/features/home/presentation/home_screen.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
+import 'package:kadro/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
@@ -141,6 +142,10 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
         builder: (context, state) => const ConceptMatchScreen(),
       ),
       GoRoute(path: '/auth', builder: (context, state) => const AuthScreen()),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingScreen(),
+      ),
     ],
   );
 }
