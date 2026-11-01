@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 
 import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -43,8 +44,9 @@ class AppTheme {
 
   /// Tipografi hiyerarşisi: Gövde için Inter, başlıklar için Plus Jakarta Sans.
   static TextTheme _buildTextTheme(TextTheme base) {
-    // KRİTİK TEST GÜVENLİĞİ: Test ortamında HTTP ile dış ağdan font indirmeyi önler
-    if (Platform.environment.containsKey('FLUTTER_TEST')) {
+    // KRİTİK TEST GÜVENLİĞİ: Test ortamında HTTP ile dış ağdan font indirmeyi önler.
+    // Web ortamında (kIsWeb) Platform.environment çağrısı desteklenmediğinden short-circuit yapılır.
+    if (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST')) {
       return base;
     }
 
