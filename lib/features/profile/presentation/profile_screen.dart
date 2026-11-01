@@ -112,6 +112,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     final prefs = ref.watch(userPreferencesProvider);
     final stats = ref.watch(studyStatsProvider);
     final auth = ref.watch(authProvider);
@@ -148,7 +149,10 @@ class ProfileScreen extends ConsumerWidget {
         const SizedBox(height: 16),
 
         const SectionTitle('Hedef'),
-        Card(
+        TactileCard(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          backgroundColor: colorScheme.surface,
+          borderColor: colorScheme.outlineVariant,
           child: Column(
             children: [
               const ListTile(
@@ -170,7 +174,10 @@ class ProfileScreen extends ConsumerWidget {
         const SizedBox(height: 8),
 
         const SectionTitle('Uygulama'),
-        Card(
+        TactileCard(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          backgroundColor: colorScheme.surface,
+          borderColor: colorScheme.outlineVariant,
           child: Column(
             children: [
               ListTile(
@@ -329,7 +336,7 @@ class _ProBannerCard extends StatelessWidget {
 
     return TactileCard(
       onTap: onTap,
-      backgroundColor: colorScheme.primaryContainer,
+      backgroundColor: colorScheme.primaryContainer.withAlpha(110),
       borderColor: colorScheme.primary.withAlpha(120),
       child: Row(
         children: [
@@ -362,14 +369,14 @@ class _ProBannerCard extends StatelessWidget {
                   'Kadro PRO\'ya Yükselt',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: colorScheme.onPrimaryContainer,
+                    color: colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Sınırsız soru, akıllı yanlış defteri ve reklamsız çalışma.',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onPrimaryContainer,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -379,7 +386,7 @@ class _ProBannerCard extends StatelessWidget {
           Icon(
             Icons.arrow_forward_ios,
             size: 16,
-            color: colorScheme.onPrimaryContainer,
+            color: colorScheme.onSurfaceVariant,
           ),
         ],
       ),

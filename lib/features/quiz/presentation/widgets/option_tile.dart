@@ -29,24 +29,48 @@ class OptionTile extends StatelessWidget {
     // Renkleri ve sağdaki durum ikonunu status değerine göre belirliyoruz
     final Color borderColor;
     final Color backgroundColor;
+    final Color avatarBg;
+    final Color avatarFg;
+    final FontWeight textWeight;
     Widget? trailingIcon;
 
     switch (status) {
       case OptionStatus.normal:
         borderColor = colorScheme.outlineVariant;
         backgroundColor = colorScheme.surface;
+        avatarBg = colorScheme.surfaceContainerHighest;
+        avatarFg = colorScheme.onSurfaceVariant;
+        textWeight = FontWeight.normal;
         trailingIcon = null;
       case OptionStatus.selected:
         borderColor = colorScheme.primary;
-        backgroundColor = colorScheme.primaryContainer.withAlpha(70);
+        backgroundColor = Color.alphaBlend(
+          colorScheme.primaryContainer.withAlpha(140),
+          colorScheme.surface,
+        );
+        avatarBg = colorScheme.primary;
+        avatarFg = colorScheme.onPrimary;
+        textWeight = FontWeight.w700;
         trailingIcon = null;
       case OptionStatus.correct:
-        borderColor = colorScheme.tertiary;
-        backgroundColor = colorScheme.tertiaryContainer.withAlpha(120);
-        trailingIcon = Icon(Icons.check_circle, color: colorScheme.tertiary);
+        borderColor = colorScheme.secondary;
+        backgroundColor = Color.alphaBlend(
+          colorScheme.secondaryContainer.withAlpha(160),
+          colorScheme.surface,
+        );
+        avatarBg = colorScheme.secondary;
+        avatarFg = colorScheme.onSecondary;
+        textWeight = FontWeight.w700;
+        trailingIcon = Icon(Icons.check_circle, color: colorScheme.secondary);
       case OptionStatus.wrong:
         borderColor = colorScheme.error;
-        backgroundColor = colorScheme.errorContainer.withAlpha(120);
+        backgroundColor = Color.alphaBlend(
+          colorScheme.errorContainer.withAlpha(160),
+          colorScheme.surface,
+        );
+        avatarBg = colorScheme.error;
+        avatarFg = colorScheme.onError;
+        textWeight = FontWeight.w700;
         trailingIcon = Icon(Icons.cancel, color: colorScheme.error);
     }
 
@@ -64,16 +88,12 @@ class OptionTile extends StatelessWidget {
         onTap: onTap,
         leading: CircleAvatar(
           radius: 14,
-          backgroundColor: status == OptionStatus.selected
-              ? colorScheme.primary
-              : colorScheme.surfaceContainerHighest,
+          backgroundColor: avatarBg,
           child: Text(
             label,
             style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: status == OptionStatus.selected
-                  ? colorScheme.onPrimary
-                  : colorScheme.onSurfaceVariant,
+              color: avatarFg,
             ),
           ),
         ),
@@ -81,6 +101,7 @@ class OptionTile extends StatelessWidget {
           text,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurface,
+            fontWeight: textWeight,
           ),
         ),
         trailing: trailingIcon,

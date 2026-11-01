@@ -26,7 +26,7 @@ class PaywallScreen extends ConsumerWidget {
             children: [
               // Üst Vurgu 3D Kartı (Kraliyet Taçlı Kadro Koçu)
               TactileCard(
-                backgroundColor: colorScheme.primaryContainer,
+                backgroundColor: colorScheme.primaryContainer.withAlpha(110),
                 borderColor: colorScheme.primary.withAlpha(120),
                 padding: const EdgeInsets.symmetric(
                   vertical: 24,
@@ -66,7 +66,7 @@ class PaywallScreen extends ConsumerWidget {
                       textAlign: TextAlign.center,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: colorScheme.onPrimaryContainer,
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -74,7 +74,7 @@ class PaywallScreen extends ConsumerWidget {
                       'Günlük soru limitine takılmadan, tam kapsamlı çalış.',
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onPrimaryContainer,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],

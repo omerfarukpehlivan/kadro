@@ -10,6 +10,7 @@ import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
 import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 
@@ -438,21 +439,15 @@ class _QuestionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      elevation: 0,
-      color: colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Text(
-          text,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            height: 1.5,
-            fontWeight: FontWeight.w500,
-          ),
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.outlineVariant,
+      child: Text(
+        text,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          color: colorScheme.onSurface,
+          height: 1.5,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -470,37 +465,38 @@ class _ExplanationCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      color: colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.lightbulb_outline,
-                  color: colorScheme.primary,
-                  size: 20,
+    return TactileCard(
+      backgroundColor: colorScheme.primaryContainer.withAlpha(80),
+      borderColor: colorScheme.primary.withAlpha(120),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.lightbulb_outline,
+                color: colorScheme.onPrimaryContainer,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Çözüm Açıklaması',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onPrimaryContainer,
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  'Çözüm Açıklaması',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.primary,
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            explanation,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface,
+              height: 1.4,
             ),
-            const SizedBox(height: 8),
-            Text(
-              explanation,
-              style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kadro/features/flashcards/data/models/flashcard.dart';
 import 'package:kadro/features/flashcards/data/sample_flashcards.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
 
 /// KPSS Hap Bilgi Kartları (Flashcards) Ekranı.
 ///
@@ -174,93 +175,85 @@ class _FlashcardFace extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      elevation: 2,
-      color: isBack
-          ? colorScheme.primaryContainer.withAlpha(70)
+    return TactileCard(
+      padding: const EdgeInsets.all(24),
+      backgroundColor: isBack
+          ? colorScheme.primaryContainer.withAlpha(90)
           : colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: isBack ? colorScheme.primary : colorScheme.outlineVariant,
-          width: isBack ? 2 : 1,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Üst Rozet / Etiket
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
+      borderColor: isBack ? colorScheme.primary : colorScheme.outlineVariant,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Üst Rozet / Etiket
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: isBack
+                      ? colorScheme.primary
+                      : colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  isBack ? 'HAP BİLGİ' : 'SORU / KAVRAM',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
                     color: isBack
-                        ? colorScheme.primary
-                        : colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
+                        ? colorScheme.onPrimary
+                        : colorScheme.onSurfaceVariant,
                   ),
-                  child: Text(
-                    isBack ? 'HAP BİLGİ' : 'SORU / KAVRAM',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: isBack
-                          ? colorScheme.onPrimary
-                          : colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-                Text(
-                  topic,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-            const Spacer(),
-
-            // Kartın Ana Metni
-            Center(
-              child: Text(
-                text,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  height: 1.5,
-                  fontWeight: isBack ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
-            ),
-            const Spacer(),
-
-            // Alt Çevirme İpucu
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.touch_app_outlined,
-                  size: 16,
+              Text(
+                topic,
+                style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  isBack
-                      ? 'Ön yüze dönmek için dokun'
-                      : 'Cevabı görmek için dokun',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+          const Spacer(),
+
+          // Kartın Ana Metni
+          Center(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurface,
+                height: 1.5,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ],
-        ),
+          ),
+          const Spacer(),
+
+          // Alt Çevirme İpucu
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.touch_app_outlined,
+                size: 16,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                isBack
+                    ? 'Ön yüze dönmek için dokun'
+                    : 'Cevabı görmek için dokun',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
