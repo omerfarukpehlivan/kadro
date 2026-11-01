@@ -1,6 +1,6 @@
 # 🎯 Kadro: KPSS Genel Kültür Hazırlık Uygulaması — Antigravity & Gemini Agent Kuralları
 
-Bu proje, **KPSS Lisans Genel Kültür (Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler — Toplam 60 Soru)** adayları için konu testi, hap bilgi kartları (flashcards), yanlış defteri ve süreli Genel Kültür denemesi içeren ticari nitelikte bir çalışma uygulaması (**Kadro**) olup Flutter ve .NET Web API mimarisini sağlam temellerle uygulamak için geliştirilmektedir.
+This project (**Kadro**) is a commercial KPSS Lisans Genel Kültür (Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler — Total 60 Questions) preparation app built with **Flutter + Supabase (PostgreSQL + Auth + RLS)**.
 - **Paket adı:** `kadro` (`com.omer.kadro`)
 - **İlk Sürüm (MVP) Kapsamı:** Sadece **KPSS Lisans Genel Kültür** (Tarih: 27, Coğrafya: 18, Vatandaşlık: 9, Güncel Bilgiler: 6 — Toplam 60 soru, 65 dakika). İlk etapta Türkçe ve Matematik yer almayacaktır.
 - **Gelir Modeli:** Hibrit Freemium (**Kadro PRO** abonelik + günlük 30 soru limiti sonrası **Ödüllü Reklam** ile +20 soru).
@@ -20,9 +20,9 @@ Bu proje, **KPSS Lisans Genel Kültür (Tarih, Coğrafya, Vatandaşlık, Güncel
 ---
 
 ## 🏗️ Mimari & Teknoloji Kararları (Kesinleşmiş Kurallar)
-- **Veri ve Backend Stratejisi:**
-  - **Aşama 1 (Şu an):** Veriler `assets/data/questions/` altındaki JSON dosyalarından ve Mock Repository sınıflarından (`QuestionRepository` vb.) okunur. Şu aşamada çevrimdışı yerel veritabanı (`sqflite` / `hive`) **kullanılmayacaktır**.
-  - **Aşama 2 (Backend Fazı):** **.NET Web API + PostgreSQL (Supabase DB)** yazılacak ve Flutter tarafında UI hiç değişmeden Repository katmanı API'ye bağlanacaktır.
+- **Veri ve Backend Stratejisi (Supabase BaaS):**
+  - **Aşama 1:** Veriler yerel JSON dosyalarından ve Repository sınıflarından (`QuestionRepository` vb.) okunur.
+  - **Aşama 2 (Backend & Bulut Fazı):** **.NET Web API kullanılmayacaktır!** Doğrudan **Supabase (`supabase_flutter` — Supabase Auth, PostgreSQL, Row Level Security ve RPC Raporlama Fonksiyonları)** kullanılacaktır. Sorular, etkileşimli oyun verileri, kullanıcının çözdüğü test oturumları (`quiz_sessions`), soru bazlı doğru/yanlış/boş ve çözüm süresi kayıtları (`question_attempt_logs`), konu ustalık seviyesi (`user_topic_mastery`) ve seri (`streaks`) verileri Supabase PostgreSQL üzerinde tutulacaktır.
 - **State Management (Durum Yönetimi):**
   - **Faz 4 ve Faz 5:** Temel mekanizmayı oturtmak için yalnızca `StatefulWidget` ve `setState` kullanılır.
   - **Faz 8 ve sonrası:** `flutter_riverpod` paketine geçilir. Faz 8'den önce Riverpod eklenmez.

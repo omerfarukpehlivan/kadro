@@ -10,9 +10,9 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
      - **Coğrafya:** 18 Soru
      - **Vatandaşlık:** 9 Soru
      - **Güncel Bilgiler:** 6 Soru
-2. **Backend & Veri Mimarisi:**
-   - **Aşama 1:** Local JSON + Bellek İçi (In-Memory / Mock) Repository. Çevrimdışı veritabanı (`sqflite`/`hive`) şimdilik **kullanılmayacak**.
-   - **Aşama 2:** **.NET Web API + PostgreSQL (Supabase DB)**. Flutter tarafında Repository Pattern kullandığımız için API'ye geçerken ekran kodları hiç değişmeyecek.
+2. **Backend & Veri Mimarisi (Supabase BaaS):**
+   - **Aşama 1:** Local JSON + Bellek İçi (In-Memory / Mock) Repository.
+   - **Aşama 2:** **.NET Web API kullanılmayacaktır!** Doğrudan **Supabase (`supabase_flutter` — Supabase Auth, PostgreSQL, RLS ve Raporlama Tabloları: `docs/supabase_schema.sql`)** kullanılacaktır.
 3. **State Management:**
    - **Faz 4 & 5:** Saf `StatefulWidget` ve `setState`.
    - **Faz 8:** `flutter_riverpod`.
@@ -44,8 +44,11 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-17** | **Havada Duran (Floating Pill) Alt Menü (`AppNavigationBar`) & Sinematik Gradient/Pop-Out `MascotCoachBanner`** | Standart alt bar yerine iOS/Linear tarzı havada asılı kapsül alt menü, `MascotCoachBanner` içinde Derin İndigo Gradient arka plan, dekoratif ışık halkaları ve `96x96` büyük Pop-Out maskot sahnesi | ✅ **Tamamlandı** (`7442b77`) |
 | **TASK-18** | **Super-App Ana Sayfa (`HomeScreen`) — Dairesel Hedef Halkası (`Circular Gauge`) & Canlı Rozetli Gradient Bento Kartları** | `_DailyGoalCard` içinde `84x84` dairesel ilerleme halkası (`CircularProgressIndicator` gauge) + mini metrik hapları, 2x2 Bento kartlarında duotone/gradient yüzey ve `'65 Dakika'` / `'Başla →'` aksiyon rozetleri | ✅ **Tamamlandı** (`5739510`) |
 | **TASK-19** | **Duolingo Tarzı "Konu Yol Haritası (Learning Path / Skill Tree)" (`LessonTopicsScreen`) & Zengin Modül Kartları (`LessonsScreen`)** | `LessonTopicsScreen` içindeki düz `ListTile` listesini kaldırıp dikey bağlantılı düğümlerden (`01`, `02`, `03`...) oluşan **Duolingo Yol Haritası**'na dönüştürme ve `LessonsScreen` modül kartlarını zenginleştirme | ✅ **Tamamlandı** (`02ac8cf`) |
-| **TASK-20** | **Akıllı KPSS Çalışma Planlayıcı Veri Katmanı (`StudyTask` Modeli & `StudyPlannerNotifier` Riverpod State)** | Ders etiketli (`Tarih`, `Coğrafya` vb.), tahmini süreli (`15-65 dk`) ve doğrudan aksiyon tipli (`quiz`, `flashcards`, `mistakes`, `custom`) görev modeli + Riverpod state yönetimi ve birim testleri | ✅ **Tamamlandı** |
-| **TASK-21** | **Hibrit Çalışma Planlayıcı Arayüzü (`HomeDailyPlanCard` + Tam Ekran `StudyPlannerScreen` + Hazır Şablonlar & "Başla ▶")** | `HomeScreen`'de anında tiklenebilen **"Bugünün Çalışma Planı"** kompakt widget'ı, tam ekran `StudyPlannerScreen` (`/planner`), tek tıkla hazır KPSS görev şablonları ve görevden doğrudan teste geçiren **"Başla ▶"** aksiyonu | ✅ **Tamamlandı** |
+| **TASK-20** | **Akıllı KPSS Çalışma Planlayıcı Veri Katmanı (`StudyTask` Modeli & `StudyPlannerNotifier` Riverpod State)** | Ders etiketli (`Tarih`, `Coğrafya` vb.), tahmini süreli (`15-65 dk`) ve doğrudan aksiyon tipli (`quiz`, `flashcards`, `mistakes`, `custom`) görev modeli + Riverpod state yönetimi ve birim testleri | ✅ **Tamamlandı** (`62b378c`) |
+| **TASK-21** | **Hibrit Çalışma Planlayıcı Arayüzü (`HomeDailyPlanCard` + Tam Ekran `StudyPlannerScreen` + Hazır Şablonlar & "Başla ▶")** | `HomeScreen`'de anında tiklenebilen **"Bugünün Çalışma Planı"** kompakt widget'ı, tam ekran `StudyPlannerScreen` (`/planner`), tek tıkla hazır KPSS görev şablonları ve görevden doğrudan teste geçiren **"Başla ▶"** aksiyonu | ✅ **Tamamlandı** (`df884d2`) |
+| **TASK-22** | **Etkileşimli Oyun Modu 1: "60 Saniyede Pençe" Doğru / Yanlış Hızlı Düello (`TrueFalseBlitzScreen`)** | 60 saniye geri sayımlı, kombo çarpanlı (`2x`, `3x`, `5x Kombo!`) ve anlık çözüm açıklamalı KPSS Doğru/Yanlış hızlı düello modu | ⏳ **Sırada (Dalga 8)** |
+| **TASK-23** | **Etkileşimli Oyun Modu 2: "Kavram Eşleştirme Tahtası" (`ConceptMatchScreen`) & `HomeScreen` Oyun Vitrini** | Quizlet Match tarzı 4'e 4 Tarih/Coğrafya/Vatandaşlık kavram eşleştirme tahtası ve `HomeScreen` üzerine **"Etkileşimli Mini Oyunlar"** Bento vitrini | ⏳ **Sırada (Dalga 8)** |
+| **TASK-24** | **Güçlü Raporlama & Retention: Çözülen Testler Arşivi (`QuizSessionRecord`), Ustalık Isı Haritası & XP/Lig Sistemi** | Supabase şemasına uyumlu çözülen testler geçmişi (`QuizHistoryScreen`), Ders Ustalık Isı Haritası (`Usta`/`Gelişiyor`/`Kritik`), soru başına ortalama süre analizi ve `Bronz -> Müsteşar Ligi` XP sistemi | ⏳ **Sırada (Dalga 8)** |
 
 ---
 
@@ -1098,5 +1101,214 @@ ADIM 4: Widget Testi ve Doğrulama
 1. `test/study_planner_test.dart` içine widget testleri ekle:
    - `HomeScreen` üzerinde `'Bugünün Çalışma Planı'` kartının ve varsayılan görevlerin göründüğünü,
    - `'Planlayıcıyı Aç & Görev Ekle'` butonuna tıklanınca `StudyPlannerScreen` ekranının açıldığını ve hızlı şablon (`'+ 20 Tarih Sorusu'`) tıklanınca görev sayısının 4'e çıktığını doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+## ⚡ 8. Dalga 8: Etkileşimli Soru/Oyun Modları (`60 Saniyede Pençe` & `Kavram Eşleştir`), Çözülen Testler Arşivi, Ustalık Isı Haritası & XP/Lig Sistemi (`TASK-22`, `TASK-23`, `TASK-24`)
+
+[docs/supabase_schema.sql](file:///d:/projelerim/gunisigi/docs/supabase_schema.sql) içindeki Supabase PostgreSQL şemasıyla (`questions`, `quiz_sessions`, `question_attempt_logs`, `user_topic_mastery`, `profiles`) birebir uyumlu olarak hazırlanan 3 görev:
+
+---
+
+### 📦 TASK-22: Etkileşimli Oyun Modu 1 — "60 Saniyede Pençe" Doğru / Yanlış Hızlı Düello (`TrueFalseBlitzScreen`)
+
+```text
+GÖREV: TASK-22 — "60 Saniyede Pençe" Doğru / Yanlış Hızlı Düello Oyunu (TrueFalseItem Modeli, Kombo Çarpanı, 60sn Sayaç ve TrueFalseBlitzScreen)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA; tüm renkleri Theme.of(context).colorScheme ve yazı stillerini textTheme üzerinden al. Feature-first yapısını (`lib/features/games/...`) kullan.
+
+ADIM 1: `lib/features/games/data/models/true_false_item.dart` (Veri Modeli & Özgün KPSS Havuzu)
+1. `lib/features/games/data/models/true_false_item.dart` dosyasını oluştur:
+   - `class TrueFalseItem`:
+     - `final String id;`
+     - `final String lesson;` (`'Tarih'`, `'Coğrafya'`, `'Vatandaşlık'`, `'Güncel Bilgiler'`)
+     - `final String topic;`
+     - `final String statement;` (Doğru veya yanlış olan tek cümlelik KPSS önermesi)
+     - `final bool isTrue;`
+     - `final String explanation;`
+     - `const TrueFalseItem({required this.id, required this.lesson, required this.topic, required this.statement, required this.isTrue, required this.explanation});`
+   - Aynı dosyada `const List<TrueFalseItem> sampleTrueFalseItems = [...]` olarak en az 8 özgün KPSS Genel Kültür önermesi tanımla:
+     1. Tarih: `'Orhun Yazıtları; Bilge Kağan, Kültigin ve Vezir Tonyukuk adına dikilmiştir.'` (`isTrue: true`)
+     2. Tarih: `'Lozan Barış Antlaşması ile Boğazlar Komisyonu tamamen kaldırılmıştır.'` (`isTrue: false`, açıklama: `'Boğazlar Komisyonu 1936 Montrö Boğazlar Sözleşmesi ile kaldırılmıştır.'`)
+     3. Coğrafya: `'Türkiye\'de bor rezervinin en fazla olduğu bölge Güney Marmara\'dır.'` (`isTrue: true`)
+     4. Coğrafya: `'Çoruh Nehri sularını Karadeniz yerine Hazar Denizi\'ne boşaltır.'` (`isTrue: false`, açıklama: `'Çoruh Nehri Gürcistan üzerinden Karadeniz\'e dökülür.'`)
+     5. Vatandaşlık: `'1982 Anayasası\'na göre TBMM genel seçimleri 5 yılda bir yapılır.'` (`isTrue: true`)
+     6. Vatandaşlık: `'Anayasa Mahkemesi üyelerinin görev süresi 8 yıldır.'` (`isTrue: false`, açıklama: `'Anayasa Mahkemesi üyeleri 12 yıl için seçilir.'`)
+     7. Güncel Bilgiler: `'Türkiye\'nin ilk yerli ve milli gözlem uydularından İMECE uzaya fırlatılmıştır.'` (`isTrue: true`)
+     8. Tarih: `'Amasya Genelgesi\'nde ilk kez milli egemenliğe dayalı yeni bir devlet kurmaktan bahsedilmiştir.'` (`isTrue: true`)
+
+ADIM 2: `lib/features/games/presentation/true_false_blitz_screen.dart` (`TrueFalseBlitzScreen`)
+1. `TrueFalseBlitzScreen extends ConsumerStatefulWidget` oluştur:
+   - Parametreler: `final List<TrueFalseItem> items;` (varsayılan `this.items = sampleTrueFalseItems`), `final int initialSeconds;` (varsayılan `60`).
+   - Durum alanları (`State`):
+     - `late int _remainingSeconds;`, `Timer? _timer;`
+     - `int _currentIndex = 0;`, `int _correctCount = 0;`, `int _wrongCount = 0;`
+     - `int _combo = 0;`, `int _maxCombo = 0;`, `int _earnedXp = 0;`
+     - `bool? _lastAnswerWasCorrect;` (`null`: henüz cevaplanmadı, `true`: doğru bildi, `false`: yanlış bildi)
+     - `bool _isFinished = false;`
+   - `initState` içinde `_startTimer()` başlat (`Timer.periodic(const Duration(seconds: 1), ...)`). Süre 0 olunca `_finishGame()` çağır. `dispose` içinde `_timer?.cancel()` yap.
+   - Kullanıcı `'DOĞRU'` veya `'YANLIŞ'` butonuna bastığında (`_submitChoice(bool userChoice)`):
+     - Eğer `_lastAnswerWasCorrect != null` veya `_isFinished` ise işlem yapma.
+     - `final isCorrect = userChoice == currentItem.isTrue;`
+     - `ref.read(studyStatsProvider.notifier).recordAnswer(lesson: currentItem.lesson, isCorrect: isCorrect);`
+     - Doğruysa: `_correctCount++`, `_combo++`, `if (_combo > _maxCombo) _maxCombo = _combo`, `_earnedXp += 10 * _combo;`
+     - Yanlışsa: `_wrongCount++`, `_combo = 0;`
+     - `_lastAnswerWasCorrect = isCorrect;` olarak güncelle (açıklama kutusu ve `'Sonraki İfade'` butonu görünür).
+   - `'Sonraki İfade'` butonuna basıldığında (`_nextItem()`):
+     - Son sorudaysa `_finishGame()` çağır, değilse `_currentIndex++` ve `_lastAnswerWasCorrect = null` yap.
+   - Ekran tasarımı (`Scaffold`, `AppBar(title: const Text('60 Saniyede Pençe'))`):
+     - `_isFinished == true` ise `_BlitzSummaryView` (`StatelessWidget`) göster:
+       - `MascotCoachBanner(mood: MascotMood.victory, badgeLabel: 'PENÇE DÜELLOSU BİTTİ', title: 'Düello Tamamlandı!', message: 'Toplam $_earnedXp XP kazandın ve en yüksek ${_maxCombo}x komboya ulaştın!')`,
+       - Doğru (`_correctCount`), Yanlış (`_wrongCount`), Maksimum Kombo (`${_maxCombo}x`) ve Kazanılan XP (`+$_earnedXp XP`) `TactileCard` kutuları,
+       - `'Tekrar Oyna'` (`FilledButton.icon`) ve `'Ana Sayfaya Dön'` (`OutlinedButton.icon`).
+     - `_isFinished == false` ise:
+       - Üst bilgi şeridi (`Row`): Solda süre rozeti (`LucideIcons.timer` + `'$_remainingSeconds sn'`), ortada Kombo rozeti (`LucideIcons.zap` + `'${_combo}x Kombo'`), sağda XP rozeti (`'+$_earnedXp XP'`).
+       - Ortada `TactileCard` içinde ders/konu rozeti (`'${item.lesson} · ${item.topic}'`), soru sayacı (`'${_currentIndex + 1} / ${widget.items.length}'`) ve büyük önerme metni (`item.statement`).
+       - `_lastAnswerWasCorrect != null` ise açıklama kartı (`item.explanation`) ve `'Sonraki İfade'` (`FilledButton`) göster.
+       - `_lastAnswerWasCorrect == null` ise altta yan yana (`Row` + `Expanded`) iki büyük buton:
+         - Sol: `OutlinedButton.icon(onPressed: () => _submitChoice(false), icon: const Icon(LucideIcons.x), label: const Text('YANLIŞ'))`
+         - Sağ: `FilledButton.icon(onPressed: () => _submitChoice(true), icon: const Icon(LucideIcons.check), label: const Text('DOĞRU'))`
+
+ADIM 3: Test ve Doğrulama
+1. `test/games_screen_test.dart` dosyasını oluştur ve `TrueFalseBlitzScreen` içinde `'DOĞRU'` / `'YANLIŞ'` seçiminin kombo/XP sayacını ve açıklama kartını çalıştırdığını test et.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-23: Etkileşimli Oyun Modu 2 — "Kavram Eşleştirme Tahtası" (`ConceptMatchScreen`) & `HomeScreen` Mini Oyun Vitrini
+
+```text
+GÖREV: TASK-23 — Quizlet Match Tarzı "Kavram Eşleştirme Tahtası" (ConceptMatchScreen) ve HomeScreen "Etkileşimli Mini Oyunlar" Vitrini
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. TASK-22 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `lib/features/games/data/models/concept_match_set.dart` (Eşleştirme Setleri)
+1. `lib/features/games/data/models/concept_match_set.dart` dosyasını oluştur:
+   - `class ConceptPair`: `final String id;`, `final String leftTerm;`, `final String rightMatch;`
+   - `class ConceptMatchSet`: `final String id;`, `final String title;`, `final String lesson;`, `final List<ConceptPair> pairs;`
+   - `const List<ConceptMatchSet> sampleConceptMatchSets = [...]` içinde 3 KPSS seti tanımla (her birinde 4 çift):
+     1. `'Tarih: Antlaşmalar & Önemi'` (`lesson: 'Tarih'`):
+        - `'Lozan Antlaşması'` ↔ `'Kapitülasyonların Kaldırılması'`
+        - `'Mondros Ateşkesi'` ↔ `'7. ve 24. Maddelerle İşgal Zeminini Hazırlama'`
+        - `'Mudanya Ateşkesi'` ↔ `'Doğu Trakya\'nın Savaşsız Kurtarılması'`
+        - `'Gümrü Antlaşması'` ↔ `'TBMM\'nin Uluslararası İlk Siyasi Zaferi'`
+     2. `'Coğrafya: Madenler & Merkezler'` (`lesson: 'Coğrafya'`):
+        - `'Divriği & Hekimhan'` ↔ `'Demir Çıkarım Alanı'`
+        - `'Murgul & Küre'` ↔ `'Bakır Çıkarım Alanı'`
+        - `'Seydişehir & Mortaş'` ↔ `'Boksit (Alüminyum) Alanı'`
+        - `'Kırka & Emet'` ↔ `'Bor Mineralleri Alanı'`
+     3. `'Vatandaşlık: Erkler & Kurumlar'` (`lesson: 'Vatandaşlık'`):
+        - `'Yasama Yetkisi'` ↔ `'Türkiye Büyük Millet Meclisi'`
+        - `'Yargısal Denetim (Bireysel Başvuru)'` ↔ `'Anayasa Mahkemesi'`
+        - `'İdari Yargı En Üst Mercii'` ↔ `'Danıştay'`
+        - `'Adli Yargı En Üst Mercii'` ↔ `'Yargıtay'`
+
+ADIM 2: `lib/features/games/presentation/concept_match_screen.dart` (`ConceptMatchScreen`)
+1. `ConceptMatchScreen extends ConsumerStatefulWidget` oluştur:
+   - `AppBar(title: const Text('Kavram Eşleştir'))`
+   - Üstte 3 set arasında geçiş sağlayan yatay `ChoiceChip` şeridi (`sampleConceptMatchSets`),
+   - Altında eşleşen çift sayacı (`'${_matchedIds.length} / ${currentSet.pairs.length} Eşleşti'`) ve hamle sayacı (`'Hamle: $_moves'`).
+   - Tüm çiftler eşleştiğinde (`_matchedIds.length == currentSet.pairs.length`):
+     - `MascotCoachBanner(mood: MascotMood.victory, badgeLabel: 'EŞLEŞTİRME USTASI', title: 'Tüm Kavramlar Eşleşti!', message: 'Tebrikler! $_moves hamlede tabloyu temizledin.')` ve `'Seti Sıfırla'` (`FilledButton.icon`) göster.
+   - Eşleşme devam ederken iki sütunlu (`Row` içinde sol `Expanded` Kavramlar, sağ `Expanded` Karşılıklar) 4'e 4 `TactileCard` tahtası göster:
+     - Kullanıcı soldan bir `pair.id` (`_selectedLeftId`) ve sağdan bir `pair.id` (`_selectedRightId`) seçtiğinde:
+       - Eşleşiyorsa (`_selectedLeftId == _selectedRightId`): `_matchedIds.add(id)` yap, `ref.read(studyStatsProvider.notifier).recordAnswer(lesson: currentSet.lesson, isCorrect: true)` çağır ve seçimleri temizle.
+       - Eşleşmiyorsa: Seçimleri temizle ve kısa bir `SnackBar` (`'Eşleşme yanlış, tekrar dene!'`, `duration: const Duration(milliseconds: 600)`) göster.
+
+ADIM 3: `HomeScreen` ve `router.dart` Entegrasyonu
+1. `lib/features/home/presentation/home_screen.dart` içinde `'Çalışma türleri'` 2x2 Bento Grid'inin hemen altına:
+   - `const SizedBox(height: 16),`
+   - `const SectionTitle('Etkileşimli Mini Oyunlar'),`
+   - Yan yana (`Row` + `Expanded`) iki yeni `_StudyTypeTile` ekle:
+     1. `title: '60 Saniyede Pençe'`, `description: 'Doğru / Yanlış hızlı düello ile kombo yap.'`, `badgeText: 'Kombo XP'`, `actionText: 'Düelloya Gir'`, `icon: LucideIcons.zap`, `accentColor: colorScheme.tertiary`, `accentContainerColor: colorScheme.tertiaryContainer`, `onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TrueFalseBlitzScreen()))`
+     2. `title: 'Kavram Eşleştir'`, `description: 'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.'`, `badgeText: 'Hafıza Oyunu'`, `actionText: 'Eşleştir'`, `icon: LucideIcons.puzzle`, `accentColor: colorScheme.primary`, `accentContainerColor: colorScheme.primaryContainer`, `onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ConceptMatchScreen()))`
+2. `lib/app/router.dart` içine `/true-false` (`TrueFalseBlitzScreen`) ve `/concept-match` (`ConceptMatchScreen`) rotalarını ekle.
+
+ADIM 4: Test ve Doğrulama
+1. `test/games_screen_test.dart` içine `ConceptMatchScreen` eşleştirme testini ve `HomeScreen` üzerinden `'60 Saniyede Pençe'` / `'Kavram Eşleştir'` kartlarının göründüğünü doğrulayan testi ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-24: Güçlü Raporlama & Retention — Çözülen Testler Arşivi (`QuizSessionRecord`), Konu Ustalık Isı Haritası (`Mastery Heatmap`), Süre Analizi & XP/Lig Sistemi
+
+```text
+GÖREV: TASK-24 — Çözülen Testler Arşivi (QuizSessionRecord & QuizHistoryScreen), Konu Ustalık Isı Haritası (Mastery Heatmap), Soru Süre Analizi ve XP/Lig Sistemi
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. TASK-23 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `lib/features/stats/data/models/quiz_session_record.dart` (Supabase `quiz_sessions` Uyumlu Model)
+1. `lib/features/stats/data/models/quiz_session_record.dart` dosyasını oluştur:
+   ```dart
+   class QuizSessionRecord {
+     final String id;
+     final String title;
+     final String lesson;
+     final int totalQuestions;
+     final int correctCount;
+     final int wrongCount;
+     final int emptyCount;
+     final double netScore;
+     final int earnedXp;
+     final int durationSeconds;
+     final DateTime completedAt;
+
+     const QuizSessionRecord({
+       required this.id,
+       required this.title,
+       required this.lesson,
+       required this.totalQuestions,
+       required this.correctCount,
+       required this.wrongCount,
+       required this.emptyCount,
+       required this.netScore,
+       required this.earnedXp,
+       required this.durationSeconds,
+       required this.completedAt,
+     });
+   }
+   ```
+
+ADIM 2: `StudyStatsState` ve `StudyStatsNotifier` (`lib/features/stats/data/study_stats_notifier.dart`) Analitik & XP/Lig Genişletmesi
+1. `StudyStatsState` içine mevcut tüm alanları ve metotları BİREBİR koruyarak şu yeni alanları ekle:
+   - `final int totalXp;` (varsayılan `0`)
+   - `final int streakDays;` (varsayılan `1`)
+   - `final int totalTimeSeconds;` (varsayılan `0`)
+   - `final List<QuizSessionRecord> sessionHistory;` (varsayılan `const []`)
+   - Yeni yardımcı getter'lar ekle:
+     - `String get leagueTier`: `if (totalXp >= 1000) return 'Müsteşar Ligi'; if (totalXp >= 500) return 'Altın Kadro'; if (totalXp >= 200) return 'Gümüş Kadro'; return 'Bronz Kadro';`
+     - `int get averageSecondsPerQuestion => totalSolved == 0 ? 0 : (totalTimeSeconds / totalSolved).round();`
+     - `String lessonMasteryLabel(String lesson)`: İlgili derste çözülen soru `0` ise `'Başlanmadı'`, `lessonAccuracyPercent(lesson) >= 80` ise `'Usta (%${lessonAccuracyPercent(lesson)})'`, `>= 50` ise `'Gelişiyor (%${lessonAccuracyPercent(lesson)})'`, `< 50` ise `'Kritik (%${lessonAccuracyPercent(lesson)})'`.
+2. `StudyStatsNotifier`:
+   - `recordAnswer({required String lesson, required bool isCorrect, int timeSpentSeconds = 20})` metodunda:
+     - Mevcut sayaçların yanında doğruysa `totalXp + 15`, yanlışsa `totalXp + 5` ekle ve `totalTimeSeconds + timeSpentSeconds` artır. (Varsayılan `timeSpentSeconds = 20` olduğu için mevcut tüm `recordAnswer(lesson: ..., isCorrect: ...)` çağrıları hiçbir değişiklik gerektirmeden çalışmaya devam eder!).
+   - Yeni metot ekle:
+     ```dart
+     void recordQuizSession(QuizSessionRecord session) {
+       state = state.copyWith(
+         totalXp: state.totalXp + session.earnedXp,
+         sessionHistory: [session, ...state.sessionHistory],
+       );
+     }
+     ```
+3. `lib/features/quiz/presentation/quiz_screen.dart` içinde test bittiğinde (`_finishQuiz` içinde `QuizResult` oluşturulduktan hemen sonra) `ref.read(studyStatsProvider.notifier).recordQuizSession(...)` çağırarak tamamlanan testi otomatik olarak `sessionHistory` arşivine kaydet!
+
+ADIM 3: `StatsScreen` (`lib/features/stats/presentation/stats_screen.dart`) & `QuizHistoryScreen` (`lib/features/stats/presentation/quiz_history_screen.dart`)
+1. `lib/features/stats/presentation/quiz_history_screen.dart` (`QuizHistoryScreen extends ConsumerWidget`) oluştur:
+   - Kullanıcının çözdüğü tüm test oturumlarını (`stats.sessionHistory`) `TactileCard` kartlarıyla listeler (Test başlığı, Doğru/Yanlış/Boş, `Net: ${s.netScore.toStringAsFixed(2)}`, `+${s.earnedXp} XP`, süre). Boşsa `'Henüz tamamlanmış bir test oturumu yok.'` gösterir.
+2. `lib/features/stats/presentation/stats_screen.dart` içine (mevcut `'Çözülen soru'`, `'Doğru oranı'`, `'En zayıf ders'` KPI kartlarını ve `_LessonAccuracyChartCard` `BarChart` bileşenini BİREBİR koruyarak!):
+   - En üste (`PageHeader` hemen altına) **`_LeagueAndStreakCard(stats: stats)`** ekle:
+     - Solda `LucideIcons.trophy` + Lig adı (`stats.leagueTier`, örn. `'Bronz Kadro'`) ve `'${stats.totalXp} XP'`,
+     - Sağda `'${stats.streakDays} Gün Seri'` (`LucideIcons.flame`) ve `'Ort. ${stats.averageSecondsPerQuestion} sn/soru'` rozeti.
+   - `_LessonAccuracyChartCard` altına **`_MasteryHeatmapCard(stats: stats)`** ekle:
+     - Başlık: `'Ders Ustalık Isı Haritası'`
+     - 4 ders (`TAR`, `COĞ`, `VAT`, `GÜN` — DİKKAT: `test/study_stats_test.dart` içindeki `find.text('Tarih')` tekil beklentisini bozmamak için burada da `'TAR · Tarih'` veya kısa kod + `stats.lessonMasteryLabel(...)` kullan!) için ustalık durumunu (`Usta`, `Gelişiyor`, `Kritik`, `Başlanmadı`) renkli rozetlerle göster.
+   - En alta **`_RecentSessionsCard(stats: stats)`** ekle:
+     - Başlık: `'Çözülen Testler Arşivi (${stats.sessionHistory.length})'` ve sağda `'Tümünü Gör'` (`QuizHistoryScreen` açar). Son 3 testi listeler.
+
+ADIM 4: Test ve Doğrulama
+1. `test/study_stats_test.dart` içine XP, Lig (`leagueTier`), Ustalık Isı Haritası (`'Ders Ustalık Isı Haritası'`) ve `recordQuizSession` ile `'Çözülen Testler Arşivi'` testlerini ekle.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
