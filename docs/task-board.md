@@ -1335,33 +1335,43 @@ ADIM 1: `supabase_flutter` Kurulumu ve `lib/core/config/supabase_config.dart`
 1. Terminalden `flutter pub add supabase_flutter` komutunu çalıştır.
 2. `lib/core/config/supabase_config.dart` dosyasını oluştur:
    ```dart
+   import 'dart:io' show Platform;
+   import 'package:flutter/foundation.dart' show kIsWeb;
    import 'package:supabase_flutter/supabase_flutter.dart';
 
    /// Supabase proje bağlantı yapılandırması.
-   /// `--dart-define=SUPABASE_URL=... --dart-define=SUPABASE_ANON_KEY=...` ile veya
-   /// doğrudan defaultValue içine proje URL/Key girilerek çalışır.
    class SupabaseConfig {
      SupabaseConfig._();
 
      static const String url = String.fromEnvironment(
        'SUPABASE_URL',
-       defaultValue: '',
+       defaultValue: 'https://axfxciyuvcdbavhzsfwu.supabase.co',
      );
 
      static const String anonKey = String.fromEnvironment(
        'SUPABASE_ANON_KEY',
-       defaultValue: '',
+       defaultValue:
+           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4ZnhjaXl1dmNkYmF2aHpzZnd1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NjU4NTcsImV4cCI6MjEwOTE0MTg1N30.irV-ZOP2Ii1Y8k0ksC-KOF7D811avX6GXRbsxvMC78M',
      );
 
      static bool _initialized = false;
 
+     static bool get _isFlutterTest =>
+         !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
+
      /// URL ve Anon Key tanımlıysa ve Supabase başarıyla başlatıldıysa true döner.
-     static bool get isReady => _initialized && url.isNotEmpty && anonKey.isNotEmpty;
+     static bool get isReady =>
+         !_isFlutterTest &&
+         _initialized &&
+         url.isNotEmpty &&
+         anonKey.isNotEmpty;
 
      /// Uygulama açılışında (`main.dart`) güvenli şekilde Supabase'i başlatır.
-     /// Test ortamında veya anahtarlar henüz girilmediğinde hata fırlatmadan yerel modda devam eder.
+     /// Test ortamında hata fırlatmadan yerel modda devam eder.
      static Future<void> initializeSafely() async {
-       if (url.isEmpty || anonKey.isEmpty || _initialized) return;
+       if (_isFlutterTest || url.isEmpty || anonKey.isEmpty || _initialized) {
+         return;
+       }
        try {
          await Supabase.initialize(url: url, anonKey: anonKey);
          _initialized = true;
