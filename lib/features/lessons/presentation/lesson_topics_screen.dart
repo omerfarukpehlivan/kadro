@@ -124,7 +124,7 @@ class _TopicPathNode extends StatelessWidget {
               child: TactileCard(
                 onTap: onTap,
                 backgroundColor: index == 0
-                    ? colorScheme.primaryContainer.withAlpha(65)
+                    ? colorScheme.primaryContainer.withAlpha(45)
                     : colorScheme.surface,
                 borderColor: index == 0
                     ? colorScheme.primary
@@ -148,7 +148,7 @@ class _TopicPathNode extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: colorScheme.secondaryContainer,
+                            color: colorScheme.primaryContainer,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Row(
@@ -157,13 +157,13 @@ class _TopicPathNode extends StatelessWidget {
                               Icon(
                                 LucideIcons.play,
                                 size: 12,
-                                color: colorScheme.primary,
+                                color: colorScheme.onPrimaryContainer,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 'Test Çöz',
                                 style: textTheme.labelSmall?.copyWith(
-                                  color: colorScheme.primary,
+                                  color: colorScheme.onPrimaryContainer,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -176,6 +176,7 @@ class _TopicPathNode extends StatelessWidget {
                     Text(
                       topic,
                       style: textTheme.titleMedium?.copyWith(
+                        color: colorScheme.onSurface,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

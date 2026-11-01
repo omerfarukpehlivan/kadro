@@ -51,8 +51,10 @@ class _LessonCard extends StatelessWidget {
             ),
           );
         },
-        backgroundColor: colorScheme.primaryContainer.withAlpha(35),
-        borderColor: colorScheme.primary.withAlpha(80),
+        backgroundColor: colorScheme.surface,
+        borderColor: lesson.badgeText != null
+            ? colorScheme.primary.withAlpha(120)
+            : colorScheme.outlineVariant,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -80,6 +82,7 @@ class _LessonCard extends StatelessWidget {
                           Text(
                             lesson.name,
                             style: theme.textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSurface,
                               fontWeight: FontWeight.w800,
                             ),
                           ),

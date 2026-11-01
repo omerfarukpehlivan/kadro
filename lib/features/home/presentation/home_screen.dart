@@ -54,6 +54,7 @@ class HomeScreen extends ConsumerWidget {
                 actionText: 'Başla',
                 accentColor: colorScheme.primary,
                 accentContainerColor: colorScheme.primaryContainer,
+                onAccentContainerColor: colorScheme.onPrimaryContainer,
                 onTap: () {
                   Navigator.of(
                     context,
@@ -71,6 +72,7 @@ class HomeScreen extends ConsumerWidget {
                 actionText: 'Başla',
                 accentColor: colorScheme.tertiary,
                 accentContainerColor: colorScheme.tertiaryContainer,
+                onAccentContainerColor: colorScheme.onTertiaryContainer,
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const FlashcardsScreen()),
@@ -93,6 +95,7 @@ class HomeScreen extends ConsumerWidget {
                 actionText: 'Başla',
                 accentColor: colorScheme.error,
                 accentContainerColor: colorScheme.errorContainer,
+                onAccentContainerColor: colorScheme.onErrorContainer,
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (_) => const MistakesScreen()),
@@ -111,6 +114,7 @@ class HomeScreen extends ConsumerWidget {
                 actionText: 'Başla',
                 accentColor: colorScheme.secondary,
                 accentContainerColor: colorScheme.secondaryContainer,
+                onAccentContainerColor: colorScheme.onSecondaryContainer,
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -139,6 +143,7 @@ class HomeScreen extends ConsumerWidget {
                 actionText: 'Düelloya Gir',
                 accentColor: colorScheme.tertiary,
                 accentContainerColor: colorScheme.tertiaryContainer,
+                onAccentContainerColor: colorScheme.onTertiaryContainer,
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -159,6 +164,7 @@ class HomeScreen extends ConsumerWidget {
                 actionText: 'Eşleştir',
                 accentColor: colorScheme.primary,
                 accentContainerColor: colorScheme.primaryContainer,
+                onAccentContainerColor: colorScheme.onPrimaryContainer,
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -314,6 +320,7 @@ class _StudyTypeTile extends StatelessWidget {
   final VoidCallback? onTap;
   final Color? accentColor;
   final Color? accentContainerColor;
+  final Color? onAccentContainerColor;
   final String badgeText;
   final String actionText;
 
@@ -324,6 +331,7 @@ class _StudyTypeTile extends StatelessWidget {
     this.onTap,
     this.accentColor,
     this.accentContainerColor,
+    this.onAccentContainerColor,
     required this.badgeText,
     this.actionText = 'Başla',
   });
@@ -336,12 +344,14 @@ class _StudyTypeTile extends StatelessWidget {
     final effectiveAccent = accentColor ?? colorScheme.primary;
     final effectiveAccentContainer =
         accentContainerColor ?? colorScheme.primaryContainer;
+    final effectiveOnAccentContainer =
+        onAccentContainerColor ?? colorScheme.onPrimaryContainer;
 
     return TactileCard(
       onTap: onTap,
       padding: const EdgeInsets.all(14),
-      backgroundColor: effectiveAccentContainer.withAlpha(55),
-      borderColor: effectiveAccent.withAlpha(95),
+      backgroundColor: colorScheme.surface,
+      borderColor: effectiveAccent.withAlpha(110),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -354,7 +364,7 @@ class _StudyTypeTile extends StatelessWidget {
                   color: effectiveAccentContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: effectiveAccent, size: 24),
+                child: Icon(icon, color: effectiveOnAccentContainer, size: 24),
               ),
               const SizedBox(width: 6),
               Flexible(
@@ -370,7 +380,7 @@ class _StudyTypeTile extends StatelessWidget {
                   child: Text(
                     badgeText,
                     style: textTheme.labelSmall?.copyWith(
-                      color: effectiveAccent,
+                      color: effectiveOnAccentContainer,
                       fontWeight: FontWeight.w800,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -382,13 +392,17 @@ class _StudyTypeTile extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             title,
-            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            style: textTheme.titleMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w800,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             description,
             style: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
