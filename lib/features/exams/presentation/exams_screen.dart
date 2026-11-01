@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 
-/// Denemeler sekmesi: sınav düzeni ve (ileride) süreli deneme başlatma.
+/// Denemeler sekmesi: sınav düzeni ve süreli deneme başlatma.
 class ExamsScreen extends StatelessWidget {
   const ExamsScreen({super.key});
 
@@ -10,8 +11,6 @@ class ExamsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      // Liste const değil, çünkü FilledButton.icon const oluşturulamıyor;
-      // bu yüzden const'u diğer elemanlara tek tek yazıyoruz.
       children: [
         const PageHeader(
           icon: Icons.timer,
@@ -44,11 +43,20 @@ class ExamsScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        // onPressed: null olan buton otomatik olarak pasif (gri) görünür
+        // 65 dakikalık süreli Genel Kültür denemesini başlatır
         FilledButton.icon(
-          onPressed: null,
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const QuizScreen(
+                  examDuration: Duration(minutes: 65),
+                  customTitle: 'Genel Kültür Denemesi',
+                ),
+              ),
+            );
+          },
           icon: const Icon(Icons.play_arrow),
-          label: const Text('Deneme başlat (yakında)'),
+          label: const Text('Genel Kültür Denemesi Başlat'),
         ),
       ],
     );

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
@@ -63,11 +65,15 @@ const List<Question> defaultSampleQuestions = [
 class QuizScreen extends StatefulWidget {
   final List<Question> questions;
   final MistakeRepository mistakeRepository;
+  final Duration? examDuration;
+  final String? customTitle;
 
   const QuizScreen({
     super.key,
     this.questions = defaultSampleQuestions,
     this.mistakeRepository = const MistakeRepository(),
+    this.examDuration,
+    this.customTitle,
   });
 
   @override
@@ -80,9 +86,44 @@ class _QuizScreenState extends State<QuizScreen> {
   bool _isAnswered = false;
   int _correctCount = 0;
   int _wrongCount = 0;
+  Timer? _timer;
+  int _remainingSeconds = 0;
 
   Question get _currentQuestion => widget.questions[_currentIndex];
   bool get _isLastQuestion => _currentIndex == widget.questions.length - 1;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.examDuration != null) {
+      _remainingSeconds = widget.examDuration!.inSeconds;
+      // Timer.periodic: JavaScript/Web'deki setInterval() mantığı gibidir.
+      // Her saniye kalan süreyi 1 azaltır ve süre bitince sınavı otomatik noktalar.
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (_remainingSeconds > 1) {
+          setState(() {
+            _remainingSeconds--;
+          });
+        } else {
+          _timer?.cancel();
+          setState(() {
+            _remainingSeconds = 0;
+          });
+          if (mounted) {
+            _finishQuiz();
+          }
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    // Angular'daki ngOnDestroy / clearInterval() gibi bellek sızıntısını önlemek için
+    // timer nesnesini hafızadan temizliyoruz.
+    _timer?.cancel();
+    super.dispose();
+  }
 
   /// Şıkkın mevcut durumuna (normal, seçili, doğru, yanlış) karar veren metot.
   OptionStatus _getOptionStatus(int index) {
@@ -146,6 +187,7 @@ class _QuizScreenState extends State<QuizScreen> {
   }
 
   void _finishQuiz() {
+    _timer?.cancel();
     final emptyCount = widget.questions.length - (_correctCount + _wrongCount);
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
@@ -186,7 +228,13 @@ class _QuizScreenState extends State<QuizScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('${question.lesson} Testi')),
+      appBar: AppBar(
+        title: Text(widget.customTitle ?? '${question.lesson} Testi'),
+        actions: [
+          if (widget.examDuration != null)
+            _ExamTimerBadge(remainingSeconds: _remainingSeconds),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -359,6 +407,66 @@ class _ExplanationCard extends StatelessWidget {
               style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Süreli sınavlarda kalan süreyi MM:SS formatında gösteren sayaç rozeti.
+class _ExamTimerBadge extends StatelessWidget {
+  final int remainingSeconds;
+
+  const _ExamTimerBadge({required this.remainingSeconds});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final minutes = (remainingSeconds ~/ 60).toString().padLeft(2, '0');
+    final seconds = (remainingSeconds % 60).toString().padLeft(2, '0');
+    final isCritical = remainingSeconds <= 60 && remainingSeconds > 0;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 16),
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: isCritical
+                ? colorScheme.errorContainer
+                : colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isCritical
+                  ? colorScheme.error
+                  : colorScheme.outlineVariant,
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.timer_outlined,
+                size: 16,
+                color: isCritical
+                    ? colorScheme.error
+                    : colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                '$minutes:$seconds',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                  color: isCritical
+                      ? colorScheme.onErrorContainer
+                      : colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

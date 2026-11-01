@@ -54,10 +54,20 @@ class HomeScreen extends StatelessWidget {
             ).push(MaterialPageRoute(builder: (_) => const MistakesScreen()));
           },
         ),
-        const _StudyTypeTile(
+        _StudyTypeTile(
           icon: Icons.timer_outlined,
           title: 'Deneme sınavı',
           description: '60 soru, 65 dakika. Gerçek Genel Kültür sınav düzeni.',
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const QuizScreen(
+                  examDuration: Duration(minutes: 65),
+                  customTitle: 'Genel Kültür Denemesi',
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
