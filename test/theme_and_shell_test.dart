@@ -15,6 +15,33 @@ void main() {
     test('Karanlık tema parlaklığı Brightness.dark değerindedir', () {
       expect(AppTheme.dark.brightness, Brightness.dark);
     });
+
+    test('WCAG AAA uyumlu yüksek kontrastlı renk çiftleri tanımlıdır', () {
+      final light = AppTheme.light;
+      expect(light.colorScheme.secondary, equals(AppTheme.secondaryColor));
+      expect(light.colorScheme.secondary, equals(const Color(0xFF0D9488)));
+      expect(light.colorScheme.primary, equals(AppTheme.seedColor));
+      expect(light.colorScheme.surface, equals(const Color(0xFFFFFFFF)));
+      expect(light.colorScheme.onSurface, equals(const Color(0xFF0F172A)));
+      expect(
+        light.colorScheme.primaryContainer,
+        equals(const Color(0xFFE0E7FF)),
+      );
+      expect(
+        light.colorScheme.onPrimaryContainer,
+        equals(const Color(0xFF1E1B4B)),
+      );
+
+      final dark = AppTheme.dark;
+      expect(dark.colorScheme.primary, equals(AppTheme.darkPrimaryColor));
+      expect(dark.colorScheme.secondary, equals(AppTheme.darkSecondaryColor));
+      expect(dark.colorScheme.surface, equals(const Color(0xFF1E293B)));
+      expect(dark.colorScheme.onSurface, equals(const Color(0xFFF8FAFC)));
+      expect(
+        dark.colorScheme.surfaceContainerHighest,
+        equals(const Color(0xFF334155)),
+      );
+    });
   });
 
   group('Shell Modernizasyon Testleri', () {
@@ -66,5 +93,27 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets(
+      'TactileCard yarı saydam renkleri Color.alphaBlend ile opak harmanlar',
+      (WidgetTester tester) async {
+        final colorScheme = AppTheme.light.colorScheme;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: TactileCard(
+                backgroundColor: colorScheme.primary.withAlpha(40),
+                borderColor: colorScheme.primary.withAlpha(80),
+                child: const Text('Harmanlanmış Kart'),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Harmanlanmış Kart'), findsOneWidget);
+      },
+    );
   });
 }
