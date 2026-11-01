@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 
 /// Kullanıcının soru çözme istatistiklerini, XP/Lig düzeyini ve günlük hedefini tutan durum (state) modeli.
@@ -113,6 +114,8 @@ class StudyStatsState {
 
 /// Soru istatistiklerini, oturum arşivini ve XP/Lig durumunu yöneten Riverpod Notifier'ı.
 class StudyStatsNotifier extends Notifier<StudyStatsState> {
+  final CloudSyncRepository _cloudSync = const CloudSyncRepository();
+
   @override
   StudyStatsState build() {
     return const StudyStatsState();
@@ -123,6 +126,8 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
     required String lesson,
     required bool isCorrect,
     int timeSpentSeconds = 20,
+    String? topic,
+    String? questionText,
   }) {
     final newWrongByLesson = Map<String, int>.from(state.wrongByLesson);
     if (!isCorrect) {
@@ -149,6 +154,20 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       totalXp: state.totalXp + earnedXp,
       totalTimeSeconds: state.totalTimeSeconds + timeSpentSeconds,
     );
+
+    // Supabase arka plan senkronizasyonu
+    _cloudSync.saveQuestionAttempt(
+      questionText: questionText ?? '$lesson Sorusu',
+      lesson: lesson,
+      topic: topic ?? 'Genel',
+      isCorrect: isCorrect,
+      timeSpentSeconds: timeSpentSeconds,
+    );
+    _cloudSync.syncProfileStats(
+      totalXp: state.totalXp,
+      leagueTier: state.leagueTier,
+      dailyGoalQuestions: state.dailyGoal,
+    );
   }
 
   /// Tamamlanan bir test oturumunu arşive kaydeder ve XP kazancını ekler.
@@ -157,11 +176,32 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       totalXp: state.totalXp + session.earnedXp,
       sessionHistory: [session, ...state.sessionHistory],
     );
+
+    // Supabase oturum ve profil senkronizasyonu
+    _cloudSync.saveQuizSession(session);
+    _cloudSync.syncProfileStats(
+      totalXp: state.totalXp,
+      leagueTier: state.leagueTier,
+      dailyGoalQuestions: state.dailyGoal,
+    );
   }
 
   /// Kullanıcının profilinden belirlediği günlük hedefi günceller.
   void updateDailyGoal(int newGoal) {
     state = state.copyWith(dailyGoal: newGoal);
+    _cloudSync.syncProfileStats(
+      totalXp: state.totalXp,
+      leagueTier: state.leagueTier,
+      dailyGoalQuestions: newGoal,
+    );
+  }
+
+  /// Supabase bulut veritabanından kullanıcının geçmiş oturumlarını yükler.
+  Future<void> loadFromCloud() async {
+    final cloudSessions = await _cloudSync.fetchSessionHistory();
+    if (cloudSessions.isNotEmpty) {
+      state = state.copyWith(sessionHistory: cloudSessions);
+    }
   }
 }
 

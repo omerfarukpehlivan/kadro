@@ -199,7 +199,12 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     try {
       ref
           .read(studyStatsProvider.notifier)
-          .recordAnswer(lesson: _currentQuestion.lesson, isCorrect: isCorrect);
+          .recordAnswer(
+            lesson: _currentQuestion.lesson,
+            topic: _currentQuestion.topic,
+            questionText: _currentQuestion.text,
+            isCorrect: isCorrect,
+          );
     } catch (_) {
       // ProviderScope bulunmayan izole test ortamlarında güvenli fallback
     }

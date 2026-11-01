@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/config/supabase_config.dart';
+import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 
 /// Kullanıcı kimlik doğrulama durumu.
 ///
@@ -49,6 +50,9 @@ class AuthNotifier extends Notifier<AuthUserState> {
     final client = SupabaseConfig.clientOrNull;
     final user = client?.auth.currentUser;
     if (user != null) {
+      Future.microtask(() {
+        ref.read(studyStatsProvider.notifier).loadFromCloud();
+      });
       return AuthUserState(
         isAuthenticated: true,
         userId: user.id,
@@ -75,6 +79,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
           displayName: email.trim().split('@').first,
           isLoading: false,
         );
+        ref.read(studyStatsProvider.notifier).loadFromCloud();
         return true;
       } else {
         state = state.copyWith(
@@ -101,6 +106,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
               email.trim().split('@').first,
           isLoading: false,
         );
+        ref.read(studyStatsProvider.notifier).loadFromCloud();
         return true;
       }
       state = state.copyWith(
