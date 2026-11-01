@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
+import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
@@ -43,10 +44,15 @@ class HomeScreen extends StatelessWidget {
             ).push(MaterialPageRoute(builder: (_) => const FlashcardsScreen()));
           },
         ),
-        const _StudyTypeTile(
+        _StudyTypeTile(
           icon: Icons.bookmark_border,
           title: 'Yanlış defteri',
           description: 'Yanlış yaptığın soruları tekrar çöz.',
+          onTap: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const MistakesScreen()));
+          },
         ),
         const _StudyTypeTile(
           icon: Icons.timer_outlined,

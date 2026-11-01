@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
@@ -61,8 +62,13 @@ const List<Question> defaultSampleQuestions = [
 /// arayüzü günceller.
 class QuizScreen extends StatefulWidget {
   final List<Question> questions;
+  final MistakeRepository mistakeRepository;
 
-  const QuizScreen({super.key, this.questions = defaultSampleQuestions});
+  const QuizScreen({
+    super.key,
+    this.questions = defaultSampleQuestions,
+    this.mistakeRepository = const MistakeRepository(),
+  });
 
   @override
   State<QuizScreen> createState() => _QuizScreenState();
@@ -114,8 +120,10 @@ class _QuizScreenState extends State<QuizScreen> {
       _isAnswered = true;
       if (isCorrect) {
         _correctCount++;
+        widget.mistakeRepository.removeMistake(_currentQuestion.id);
       } else {
         _wrongCount++;
+        widget.mistakeRepository.addMistake(_currentQuestion);
       }
     });
 
