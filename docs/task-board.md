@@ -51,7 +51,10 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-24** | **Güçlü Raporlama & Retention: Çözülen Testler Arşivi (`QuizSessionRecord`), Ustalık Isı Haritası & XP/Lig Sistemi** | Supabase şemasına uyumlu çözülen testler geçmişi (`QuizHistoryScreen`), Ders Ustalık Isı Haritası (`Usta`/`Gelişiyor`/`Kritik`), soru başına ortalama süre analizi ve `Bronz -> Müsteşar Ligi` XP sistemi | ✅ **Tamamlandı** |
 | **TASK-25** | **Supabase Kurulumu (`supabase_flutter`), Yapılandırma (`SupabaseConfig`) & Giriş / Kayıt Ekranı (`AuthScreen`)** | `supabase_flutter` entegrasyonu, `SupabaseConfig`, `AuthNotifier` (Giriş Yap / Kayıt Ol / Misafir Modu), `AuthScreen` (`/auth`) ve `ProfileScreen` hesap kartı | ✅ **Tamamlandı** |
 | **TASK-26** | **Bulut Soru & Oyun Havuzu Entegrasyonu (`QuestionRepository` +Ders/Konu Filtreleme + Offline Fallback)** | Soruların (`multiple_choice`, `true_false`, `matching`) seçilen ders/konuya göre Supabase `public.questions` tablosundan çekilmesi ve çevrimdışı durumda yerel JSON/sample yedeğine düşmesi | ✅ **Tamamlandı** |
-| **TASK-27** | **Bulut Raporlama & İlerleme Senkronizasyonu (`quiz_sessions`, `question_attempt_logs`, `user_topic_mastery`)** | Çözülen testlerin, soru bazlı doğru/yanlış ve süre loglarının, konu ustalık ısı haritasının ve kullanıcı XP/Seri verilerinin Supabase PostgreSQL tablolarına kaydedilmesi ve giriş yapıldığında buluttan geri yüklenmesi | ✅ **Tamamlandı** |
+| **TASK-27** | **Bulut Raporlama & İlerleme Senkronizasyonu (`quiz_sessions`, `question_attempt_logs`, `user_topic_mastery`)** | Çözülen testlerin, soru bazlı doğru/yanlış ve süre loglarının, konu ustalık ısı haritasının ve kullanıcı XP/Seri verilerinin Supabase PostgreSQL tablolarına kaydedilmesi ve giriş yapıldığında buluttan geri yüklenmesi | ✅ **Tamamlandı** (`c9daabc`) |
+| **TASK-28** | **Çalışma Planlayıcı (`public.study_tasks`) & Konu Ustalık Matrisi (`public.user_topic_mastery`) Bulut Senkronizasyonu** | `StudyTask` serileştirmesi (`toMap`/`fromMap`), `CloudSyncRepository` üzerinden günlük görevlerin ve konu bazlı ustalık yüzdelerinin Supabase tablolarına senkronize edilmesi | ⏳ **Sırada** |
+| **TASK-29** | **Bulut Destekli Mini Oyunlar (`TrueFalseBlitz` & `ConceptMatch` Supabase) + Test Oturumu Detay Ekranı (`QuizSessionDetailScreen`)** | Mini oyunların Supabase `public.questions` (`true_false` & `matching`) tablosundan beslenmesi, oyun sonuçlarının arşive kaydedilmesi ve arşivdeki testlere tıklanınca detaylı karne analiz ekranının (`QuizSessionDetailScreen`) açılması | ⏳ **Sırada** |
+| **TASK-30** | **3 Adımlı Kişiselleştirilmiş KPSS Hedef Sihirbazı (`OnboardingScreen`) & Odak Ders Koçluğu** | Kadro Koçu eşliğinde Hedef KPSS Puanı (`80+`, `85+`, `90+`), Odak Ders ve Günlük Soru Hedefi seçimi (`OnboardingScreen`), seçilen odak derse göre otomatik çalışma görevi ataması ve `ProfileScreen` hedef kartı | ⏳ **Sırada** |
 
 ---
 
@@ -1544,5 +1547,194 @@ ADIM 2: `StudyStatsNotifier` ve `AuthNotifier` ile Bulut Senkronizasyonu
 ADIM 3: Test ve Doğrulama
 1. `test/cloud_sync_test.dart` dosyasını oluştur:
    - Supabase başlatılmamışken (`SupabaseConfig.isReady == false`) `CloudSyncRepository` metotlarının (`saveQuizSession`, `saveQuestionAttempt`, `fetchSessionHistory`) hiçbir hata fırlatmadan güvenli şekilde çalıştığını (offline-safe) doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+## 🚀 10. Dalga 10: Tam Bulut Senkronizasyonu (`study_tasks` & `user_topic_mastery`), Bulut Destekli Mini Oyunlar, Test Detay Karnesi & 3 Adımlı KPSS Hedef Sihirbazı (`TASK-28`, `TASK-29`, `TASK-30`)
+
+---
+
+### 📦 TASK-28: Çalışma Planlayıcı (`public.study_tasks`) & Konu Ustalık Matrisi (`public.user_topic_mastery`) Bulut Senkronizasyonu
+
+```text
+GÖREV: TASK-28 — Çalışma Planlayıcı (public.study_tasks) ve Konu Ustalık Matrisi (public.user_topic_mastery) Tablolarının Supabase ile Tam Senkronizasyonu
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. Tüm Supabase işlemlerini `CloudSyncRepository` içinde `try/catch` ile sar. TASK-27 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `StudyTask` (`lib/features/planner/data/models/study_task.dart`) JSON / Supabase Serileştirmesi
+1. `lib/features/planner/data/models/study_task.dart` dosyasındaki `StudyTask` sınıfına mevcut alanları ve `copyWith` metodunu BİREBİR koruyarak şu iki metodu ekle:
+   - `Map<String, dynamic> toMap(String userId)`:
+     ```dart
+     Map<String, dynamic> toMap(String userId) {
+       return {
+         'user_id': userId,
+         'title': title,
+         'lesson_tag': lessonTag,
+         'estimated_minutes': estimatedMinutes,
+         'action_type': actionType.name,
+         'is_completed': isCompleted,
+       };
+     }
+     ```
+   - `factory StudyTask.fromMap(Map<String, dynamic> map)`:
+     ```dart
+     factory StudyTask.fromMap(Map<String, dynamic> map) {
+       final actionName = (map['action_type'] as String?) ?? 'custom';
+       final actionType = StudyTaskActionType.values.firstWhere(
+         (e) => e.name == actionName,
+         orElse: () => StudyTaskActionType.custom,
+       );
+       return StudyTask(
+         id: (map['id'] ?? '').toString(),
+         title: (map['title'] as String?) ?? '',
+         lessonTag: (map['lesson_tag'] as String?) ?? 'Genel',
+         estimatedMinutes: (map['estimated_minutes'] as num?)?.toInt() ?? 25,
+         actionType: actionType,
+         isCompleted: (map['is_completed'] as bool?) ?? false,
+       );
+     }
+     ```
+
+ADIM 2: `CloudSyncRepository` (`lib/features/stats/data/cloud_sync_repository.dart`) Genişletmesi
+1. `lib/features/stats/data/cloud_sync_repository.dart` içine `StudyTask` import'unu ekle ve şu 5 yeni metodu ekle:
+   - `Future<List<StudyTask>> fetchStudyTasks()`:
+     - `SupabaseConfig.clientOrNull` veya `currentUser?.id` null ise `const []` döner.
+     - Aktifse `client.from('study_tasks').select().eq('user_id', userId).order('created_at', ascending: true)` sorgusunu çalıştırıp `StudyTask.fromMap` ile listeye çevirir (`try/catch` içinde).
+   - `Future<void> insertStudyTask(StudyTask task)`:
+     - `client == null || userId == null` ise çıkar; aktifse `client.from('study_tasks').insert(task.toMap(userId))` çağırır.
+   - `Future<void> updateStudyTaskCompletion({required String title, required bool isCompleted})`:
+     - `client == null || userId == null` ise çıkar; aktifse `client.from('study_tasks').update({'is_completed': isCompleted}).eq('user_id', userId).eq('title', title)` çağırır.
+   - `Future<void> deleteStudyTaskByTitle(String title)`:
+     - `client == null || userId == null` ise çıkar; aktifse `client.from('study_tasks').delete().eq('user_id', userId).eq('title', title)` çağırır.
+   - `Future<void> upsertTopicMastery({required String lesson, required String topic, required int totalSolved, required int totalCorrect, required int totalTimeSeconds})`:
+     - `client == null || userId == null` ise çıkar; aktifse `masteryPercent = totalSolved == 0 ? 0 : ((totalCorrect / totalSolved) * 100).round()` hesaplayıp `client.from('user_topic_mastery').upsert({'user_id': userId, 'lesson': lesson, 'topic': topic, 'total_solved': totalSolved, 'total_correct': totalCorrect, 'total_time_seconds': totalTimeSeconds, 'mastery_percent': masteryPercent, 'last_studied_at': DateTime.now().toIso8601String()}, onConflict: 'user_id,lesson,topic')` çağırır (`try/catch` içinde).
+
+ADIM 3: `StudyPlannerNotifier` ve `StudyStatsNotifier` Bulut Bağlantısı
+1. `lib/features/planner/data/study_planner_notifier.dart` içine `final CloudSyncRepository _cloudSync = const CloudSyncRepository();` ekle:
+   - `addTask(...)` içinde yeni görev eklendikten sonra `unawaited(_cloudSync.insertStudyTask(newTask));` çağır.
+   - `toggleTask(String id)` içinde durumu değişen görevin başlığı ve yeni `isCompleted` değeriyle `unawaited(_cloudSync.updateStudyTaskCompletion(title: updatedTask.title, isCompleted: updatedTask.isCompleted));` çağır.
+   - `removeTask(String id)` içinde silinen görev için `unawaited(_cloudSync.deleteStudyTaskByTitle(removedTask.title));` çağır.
+   - `Future<void> loadTasksFromCloud()` metodu ekle: `final remoteTasks = await _cloudSync.fetchStudyTasks(); if (remoteTasks.isNotEmpty) { state = state.copyWith(tasks: remoteTasks); }`
+2. `lib/features/auth/data/auth_notifier.dart` içinde `signIn` ve `signUp` başarılı olduğunda `unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());` çağır.
+3. `lib/features/stats/data/study_stats_notifier.dart` içinde `recordAnswer(...)` çağrıldığında `unawaited(_cloudSync.upsertTopicMastery(lesson: lesson, topic: topic.isEmpty ? 'Genel' : topic, totalSolved: newLessonSolved[lesson] ?? 1, totalCorrect: newLessonCorrect[lesson] ?? 0, totalTimeSeconds: newTotalTimeSeconds));` çağır.
+
+ADIM 4: Test ve Doğrulama
+1. `test/cloud_sync_test.dart` içine:
+   - `StudyTask.toMap` ve `StudyTask.fromMap` serileştirme doğrulamasını,
+   - `fetchStudyTasks`, `insertStudyTask`, `updateStudyTaskCompletion`, `deleteStudyTaskByTitle` ve `upsertTopicMastery` metotlarının offline/test modunda (`SupabaseConfig.isReady == false`) hata fırlatmadan çalıştığını doğrulayan testi ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-29: Bulut Destekli Mini Oyunlar (`TrueFalseBlitz` & `ConceptMatch` Supabase) + Test Oturumu Detay Ekranı (`QuizSessionDetailScreen`)
+
+```text
+GÖREV: TASK-29 — Mini Oyunların Supabase `public.questions` Tablosundan Beslenmesi, Oyun Sonuçlarının Arşive Kaydedilmesi ve Test Oturumu Detay Ekranı (QuizSessionDetailScreen)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. TASK-28 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `QuestionRepository` (`lib/features/quiz/data/question_repository.dart`) Mini Oyun Sorguları
+1. `lib/features/quiz/data/question_repository.dart` içine `TrueFalseItem` ve `ConceptMatchSet` import'larını ekle ve şu iki metodu ekle:
+   - `Future<List<TrueFalseItem>> fetchTrueFalseItems({String? lesson})`:
+     - `SupabaseConfig.clientOrNull` aktifse `public.questions` tablosundan `question_type = 'true_false'` olan kayıtları sorgula (`lesson` verilmişse `.eq('lesson', lesson)`).
+     - Dönen kayıtları `TrueFalseItem(id: row['id'].toString(), lesson: row['lesson'], topic: row['topic'], statement: row['prompt_text'], isTrue: (row['interaction_data']?['isTrue'] as bool?) ?? true, explanation: row['explanation'])` olarak dönüştür.
+     - Buluttan gelen liste ile `sampleTrueFalseItems` listesini birleştir (veya bulut boşsa/offline ise doğrudan `sampleTrueFalseItems` döndür) ki her zaman en az 8 önerme hazır olsun.
+   - `Future<List<ConceptMatchSet>> fetchConceptMatchSets()`:
+     - `SupabaseConfig.clientOrNull` aktifse `public.questions` tablosundan `question_type = 'matching'` olan kayıtları sorgula.
+     - Dönen her satırdaki `interaction_data['pairs']` dizisini `List<ConceptPair>` nesnelerine dönüştürüp `ConceptMatchSet` oluştur; mevcut `sampleConceptMatchSets` ile birleştir (aynı başlık varsa tekilleştir) ve döndür; hata veya offline durumda `sampleConceptMatchSets` döndür.
+
+ADIM 2: Mini Oyun Sonuçlarının `QuizSessionRecord` Arşivine Kaydedilmesi
+1. `lib/features/games/presentation/true_false_blitz_screen.dart` içinde `_finishGame()` çağrıldığında (eğer `_correctCount + _wrongCount > 0` ise):
+   - `final net = _correctCount - (_wrongCount / 4.0);`
+   - `ref.read(studyStatsProvider.notifier).recordQuizSession(QuizSessionRecord(id: DateTime.now().microsecondsSinceEpoch.toString(), title: '60 Saniyede Pençe Düellosu', lesson: 'Genel Kültür', totalQuestions: _correctCount + _wrongCount, correctCount: _correctCount, wrongCount: _wrongCount, emptyCount: 0, netScore: net, earnedXp: _earnedXp, durationSeconds: widget.initialSeconds - _remainingSeconds, completedAt: DateTime.now()));` çağır.
+2. `lib/features/games/presentation/concept_match_screen.dart` içinde bir setin tüm çiftleri eşleştiğinde (`_matchedIds.length == currentSet.pairs.length`):
+   - `ref.read(studyStatsProvider.notifier).recordQuizSession(QuizSessionRecord(id: DateTime.now().microsecondsSinceEpoch.toString(), title: 'Kavram Eşleştir · ${currentSet.title}', lesson: currentSet.lesson, totalQuestions: currentSet.pairs.length, correctCount: currentSet.pairs.length, wrongCount: 0, emptyCount: 0, netScore: currentSet.pairs.length.toDouble(), earnedXp: 40, durationSeconds: _moves * 4, completedAt: DateTime.now()));` çağır.
+
+ADIM 3: `lib/features/stats/presentation/quiz_session_detail_screen.dart` (`QuizSessionDetailScreen`)
+1. `lib/features/stats/presentation/quiz_session_detail_screen.dart` (`QuizSessionDetailScreen extends StatelessWidget`) oluştur:
+   - Parametre: `final QuizSessionRecord session;`
+   - `AppBar(title: const Text('Test Oturumu Detayı'))`
+   - Gövde (`ListView`):
+     - `MascotCoachBanner`: Başarı oranına göre (`accuracy >= 75 ? MascotMood.victory : MascotMood.coach`), `badgeLabel: session.lesson.toUpperCase()`, `title: session.title`, `message: 'Bu oturumda ${session.totalQuestions} soruda ${session.netScore.toStringAsFixed(2)} net ve +${session.earnedXp} XP elde ettin.'`
+     - `TactileCard` içinde detaylı metrik ızgarası:
+       - Doğru (`session.correctCount`), Yanlış (`session.wrongCount`), Boş (`session.emptyCount`),
+       - Net Puan (`session.netScore.toStringAsFixed(2)`), Başarı Oranı (`%$accuracy`),
+       - Toplam Süre (`${session.durationSeconds ~/ 60} dk ${session.durationSeconds % 60} sn`) ve Soru Başına Ortalama Süre (`$avgSeconds sn/soru`).
+     - Altta `'Aynı Dersten Yeni Test Çöz'` (`FilledButton.icon`, `LucideIcons.play`) butonu: Tıklandığında `Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => QuizScreen(lessonFilter: session.lesson == 'Genel Kültür' ? null : session.lesson, customTitle: '${session.lesson} Tekrar Testi')))` açar.
+2. `lib/features/stats/presentation/quiz_history_screen.dart` ve `lib/features/stats/presentation/stats_screen.dart` (`_RecentSessionsCard`) içindeki oturum kartlarına tıklandığında `QuizSessionDetailScreen(session: session)` ekranını aç!
+
+ADIM 4: Test ve Doğrulama
+1. `test/study_stats_test.dart` veya `test/games_screen_test.dart` içine `QuizHistoryScreen` üzerinde bir test kaydına tıklanınca `'Test Oturumu Detayı'` (`QuizSessionDetailScreen`) ekranının açıldığını doğrulayan widget testi ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-30: 3 Adımlı Kişiselleştirilmiş KPSS Hedef Sihirbazı (`OnboardingScreen`) & Odak Ders Koçluğu
+
+```text
+GÖREV: TASK-30 — 3 Adımlı Kişiselleştirilmiş KPSS Hedef Sihirbazı (OnboardingScreen), Hedef Puan / Odak Ders Tercihleri ve Otomatik Çalışma Görevi Ataması
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. TASK-29 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `UserPreferencesState` ve `UserPreferencesNotifier` (`lib/features/profile/data/user_preferences_notifier.dart`) Genişletmesi
+1. `UserPreferencesState` içine mevcut tüm alanları (`isPro`, `dailyFreeQuestionLimit`, `themeMode`) ve varsayılanlarını BİREBİR koruyarak şu 3 yeni alanı ekle:
+   - `final int targetKpssScore;` (varsayılan `85`)
+   - `final String focusLesson;` (varsayılan `'Tarih'`)
+   - `final bool hasCompletedOnboarding;` (varsayılan `false`)
+   - `copyWith` metodunu bu 3 alanı da destekleyecek şekilde güncelle.
+2. `UserPreferencesNotifier` içine şu metodu ekle:
+   ```dart
+   /// Kullanıcının KPSS hedef puanını, odak dersini ve günlük soru hedefini kaydeder.
+   void saveOnboardingGoals({
+     required int targetKpssScore,
+     required String focusLesson,
+     required int dailyGoalQuestions,
+   }) {
+     state = state.copyWith(
+       targetKpssScore: targetKpssScore,
+       focusLesson: focusLesson,
+       dailyFreeQuestionLimit: dailyGoalQuestions,
+       hasCompletedOnboarding: true,
+     );
+   }
+   ```
+
+ADIM 2: `lib/features/onboarding/presentation/onboarding_screen.dart` (`OnboardingScreen`)
+1. `lib/features/onboarding/presentation/onboarding_screen.dart` (`OnboardingScreen extends ConsumerStatefulWidget`) oluştur:
+   - `AppBar(title: const Text('KPSS Hedef Sihirbazı'))`
+   - Durum değişkenleri:
+     - `int _step = 0;` (`0`, `1`, `2` olmak üzere 3 adım)
+     - `int _selectedScore = 85;` (`80`, `85`, `90`)
+     - `String _selectedLesson = 'Tarih';` (`'Tarih'`, `'Coğrafya'`, `'Vatandaşlık'`, `'Güncel Bilgiler'`)
+     - `int _selectedDailyGoal = 30;` (`30`, `50`, `100`)
+   - Üstte adım göstergesi (`'Adım ${_step + 1} / 3'`) + `LinearProgressIndicator(value: (_step + 1) / 3)` ve `MascotCoachBanner`:
+     - Adım 0: `title: 'Hedef KPSS Puanın Kaç?'`, `message: 'Atanmak istediğin kadro için hedef puanını seç, çalışma rotanı ona göre kuralım.'`
+     - Adım 1: `title: 'En Çok Hangi Derste Zorlanıyorsun?'`, `message: 'Öncelikli odak dersini seç; günlük çalışma planına özel görev ekleyelim.'`
+     - Adım 2: `title: 'Günlük Kaç Soru Çözmek İstiyorsun?'`, `message: 'İstikrarlı bir seri (streak) yakalamak için günlük soru hedefini belirle.'`
+   - Ortada adıma göre seçilebilir `TactileCard` seçenekleri:
+     - **Adım 0 Seçenekleri:** `80` (`'80+ Puan · B Grubu Memurluk'`), `85` (`'85+ Puan · Merkez & Kurum Kadroları'`), `90` (`'90+ Puan · Derece & A Grubu Kadrolar'`)
+     - **Adım 1 Seçenekleri:** `'Tarih'` (`'Tarih · 27 Soru (%45 Ağırlık)'`), `'Coğrafya'` (`'Coğrafya · 18 Soru (%30 Ağırlık)'`), `'Vatandaşlık'` (`'Vatandaşlık · 9 Soru (%15 Ağırlık)'`), `'Güncel Bilgiler'` (`'Güncel Bilgiler · 6 Soru (%10 Ağırlık)'`)
+     - **Adım 2 Seçenekleri:** `30` (`'30 Soru / Gün · İstikrarlı Tempo'`), `50` (`'50 Soru / Gün · Yoğun Tempo'`), `100` (`'100 Soru / Gün · Derece Kampı'`)
+   - Altta navigasyon butonları:
+     - `_step > 0` ise solda `'Geri'` (`OutlinedButton`),
+     - Sağda `_step < 2` ise `'Devam Et'` (`FilledButton`), `_step == 2` ise `'Rotamı Oluştur'` (`FilledButton.icon`, `LucideIcons.sparkles`):
+       - `'Rotamı Oluştur'` tıklandığında:
+         1. `ref.read(userPreferencesProvider.notifier).saveOnboardingGoals(targetKpssScore: _selectedScore, focusLesson: _selectedLesson, dailyGoalQuestions: _selectedDailyGoal);`
+         2. `ref.read(studyPlannerProvider.notifier).addTask(title: '$_selectedLesson Odak Testi ($_selectedScore+ Hedef)', lessonTag: _selectedLesson, estimatedMinutes: 20, actionType: StudyTaskActionType.quiz);`
+         3. `if (mounted) Navigator.of(context).pop();`
+
+ADIM 3: `ProfileScreen` ve `router.dart` Entegrasyonu
+1. `lib/features/profile/presentation/profile_screen.dart` içinde `_AccountCard` altına **`_StudyGoalWizardCard`** (`TactileCard`) ekle:
+   - Başlık: `'KPSS Hedefim: ${prefs.targetKpssScore}+ Puan'`
+   - Alt metin: `'Odak Ders: ${prefs.focusLesson} · Günlük Hedef: ${prefs.dailyFreeQuestionLimit} Soru'`
+   - Aksiyon butonu (`FilledButton.tonalIcon`, `LucideIcons.compass`, `label: const Text('Hedef Sihirbazını Aç')`): Tıklandığında `OnboardingScreen` açar.
+2. `lib/app/router.dart` içine `/onboarding` (`OnboardingScreen`) rotasını ekle.
+
+ADIM 4: Test ve Doğrulama
+1. `test/paywall_and_profile_test.dart` içine:
+   - `ProfileScreen` üzerinden `'Hedef Sihirbazını Aç'` butonuna tıklanınca `OnboardingScreen` ekranının açıldığını,
+   - 3 adım tamamlanıp `'Rotamı Oluştur'` butonuna basıldığında `userPreferencesProvider` üzerinde `targetKpssScore` ve `focusLesson` değerlerinin güncellendiğini doğrulayan widget testi ekle.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
