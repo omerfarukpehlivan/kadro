@@ -2080,3 +2080,9 @@ create policy "Anyone can submit question report"
 create policy "Users can read their own reports or admin all"
   on public.question_reports for select
   using (auth.uid() = user_id or auth.jwt()->>'role' = 'service_role');
+
+
+-- ==============================================================================
+-- 11. Geriye Dönük Uyumluluk Yamaları
+-- ==============================================================================
+alter table if exists public.questions add column if not exists distractor_trap text;
