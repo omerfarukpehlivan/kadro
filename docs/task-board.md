@@ -63,6 +63,11 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-36** | **Zengin Deneme Sınavı Merkezi (`ExamsScreen` Prova Paketleri) & `QuizScreen` Tam Havuz (`fetchAllFromPool`) Bağlantısı** | `ExamsScreen` içine 3 farklı deneme paketi (Türkiye Geneli 65 Dk Prova, Tarih & Coğrafya Kamp Denemesi, 15 Dk Hızlı Mola Denemesi) eklenmesi ve `QuizScreen` üzerinden tüm soru havuzunun çekilmesi | ⏳ **Sırada** |
 | **TASK-37** | **Ders Filtreli Hap Bilgi Kartları (`FlashcardsScreen` + 4 Ders + XP Kazanımı)** | `sample_flashcards.dart` zenginleştirmesi, `FlashcardsScreen` içine 4 ders filtresi ve öğrenilen kart başına `+10 XP` ödülü eklenmesi | ⏳ **Sırada** |
 | **TASK-38** | **KPSS Başarım Rozetleri (`Achievements`) & Haftalık Kadro Lig Sıralaması (`Leaderboard` — `StatsScreen`)** | `StatsScreen` üzerine 4 KPSS Başarım Rozeti (`İlk Pençe`, `Keskin Nişancı`, `Deneme Fatihi`, `Gümüş Kadro`) ve RPC destekli Liderlik Tablosu kartı | ⏳ **Sırada** |
+| **TASK-39** | **Kalıcı Yerel Depolama Katmanı (`LocalStorageService` + `shared_preferences`)** | Misafir modunda dahi XP, Seri, Günlük Soru Sayısı, Hedefler, Yanlış Defteri ve Çalışma Planı verilerinin cihazda kalıcı saklanması | ⏳ **Planlandı** |
+| **TASK-40** | **Kadro PRO 3'lü Paywall & RevenueCat (`purchases_flutter`) Entegrasyonu** | Aylık (89 ₺), İndirimli Yıllık (499 ₺) ve Sınava Kadar Tek Seferlik (349 ₺) satın alma ve PRO durum senkronizasyonu | ⏳ **Planlandı** |
+| **TASK-41** | **AdMob Ödüllü Video Reklam Motoru (`google_mobile_ads`)** | Günlük 30 soru limiti bittiğinde izlenen reklam ile +20 soru hakkı kazandıran gerçek AdMob Rewarded Ad motoru | ⏳ **Planlandı** |
+| **TASK-42** | **200 Soruluk Zengin Çekirdek KPSS Genel Kültür Havuzu** | Tarih (50), Coğrafya (50), Vatandaşlık (50), Güncel Bilgiler (50) özgün soru JSON ve Supabase seed verisinin oluşturulması | ⏳ **Planlandı** |
+| **TASK-43** | **Akıllı Çalışma Bildirimleri (`flutter_local_notifications`) & Çökme Takibi (`sentry_flutter`)** | Günlük soru çözme ve seri koruma bildirimleri ile Sentry hata takip entegrasyonu | ⏳ **Planlandı** |
 
 ---
 
@@ -2167,4 +2172,86 @@ ADIM 1: `StatsScreen` Bileşenleri
 ADIM 2: Test ve Doğrulama
 1. `test/study_stats_test.dart` güncellenerek rozetlerin ve lig kartının varlığı test edilir.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+## 💰 13. Dalga 13: Yerel Kalıcılık, Gelir Altyapısı (Kadro PRO + AdMob) & 200 Soruluk Çekirdek Havuz (`TASK-39` - `TASK-43`)
+
+---
+
+### 📦 TASK-39: Kalıcı Yerel Depolama Katmanı (`LocalStorageService` + `shared_preferences`)
+
+```text
+GÖREV: TASK-39 — Misafir Modunda dahi Veri Kaybını Önleyen LocalStorageService ve Notifier Entegrasyonları
+ÖNEMLİ: GEMINI.md kurallarına birebir uy.
+
+ADIM 1: `LocalStorageService` (`lib/core/services/local_storage_service.dart`)
+1. `SharedPreferences` tabanlı kalıcı veri katmanı oluştur:
+   - `saveUserPreferences(UserPreferencesState state)` & `loadUserPreferences()`
+   - `saveStudyStats(StudyStatsState state)` & `loadStudyStats()`
+   - `saveMistakes(List<Question> mistakes)` & `loadMistakes()`
+   - `saveStudyTasks(List<StudyTask> tasks)` & `loadStudyTasks()`
+
+ADIM 2: Notifier Entegrasyonları
+1. `UserPreferencesNotifier`, `StudyStatsNotifier`, `StudyPlannerNotifier` ve `MistakeRepository` başlatılırken yerel depodan verileri okusun; her değişiklikte asenkron olarak yerel depoya yazsın.
+
+ADIM 3: Test ve Doğrulama
+1. Birim testler eklenerek uygulama açılıp kapandığında (container dispose/recreate) verilerin korunduğu test edilir.
+```
+
+---
+
+### 📦 TASK-40: Kadro PRO 3'lü Paywall & RevenueCat (`purchases_flutter`) Entegrasyonu
+
+```text
+GÖREV: TASK-40 — 3 Seçenekli Karma Abonelik (Aylık 89 TL, Yıllık 499 TL, Sınava Kadar 349 TL) ve PaywallScreen Modernizasyonu
+ÖNEMLİ: GEMINI.md kurallarına birebir uy.
+
+ADIM 1: `PaywallScreen` Revizyonu
+1. 3 paket seçeneği kartı (`TactileCard`):
+   - Aylık: 89 ₺ / Ay
+   - Yıllık (En Çok Tercih Edilen rozetli): 499 ₺ / Yıl (Aylık ~41 ₺)
+   - 2026 Sınava Kadar: 349 ₺ (Tek Seferlik)
+2. `purchases_flutter` SDK sarmalayıcısı (`PurchaseService`) ile güvenli satın alma ve offline mock desteği.
+```
+
+---
+
+### 📦 TASK-41: AdMob Ödüllü Video Reklam Motoru (`google_mobile_ads`)
+
+```text
+GÖREV: TASK-41 — Günlük 30 Soru Limiti Dolduğunda +20 Soru Kazandıran Gerçek Ödüllü Reklam Entegrasyonu
+ÖNEMLİ: GEMINI.md kurallarına birebir uy.
+
+ADIM 1: `AdService` (`lib/core/services/ad_service.dart`)
+1. Test Reklam Birimi ID'leri ile `RewardedAd` yükleme ve gösterme mantığı.
+2. Reklam başarıyla izlendiğinde `ref.read(userPreferencesProvider.notifier).rewardExtraQuestions(20)` tetiklenmesi.
+```
+
+---
+
+### 📦 TASK-42: 200 Soruluk Zengin Çekirdek KPSS Genel Kültür Havuzu
+
+```text
+GÖREV: TASK-42 — 4 KPSS Dersi İçin 50'şer Soru (Toplam 200 Özgün Soru) JSON ve Supabase Seed Verisinin Hazırlanması
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Telifli ÖSYM çıkmış sorularını birebir kopyalama, özgün ve kazanım odaklı hazırla.
+
+ADIM 1: JSON Dosyaları
+1. `assets/data/sample_questions.json` içine her dersten 50 soru (Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler) ekle.
+2. `docs/supabase_schema.sql` seed veri bölümünü bu 200 soru ile güncelle.
+```
+
+---
+
+### 📦 TASK-43: Akıllı Çalışma Bildirimleri (`flutter_local_notifications`) & Çökme Takibi (`sentry_flutter`)
+
+```text
+GÖREV: TASK-43 — Günlük Çalışma & Seri Hatırlatıcı Bildirimleri ve Sentry Çökme Takibi
+ÖNEMLİ: GEMINI.md kurallarına birebir uy.
+
+ADIM 1: `NotificationService`
+1. Akşam 20:00'de "Kadro Koçun: Bugünkü serin bozulmasın, 10 soru çöz!" hatırlatması.
+ADIM 2: `sentry_flutter` Entegrasyonu
+1. `main.dart` içinde Sentry başlatma ve hata yakalama.
 ```
