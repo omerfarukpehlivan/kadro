@@ -78,6 +78,9 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-51** | **"ÖSYM Çeldirici Tuzağı" (UWorld Modeli) Açıklama Formatı & Çözüm Kartı Revizyonu** | `Question` modeline `distractorTrap` eklenmesi, soru çözüm açıklaması içine altın/kehribar vurgulu '⚠️ ÖSYM Çeldirici Tuzağı' analizi ve örnek soruların zenginleştirilmesi | ✅ **Tamamlandı** (`84bbe59`) |
 | **TASK-52** | **Instagram & WhatsApp Uyumlu 9:16 "Zafer Karnesi" Hikaye Paylaşım Kartı (`ShareVictoryCard`)** | Test sonu karnesinde tek tıkla açılan 9:16 Story formatında viral karne kartı, net/başarı özeti, Koç Tuğrul görseli, pano kopyalama ve native paylaşım köprüsü | ✅ **Tamamlandı** (`82a9429`) |
 | **TASK-53** | **Çerçevesiz & Büyük Pop-Out Maskot Tasarımı ve Derse Özel Tuğrul Varyasyonları** | Tuğrul maskotunu 84x84'lük kısıtlayıcı kutudan çıkarıp büyük (100px) çerçevesiz pop-out yapıya kavuşturma; Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler için 4 yeni tematik Tuğrul karakteri entegrasyonu | ✅ **Tamamlandı** |
+| **TASK-54** | **Mağaza Yayın Hazırlığı (App Icon, Splash Screen & Production Release Setup)** | Tuğrul maskotundan Android/iOS adaptive app icon (`flutter_launcher_icons`), derin indigo açılış ekranı (`flutter_native_splash`), Android v2 embedding / app label ve release build altyapısı | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-55** | **Kadro PRO Çevrimdışı Soru & Deneme İndirme Motoru (Offline-First Sync & Pro Paywall Kilidi)** | Sadece Kadro PRO üyelerine özel soru paketlerini ve denemeleri çevrimdışı kullanım için cihaza indirme (`OfflineDownloadService`), internet yokken indirilmemiş içerikte PRO Paywall yönlendirmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
 
@@ -2869,3 +2872,114 @@ ADIM 5: Test ve Doğrulama
    - Tüm yeni `MascotMood` değerlerinin geçerli ve boş olmayan `assetPath` döndürdüğünü doğrulayan birim testini ekle.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
+
+
+---
+
+### 📦 TASK-54: Mağaza Yayın Hazırlığı (App Icon, Splash Screen & Production Release Setup)
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - `flutter_launcher_icons` paketi ile Tuğrul maskotumuzdan Android (Adaptive Icon) ve iOS için yüksek çözünürlüklü kurumsal uygulama ikonlarının üretilmesi.
+  - `flutter_native_splash` paketi ile Academic Indigo (`#0F172A`) zeminli, ortasında Tuğrul Koç amblemi bulunan modern native açılış ekranı (Splash Screen) entegrasyonu.
+  - Android Manifest ve iOS yapılandırmalarında uygulama adının `"Kadro: KPSS Genel Kültür"`, paket adının `com.omer.kadro` olarak standardize edilmesi.
+  - `flutter analyze` ve derleme doğrulaması.
+
+```text
+GÖREV: TASK-54 — Kadro Mobil Uygulama İkonu, Splash Screen ve Mağaza Yapılandırması
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Renkleri design-system/kadro/MASTER.md doğrultusunda kullan.
+
+ADIM 1: flutter_launcher_icons Yapılandırması
+1. `pubspec.yaml` dosyasının `dev_dependencies` bölümüne `flutter_launcher_icons: ^0.14.3` ekle (veya güncel sürüm).
+2. `pubspec.yaml` altına yapılandırmayı tanımla:
+   ```yaml
+   flutter_launcher_icons:
+     android: "launcher_icon"
+     ios: true
+     image_path: "assets/images/mascot/tugrul_coach.png"
+     min_sdk_android: 21
+     adaptive_icon_background: "#0F172A"
+     adaptive_icon_foreground: "assets/images/mascot/tugrul_coach.png"
+   ```
+3. `dart run flutter_launcher_icons` komutunu çalıştırarak ikonları otomatik ürettir.
+
+ADIM 2: flutter_native_splash Yapılandırması
+1. `pubspec.yaml` içine `flutter_native_splash: ^2.4.4` ekle.
+2. `pubspec.yaml` altına native splash ayarlarını tanımla:
+   ```yaml
+   flutter_native_splash:
+     color: "#0F172A"
+     image: assets/images/mascot/tugrul_coach.png
+     color_dark: "#0F172A"
+     image_dark: assets/images/mascot/tugrul_coach.png
+     android_12:
+       color: "#0F172A"
+       image: assets/images/mascot/tugrul_coach.png
+   ```
+3. `dart run flutter_native_splash:create` komutunu çalıştır.
+
+ADIM 3: Manifest ve İsim Standardizasyonu
+1. `android/app/src/main/AndroidManifest.xml` dosyasında `android:label` değerinin `"Kadro: KPSS Genel Kültür"` olduğunu doğrula.
+
+ADIM 4: Doğrulama ve Test
+1. Sırasıyla `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-55: Kadro PRO Çevrimdışı Soru & Deneme İndirme Motoru (Offline-First Sync & Pro Paywall Kilidi)
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - **Sadece Kadro PRO Üyelerine Özel:** Soru paketlerini ve 60 soruluk denemeleri çevrimdışı kullanım için cihaza indirme yetkisi (`isPro == true`). Ücretsiz üyeler çevrimdışı indirme butonuna bastığında `PaywallScreen` açılır.
+  - `OfflineDownloadService` veri katmanı ile indirilen ders/deneme paketlerinin `LocalStorageService` içinde sıkıştırılmış JSON olarak saklanması.
+  - `ExamsScreen` ve `LessonTopicsScreen` kartlarına PRO üyeler için tek tıkla "İndir ⬇️" / "Cihazda Hazır ✅" rozeti eklenmesi.
+  - İnternet bağlantısı koptuğunda (`connectivity_plus` veya offline fallback) indirilmiş testlerin anında açılabilmesi, indirilmemiş içeriklerde ise zarif PRO yükseltme yönlendirmesi gösterilmesi.
+
+```text
+GÖREV: TASK-55 — Yalnızca Kadro PRO Üyelerine Özel Çevrimdışı Soru & Deneme İndirme Motoru (OfflineDownloadService + Paywall Köprüsü)
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme ve textTheme üzerinden al. Sabit Color(0xFF...) KULLANMA.
+
+ADIM 1: OfflineDownloadService Veri Servisi (`lib/core/services/offline_download_service.dart`)
+1. `OfflineDownloadService` sınıfını oluştur:
+   - `Future<bool> isPackageDownloaded(String packageId)`
+   - `Future<void> downloadPackage({required String packageId, required List<Question> questions, required bool isPro})`:
+     - Eğer `!isPro` ise `ProRequiredException` fırlatır veya false döner.
+     - PRO ise `LocalStorageService` içine `offline_pkg_$packageId` anahtarıyla soruları JSON olarak yazar.
+   - `Future<List<Question>?> getDownloadedQuestions(String packageId)`
+   - `Future<void> removeDownloadedPackage(String packageId)`
+   - `Future<List<String>> getDownloadedPackageIds()`
+
+ADIM 2: `LessonTopicsScreen` ve `ExamsScreen` Üzerine İndirme Aksiyonu
+1. Deneme veya konu kartı üzerine indirme ikonu (`LucideIcons.download` / `LucideIcons.checkCircle`):
+   - Tıklandığında:
+     - `ref.read(userPreferencesProvider).isPro` kontrolü yapılır.
+     - Eğer kullanıcı PRO DEĞİLSE:
+       `Navigator.of(context).push(MaterialPageRoute(builder: (_) => const PaywallScreen()));`
+       ile Kadro PRO Paywall ekranı açılır ve SnackBar ile:
+       *"🔒 Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir."* bilgisi verilir.
+     - Eğer kullanıcı PRO İSE:
+       Paket arka planda indirilir ve buton "Cihazda Hazır ✅" durumuna geçer.
+
+ADIM 3: Çevrimdışı Durumda Akıllı Açılış Kuralı
+1. İnternet yokken indirilen bir pakete tıklandığında soru motoru doğrudan `OfflineDownloadService` üzerindeki yerel sorularla başlar.
+2. İndirilmemiş bir pakete internetsiz tıklandığında:
+   *"Bu denemeyi internetsiz çözebilmek için internet varken Kadro PRO ile indirmiş olmanız gerekir."* diyalogu gösterilir.
+
+ADIM 4: Test ve Doğrulama
+1. `test/offline_download_test.dart` dosyasını oluştur:
+   - PRO olmayan kullanıcının indirme yapamadığını ve Paywall kuralını test et.
+   - PRO kullanıcının soruları yerel depolamaya başarıyla kaydedip geri okuduğunu doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 🔮 [GELECEK FAZ] "Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)
+
+- **Sıra No:** *Sıra No'suz (İleri Faz)*
+- **Durum:** ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)**
+- **Açıklama:**
+  - Kullanıcı kararıyla şimdilik uygulanmayacak, projenin ileri aşamalarına ertelenmiştir.
+  - **Kullanıcıdan kesin onay alınmadan bu göreve başlanmayacaktır.**
+  - **Kapsam Özeti:** Her hafta belirlenen gün/saatte tüm KPSS adaylarının aynı anda başladığı, canlı geri sayımlı, süresi bitince otomatik toplanan ve Türkiye geneli canlı sıralama çıkaran eş zamanlı sınav motoru ve etkinlik ekranı.
