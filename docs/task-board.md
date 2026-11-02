@@ -65,7 +65,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-38** | **KPSS Başarım Rozetleri (`Achievements`) & Haftalık Kadro Lig Sıralaması (`Leaderboard` — `StatsScreen`)** | `StatsScreen` üzerine 4 KPSS Başarım Rozeti (`İlk Pençe`, `Keskin Nişancı`, `Deneme Fatihi`, `Gümüş Kadro`) ve RPC destekli Liderlik Tablosu kartı | ✅ **Tamamlandı** |
 | **TASK-39** | **Kalıcı Yerel Depolama Katmanı (`LocalStorageService` + `shared_preferences`)** | Misafir modunda dahi XP, Seri, Günlük Soru Sayısı, Hedefler, Yanlış Defteri ve Çalışma Planı verilerinin cihazda kalıcı saklanması | ✅ **Tamamlandı** |
 | **TASK-40** | **Kadro PRO 3'lü Paywall & RevenueCat (`purchases_flutter`) Entegrasyonu** | Aylık (89 ₺), İndirimli Yıllık (499 ₺) ve Sınava Kadar Tek Seferlik (349 ₺) satın alma ve PRO durum senkronizasyonu | ✅ **Tamamlandı** |
-| **TASK-41** | **AdMob Ödüllü Video Reklam Motoru (`google_mobile_ads`)** | Günlük 30 soru limiti bittiğinde izlenen reklam ile +20 soru hakkı kazandıran gerçek AdMob Rewarded Ad motoru | ⏳ **Planlandı** |
+| **TASK-41** | **AdMob Ödüllü Video Reklam Motoru (`google_mobile_ads`)** | Günlük 30 soru limiti bittiğinde izlenen reklam ile +20 soru hakkı kazandıran gerçek AdMob Rewarded Ad motoru | ✅ **Tamamlandı** |
 | **TASK-42** | **200 Soruluk Zengin Çekirdek KPSS Genel Kültür Havuzu** | Tarih (50), Coğrafya (50), Vatandaşlık (50), Güncel Bilgiler (50) özgün soru JSON ve Supabase seed verisinin oluşturulması | ⏳ **Planlandı** |
 | **TASK-43** | **Akıllı Çalışma Bildirimleri (`flutter_local_notifications`) & Çökme Takibi (`sentry_flutter`)** | Günlük soru çözme ve seri koruma bildirimleri ile Sentry hata takip entegrasyonu | ⏳ **Planlandı** |
 

@@ -221,5 +221,50 @@ void main() {
         );
       },
     );
+
+    testWidgets(
+      'PaywallScreen üzerinde ödüllü reklam butonuna basıldığında +20 soru hakkı tanımlanmalı',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(home: ProfileScreen()),
+          ),
+        );
+
+        expect(
+          container.read(userPreferencesProvider).dailyFreeQuestionLimit,
+          30,
+        );
+
+        // Tanıtım kartına tıkla -> PaywallScreen açılmalı
+        await tester.tap(find.text('Kadro PRO\'ya Yükselt'));
+        await tester.pumpAndSettle();
+
+        // Ödüllü reklam butonuna tıkla
+        final adButtonFinder = find.byKey(
+          const ValueKey('paywall_rewarded_ad_button'),
+        );
+        expect(adButtonFinder, findsOneWidget);
+        await tester.tap(adButtonFinder);
+        await tester.pumpAndSettle();
+
+        // +20 soru hakkı verilmiş olmalı
+        expect(
+          container.read(userPreferencesProvider).dailyFreeQuestionLimit,
+          50,
+        );
+      },
+    );
   });
 }

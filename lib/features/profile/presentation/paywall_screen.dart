@@ -1,3 +1,4 @@
+import 'package:kadro/core/services/ad_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/purchase_service.dart';
@@ -317,17 +318,24 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 
             // 6. Ödüllü Reklam ile Ücretsiz Soru Kazanma
             OutlinedButton.icon(
+              key: const ValueKey('paywall_rewarded_ad_button'),
               onPressed: () {
-                ref
-                    .read(userPreferencesProvider.notifier)
-                    .rewardExtraQuestions(20);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('+20 soru hakkı tanımlandı!'),
-                    behavior: SnackBarBehavior.floating,
-                  ),
+                AdService.showRewardedAd(
+                  onUserEarnedReward: () {
+                    ref
+                        .read(userPreferencesProvider.notifier)
+                        .rewardExtraQuestions(20);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('+20 soru hakkı başarıyla tanımlandı!'),
+                          behavior: SnackBarBehavior.floating,
+                        ),
+                      );
+                      Navigator.of(context).pop();
+                    }
+                  },
                 );
-                Navigator.of(context).pop();
               },
               icon: const Icon(Icons.play_circle_outline),
               label: const Text('Kısa Reklam İzle (+20 Soru Hakkı Kazan)'),

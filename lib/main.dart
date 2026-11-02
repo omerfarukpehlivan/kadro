@@ -1,3 +1,5 @@
+import 'package:kadro/core/services/ad_service.dart';
+import 'package:kadro/core/services/purchase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/app/router.dart';
@@ -8,6 +10,8 @@ import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseConfig.initializeSafely();
+  await PurchaseService.initializeSafely();
+  await AdService.initializeSafely();
   // Uygulama genelinde Riverpod durum yönetimini etkinleştirir
   runApp(const ProviderScope(child: MyApp()));
 }
