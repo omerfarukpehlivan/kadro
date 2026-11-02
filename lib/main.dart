@@ -1,19 +1,32 @@
-import 'package:kadro/core/services/ad_service.dart';
-import 'package:kadro/core/services/purchase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/app/router.dart';
 import 'package:kadro/app/theme.dart';
 import 'package:kadro/core/config/supabase_config.dart';
+import 'package:kadro/core/services/ad_service.dart';
+import 'package:kadro/core/services/notification_service.dart';
+import 'package:kadro/core/services/purchase_service.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseConfig.initializeSafely();
   await PurchaseService.initializeSafely();
   await AdService.initializeSafely();
-  // Uygulama genelinde Riverpod durum yönetimini etkinleştirir
-  runApp(const ProviderScope(child: MyApp()));
+  await NotificationService.initializeSafely();
+
+  const sentryDsn = String.fromEnvironment('SENTRY_DSN', defaultValue: '');
+
+  if (sentryDsn.isNotEmpty) {
+    await SentryFlutter.init((options) {
+      options.dsn = sentryDsn;
+      options.tracesSampleRate = 1.0;
+    }, appRunner: () => runApp(const ProviderScope(child: MyApp())));
+  } else {
+    // Uygulama genelinde Riverpod durum yönetimini etkinleştirir
+    runApp(const ProviderScope(child: MyApp()));
+  }
 }
 
 /// Uygulamanın kök bileşeni.
