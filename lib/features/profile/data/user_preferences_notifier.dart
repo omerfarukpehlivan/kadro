@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/services/local_storage_service.dart';
 
 /// Kullanıcının abonelik (PRO/Freemium), soru limiti ve tema tercihlerini tutan state modeli.
 ///
@@ -44,18 +47,63 @@ class UserPreferencesState {
           hasCompletedOnboarding ?? this.hasCompletedOnboarding,
     );
   }
+
+  /// JSON formatına dönüştürür (LocalStorageService için).
+  Map<String, dynamic> toJson() {
+    return {
+      'isPro': isPro,
+      'dailyFreeQuestionLimit': dailyFreeQuestionLimit,
+      'targetDailyStudyGoal': targetDailyStudyGoal,
+      'themeMode': themeMode.name,
+      'targetKpssScore': targetKpssScore,
+      'focusLesson': focusLesson,
+      'hasCompletedOnboarding': hasCompletedOnboarding,
+    };
+  }
+
+  /// JSON formatından nesne üretir.
+  factory UserPreferencesState.fromJson(Map<String, dynamic> json) {
+    final themeName = (json['themeMode'] as String?) ?? 'system';
+    final themeMode = ThemeMode.values.firstWhere(
+      (e) => e.name == themeName,
+      orElse: () => ThemeMode.system,
+    );
+    return UserPreferencesState(
+      isPro: (json['isPro'] as bool?) ?? false,
+      dailyFreeQuestionLimit:
+          (json['dailyFreeQuestionLimit'] as num?)?.toInt() ?? 30,
+      targetDailyStudyGoal:
+          (json['targetDailyStudyGoal'] as num?)?.toInt() ?? 30,
+      themeMode: themeMode,
+      targetKpssScore: (json['targetKpssScore'] as num?)?.toInt() ?? 85,
+      focusLesson: (json['focusLesson'] as String?) ?? 'Tarih',
+      hasCompletedOnboarding:
+          (json['hasCompletedOnboarding'] as bool?) ?? false,
+    );
+  }
 }
 
 /// Kullanıcı tercihlerini ve abonelik durumunu yöneten Riverpod Notifier'ı.
 class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
+  final LocalStorageService _storage = LocalStorageService();
+
   @override
   UserPreferencesState build() {
+    unawaited(_loadFromStorage());
     return const UserPreferencesState();
+  }
+
+  Future<void> _loadFromStorage() async {
+    final saved = await _storage.loadUserPreferences();
+    if (saved != null) {
+      state = saved;
+    }
   }
 
   /// Kadro PRO aboneliğini aktifleştirir (sınırsız soru).
   void upgradeToPro() {
     state = state.copyWith(isPro: true);
+    unawaited(_storage.saveUserPreferences(state));
   }
 
   /// Ödüllü reklam izlendiğinde ek soru hakkı tanımlar (varsayılan +20 soru).
@@ -63,17 +111,16 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
     state = state.copyWith(
       dailyFreeQuestionLimit: state.dailyFreeQuestionLimit + amount,
     );
+    unawaited(_storage.saveUserPreferences(state));
   }
 
   /// Uygulama temasını (Sistem, Açık veya Koyu) günceller.
   void setThemeMode(ThemeMode mode) {
     state = state.copyWith(themeMode: mode);
+    unawaited(_storage.saveUserPreferences(state));
   }
 
   /// Kullanıcının KPSS hedef puanını, odak dersini ve günlük soru hedefini kaydeder.
-  ///
-  /// [dailyGoalQuestions] kullanıcının ders çalışma hedefidir (örn. 50 soru);
-  /// freemium soru limiti [dailyFreeQuestionLimit] bundan bağımsız olarak korunur.
   void saveOnboardingGoals({
     required int targetKpssScore,
     required String focusLesson,
@@ -85,6 +132,7 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
       targetDailyStudyGoal: dailyGoalQuestions,
       hasCompletedOnboarding: true,
     );
+    unawaited(_storage.saveUserPreferences(state));
   }
 }
 

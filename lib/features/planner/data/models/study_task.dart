@@ -70,4 +70,33 @@ class StudyTask {
       isCompleted: (map['is_completed'] as bool?) ?? false,
     );
   }
+
+  /// Yerel depolama için JSON Haritası üretir.
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'lessonTag': lessonTag,
+      'estimatedMinutes': estimatedMinutes,
+      'isCompleted': isCompleted,
+      'actionType': actionType.name,
+    };
+  }
+
+  /// Yerel depolamadan JSON ile nesne üretir.
+  factory StudyTask.fromJson(Map<String, dynamic> json) {
+    final actionName = (json['actionType'] as String?) ?? 'custom';
+    final actionType = StudyTaskActionType.values.firstWhere(
+      (e) => e.name == actionName,
+      orElse: () => StudyTaskActionType.custom,
+    );
+    return StudyTask(
+      id: (json['id'] ?? '').toString(),
+      title: (json['title'] as String?) ?? '',
+      lessonTag: (json['lessonTag'] as String?) ?? 'Genel',
+      estimatedMinutes: (json['estimatedMinutes'] as num?)?.toInt() ?? 25,
+      actionType: actionType,
+      isCompleted: (json['isCompleted'] as bool?) ?? false,
+    );
+  }
 }

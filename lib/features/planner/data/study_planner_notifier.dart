@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/services/local_storage_service.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 
@@ -30,9 +31,11 @@ class StudyPlannerState {
 /// Web/Angular benzetmesi: Injectable Service + State Machine.
 class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
   final CloudSyncRepository _cloudSync = const CloudSyncRepository();
+  final LocalStorageService _storage = LocalStorageService();
 
   @override
   StudyPlannerState build() {
+    unawaited(_loadFromStorage());
     return const StudyPlannerState(
       tasks: [
         StudyTask(
@@ -60,6 +63,13 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     );
   }
 
+  Future<void> _loadFromStorage() async {
+    final saved = await _storage.loadStudyTasks();
+    if (saved != null && saved.isNotEmpty) {
+      state = state.copyWith(tasks: saved);
+    }
+  }
+
   /// Görevin tamamlandı/tamamlanmadı durumunu değiştirir.
   void toggleTask(String id) {
     StudyTask? updatedTask;
@@ -74,6 +84,8 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
         return task;
       }).toList(),
     );
+
+    unawaited(_storage.saveStudyTasks(state.tasks));
 
     if (updatedTask != null) {
       unawaited(
@@ -104,6 +116,7 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     );
 
     state = state.copyWith(tasks: [...state.tasks, newTask]);
+    unawaited(_storage.saveStudyTasks(state.tasks));
     unawaited(_cloudSync.insertStudyTask(newTask));
   }
 
@@ -121,6 +134,8 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       tasks: state.tasks.where((task) => task.id != id).toList(),
     );
 
+    unawaited(_storage.saveStudyTasks(state.tasks));
+
     if (removedTask != null) {
       unawaited(_cloudSync.deleteStudyTaskByTitle(removedTask.title));
     }
@@ -133,6 +148,8 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       tasks: state.tasks.where((task) => !task.isCompleted).toList(),
     );
 
+    unawaited(_storage.saveStudyTasks(state.tasks));
+
     for (final task in completedTasks) {
       unawaited(_cloudSync.deleteStudyTaskByTitle(task.title));
     }
@@ -143,6 +160,7 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     final remoteTasks = await _cloudSync.fetchStudyTasks();
     if (remoteTasks.isNotEmpty) {
       state = state.copyWith(tasks: remoteTasks);
+      unawaited(_storage.saveStudyTasks(state.tasks));
     }
   }
 }

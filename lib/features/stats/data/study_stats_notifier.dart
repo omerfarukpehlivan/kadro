@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:kadro/core/services/local_storage_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
@@ -118,15 +121,88 @@ class StudyStatsState {
       sessionHistory: sessionHistory ?? this.sessionHistory,
     );
   }
+
+  /// JSON formatına dönüştürür (LocalStorageService için).
+  Map<String, dynamic> toJson() {
+    return {
+      'totalSolved': totalSolved,
+      'totalCorrect': totalCorrect,
+      'totalWrong': totalWrong,
+      'dailyGoal': dailyGoal,
+      'dailySolvedCount': dailySolvedCount,
+      'lastStudyDate': lastStudyDate?.toIso8601String(),
+      'wrongByLesson': wrongByLesson,
+      'solvedByLesson': solvedByLesson,
+      'correctByLesson': correctByLesson,
+      'totalXp': totalXp,
+      'streakDays': streakDays,
+      'totalTimeSeconds': totalTimeSeconds,
+      'sessionHistory': sessionHistory.map((s) => s.toMap()).toList(),
+    };
+  }
+
+  /// JSON formatından StudyStatsState nesnesi üretir.
+  factory StudyStatsState.fromJson(Map<String, dynamic> json) {
+    final sessionList =
+        (json['sessionHistory'] as List?)
+            ?.map((s) => QuizSessionRecord.fromMap(s as Map<String, dynamic>))
+            .toList() ??
+        const [];
+
+    final wrongMap =
+        (json['wrongByLesson'] as Map?)?.map(
+          (k, v) => MapEntry(k.toString(), (v as num).toInt()),
+        ) ??
+        const {};
+
+    final solvedMap =
+        (json['solvedByLesson'] as Map?)?.map(
+          (k, v) => MapEntry(k.toString(), (v as num).toInt()),
+        ) ??
+        const {};
+
+    final correctMap =
+        (json['correctByLesson'] as Map?)?.map(
+          (k, v) => MapEntry(k.toString(), (v as num).toInt()),
+        ) ??
+        const {};
+
+    return StudyStatsState(
+      totalSolved: (json['totalSolved'] as num?)?.toInt() ?? 0,
+      totalCorrect: (json['totalCorrect'] as num?)?.toInt() ?? 0,
+      totalWrong: (json['totalWrong'] as num?)?.toInt() ?? 0,
+      dailyGoal: (json['dailyGoal'] as num?)?.toInt() ?? 30,
+      dailySolvedCount: (json['dailySolvedCount'] as num?)?.toInt() ?? 0,
+      lastStudyDate: json['lastStudyDate'] != null
+          ? DateTime.tryParse(json['lastStudyDate'].toString())
+          : null,
+      wrongByLesson: wrongMap,
+      solvedByLesson: solvedMap,
+      correctByLesson: correctMap,
+      totalXp: (json['totalXp'] as num?)?.toInt() ?? 0,
+      streakDays: (json['streakDays'] as num?)?.toInt() ?? 1,
+      totalTimeSeconds: (json['totalTimeSeconds'] as num?)?.toInt() ?? 0,
+      sessionHistory: sessionList,
+    );
+  }
 }
 
 /// Soru istatistiklerini, oturum arşivini ve XP/Lig durumunu yöneten Riverpod Notifier'ı.
 class StudyStatsNotifier extends Notifier<StudyStatsState> {
   final CloudSyncRepository _cloudSync = const CloudSyncRepository();
+  final LocalStorageService _storage = LocalStorageService();
 
   @override
   StudyStatsState build() {
+    unawaited(_loadFromStorage());
     return const StudyStatsState();
+  }
+
+  Future<void> _loadFromStorage() async {
+    final saved = await _storage.loadStudyStats();
+    if (saved != null) {
+      state = saved;
+    }
   }
 
   /// Her soru onaylandığında istatistikleri ve XP/süre puanını günceller.
@@ -195,6 +271,9 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       totalTimeSeconds: state.totalTimeSeconds + timeSpentSeconds,
     );
 
+    // Yerel depolama (misafir modu kalıcılığı)
+    unawaited(_storage.saveStudyStats(state));
+
     // Supabase arka plan senkronizasyonu
     final effectiveTopic = (topic == null || topic.isEmpty) ? 'Genel' : topic;
     _cloudSync.saveQuestionAttempt(
@@ -224,6 +303,8 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       totalXp: state.totalXp + session.earnedXp,
       sessionHistory: [session, ...state.sessionHistory],
     );
+
+    unawaited(_storage.saveStudyStats(state));
 
     // Supabase oturum ve profil senkronizasyonu
     _cloudSync.saveQuizSession(session);
