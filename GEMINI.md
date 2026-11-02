@@ -5,6 +5,7 @@ This project (**Kadro**) is a commercial KPSS Lisans Genel Kültür (Tarih, Coğ
 - **İlk Sürüm (MVP) Kapsamı:** Sadece **KPSS Lisans Genel Kültür** (Tarih: 27, Coğrafya: 18, Vatandaşlık: 9, Güncel Bilgiler: 6 — Toplam 60 soru, 65 dakika). İlk etapta Türkçe ve Matematik yer almayacaktır.
 - **Gelir Modeli:** Hibrit Freemium (**Kadro PRO** abonelik + günlük 30 soru limiti sonrası **Ödüllü Reklam** ile +20 soru).
 - **Özgün İçerik Kuralı:** Sorular özgün olmalı; ÖSYM'nin telifli çıkmış sorularını birebir içerik olarak ekleme.
+- **"ÖSYM Çeldirici Tuzağı" (UWorld Modeli) Kuralı:** Hazırlanan soruların açıklamasında adayın en çok düşebileceği yanıltıcı şıkkı deşifre eden ve neden doğru sanıldığını açıklayan `distractorTrap` ("⚠️ ÖSYM Çeldirici Tuzağı") analizi yer almalıdır. Soru çözüm ekranında bu bölüm özel altın/kehribar uyarı rozetiyle öne çıkarılır.
 
 ---
 

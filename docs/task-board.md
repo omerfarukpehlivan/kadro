@@ -75,6 +75,8 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-48** | **Canlı Soru Çözüm Modu Rozeti (`QuizScreen`) & Profil Mod Seçiminden Test Başlatma** | Soru ekranı AppBar'ına anında mod gösteren/değiştiren `_QuizModeBadge` eklenmesi ve Profil diyalogundan 'Bu Modla Hemen 10 Soru Çöz' butonuyla teste geçiş | ✅ **Tamamlandı** |
 | **TASK-49** | **`QuizScreen` QuizMode Null-Safety & Geriye Dönük Uyumluluk Yaması (Hot-Reload / Web TypeError Fix)** | Web ve eski yerel depolama verilerinde `QuizMode` değerinin `null` dönmesiyle AppBar'da oluşan `TypeError: null is not a subtype of type QuizMode` hatasını gideren defansif kontrol ve yedekleme | ✅ **Tamamlandı** |
 | **TASK-50** | **Kesintisiz Çalışma Döngüsü & Akıllı Sayfa İçi Yönlendirmeler (Zero Dead-Ends UX)** | Test karnesinde yanlış varsa tek tıkla Yanlış Defteri'ne yönlendirme; Yanlış Defteri boşken teste yönlendirme; Bilgi kartları bitince konu testine geçiş köprüsü | ✅ **Tamamlandı** |
+| **TASK-51** | **"ÖSYM Çeldirici Tuzağı" (UWorld Modeli) Açıklama Formatı & Çözüm Kartı Revizyonu** | `Question` modeline `distractorTrap` eklenmesi, soru çözüm açıklaması içine altın/kehribar vurgulu '⚠️ ÖSYM Çeldirici Tuzağı' analizi ve örnek soruların zenginleştirilmesi | ⏳ **Planlandı** |
+| **TASK-52** | **Instagram & WhatsApp Uyumlu 9:16 "Zafer Karnesi" Hikaye Paylaşım Kartı (`ShareVictoryCard`)** | Test sonu karnesinde tek tıkla açılan 9:16 Story formatında viral karne kartı, net/başarı özeti, Koç Tuğrul görseli, pano kopyalama ve native paylaşım köprüsü | ⏳ **Planlandı** |
 
 ---
 
@@ -2643,5 +2645,119 @@ ADIM 4: Test ve Doğrulama
 1. `test/quiz_result_test.dart` dosyasını güncelle:
    - `wrongCount > 0` olduğunda 'Yanlış Defterine Git' butonunun göründüğünü ve tıklandığında `MistakesScreen`'in açıldığını test et.
    - `wrongCount == 0` olduğunda 'Bilgi Kartlarıyla Hızlı Tekrar' butonunun render edildiğini test et.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+## 🦅 16. Dalga 16: UWorld Çeldirici Tuzağı Formatı & Viral Zafer Karnesi (`TASK-51` - `TASK-52`)
+
+KPSS adaylarına dershane hocalarından daha iyi soru çözüm mantığı sunan **"ÖSYM Çeldirici Tuzağı" (UWorld Modeli)** formatı ile sınav sonucunu Instagram/WhatsApp hikayelerinde paylaşarak sıfır reklam maliyetiyle organik kullanıcı çeken **"Zafer Karnesi"** görev paketleri:
+
+---
+
+### 📦 TASK-51: "ÖSYM Çeldirici Tuzağı" (UWorld Modeli) Açıklama Formatı & Çözüm Kartı Revizyonu
+
+```text
+GÖREV: TASK-51 — Question Modeline distractorTrap Eklenmesi, _ExplanationCard Çeldirici Bölümü ve Örnek Soru Zenginleştirmesi
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme ve textTheme üzerinden al. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: `Question` Modelini Güncelle (`lib/features/quiz/data/models/question.dart`)
+1. `Question` sınıfına opsiyonel alan ekle:
+   ```dart
+   final String? distractorTrap;
+   ```
+2. Constructor'a `this.distractorTrap,` parametresini ekle.
+3. `copyWith` metoduna `String? distractorTrap` ekle.
+4. `toJson` içine `'distractor_trap': distractorTrap,` ekle.
+5. `fromJson` içine:
+   ```dart
+   distractorTrap: json['distractor_trap'] as String? ?? json['distractorTrap'] as String?,
+   ```
+   ekleyerek hem Supabase `snake_case` hem de yerel JSON `camelCase` için geriye dönük uyumlu hale getir.
+
+ADIM 2: `defaultSampleQuestions` Örnek Sorularını Zenginleştir (`lib/features/quiz/presentation/quiz_screen.dart`)
+1. `defaultSampleQuestions` içindeki 3 soruya zengin `distractorTrap` metinleri ekle:
+   - Tarih (tar_001): `'Uygurların yerleşik hayata geçmesiyle din ve alfabe değişmiş, tapınak mimarisi başlamıştır. Ancak Kut anlayışı (egemenliğin kaynağının ilahi olması) İslamiyet öncesi Türk devletlerinin tamamında olduğu gibi Uygurlarda da aynen devam etmiştir. ÖSYM adayın 'din değiştiyse yönetim anlayışı da değişmiştir' ön yargısını en büyük çeldirici olarak kullanır.'`
+   - Coğrafya (cog_001): `'Akdeniz Bölgesi'nde karstik şekillerin varlığı yağış miktarına DEĞİL, arazinin kolay eriyebilen kalkerli (kireçtaşı) kimyasal tortul kayaç yapısına bağlıdır. Karadeniz Akdeniz'den çok daha fazla yağış almasına rağmen karstik şekil azdır. ÖSYM 'yağış fazlalığı' şıkkını en sık kullanılan tuzak olarak koyar.'`
+   - Vatandaşlık (vat_001): `'Çalışma ve sözleşme hürriyeti ile eğitim hakkı sosyal ve ekonomik haklardır (pozitif statü). Dilekçe ve vergi ise siyasi haklardır (aktif statü). Din ve vicdan hürriyeti ise devletin dahi dokunamayacağı negatif (koruyucu) statü hakkıdır. ÖSYM hak kategorilerini birbiriyle karıştırmayı çok sever.'`
+
+ADIM 3: `_ExplanationCard` Bileşenine "⚠️ ÖSYM Çeldirici Tuzağı" Bölümü Ekle (`lib/features/quiz/presentation/quiz_screen.dart`)
+1. `_ExplanationCard` parametrelerine opsiyonel `final String? distractorTrap;` ekle.
+2. Kartın alt kısmına, eğer `distractorTrap != null && distractorTrap!.isNotEmpty` ise:
+   - `const SizedBox(height: 12),`
+   - `Container` oluştur:
+     - Arka plan: `colorScheme.tertiaryContainer.withAlpha(90)`
+     - Kenarlık: `Border.all(color: colorScheme.tertiary.withAlpha(150), width: 1.2)`
+     - Köşe yuvarlama: `BorderRadius.circular(12)`
+     - Padding: `const EdgeInsets.all(12)`
+   - İçerik (`Column`, `crossAxisAlignment: CrossAxisAlignment.start`):
+     - Başlık (`Row`):
+       - `Icon(LucideIcons.triangleAlert, size: 16, color: colorScheme.onTertiaryContainer)`
+       - `const SizedBox(width: 6)`
+       - `Text('ÖSYM ÇELDİRİCİ TUZAĞI', style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.onTertiaryContainer, letterSpacing: 0.5))`
+     - `const SizedBox(height: 6)`
+     - Açıklama:
+       - `Text(distractorTrap!, style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onTertiaryContainer, height: 1.4))`
+
+ADIM 4: Test ve Doğrulama
+1. `test/question_test.dart` içine `Question distractorTrap alanı serileştirilip geri okunabilmeli` birim testini ekle.
+2. `test/quiz_screen_test.dart` içine soru cevaplandığında 'ÖSYM ÇELDİRİCİ TUZAĞI' başlığının ekranda render edildiğini doğrulayan widget testi ekle.
+3. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-52: Instagram & WhatsApp Uyumlu 9:16 "Zafer Karnesi" Hikaye Paylaşım Kartı (`ShareVictoryCard`)
+
+```text
+GÖREV: TASK-52 — QuizResultScreen Üzerine Zafer Karnesi Paylaşım Modalı ve Pano Kopyalama / Paylaşım Entegrasyonu
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme ve textTheme üzerinden al. Sabit Color(0xFF...) KULLANMA. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: 9:16 Instagram Story Formatında Zafer Kartı Bileşeni (`lib/features/quiz/presentation/widgets/victory_story_card.dart`)
+1. `lib/features/quiz/presentation/widgets/victory_story_card.dart` dosyasını oluştur:
+   - Sınıf: `class VictoryStoryCard extends StatelessWidget`
+   - Parametreler: `final QuizResult result;`, `final String? testTitle;`
+   - Yapı: `Dialog` veya `showModalBottomSheet` içinde gösterilebilecek, `AspectRatio(aspectRatio: 9 / 16)` oranında dikey hikaye kartı:
+     - Dış çerçeve: `Container` (degrade arka plan: `LinearGradient(colors: [colorScheme.primary, colorScheme.surfaceContainerHighest], begin: Alignment.topCenter, end: Alignment.bottomCenter)`, `borderRadius: BorderRadius.circular(24)`, `border: Border.all(color: colorScheme.tertiary, width: 2)`)
+     - İçindekiler (`Column`, `padding: const EdgeInsets.all(20)`):
+       1. Üst Rozet: `Row(children: [Icon(LucideIcons.sparkles, color: colorScheme.tertiary), Text('KADRO · KPSS GENEL KÜLTÜR')])`
+       2. Maskot: `Image.asset('assets/images/mascot/tugrul_victory.png', height: 100)`
+       3. Test Başlığı: `Text(testTitle ?? 'Genel Kültür Testi', style: ...)`
+       4. Dev Net Göstergesi: `Text('${result.net} NET', style: theme.textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w900, color: colorScheme.tertiary))`
+       5. 3'lü Metrik Çubuğu: `Doğru: ${result.correctCount} | Yanlış: ${result.wrongCount} | Başarı: %${result.successRate}`
+       6. Derece Rozeti: `result.net >= 45 ? '🦅 KADRO DERECE ADAYI' : '🎯 HEDEF 60'TA 60'`
+       7. Alt Çağrı (Call-to-Action): `Container(padding: ..., child: Text('Benimle KPSS düellosuna var mısın? 📲 com.omer.kadro'))`
+
+ADIM 2: `QuizResultScreen` (`lib/features/quiz/presentation/quiz_result_screen.dart`) Paylaşım Butonu Entegrasyonu
+1. `_NetScoreCard` altına veya butonların üstüne:
+   - `FilledButton.tonalIcon` ile:
+     - `icon: const Icon(LucideIcons.share2, size: 18)`
+     - `label: const Text('Zafer Karneni Paylaş 📸')`
+     - `onPressed:` `_showShareModal(context)`
+2. `_showShareModal(BuildContext context)` metodu içinde:
+   - `showDialog` ile `VictoryStoryCard` gösterilir.
+   - Dialog altında 2 buton:
+     - `FilledButton.icon`:
+       - `icon: const Icon(LucideIcons.copy, size: 16)`
+       - `label: const Text('Skorumu & Metni Kopyala')`
+       - Tıklandığında:
+         ```dart
+         await Clipboard.setData(ClipboardData(
+           text: '🦅 Kadro KPSS Genel Kültür testimde ${result.net} NET yaptım! (%${result.successRate} Başarı). Hedef 2026 KPSS Derecesi! Sen de netini test et: https://kadro.app',
+         ));
+         if (context.mounted) {
+           ScaffoldMessenger.of(context).showSnackBar(
+             const SnackBar(content: Text('📸 Zafer metni panoya kopyalandı! Instagram veya WhatsApp durumunda paylaşabilirsin.')),
+           );
+         }
+         ```
+     - `TextButton`: `label: const Text('Kapat')`, `onPressed: () => Navigator.pop(context)`
+
+ADIM 3: Test ve Doğrulama
+1. `test/quiz_result_test.dart` dosyasını güncelle:
+   - `QuizResultScreen` üzerinde 'Zafer Karneni Paylaş 📸' butonunun render edildiğini doğrula.
+   - Butona tıklandığında `VictoryStoryCard` modalının açıldığını ve 'NET', 'KADRO · KPSS GENEL KÜLTÜR' metinlerinin ekranda olduğunu test et.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
