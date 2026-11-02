@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Bir derse ait KPSS konularını Duolingo/Brilliant tarzı dikey yol haritası (learning path)
 /// olarak listeleyen ekran.
+///
+/// Angular/Web karşılığı: `TopicHierarchyComponent` veya `SkillTreeComponent`.
+/// TASK-53 kapsamında derse özel Tuğrul karakteri (Selçuklu Alp, Kâşif, Hukukçu, Haberci)
+/// dinamik olarak konuşma balonunda gösterilir.
 class LessonTopicsScreen extends StatelessWidget {
   final Lesson lesson;
 
@@ -15,30 +19,39 @@ class LessonTopicsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('${lesson.name} Konuları')),
-      // ListView.builder: Dikey öğrenme yolu düğümlerini verimli bir şekilde render eder.
-      body: ListView.builder(
+      body: ListView(
         padding: const EdgeInsets.all(16),
-        itemCount: lesson.topics.length,
-        itemBuilder: (context, index) {
-          final topic = lesson.topics[index];
-          return _TopicPathNode(
-            index: index,
-            totalCount: lesson.topics.length,
-            lessonName: lesson.name,
-            topic: topic,
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => QuizScreen(
-                    lessonFilter: lesson.name,
-                    topicFilter: topic,
-                    customTitle: '${lesson.name} · $topic',
+        children: [
+          // Derse özel Tuğrul karakteri ile Koç Karşılama Kartı (TASK-53)
+          MascotCoachBanner(
+            mood: MascotMoodExtension.fromLesson(lesson.name),
+            badgeLabel: '${lesson.name.toUpperCase()} REHBERİ',
+            title: '${lesson.name} Yol Haritası',
+            message:
+                '${lesson.topics.length} kritik konudan oluşan KPSS yol haritası. Konuları sırayla tamamla, netlerini zirveye taşı!',
+          ),
+          const SizedBox(height: 16),
+
+          // Dikey Yol Haritası Düğümleri
+          for (var i = 0; i < lesson.topics.length; i++)
+            _TopicPathNode(
+              index: i,
+              totalCount: lesson.topics.length,
+              lessonName: lesson.name,
+              topic: lesson.topics[i],
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => QuizScreen(
+                      lessonFilter: lesson.name,
+                      topicFilter: lesson.topics[i],
+                      customTitle: '${lesson.name} · ${lesson.topics[i]}',
+                    ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            ),
+        ],
       ),
     );
   }
@@ -98,18 +111,16 @@ class _TopicPathNode extends StatelessWidget {
                       color: index == 0
                           ? colorScheme.onPrimary
                           : colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
                 if (index < totalCount - 1)
                   Expanded(
-                    child: Container(
-                      width: 3,
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                      decoration: BoxDecoration(
+                    child: Center(
+                      child: Container(
+                        width: 3,
                         color: colorScheme.primary.withAlpha(70),
-                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
@@ -117,68 +128,57 @@ class _TopicPathNode extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // 2. Sağ Sütun (3D TactileCard Konu Modülü)
+
+          // 2. Sağ Sütun: Konu Başlığı ve Test Çöz Butonu (3D TactileCard)
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 14),
+              padding: const EdgeInsets.only(bottom: 16),
               child: TactileCard(
                 onTap: onTap,
-                backgroundColor: index == 0
-                    ? colorScheme.primaryContainer.withAlpha(45)
-                    : colorScheme.surface,
-                borderColor: index == 0
-                    ? colorScheme.primary
-                    : colorScheme.outlineVariant,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'ADIM ${index + 1}',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.primary,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.primaryContainer,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                LucideIcons.play,
-                                size: 12,
-                                color: colorScheme.onPrimaryContainer,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.secondaryContainer,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'ADIM ${index + 1}',
+                              style: textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onSecondaryContainer,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Test Çöz',
-                                style: textTheme.labelSmall?.copyWith(
-                                  color: colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      topic,
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w700,
+                          const SizedBox(height: 6),
+                          Text(
+                            topic,
+                            style: textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '$lessonName · Konu Testi',
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
+                    const SizedBox(width: 8),
+                    FilledButton.tonal(
+                      onPressed: onTap,
+                      child: const Text('Test Çöz'),
                     ),
                   ],
                 ),

@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-/// Kadro Koçu'nun ruh hali (mood) ve görsel varyasyonları.
-enum MascotMood { coach, victory, detective, pro }
+/// Kadro Koçu'nun ruh hali (mood) ve derse özel görsel varyasyonları.
+///
+/// Angular/Web karşılığı:
+/// Gamification avatar model varyasyonları (Duolingo/Babbel karakter durumları).
+enum MascotMood {
+  coach,
+  victory,
+  detective,
+  pro,
+  history,
+  geography,
+  citizenship,
+  current,
+}
 
+/// [MascotMood] için dosya yolu ve ders eşleştirme yardımcı fonksiyonları.
 extension MascotMoodExtension on MascotMood {
+  /// Her mood için ilgili görsel varlığın dosya yolu.
   String get assetPath {
     switch (this) {
       case MascotMood.coach:
@@ -15,16 +29,47 @@ extension MascotMoodExtension on MascotMood {
         return 'assets/images/mascot/tugrul_detective.png';
       case MascotMood.pro:
         return 'assets/images/mascot/tugrul_pro.png';
+      case MascotMood.history:
+        return 'assets/images/mascot/tugrul_history.png';
+      case MascotMood.geography:
+        return 'assets/images/mascot/tugrul_geography.png';
+      case MascotMood.citizenship:
+        return 'assets/images/mascot/tugrul_citizenship.png';
+      case MascotMood.current:
+        return 'assets/images/mascot/tugrul_current.png';
     }
+  }
+
+  /// Verilen KPSS ders adına göre uygun Tuğrul karakterini seçer.
+  ///
+  /// Örnek:
+  /// - 'Tarih' -> [MascotMood.history] (Selçuklu miğferli Tuğrul Alp)
+  /// - 'Coğrafya' -> [MascotMood.geography] (Kâşif Tuğrul)
+  /// - 'Vatandaşlık' -> [MascotMood.citizenship] (Hukukçu Tuğrul)
+  /// - 'Güncel Bilgiler' -> [MascotMood.current] (Haberci Tuğrul)
+  static MascotMood fromLesson(String? lesson) {
+    final normalized = (lesson ?? '').toLowerCase().trim();
+    if (normalized.contains('tarih')) return MascotMood.history;
+    if (normalized.contains('coğrafya') || normalized.contains('cografya')) {
+      return MascotMood.geography;
+    }
+    if (normalized.contains('vatandaşlık') ||
+        normalized.contains('vatandaslik')) {
+      return MascotMood.citizenship;
+    }
+    if (normalized.contains('güncel') || normalized.contains('guncel')) {
+      return MascotMood.current;
+    }
+    return MascotMood.coach;
   }
 }
 
-/// "Kadro Koçu" maskot konuşma balonu ve rehberlik bileşeni.
+/// "Kadro Koçu" çerçevesiz pop-out maskot konuşma balonu ve rehberlik bileşeni.
 ///
 /// Web/Angular karşılığı:
 /// Gamification bildirim bileşeni (Duolingo banner/speech bubble).
-/// WCAG AAA yüksek kontrastlı Tactile Koç Kartı yapısıyla hem açık hem koyu
-/// temada kusursuz okunabilirlik ve fiziksel derinlik sunar.
+/// 84x84 kısıtlayıcı kutulardan arındırılmış, 100x100 büyük çerçevesiz yapısıyla
+/// karakterin doğrudan konuşma balonunun yanından fırlamasını (pop-out) sağlar.
 class MascotCoachBanner extends StatelessWidget {
   final MascotMood mood;
   final String title;
@@ -66,42 +111,30 @@ class MascotCoachBanner extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(22),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Sol: 84x84 Maskot Çerçevesi + Yıldız Rozeti
+              // Sol: Çerçevesiz Pop-Out 100x100 Maskot Sahnesi + Minyatür Yıldız Rozeti
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  Container(
-                    width: 84,
-                    height: 84,
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: colorScheme.primary.withAlpha(90),
-                        width: 2,
-                      ),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: Image.asset(
-                        mood.assetPath,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Icon(
-                          LucideIcons.award,
-                          color: colorScheme.primary,
-                          size: 40,
-                        ),
+                  SizedBox(
+                    width: 100,
+                    height: 100,
+                    child: Image.asset(
+                      mood.assetPath,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => Icon(
+                        LucideIcons.award,
+                        color: colorScheme.primary,
+                        size: 48,
                       ),
                     ),
                   ),
                   Positioned(
-                    right: -2,
-                    bottom: -2,
+                    right: 0,
+                    bottom: 0,
                     child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
@@ -121,7 +154,8 @@ class MascotCoachBanner extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(width: 14),
+              const SizedBox(width: 12),
+
               // Sağ: Rozet, Başlık ve Konuşma Balonu
               Expanded(
                 child: Column(
@@ -147,15 +181,17 @@ class MascotCoachBanner extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
+
                     // Başlık
                     Text(
                       title,
-                      style: textTheme.titleLarge?.copyWith(
+                      style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurface,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                     const SizedBox(height: 6),
+
                     // Konuşma Balonu
                     Container(
                       padding: const EdgeInsets.symmetric(

@@ -77,7 +77,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-50** | **Kesintisiz Çalışma Döngüsü & Akıllı Sayfa İçi Yönlendirmeler (Zero Dead-Ends UX)** | Test karnesinde yanlış varsa tek tıkla Yanlış Defteri'ne yönlendirme; Yanlış Defteri boşken teste yönlendirme; Bilgi kartları bitince konu testine geçiş köprüsü | ✅ **Tamamlandı** |
 | **TASK-51** | **"ÖSYM Çeldirici Tuzağı" (UWorld Modeli) Açıklama Formatı & Çözüm Kartı Revizyonu** | `Question` modeline `distractorTrap` eklenmesi, soru çözüm açıklaması içine altın/kehribar vurgulu '⚠️ ÖSYM Çeldirici Tuzağı' analizi ve örnek soruların zenginleştirilmesi | ✅ **Tamamlandı** (`84bbe59`) |
 | **TASK-52** | **Instagram & WhatsApp Uyumlu 9:16 "Zafer Karnesi" Hikaye Paylaşım Kartı (`ShareVictoryCard`)** | Test sonu karnesinde tek tıkla açılan 9:16 Story formatında viral karne kartı, net/başarı özeti, Koç Tuğrul görseli, pano kopyalama ve native paylaşım köprüsü | ✅ **Tamamlandı** (`82a9429`) |
-| **TASK-53** | **Çerçevesiz & Büyük Pop-Out Maskot Tasarımı ve Derse Özel Tuğrul Varyasyonları** | Tuğrul maskotunu 84x84'lük kısıtlayıcı kutudan çıkarıp büyük (100px) çerçevesiz pop-out yapıya kavuşturma; Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler için 4 yeni tematik Tuğrul karakteri entegrasyonu | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-53** | **Çerçevesiz & Büyük Pop-Out Maskot Tasarımı ve Derse Özel Tuğrul Varyasyonları** | Tuğrul maskotunu 84x84'lük kısıtlayıcı kutudan çıkarıp büyük (100px) çerçevesiz pop-out yapıya kavuşturma; Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler için 4 yeni tematik Tuğrul karakteri entegrasyonu | ✅ **Tamamlandı** |
 
 ---
 
@@ -2781,17 +2781,13 @@ ADIM 3: Test ve Doğrulama
 
 ### 📦 TASK-53: Çerçevesiz & Büyük Pop-Out Maskot Tasarımı ve Derse Özel Tuğrul Varyasyonları
 
-- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Durum:** ✅ **Tamamlandı** (2026-11-02)
 - **Kapsam:**
-  - `MascotCoachBanner` içindeki 84x84 piksellik kısıtlayıcı iç çerçeve kutusunu (`Container(width: 84, height: 84, decoration: ...)`), katı kenarlıkları ve gri dolguyu tamamen kaldırma.
-  - Tuğrul maskotunu daha büyük (`100x100` veya `104x104` px), konuşma balonunun hemen yanından fırlayan (Duolingo/Babbel pop-out stili) çerçevesiz ve ferah bir yapıya dönüştürme.
-  - KPSS Lisans Genel Kültür'ün 4 ana dersine özel 4 yeni Tuğrul karakter varyasyonu ekleme:
-    1. **Tarih (`history`):** Selçuklu miğferli, fermanlı ve kılıçlı Tuğrul Alp (`assets/images/mascot/tugrul_history.png`).
-    2. **Coğrafya (`geography`):** Safari/dağcı yelekli, pusulalı ve dürbünlü Kâşif Tuğrul (`assets/images/mascot/tugrul_geography.png`).
-    3. **Vatandaşlık (`citizenship`):** Hukukçu cübbeli, adalet terazili ve anayasa kitapçıklı Hakim Tuğrul (`assets/images/mascot/tugrul_citizenship.png`).
-    4. **Güncel Bilgiler (`current`):** Gazeteci mikrofonlu, şık gözlüklü Haberci Tuğrul (`assets/images/mascot/tugrul_current.png`).
-  - `MascotMood` enum'unu `history`, `geography`, `citizenship`, `current` mood'ları ile genişletme ve derse göre otomatik mood seçen `MascotMoodExtension.fromLesson(String? lesson)` yardımcı metodunu oluşturma.
-  - `LessonTopicsScreen` gibi derse özel ekranlarda ilgili dersin Tuğrul karakterini otomatik gösterme.
+  - `MascotCoachBanner` içindeki 84x84 piksellik kısıtlayıcı iç çerçeve kutusu (`Container(width: 84, height: 84, decoration: ...)`) kaldırıldı; yerine 100x100 büyük, çerçevesiz ve ferah pop-out düzeni getirildi.
+  - `MascotMood` enum'u `history`, `geography`, `citizenship`, `current` mood'ları ile genişletildi; derse göre otomatik mood eşleyen `MascotMoodExtension.fromLesson(String? lesson)` eklendi.
+  - `assets/images/mascot/` altına 4 derse özel görsel varlığı (`tugrul_history.png`, `tugrul_geography.png`, `tugrul_citizenship.png`, `tugrul_current.png`) eklendi.
+  - `LessonTopicsScreen` içine derse özel Tuğrul karakteri ile karşılama rehberi entegre edildi.
+  - `test/mascot_coach_banner_test.dart` eklendi; 99 testin tamamı 0 hatayla geçti.
 
 ```text
 GÖREV: TASK-53 — MascotCoachBanner Çerçevesiz Pop-Out Dönüşümü ve 4 Temel KPSS Dersi İçin Tuğrul Varyasyonları Entegrasyonu
