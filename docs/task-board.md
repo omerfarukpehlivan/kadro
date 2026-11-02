@@ -69,7 +69,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-42** | **200 Soruluk Zengin Çekirdek KPSS Genel Kültür Havuzu** | Tarih (50), Coğrafya (50), Vatandaşlık (50), Güncel Bilgiler (50) özgün soru JSON ve Supabase seed verisinin oluşturulması | ✅ **Tamamlandı** |
 | **TASK-43** | **Akıllı Çalışma Bildirimleri (`flutter_local_notifications`) & Çökme Takibi (`sentry_flutter`)** | Günlük soru çözme ve seri koruma bildirimleri ile Sentry hata takip entegrasyonu | ✅ **Tamamlandı** |
 | **TASK-44** | **`QuizScreen` İki Yönlü Soru Gezintisi (Önceki/Sonraki Soru) & Zarif Yanlış Bildirimi** | Test içinde geriye doğru 1'e kadar ve ileriye doğru en son soruya gidebilme (`_userAnswers` geçmişi) + İlk yanlışta tek seferlik dismissible Koç bilgilendirme kartı | ✅ **Tamamlandı** (`64b1a2b`) |
-| **TASK-45** | **`MistakesScreen` Ders Bazlı Filtreleme & Derse Özel Yanlış Çözüm Akışı** | Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler sekme/çip filtreleri, her dersin yanlış sayısı rozeti ve sadece seçilen dersin yanlışlarını test olarak başlatma | ⏳ **Planlandı** |
+| **TASK-45** | **`MistakesScreen` Ders Bazlı Filtreleme & Derse Özel Yanlış Çözüm Akışı** | Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler sekme/çip filtreleri, her dersin yanlış sayısı rozeti ve sadece seçilen dersin yanlışlarını test olarak başlatma | ✅ **Tamamlandı** (`ae86af6`) |
 | **TASK-46** | **Kadro Çalışma Modları (Öğrenme/Anında Çözüm vs. Sınav/Gizli Çözüm & Zayıf Konu Testi)** | Anında doğru/yanlış gösteren öğrenme modu ile sonuçları karneye saklayan sınav modu; moda duyarlı geriye dönük şık değiştirme kuralı; zayıf konudan otomatik 10 soru çıkarma | ⏳ **Planlandı** |
 
 ---
