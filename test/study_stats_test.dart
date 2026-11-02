@@ -155,6 +155,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.text('1 / 30 soru'), findsOneWidget);
+        expect(find.text('Zayıf Konuyu Güçlendir'), findsOneWidget);
 
         // 4. İstatistik Ekranını çiz -> Çözülen 1, Doğru oranı %0, En zayıf Tarih olmalı
         await tester.pumpWidget(
@@ -167,6 +168,7 @@ void main() {
         expect(find.text('1'), findsOneWidget); // Çözülen soru
         expect(find.text('%0'), findsOneWidget); // Doğru oranı
         expect(find.text('Tarih'), findsOneWidget); // En zayıf ders
+        expect(find.text('Zayıf Konuyu Güçlendir (10 Soru)'), findsOneWidget);
       },
     );
 

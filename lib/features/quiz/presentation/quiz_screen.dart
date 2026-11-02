@@ -6,6 +6,7 @@ import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
+import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
@@ -80,6 +81,8 @@ class QuizScreen extends ConsumerStatefulWidget {
   final Duration? examDuration;
   final String? customTitle;
   final bool fetchAllFromPool;
+  final QuizMode? mode;
+  final int? limit;
 
   const QuizScreen({
     super.key,
@@ -91,6 +94,8 @@ class QuizScreen extends ConsumerStatefulWidget {
     this.examDuration,
     this.customTitle,
     this.fetchAllFromPool = false,
+    this.mode,
+    this.limit,
   });
 
   @override
@@ -117,6 +122,17 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   bool _hasDismissedMistakeNotice = false;
   bool _showMistakeNotice = false;
 
+  QuizMode get _effectiveMode {
+    if (widget.mode != null) return widget.mode!;
+    try {
+      return ref.read(userPreferencesProvider).defaultQuizMode;
+    } catch (_) {
+      return QuizMode.learning;
+    }
+  }
+
+  bool get _isExamMode => _effectiveMode == QuizMode.exam;
+
   Question get _currentQuestion => _questions[_currentIndex];
   bool get _isLastQuestion => _currentIndex == _questions.length - 1;
 
@@ -124,9 +140,13 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   void initState() {
     super.initState();
     if (widget.questions != null && widget.questions!.isNotEmpty) {
-      _questions = widget.questions!;
+      _questions = widget.limit != null
+          ? widget.questions!.take(widget.limit!).toList()
+          : widget.questions!;
     } else {
-      _questions = defaultSampleQuestions;
+      _questions = widget.limit != null
+          ? defaultSampleQuestions.take(widget.limit!).toList()
+          : defaultSampleQuestions;
       if (widget.fetchAllFromPool ||
           widget.lessonFilter != null ||
           widget.topicFilter != null) {
@@ -165,7 +185,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     if (!mounted) return;
     setState(() {
       if (fetched.isNotEmpty) {
-        _questions = fetched;
+        _questions = widget.limit != null
+            ? fetched.take(widget.limit!).toList()
+            : fetched;
       }
       _isLoading = false;
     });
@@ -173,14 +195,19 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
   @override
   void dispose() {
-    // Angular'daki ngOnDestroy / clearInterval() gibi bellek sızıntısını önlemek için
-    // timer nesnesini hafızadan temizliyoruz.
+    // Bellek sızıntısını önlemek için timer nesnesini hafızadan temizliyoruz.
     _timer?.cancel();
     super.dispose();
   }
 
   /// Şıkkın mevcut durumuna (normal, seçili, doğru, yanlış) karar veren metot.
   OptionStatus _getOptionStatus(int index) {
+    if (_isExamMode) {
+      return index == _selectedOptionIndex
+          ? OptionStatus.selected
+          : OptionStatus.normal;
+    }
+
     if (!_isAnswered) {
       return index == _selectedOptionIndex
           ? OptionStatus.selected
@@ -199,11 +226,13 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   void _onOptionTap(int index) {
-    if (_isAnswered) return;
+    // Öğrenme modunda onaylanan soru kilitlenir; sınav modunda geri dönülüp şık değiştirilebilir
+    if (!_isExamMode && _isAnswered) return;
 
     setState(() {
       _selectedOptionIndex = index;
       _userAnswers[_currentIndex] = index;
+      _answeredStatus[_currentIndex] = true;
     });
   }
 
@@ -294,6 +323,40 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
   void _finishQuiz() {
     _timer?.cancel();
+
+    // Sınav modunda tüm cevaplar test bitiminde topluca değerlendirilir
+    if (_isExamMode) {
+      _correctCount = 0;
+      _wrongCount = 0;
+      for (var i = 0; i < _questions.length; i++) {
+        final q = _questions[i];
+        final ans = _userAnswers[i];
+        if (ans != null) {
+          final isCorrect = q.isCorrect(ans);
+          if (isCorrect) {
+            _correctCount++;
+            widget.mistakeRepository.removeMistake(q.id);
+            const CloudSyncRepository().markMistakeResolved(
+              questionText: q.text,
+            );
+          } else {
+            _wrongCount++;
+            widget.mistakeRepository.addMistake(q);
+          }
+          try {
+            ref
+                .read(studyStatsProvider.notifier)
+                .recordAnswer(
+                  lesson: q.lesson,
+                  topic: q.topic,
+                  questionText: q.text,
+                  isCorrect: isCorrect,
+                );
+          } catch (_) {}
+        }
+      }
+    }
+
     final emptyCount = _questions.length - (_correctCount + _wrongCount);
     final result = QuizResult(
       totalQuestions: _questions.length,
@@ -343,28 +406,44 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     const labels = ['A', 'B', 'C', 'D', 'E'];
     final question = _currentQuestion;
 
-    // Alt butonun fonksiyonu, ikonu ve metnini duruma göre belirliyoruz
+    // Alt butonun fonksiyonu, ikonu ve metnini duruma ve çalışma moduna göre belirliyoruz
     final isAtHistory = _currentIndex < _maxReachedIndex;
     final VoidCallback? buttonAction;
     final IconData buttonIcon;
     final String buttonLabel;
 
-    if (isAtHistory) {
-      buttonAction = _goToNextQuestion;
-      buttonIcon = LucideIcons.arrowRight;
-      buttonLabel = 'Sonraki Soru';
-    } else if (!_isAnswered) {
-      buttonAction = _selectedOptionIndex != null ? _submitAnswer : null;
-      buttonIcon = Icons.check_circle_outline;
-      buttonLabel = 'Cevabı Onayla';
-    } else if (!_isLastQuestion) {
-      buttonAction = _nextQuestion;
-      buttonIcon = Icons.arrow_forward;
-      buttonLabel = 'Sonraki Soru';
+    if (_isExamMode) {
+      if (isAtHistory) {
+        buttonAction = _goToNextQuestion;
+        buttonIcon = LucideIcons.arrowRight;
+        buttonLabel = 'Sonraki Soru';
+      } else if (!_isLastQuestion) {
+        buttonAction = _nextQuestion;
+        buttonIcon = LucideIcons.arrowRight;
+        buttonLabel = 'Sonraki Soru';
+      } else {
+        buttonAction = _finishQuiz;
+        buttonIcon = Icons.emoji_events_outlined;
+        buttonLabel = 'Testi Bitir ve Sonucu Gör';
+      }
     } else {
-      buttonAction = _finishQuiz;
-      buttonIcon = Icons.emoji_events_outlined;
-      buttonLabel = 'Testi Bitir ve Sonucu Gör';
+      if (isAtHistory) {
+        buttonAction = _goToNextQuestion;
+        buttonIcon = LucideIcons.arrowRight;
+        buttonLabel = 'Sonraki Soru';
+      } else if (!_isAnswered) {
+        buttonAction = _selectedOptionIndex != null ? _submitAnswer : null;
+        buttonIcon = Icons.check_circle_outline;
+        buttonLabel = 'Cevabı Onayla';
+      } else if (!_isLastQuestion) {
+        buttonAction = _nextQuestion;
+        buttonIcon = Icons.arrow_forward;
+        buttonLabel = 'Sonraki Soru';
+      } else {
+        buttonAction = _finishQuiz;
+        buttonIcon = Icons.emoji_events_outlined;
+        buttonLabel = 'Testi Bitir ve Sonucu Gör';
+      }
     }
 
     return Scaffold(
@@ -402,18 +481,22 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               label: labels[i],
               text: question.options[i],
               status: _getOptionStatus(i),
-              onTap: _isAnswered ? null : () => _onOptionTap(i),
+              onTap: (_isExamMode || !_isAnswered)
+                  ? () => _onOptionTap(i)
+                  : null,
             ),
           const SizedBox(height: 16),
 
-          // Çözüm Açıklaması Kartı (Cevaplandıysa gösterilir)
-          if (_isAnswered) ...[
+          // Çözüm Açıklaması Kartı (Yalnızca Öğrenme modunda ve cevaplandıysa gösterilir)
+          if (!_isExamMode && _isAnswered) ...[
             _ExplanationCard(explanation: question.explanation),
             const SizedBox(height: 16),
           ],
 
-          // Zarif Yanlış Defteri Bilgilendirme Kartı (Tek seferlik / kapatılabilir)
-          if (_showMistakeNotice && !_hasDismissedMistakeNotice) ...[
+          // Zarif Yanlış Defteri Bilgilendirme Kartı (Tek seferlik / kapatılabilir, yalnızca Öğrenme modunda)
+          if (!_isExamMode &&
+              _showMistakeNotice &&
+              !_hasDismissedMistakeNotice) ...[
             _MistakeNoticeCard(
               onDismiss: () {
                 setState(() {

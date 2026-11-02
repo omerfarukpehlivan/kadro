@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/onboarding/presentation/onboarding_screen.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
+import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 
 void main() {
@@ -23,6 +24,10 @@ void main() {
         container.read(userPreferencesProvider).themeMode,
         equals(ThemeMode.system),
       );
+      expect(
+        container.read(userPreferencesProvider).defaultQuizMode,
+        equals(QuizMode.learning),
+      );
 
       // PRO'ya yükselt
       notifier.upgradeToPro();
@@ -40,6 +45,13 @@ void main() {
       expect(
         container.read(userPreferencesProvider).themeMode,
         equals(ThemeMode.dark),
+      );
+
+      // Soru çözüm modunu Sınav modu yap
+      notifier.setQuizMode(QuizMode.exam);
+      expect(
+        container.read(userPreferencesProvider).defaultQuizMode,
+        equals(QuizMode.exam),
       );
     });
 
@@ -146,6 +158,46 @@ void main() {
         equals(ThemeMode.dark),
       );
     });
+
+    testWidgets(
+      'TASK-46: ProfileScreen üzerinden Soru Çözüm Modu seçilebilmeli',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(home: ProfileScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Soru Çözüm Modu'), findsOneWidget);
+        expect(find.text('Öğrenme'), findsOneWidget);
+
+        // Satıra dokun -> Diyalog açılsın
+        await tester.tap(find.text('Soru Çözüm Modu'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Sınav Modu (Gizli Çözüm)'), findsOneWidget);
+        await tester.tap(find.text('Sınav Modu (Gizli Çözüm)'));
+        await tester.pumpAndSettle();
+
+        expect(
+          container.read(userPreferencesProvider).defaultQuizMode,
+          equals(QuizMode.exam),
+        );
+        expect(find.text('Sınav'), findsOneWidget);
+      },
+    );
 
     testWidgets(
       'ProfileScreen üzerinden OnboardingScreen açılmalı ve hedef rotası kurulabilmeli',

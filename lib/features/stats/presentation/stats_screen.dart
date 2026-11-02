@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/features/stats/presentation/quiz_history_screen.dart';
@@ -63,6 +64,10 @@ class StatsScreen extends ConsumerWidget {
           value: stats.weakestLesson,
           icon: LucideIcons.flame,
         ),
+        if (stats.weakestLesson != 'Henüz veri yok') ...[
+          const SizedBox(height: 12),
+          _WeakLessonActionCard(stats: stats),
+        ],
         const SizedBox(height: 16),
 
         // 3. KPSS Başarım Rozetleri (Achievements)
@@ -937,5 +942,77 @@ class _LessonAccuracyChartCard extends StatelessWidget {
         ],
       ),
     ).animate().fadeIn(duration: 200.ms);
+  }
+}
+
+/// Kullanıcının en çok zorlandığı dersten 10 hedef soru çözmesini sağlayan eylem kartı.
+class _WeakLessonActionCard extends StatelessWidget {
+  final StudyStatsState stats;
+
+  const _WeakLessonActionCard({required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.error.withAlpha(140),
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: colorScheme.errorContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              LucideIcons.flame,
+              color: colorScheme.onErrorContainer,
+              size: 22,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Zayıf Konuyu Güçlendir (10 Soru)',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '${stats.weakestLesson} dersindeki eksiklerini kapat.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          FilledButton.tonal(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => QuizScreen(
+                    lessonFilter: stats.weakestLesson,
+                    customTitle: '${stats.weakestLesson} — Zayıf Konu Testi',
+                    limit: 10,
+                  ),
+                ),
+              );
+            },
+            child: const Text('10 Soru'),
+          ),
+        ],
+      ),
+    );
   }
 }

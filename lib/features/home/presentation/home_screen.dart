@@ -39,6 +39,10 @@ class HomeScreen extends ConsumerWidget {
         const SizedBox(height: 16),
         // Akıllı KPSS Günlük Çalışma Planı Kompakt Kartı
         const HomeDailyPlanCard(),
+        if (stats.weakestLesson != 'Henüz veri yok') ...[
+          const SizedBox(height: 16),
+          _WeakLessonHomeBanner(weakestLesson: stats.weakestLesson),
+        ],
         const SizedBox(height: 16),
         const SectionTitle('Çalışma türleri'),
         // 2x2 Tactile Bento Grid
@@ -424,5 +428,100 @@ class _StudyTypeTile extends StatelessWidget {
         ],
       ),
     ).animate().fadeIn(duration: 200.ms);
+  }
+}
+
+/// Ana sayfada en zayıf derse özel 10 soruluk hızlı güçlendirme kartı.
+class _WeakLessonHomeBanner extends StatelessWidget {
+  final String weakestLesson;
+
+  const _WeakLessonHomeBanner({required this.weakestLesson});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.error.withAlpha(140),
+      padding: const EdgeInsets.all(14),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => QuizScreen(
+              lessonFilter: weakestLesson,
+              customTitle: '$weakestLesson — Zayıf Konuyu Güçlendir',
+              limit: 10,
+            ),
+          ),
+        );
+      },
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: colorScheme.errorContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              LucideIcons.flame,
+              color: colorScheme.onErrorContainer,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Zayıf Konuyu Güçlendir',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.errorContainer,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        '10 Soru',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onErrorContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  '$weakestLesson dersindeki eksiklerini kapatmak için hemen başla.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(
+            LucideIcons.chevronRight,
+            color: colorScheme.onSurfaceVariant,
+            size: 20,
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/local_storage_service.dart';
+import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 
-/// Kullanıcının abonelik (PRO/Freemium), soru limiti ve tema tercihlerini tutan state modeli.
+/// Kullanıcının abonelik (PRO/Freemium), soru limiti, tema ve soru çözüm modu tercihlerini tutan state modeli.
 ///
 /// Angular'daki `interface UserPreferences` veya NgRx Preferences state nesnesinin karşılığıdır.
 class UserPreferencesState {
@@ -15,6 +16,7 @@ class UserPreferencesState {
   final int targetKpssScore;
   final String focusLesson;
   final bool hasCompletedOnboarding;
+  final QuizMode defaultQuizMode;
 
   const UserPreferencesState({
     this.isPro = false,
@@ -24,6 +26,7 @@ class UserPreferencesState {
     this.targetKpssScore = 85,
     this.focusLesson = 'Tarih',
     this.hasCompletedOnboarding = false,
+    this.defaultQuizMode = QuizMode.learning,
   });
 
   UserPreferencesState copyWith({
@@ -34,6 +37,7 @@ class UserPreferencesState {
     int? targetKpssScore,
     String? focusLesson,
     bool? hasCompletedOnboarding,
+    QuizMode? defaultQuizMode,
   }) {
     return UserPreferencesState(
       isPro: isPro ?? this.isPro,
@@ -45,6 +49,7 @@ class UserPreferencesState {
       focusLesson: focusLesson ?? this.focusLesson,
       hasCompletedOnboarding:
           hasCompletedOnboarding ?? this.hasCompletedOnboarding,
+      defaultQuizMode: defaultQuizMode ?? this.defaultQuizMode,
     );
   }
 
@@ -58,6 +63,7 @@ class UserPreferencesState {
       'targetKpssScore': targetKpssScore,
       'focusLesson': focusLesson,
       'hasCompletedOnboarding': hasCompletedOnboarding,
+      'defaultQuizMode': defaultQuizMode.name,
     };
   }
 
@@ -67,6 +73,11 @@ class UserPreferencesState {
     final themeMode = ThemeMode.values.firstWhere(
       (e) => e.name == themeName,
       orElse: () => ThemeMode.system,
+    );
+    final modeName = (json['defaultQuizMode'] as String?) ?? 'learning';
+    final defaultQuizMode = QuizMode.values.firstWhere(
+      (e) => e.name == modeName,
+      orElse: () => QuizMode.learning,
     );
     return UserPreferencesState(
       isPro: (json['isPro'] as bool?) ?? false,
@@ -79,6 +90,7 @@ class UserPreferencesState {
       focusLesson: (json['focusLesson'] as String?) ?? 'Tarih',
       hasCompletedOnboarding:
           (json['hasCompletedOnboarding'] as bool?) ?? false,
+      defaultQuizMode: defaultQuizMode,
     );
   }
 }
@@ -117,6 +129,12 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
   /// Uygulama temasını (Sistem, Açık veya Koyu) günceller.
   void setThemeMode(ThemeMode mode) {
     state = state.copyWith(themeMode: mode);
+    unawaited(_storage.saveUserPreferences(state));
+  }
+
+  /// Varsayılan soru çözüm modunu (Öğrenme / Sınav) günceller.
+  void setQuizMode(QuizMode mode) {
+    state = state.copyWith(defaultQuizMode: mode);
     unawaited(_storage.saveUserPreferences(state));
   }
 

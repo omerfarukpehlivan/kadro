@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
+import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 
 void main() {
@@ -240,5 +241,109 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Soru 2 / 3'), findsOneWidget);
     });
+
+    testWidgets(
+      'TASK-46: QuizMode.exam modunda şıklar gizli tutulmalı, geri dönüldüğünde şık değiştirilebilmeli ve sonuçlar test sonunda hesaplanmalı',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        const examQuestions = [
+          Question(
+            id: 'exam_1',
+            lesson: 'Tarih',
+            topic: 'İlk Türk Devletleri',
+            text: 'Soru 1',
+            options: ['A1', 'B1'],
+            correctIndex: 0,
+            explanation: 'Açıklama 1',
+          ),
+          Question(
+            id: 'exam_2',
+            lesson: 'Tarih',
+            topic: 'Selçuklular',
+            text: 'Soru 2',
+            options: ['A2', 'B2'],
+            correctIndex: 1,
+            explanation: 'Açıklama 2',
+          ),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: QuizScreen(questions: examQuestions, mode: QuizMode.exam),
+          ),
+        );
+
+        // 1. Soru: Şıkka dokun (B1 - yanlış şık)
+        await tester.tap(find.text('B1'));
+        await tester.pumpAndSettle();
+
+        // Sınav modunda "Cevabı Onayla" butonu OLMAZ, doğrudan "Sonraki Soru" görünür
+        expect(find.text('Cevabı Onayla'), findsNothing);
+        expect(find.text('Çözüm Açıklaması'), findsNothing);
+        expect(find.text('Yanlış Defterine Eklendi'), findsNothing);
+
+        // Sonraki soruya geç
+        await tester.tap(find.widgetWithText(FilledButton, 'Sonraki Soru'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Soru 2 / 2'), findsOneWidget);
+
+        // Geri dön (Önceki Soru)
+        await tester.tap(find.widgetWithText(OutlinedButton, 'Önceki Soru'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Soru 1 / 2'), findsOneWidget);
+        // Soru 1'de açıklama yine çıkmamalı (sınav devam ediyor)
+        expect(find.text('Çözüm Açıklaması'), findsNothing);
+
+        // Şıkkı değiştir: B1 yerine A1 (doğru şık) işaretle
+        await tester.tap(find.text('A1'));
+        await tester.pumpAndSettle();
+
+        // Tekrar Soru 2'ye geç
+        await tester.tap(find.widgetWithText(FilledButton, 'Sonraki Soru'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Soru 2 / 2'), findsOneWidget);
+        // 2. soruyu boş bırak ve testi bitir
+        final finishBtn = find.widgetWithText(
+          FilledButton,
+          'Testi Bitir ve Sonucu Gör',
+        );
+        expect(finishBtn, findsOneWidget);
+        await tester.tap(finishBtn);
+        await tester.pumpAndSettle();
+
+        // QuizResultScreen açılmalı: 1 Doğru (A1), 0 Yanlış, 1 Boş
+        expect(find.text('Test Tamamlandı!'), findsOneWidget);
+        expect(find.text('Net Puanın'), findsOneWidget);
+        // 1 doğru, 0 yanlış => 1.0 Net
+        expect(find.text('1.00'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'TASK-46: QuizScreen limit parametresi soru adedini sınırlamalı',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        // defaultSampleQuestions 3 sorudur, limit: 1 ile 1 soru olmalı
+        await tester.pumpWidget(const MaterialApp(home: QuizScreen(limit: 1)));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Soru 1 / 1'), findsOneWidget);
+      },
+    );
   });
 }

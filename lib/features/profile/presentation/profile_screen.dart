@@ -5,6 +5,7 @@ import 'package:kadro/features/auth/presentation/auth_screen.dart';
 import 'package:kadro/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
+import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
@@ -110,6 +111,72 @@ class ProfileScreen extends ConsumerWidget {
     }
   }
 
+  void _showQuizModeDialog(
+    BuildContext context,
+    WidgetRef ref,
+    QuizMode currentMode,
+  ) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: const Text('Soru Çözüm Modu'),
+          children: QuizMode.values.map((mode) {
+            final isSelected = mode == currentMode;
+            final colorScheme = Theme.of(context).colorScheme;
+            final textTheme = Theme.of(context).textTheme;
+            return SimpleDialogOption(
+              onPressed: () {
+                ref.read(userPreferencesProvider.notifier).setQuizMode(mode);
+                Navigator.of(context).pop();
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            mode.label,
+                            style: textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: isSelected ? colorScheme.primary : null,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            mode.description,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isSelected)
+                      Icon(Icons.check, color: colorScheme.primary, size: 20),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  String _quizModeLabel(QuizMode mode) {
+    switch (mode) {
+      case QuizMode.learning:
+        return 'Öğrenme';
+      case QuizMode.exam:
+        return 'Sınav';
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -185,6 +252,14 @@ class ProfileScreen extends ConsumerWidget {
                 title: const Text('Tema'),
                 trailing: Text(_themeModeLabel(prefs.themeMode)),
                 onTap: () => _showThemeDialog(context, ref, prefs.themeMode),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.tune_outlined),
+                title: const Text('Soru Çözüm Modu'),
+                trailing: Text(_quizModeLabel(prefs.defaultQuizMode)),
+                onTap: () =>
+                    _showQuizModeDialog(context, ref, prefs.defaultQuizMode),
               ),
               const Divider(height: 1),
               const ListTile(
