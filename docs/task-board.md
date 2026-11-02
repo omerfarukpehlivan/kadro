@@ -74,6 +74,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-47** | **Hatalı Soru Raporlama & Yönetici İnceleme Paneli (`question_reports` + Supabase + UI)** | Test esnasında kullanıcının hatalı soruyu tek tıkla sebep ve notla bildirmesi (`ReportQuestionBottomSheet`); Supabase tablosu ve yöneticinin ders/test/soru bazlı inceleme ekranı | ✅ **Tamamlandı** (`d8b3b3a`) |
 | **TASK-48** | **Canlı Soru Çözüm Modu Rozeti (`QuizScreen`) & Profil Mod Seçiminden Test Başlatma** | Soru ekranı AppBar'ına anında mod gösteren/değiştiren `_QuizModeBadge` eklenmesi ve Profil diyalogundan 'Bu Modla Hemen 10 Soru Çöz' butonuyla teste geçiş | ✅ **Tamamlandı** |
 | **TASK-49** | **`QuizScreen` QuizMode Null-Safety & Geriye Dönük Uyumluluk Yaması (Hot-Reload / Web TypeError Fix)** | Web ve eski yerel depolama verilerinde `QuizMode` değerinin `null` dönmesiyle AppBar'da oluşan `TypeError: null is not a subtype of type QuizMode` hatasını gideren defansif kontrol ve yedekleme | ⏳ **Planlandı** |
+| **TASK-50** | **Kesintisiz Çalışma Döngüsü & Akıllı Sayfa İçi Yönlendirmeler (Zero Dead-Ends UX)** | Test karnesinde yanlış varsa tek tıkla Yanlış Defteri'ne yönlendirme; Yanlış Defteri boşken teste yönlendirme; Bilgi kartları bitince konu testine geçiş köprüsü | ⏳ **Planlandı** |
 
 ---
 
@@ -2592,5 +2593,55 @@ ADIM 3: `lib/features/profile/presentation/profile_screen.dart` Null Güvenliği
 ADIM 4: Test ve Doğrulama
 1. `test/quiz_screen_test.dart` içine:
    - `_QuizModeBadge mode parametresi null gelse dahi çökmeksizin varsayılan Öğrenme modu ile render edilmeli` testini ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+### 📦 TASK-50: Kesintisiz Çalışma Döngüsü & Akıllı Sayfa İçi Yönlendirmeler (Zero Dead-Ends UX)
+
+```text
+GÖREV: TASK-50 — Test Sonunda Yanlış Defterine Yönlendirme, Boş Durum Akıllı Köprüleri ve Bilgi Kartı -> Test Entegrasyonu
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Sabit Color(0xFF...) veya sabit fontSize KULLANMA; tüm renkleri Theme.of(context).colorScheme ve yazı stillerini textTheme üzerinden al. `lib/shared/` altında `widgets/` dışında klasör açma! Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: `QuizResultScreen` (`lib/features/quiz/presentation/quiz_result_screen.dart`) Yanlış Defteri & Başarı Köprüsü
+1. `package:kadro/features/mistakes/presentation/mistakes_screen.dart` ve `package:kadro/features/flashcards/presentation/flashcards_screen.dart` import et.
+2. Alt buton alanını (`result.wrongCount > 0` durumuna göre) akıllı ikili aksiyona dönüştür:
+   - Eğer `result.wrongCount > 0`:
+     - Üstte birincil buton (`FilledButton.icon`):
+       - `icon: Icon(LucideIcons.bookmarkCheck)`
+       - `label: Text('Yanlış Defterine Git (${result.wrongCount} Yanlış)')`
+       - `onPressed:` `Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const MistakesScreen()));`
+     - Altta ikincil buton (`OutlinedButton.icon`):
+       - `icon: Icon(LucideIcons.house)`
+       - `label: Text('Ana Sayfaya Dön')`
+       - `onPressed: () => Navigator.of(context).pop();`
+   - Eğer `result.wrongCount == 0` (Mükemmel Skor / Full):
+     - Üstte birincil buton (`FilledButton.icon`):
+       - `icon: Icon(LucideIcons.house)`
+       - `label: Text('Ana Sayfaya Dön')`
+     - Altta ikincil buton (`OutlinedButton.icon`):
+       - `icon: Icon(LucideIcons.layers)`
+       - `label: Text('Bilgi Kartlarıyla Hızlı Tekrar')`
+       - `onPressed:` `Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const FlashcardsScreen()));`
+
+ADIM 2: `MistakesScreen` (`lib/features/mistakes/presentation/mistakes_screen.dart`) Boş Durum Akıllı Kısayolları (Zero Dead-End)
+1. Yanlış Defteri boşken (`mistakes.isEmpty`) çıkan kartın altına 2 yönlendirici buton ekle:
+   - "Tebrikler, hiç yanlışın yok!" metninin hemen altına:
+     - `FilledButton.tonalIcon(icon: Icon(LucideIcons.play), label: Text('Yeni Test Çöz'), onPressed: () => Navigator.of(context).pushNamed veya pop)`
+     - `OutlinedButton.icon(icon: Icon(LucideIcons.layers), label: Text('Bilgi Kartlarına Git'), onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const FlashcardsScreen())))`
+   - Böylece kullanıcı boş bir ekranda sıkışıp kalmaz; çalışma akışına anında devam eder.
+
+ADIM 3: `FlashcardsScreen` (`lib/features/flashcards/presentation/flashcards_screen.dart`) Kart Tamamlama Köprüsü
+1. Tüm kartlar gözden geçirildiğinde veya deste tamamlandığında:
+   - Kartların altında beliren başarı kartına:
+     - `FilledButton.icon(icon: Icon(LucideIcons.target), label: Text('Bu Konuyu Testle Pekiştir (10 Soru)'), onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => QuizScreen(lessonFilter: _selectedLesson == 'Tümü' ? null : _selectedLesson, limit: 10))))`
+   - Bu sayede hafıza kartını bitiren kullanıcı doğrudan o dersten 10 soruluk pekiştirme testine yönlendirilir.
+
+ADIM 4: Test ve Doğrulama
+1. `test/quiz_result_test.dart` dosyasını güncelle:
+   - `wrongCount > 0` olduğunda 'Yanlış Defterine Git' butonunun göründüğünü ve tıklandığında `MistakesScreen`'in açıldığını test et.
+   - `wrongCount == 0` olduğunda 'Bilgi Kartlarıyla Hızlı Tekrar' butonunun render edildiğini test et.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
