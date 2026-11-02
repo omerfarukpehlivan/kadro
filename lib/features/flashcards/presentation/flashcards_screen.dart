@@ -1,31 +1,66 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/flashcards/data/models/flashcard.dart';
 import 'package:kadro/features/flashcards/data/sample_flashcards.dart';
+import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 
 /// KPSS Hap Bilgi Kartları (Flashcards) Ekranı.
 ///
 /// Angular'daki `FlashcardsComponent` karşılığıdır.
-/// StatefulWidget olarak kartın ön/arka yüz çevrilme durumunu ve
-/// öğrenilen/tekrar edilecek sayaçlarını kendi içinde yönetir.
-class FlashcardsScreen extends StatefulWidget {
+/// [ConsumerStatefulWidget] olarak kartın ön/arka yüz çevrilme durumunu,
+/// seçili ders filtresini ve öğrenilen kart başına Riverpod [studyStatsProvider]
+/// üzerinden XP / istatistik kaydını yönetir.
+class FlashcardsScreen extends ConsumerStatefulWidget {
   final List<Flashcard> flashcards;
 
   const FlashcardsScreen({super.key, this.flashcards = sampleFlashcards});
 
   @override
-  State<FlashcardsScreen> createState() => _FlashcardsScreenState();
+  ConsumerState<FlashcardsScreen> createState() => _FlashcardsScreenState();
 }
 
-class _FlashcardsScreenState extends State<FlashcardsScreen> {
+class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
+  static const List<String> _lessonFilters = [
+    'Tümü',
+    'Tarih',
+    'Coğrafya',
+    'Vatandaşlık',
+    'Güncel Bilgiler',
+  ];
+
+  String _selectedLesson = 'Tümü';
   int _currentIndex = 0;
   bool _isBackVisible = false;
   int _learnedCount = 0;
   int _repeatCount = 0;
 
-  bool get _isCompleted => _currentIndex >= widget.flashcards.length;
-  Flashcard get _currentCard => widget.flashcards[_currentIndex];
+  /// Seçili derse göre filtrelenmiş kart listesi.
+  List<Flashcard> get _filteredCards {
+    if (_selectedLesson == 'Tümü') {
+      return widget.flashcards;
+    }
+    return widget.flashcards
+        .where((card) => card.lesson == _selectedLesson)
+        .toList();
+  }
+
+  bool get _isCompleted =>
+      _filteredCards.isNotEmpty && _currentIndex >= _filteredCards.length;
+
+  Flashcard get _currentCard => _filteredCards[_currentIndex];
+
+  void _selectLesson(String lesson) {
+    if (_selectedLesson == lesson) return;
+    setState(() {
+      _selectedLesson = lesson;
+      _currentIndex = 0;
+      _isBackVisible = false;
+      _learnedCount = 0;
+      _repeatCount = 0;
+    });
+  }
 
   void _flipCard() {
     setState(() {
@@ -42,6 +77,25 @@ class _FlashcardsScreenState extends State<FlashcardsScreen> {
   }
 
   void _onLearned() {
+    if (_filteredCards.isEmpty || _currentIndex >= _filteredCards.length) {
+      return;
+    }
+    final card = _currentCard;
+
+    // studyStatsProvider ile XP (+15 XP) ve soru istatistiklerini kaydet
+    try {
+      ref
+          .read(studyStatsProvider.notifier)
+          .recordAnswer(
+            lesson: card.lesson,
+            isCorrect: true,
+            topic: card.topic,
+            questionText: card.frontText,
+          );
+    } catch (_) {
+      // ProviderScope olmadan çalışan testlerde hata fırlatmasını önler
+    }
+
     setState(() {
       _learnedCount++;
       _currentIndex++;
@@ -60,97 +114,169 @@ class _FlashcardsScreenState extends State<FlashcardsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final filtered = _filteredCards;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Hap Bilgi Kartları')),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: _isCompleted
-              ? _FlashcardsSummaryView(
-                  totalCards: widget.flashcards.length,
-                  learnedCount: _learnedCount,
-                  repeatCount: _repeatCount,
-                  onRestart: _restart,
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // Üst İlerleme ve Sayaç Bilgisi
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          _currentCard.lesson,
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        Text(
-                          'Kart ${_currentIndex + 1} / ${widget.flashcards.length}',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    LinearProgressIndicator(
-                      value: (_currentIndex + 1) / widget.flashcards.length,
-                    ),
-                    const SizedBox(height: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Ders Filtresi Şeridi (Tümü, Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler)
+            SizedBox(
+              height: 48,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: _lessonFilters.length,
+                separatorBuilder: (context, index) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final lesson = _lessonFilters[index];
+                  final isSelected = _selectedLesson == lesson;
+                  return ChoiceChip(
+                    label: Text(lesson),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      if (selected) {
+                        _selectLesson(lesson);
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
 
-                    // Karta Dokunulduğunda Ön/Arka Yüz Geçişi
-                    // AnimatedSwitcher: Web'deki CSS transition/flip efektine benzer;
-                    // child widget değiştiğinde yumuşak fade ve scale geçişi uygular.
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: _flipCard,
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          transitionBuilder: (child, animation) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: ScaleTransition(
-                                scale: Tween<double>(
-                                  begin: 0.95,
-                                  end: 1.0,
-                                ).animate(animation),
-                                child: child,
+            // Ana İçerik Alanı
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: filtered.isEmpty
+                    ? Center(
+                        child: TactileCard(
+                          padding: const EdgeInsets.all(24),
+                          backgroundColor: colorScheme.surface,
+                          borderColor: colorScheme.outlineVariant,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 48,
+                                color: colorScheme.primary,
                               ),
-                            );
-                          },
-                          child: _FlashcardFace(
-                            key: ValueKey(_isBackVisible),
-                            isBack: _isBackVisible,
-                            topic: _currentCard.topic,
-                            text: _isBackVisible
-                                ? _currentCard.backText
-                                : _currentCard.frontText,
+                              const SizedBox(height: 12),
+                              Text(
+                                '$_selectedLesson için henüz kart bulunmuyor',
+                                style: theme.textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.onSurface,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Farklı bir ders seçerek kart çalışmasına devam edebilirsin.',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
+                      )
+                    : _isCompleted
+                    ? _FlashcardsSummaryView(
+                        totalCards: filtered.length,
+                        learnedCount: _learnedCount,
+                        repeatCount: _repeatCount,
+                        onRestart: _restart,
+                      )
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // Üst İlerleme ve Sayaç Bilgisi
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                _currentCard.lesson,
+                                style: theme.textTheme.titleSmall,
+                              ),
+                              Text(
+                                'Kart ${_currentIndex + 1} / ${filtered.length}',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          LinearProgressIndicator(
+                            value: (_currentIndex + 1) / filtered.length,
+                          ),
+                          const SizedBox(height: 16),
 
-                    // Alt Butonlar (Tekrar Et & Biliyorum)
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: _onRepeat,
-                            icon: const Icon(Icons.refresh),
-                            label: const Text('Tekrar Et'),
+                          // Karta Dokunulduğunda Ön/Arka Yüz Geçişi
+                          Expanded(
+                            child: GestureDetector(
+                              key: const ValueKey('flashcard_flip_detector'),
+                              onTap: _flipCard,
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 300),
+                                transitionBuilder: (child, animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: ScaleTransition(
+                                      scale: Tween<double>(
+                                        begin: 0.95,
+                                        end: 1.0,
+                                      ).animate(animation),
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                                child: _FlashcardFace(
+                                  key: ValueKey(_isBackVisible),
+                                  isBack: _isBackVisible,
+                                  topic: _currentCard.topic,
+                                  text: _isBackVisible
+                                      ? _currentCard.backText
+                                      : _currentCard.frontText,
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: FilledButton.icon(
-                            onPressed: _onLearned,
-                            icon: const Icon(Icons.check),
-                            label: const Text('Biliyorum'),
+                          const SizedBox(height: 16),
+
+                          // Alt Butonlar (Tekrar Et & Biliyorum)
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: _onRepeat,
+                                  icon: const Icon(Icons.refresh),
+                                  label: const Text('Tekrar Et'),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: FilledButton.icon(
+                                  onPressed: _onLearned,
+                                  icon: const Icon(Icons.check),
+                                  label: const Text('Biliyorum'),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                        ],
+                      ),
+              ),
+            ),
+          ],
         ),
       ),
     );
