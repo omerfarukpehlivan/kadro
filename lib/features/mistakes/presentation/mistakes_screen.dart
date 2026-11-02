@@ -1,3 +1,5 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
@@ -206,6 +208,33 @@ class _EmptyMistakesView extends StatelessWidget {
                 color: colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FilledButton.tonalIcon(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const QuizScreen()),
+                    );
+                  },
+                  icon: const Icon(LucideIcons.play, size: 18),
+                  label: const Text('Yeni Test Çöz'),
+                ),
+                const SizedBox(width: 12),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const FlashcardsScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(LucideIcons.layers, size: 18),
+                  label: const Text('Bilgi Kartlarına Git'),
+                ),
+              ],
             ),
           ],
         ),

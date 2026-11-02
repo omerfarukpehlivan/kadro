@@ -1,3 +1,5 @@
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/flashcards/data/models/flashcard.dart';
@@ -193,6 +195,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
                         totalCards: filtered.length,
                         learnedCount: _learnedCount,
                         repeatCount: _repeatCount,
+                        selectedLesson: _selectedLesson,
                         onRestart: _restart,
                       )
                     : Column(
@@ -390,12 +393,14 @@ class _FlashcardsSummaryView extends StatelessWidget {
   final int totalCards;
   final int learnedCount;
   final int repeatCount;
+  final String selectedLesson;
   final VoidCallback onRestart;
 
   const _FlashcardsSummaryView({
     required this.totalCards,
     required this.learnedCount,
     required this.repeatCount,
+    this.selectedLesson = 'Tümü',
     required this.onRestart,
   });
 
@@ -497,13 +502,33 @@ class _FlashcardsSummaryView extends StatelessWidget {
           ],
         ),
         const Spacer(),
+        FilledButton.icon(
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => QuizScreen(
+                  lessonFilter: selectedLesson == 'Tümü'
+                      ? null
+                      : selectedLesson,
+                  customTitle: selectedLesson == 'Tümü'
+                      ? 'Pekiştirme Testi'
+                      : '$selectedLesson Pekiştirme Testi',
+                  limit: 10,
+                ),
+              ),
+            );
+          },
+          icon: const Icon(LucideIcons.target),
+          label: const Text('Bu Konuyu Testle Pekiştir (10 Soru)'),
+        ),
+        const SizedBox(height: 8),
         OutlinedButton.icon(
           onPressed: onRestart,
           icon: const Icon(Icons.refresh),
           label: const Text('Yeniden Başla'),
         ),
         const SizedBox(height: 8),
-        FilledButton.icon(
+        TextButton.icon(
           onPressed: () => Navigator.of(context).pop(),
           icon: const Icon(Icons.home),
           label: const Text('Ana Sayfaya Dön'),

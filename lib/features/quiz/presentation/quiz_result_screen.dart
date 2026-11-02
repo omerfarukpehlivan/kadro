@@ -1,3 +1,5 @@
+import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
+import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
@@ -75,12 +77,44 @@ class QuizResultScreen extends StatelessWidget {
               ),
               const Spacer(),
 
-              // Ana sayfaya / listeye dönüş butonu
-              FilledButton.icon(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(LucideIcons.house),
-                label: const Text('Ana Sayfaya Dön'),
-              ),
+              // Akıllı İkili Aksiyon Köprüsü (TASK-50: Zero Dead-Ends UX)
+              if (result.wrongCount > 0) ...[
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const MistakesScreen()),
+                    );
+                  },
+                  icon: const Icon(LucideIcons.bookmarkCheck),
+                  label: Text(
+                    'Yanlış Defterine Git (${result.wrongCount} Yanlış)',
+                  ),
+                ),
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(LucideIcons.house),
+                  label: const Text('Ana Sayfaya Dön'),
+                ),
+              ] else ...[
+                FilledButton.icon(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(LucideIcons.house),
+                  label: const Text('Ana Sayfaya Dön'),
+                ),
+                const SizedBox(height: 10),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (_) => const FlashcardsScreen(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(LucideIcons.layers),
+                  label: const Text('Bilgi Kartlarıyla Hızlı Tekrar'),
+                ),
+              ],
             ],
           ),
         ),

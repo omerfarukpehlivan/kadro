@@ -1,7 +1,18 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
+import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
+import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   group('QuizResult Model Testleri', () {
     test('Net hesabı 4 yanlış 1 doğruyu götürecek şekilde hesaplanmalı', () {
       const result = QuizResult(
@@ -35,5 +46,71 @@ void main() {
 
       expect(result.successRate, equals(0));
     });
+  });
+
+  group('TASK-50: QuizResultScreen & Zero Dead-Ends Köprü Testleri', () {
+    testWidgets(
+      'wrongCount > 0 olduğunda Yanlış Defterine Git butonu görünmeli ve yönlendirmeli',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        const resultWithMistakes = QuizResult(
+          totalQuestions: 10,
+          correctCount: 7,
+          wrongCount: 2,
+          emptyCount: 1,
+        );
+
+        await tester.pumpWidget(
+          const MaterialApp(home: QuizResultScreen(result: resultWithMistakes)),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Yanlış Defterine Git (2 Yanlış)'), findsOneWidget);
+        expect(find.text('Ana Sayfaya Dön'), findsOneWidget);
+
+        await tester.tap(find.text('Yanlış Defterine Git (2 Yanlış)'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(MistakesScreen), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'wrongCount == 0 olduğunda Bilgi Kartlarıyla Hızlı Tekrar butonu görünmeli ve yönlendirmeli',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        const perfectResult = QuizResult(
+          totalQuestions: 10,
+          correctCount: 10,
+          wrongCount: 0,
+          emptyCount: 0,
+        );
+
+        await tester.pumpWidget(
+          const MaterialApp(home: QuizResultScreen(result: perfectResult)),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Bilgi Kartlarıyla Hızlı Tekrar'), findsOneWidget);
+        expect(find.text('Ana Sayfaya Dön'), findsOneWidget);
+
+        await tester.tap(find.text('Bilgi Kartlarıyla Hızlı Tekrar'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(FlashcardsScreen), findsOneWidget);
+      },
+    );
   });
 }
