@@ -10,6 +10,7 @@ import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
 import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
+import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
@@ -215,6 +216,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       if (isCorrect) {
         _correctCount++;
         widget.mistakeRepository.removeMistake(_currentQuestion.id);
+        const CloudSyncRepository().markMistakeResolved(
+          questionText: _currentQuestion.text,
+        );
       } else {
         _wrongCount++;
         widget.mistakeRepository.addMistake(_currentQuestion);

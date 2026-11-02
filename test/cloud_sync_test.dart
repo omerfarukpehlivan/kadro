@@ -213,5 +213,26 @@ void main() {
         expect(container.read(studyPlannerProvider).totalCount, initialCount);
       },
     );
+
+    test(
+      'markMistakeResolved ve fetchLeaderboard offline modda güvenli çalışmalı',
+      () async {
+        // Yanlış sorunun çözüldü işaretlenmesi offline modda hata vermemeli
+        await expectLater(
+          repository.markMistakeResolved(
+            questionText: 'Uygurların yerleşik hayata geçmesi...',
+          ),
+          completes,
+        );
+
+        // fetchLeaderboard offline modda varsayılan aday listesini döndürmeli
+        final leaderboard = await repository.fetchLeaderboard();
+        expect(leaderboard, isNotEmpty);
+        expect(leaderboard.length, greaterThanOrEqualTo(4));
+        expect(leaderboard.first.displayName, contains('Zeynep K.'));
+        expect(leaderboard.first.totalXp, 640);
+        expect(leaderboard.first.leagueTier, 'Altın Kadro');
+      },
+    );
   });
 }

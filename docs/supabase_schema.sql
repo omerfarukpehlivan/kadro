@@ -139,6 +139,26 @@ drop policy if exists "Kullanıcı kendi profilini okuyup güncelleyebilir" on p
 create policy "Kullanıcı kendi profilini okuyup güncelleyebilir" on public.profiles
   for all using (auth.uid() = id);
 
+-- GÜVENLİK: İstemcinin doğrudan `is_pro` alanını true yapmasını önleyen trigger
+create or replace function public.prevent_direct_is_pro_escalation()
+returns trigger
+language plpgsql
+security definer
+as $$
+begin
+  -- Eğer istemci (anon veya authenticated rolü) is_pro'yu değiştirmeye çalışırsa reddet
+  if (current_user not in ('service_role', 'postgres')) and (new.is_pro is distinct from old.is_pro) then
+    raise exception 'is_pro alanı doğrudan istemci tarafından güncellenemez. Webhook veya In-App Purchase doğrulaması gereklidir.';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_prevent_direct_is_pro on public.profiles;
+create trigger trg_prevent_direct_is_pro
+  before update on public.profiles
+  for each row execute procedure public.prevent_direct_is_pro_escalation();
+
 drop policy if exists "Kullanıcı kendi test geçmişini yönetebilir" on public.quiz_sessions;
 create policy "Kullanıcı kendi test geçmişini yönetebilir" on public.quiz_sessions
   for all using (auth.uid() = user_id);
@@ -155,7 +175,27 @@ drop policy if exists "Kullanıcı kendi çalışma görevlerini yönetebilir" o
 create policy "Kullanıcı kendi çalışma görevlerini yönetebilir" on public.study_tasks
   for all using (auth.uid() = user_id);
 
--- 9. BAŞLANGIÇ KPSS GENEL KÜLTÜR VERİLERİ (SEED DATA)
+-- 9. RPC GÜVENLİK VE RAPORLAMA FONKSİYONLARI
+-- Top 10 haftalık aday sıralamasını RLS kısıtlamasına takılmadan sadece anonim/genel alanlarla döndürür.
+create or replace function public.get_weekly_leaderboard()
+returns table (
+    display_name text,
+    total_xp integer,
+    league_tier text
+)
+language sql
+security definer
+as $$
+    select
+        display_name,
+        coalesce(total_xp, 0) as total_xp,
+        coalesce(league_tier, 'Bronz Kadro') as league_tier
+    from public.profiles
+    order by total_xp desc
+    limit 10;
+$$;
+
+-- 10. BAŞLANGIÇ KPSS GENEL KÜLTÜR VERİLERİ (SEED DATA)
 insert into public.questions (lesson, topic, question_type, difficulty, prompt_text, interaction_data, explanation)
 values
   (

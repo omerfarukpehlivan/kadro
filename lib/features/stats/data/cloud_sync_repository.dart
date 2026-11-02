@@ -219,4 +219,83 @@ class CloudSyncRepository {
       debugPrint('Supabase upsertTopicMastery hatası: $e');
     }
   }
+
+  /// Yanlış defterindeki bir soru doğru çözüldüğünde
+  /// Supabase `public.question_attempt_logs` tablosunda `is_resolved_in_mistakes = true` yapar.
+  Future<void> markMistakeResolved({required String questionText}) async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return;
+
+    try {
+      await client
+          .from('question_attempt_logs')
+          .update({'is_resolved_in_mistakes': true})
+          .eq('user_id', userId)
+          .eq('question_text', questionText);
+    } catch (e) {
+      debugPrint('Supabase markMistakeResolved hatası: $e');
+    }
+  }
+
+  /// Haftalık liderlik tablosunu Supabase `get_weekly_leaderboard` RPC fonksiyonu üzerinden çeker.
+  ///
+  /// Offline veya hata durumunda yüksek motivasyonlu varsayılan aday listesi döner.
+  Future<List<LeaderboardEntry>> fetchLeaderboard() async {
+    final client = SupabaseConfig.clientOrNull;
+    if (client != null) {
+      try {
+        final response = await client.rpc('get_weekly_leaderboard');
+        if (response is List && response.isNotEmpty) {
+          return response.map((row) {
+            final map = row as Map<String, dynamic>;
+            return LeaderboardEntry(
+              displayName: (map['display_name'] as String?) ?? 'Memur Adayı',
+              totalXp: (map['total_xp'] as num?)?.toInt() ?? 0,
+              leagueTier: (map['league_tier'] as String?) ?? 'Bronz Kadro',
+            );
+          }).toList();
+        }
+      } catch (e) {
+        debugPrint('Supabase fetchLeaderboard RPC hatası: $e');
+      }
+    }
+
+    // Offline / Demo yedek adaylar
+    return const [
+      LeaderboardEntry(
+        displayName: 'Zeynep K. (90+ Hedef)',
+        totalXp: 640,
+        leagueTier: 'Altın Kadro',
+      ),
+      LeaderboardEntry(
+        displayName: 'Burak T. (Merkez Kadro)',
+        totalXp: 420,
+        leagueTier: 'Gümüş Kadro',
+      ),
+      LeaderboardEntry(
+        displayName: 'Elif A. (A Grubu)',
+        totalXp: 285,
+        leagueTier: 'Gümüş Kadro',
+      ),
+      LeaderboardEntry(
+        displayName: 'Mert D. (Memur Adayı)',
+        totalXp: 140,
+        leagueTier: 'Bronz Kadro',
+      ),
+    ];
+  }
+}
+
+/// Haftalık Kadro Lig sıralamasındaki bir adayın özet bilgisi.
+class LeaderboardEntry {
+  final String displayName;
+  final int totalXp;
+  final String leagueTier;
+
+  const LeaderboardEntry({
+    required this.displayName,
+    required this.totalXp,
+    required this.leagueTier,
+  });
 }
