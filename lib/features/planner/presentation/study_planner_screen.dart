@@ -53,7 +53,7 @@ class StudyPlannerScreen extends ConsumerWidget {
             mood: MascotMood.coach,
             badgeLabel: 'GÜNLÜK KAMP PLANI',
             title: 'Bugünkü Görevlerin',
-            message: 'Planlı çalışan kadroyu kapar! Görevlerini tikle veya Başla butonuyla doğrudan çalışmaya geç.',
+            message: 'Planlı çalışan kadroyu kapar! Görevlerini tamamla, netlerini her gün istikrarla artır.',
           ),
           const SizedBox(height: 16),
 

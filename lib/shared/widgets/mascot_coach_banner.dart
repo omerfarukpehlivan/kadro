@@ -64,12 +64,13 @@ extension MascotMoodExtension on MascotMood {
   }
 }
 
-/// "Kadro Koçu" çerçevesiz pop-out maskot konuşma balonu ve rehberlik bileşeni.
+/// "Kadro Koçu" maskot konuşma balonu ve rehberlik bileşeni.
 ///
 /// Web/Angular karşılığı:
 /// Gamification bildirim bileşeni (Duolingo banner/speech bubble).
-/// 84x84 kısıtlayıcı kutulardan arındırılmış, 100x100 büyük çerçevesiz yapısıyla
-/// karakterin doğrudan konuşma balonunun yanından fırlamasını (pop-out) sağlar.
+/// 92x92 boyutundaki çift katmanlı altın/indigo çerçeveli avatar yapısı ve
+/// zıplamaları önleyen sabit dikey baseline'ı ile tüm sekmelerde kusursuz
+/// görsel akıcılık sunar.
 class MascotCoachBanner extends StatelessWidget {
   final MascotMood mood;
   final String title;
@@ -90,6 +91,7 @@ class MascotCoachBanner extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
+      constraints: const BoxConstraints(minHeight: 122),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
@@ -115,26 +117,38 @@ class MascotCoachBanner extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Sol: Çerçevesiz Pop-Out 100x100 Maskot Sahnesi + Minyatür Yıldız Rozeti
+              // Sol: 92x92 Çift Katmanlı Borderlı Maskot Çerçevesi + Yıldız Rozeti
               Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: Image.asset(
-                      mood.assetPath,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => Icon(
-                        LucideIcons.award,
-                        color: colorScheme.primary,
-                        size: 48,
+                  Container(
+                    width: 92,
+                    height: 92,
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: colorScheme.primary.withAlpha(90),
+                        width: 2,
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: Image.asset(
+                        mood.assetPath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          LucideIcons.award,
+                          color: colorScheme.primary,
+                          size: 40,
+                        ),
                       ),
                     ),
                   ),
                   Positioned(
-                    right: 0,
-                    bottom: 0,
+                    right: -2,
+                    bottom: -2,
                     child: Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
@@ -154,12 +168,13 @@ class MascotCoachBanner extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
 
-              // Sağ: Rozet, Başlık ve Konuşma Balonu
+              // Sağ: Rozet, Başlık ve Tam Genişlik Konuşma Balonu
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // Üst Rozet Hapı (badgeLabel)
                     Container(
@@ -180,20 +195,23 @@ class MascotCoachBanner extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 5),
 
-                    // Başlık
+                    // Başlık (Tek satır, sayfalar arası dikey zıplamayı önler)
                     Text(
                       title,
                       style: textTheme.titleMedium?.copyWith(
                         color: colorScheme.onSurface,
                         fontWeight: FontWeight.w800,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 5),
 
-                    // Konuşma Balonu
+                    // Konuşma Balonu (Tam genişlik ve 2 satır sabit ritim)
                     Container(
+                      width: double.infinity,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
                         vertical: 8,
@@ -208,8 +226,10 @@ class MascotCoachBanner extends StatelessWidget {
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
-                          height: 1.4,
+                          height: 1.35,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],

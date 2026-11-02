@@ -57,7 +57,7 @@ void main() {
 
   group('TASK-53: MascotCoachBanner Widget Testleri', () {
     testWidgets(
-      'Çerçevesiz Pop-Out yapısında başlık, mesaj ve rozet eksiksiz render edilmeli',
+      '92x92 borderlı çerçeve yapısında başlık, mesaj ve rozet eksiksiz render edilmeli',
       (tester) async {
         tester.view.physicalSize = const Size(1080, 2400);
         tester.view.devicePixelRatio = 1.0;
@@ -86,15 +86,16 @@ void main() {
         expect(find.byIcon(LucideIcons.sparkles), findsOneWidget);
         expect(find.byType(Image), findsOneWidget);
 
-        // 100x100 boyutundaki çerçevesiz görsel kutusunu doğrula
-        final sizedBoxes = tester.widgetList<SizedBox>(find.byType(SizedBox));
-        final mascotBox = sizedBoxes.any(
-          (box) => box.width == 100 && box.height == 100,
+        // 92x92 boyutundaki borderlı görsel kutusunu doğrula
+        final containers = tester.widgetList<Container>(find.byType(Container));
+        final mascotBox = containers.any(
+          (c) =>
+              c.constraints?.maxWidth == 92 && c.constraints?.maxHeight == 92,
         );
         expect(
           mascotBox,
           true,
-          reason: 'Tuğrul 100x100 çerçevesiz kutuda render edilmeli',
+          reason: 'Tuğrul 92x92 borderlı çerçeve kutusunda render edilmeli',
         );
       },
     );

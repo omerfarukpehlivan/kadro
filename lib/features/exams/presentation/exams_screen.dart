@@ -21,7 +21,7 @@ class ExamsScreen extends StatelessWidget {
         const MascotCoachBanner(
           mood: MascotMood.coach,
           title: 'Deneme sınavları',
-          message: 'Gerçek sınav provası! 60 soru, 65 dakika ve 4 yanlış 1 doğruyu götürür.',
+          message: 'Gerçek sınav provası! 60 soru, 65 dakika ve 4 yanlış 1 doğru kuralıyla netini test et.',
         ),
         const SizedBox(height: 16),
         const SectionTitle('Sınav düzeni'),
