@@ -122,7 +122,10 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   bool _hasDismissedMistakeNotice = false;
   bool _showMistakeNotice = false;
 
+  QuizMode? _runtimeMode;
+
   QuizMode get _effectiveMode {
+    if (_runtimeMode != null) return _runtimeMode!;
     if (widget.mode != null) return widget.mode!;
     try {
       return ref.read(userPreferencesProvider).defaultQuizMode;
@@ -132,6 +135,24 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   bool get _isExamMode => _effectiveMode == QuizMode.exam;
+
+  void _toggleQuizMode() {
+    setState(() {
+      _runtimeMode = _isExamMode ? QuizMode.learning : QuizMode.exam;
+    });
+    final isNowExam = _isExamMode;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isNowExam
+              ? '📝 Sınav Modu devrede: Şıklar gizli, optik form mantığı aktif.'
+              : '🎯 Öğrenme Modu devrede: Anında doğru/yanlış ve çözüm açıklaması aktif.',
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
   Question get _currentQuestion => _questions[_currentIndex];
   bool get _isLastQuestion => _currentIndex == _questions.length - 1;
@@ -450,6 +471,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       appBar: AppBar(
         title: Text(widget.customTitle ?? '${question.lesson} Testi'),
         actions: [
+          _QuizModeBadge(mode: _effectiveMode, onToggle: _toggleQuizMode),
           if (widget.examDuration != null)
             _ExamTimerBadge(remainingSeconds: _remainingSeconds),
         ],
@@ -785,6 +807,61 @@ class _ExamTimerBadge extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Soru ekranında o anki çalışma modunu gösteren ve tek tıkla Öğrenme/Sınav modu
+/// arasında geçiş sağlayan interaktif AppBar rozeti (TASK-48).
+class _QuizModeBadge extends StatelessWidget {
+  final QuizMode mode;
+  final VoidCallback onToggle;
+
+  const _QuizModeBadge({required this.mode, required this.onToggle});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isExam = mode == QuizMode.exam;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      child: Material(
+        color: isExam
+            ? colorScheme.secondaryContainer
+            : colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onToggle,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isExam ? LucideIcons.fileText : LucideIcons.sparkles,
+                  size: 14,
+                  color: isExam
+                      ? colorScheme.onSecondaryContainer
+                      : colorScheme.onPrimaryContainer,
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  isExam ? 'Sınav' : 'Öğrenme',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: isExam
+                        ? colorScheme.onSecondaryContainer
+                        : colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

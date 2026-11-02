@@ -71,7 +71,9 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-44** | **`QuizScreen` İki Yönlü Soru Gezintisi (Önceki/Sonraki Soru) & Zarif Yanlış Bildirimi** | Test içinde geriye doğru 1'e kadar ve ileriye doğru en son soruya gidebilme (`_userAnswers` geçmişi) + İlk yanlışta tek seferlik dismissible Koç bilgilendirme kartı | ✅ **Tamamlandı** (`64b1a2b`) |
 | **TASK-45** | **`MistakesScreen` Ders Bazlı Filtreleme & Derse Özel Yanlış Çözüm Akışı** | Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler sekme/çip filtreleri, her dersin yanlış sayısı rozeti ve sadece seçilen dersin yanlışlarını test olarak başlatma | ✅ **Tamamlandı** (`ae86af6`) |
 | **TASK-46** | **Kadro Çalışma Modları (Öğrenme/Anında Çözüm vs. Sınav/Gizli Çözüm & Zayıf Konu Testi)** | Anında doğru/yanlış gösteren öğrenme modu ile sonuçları karneye saklayan sınav modu; moda duyarlı geriye dönük şık değiştirme kuralı; zayıf konudan otomatik 10 soru çıkarma | ✅ **Tamamlandı** (`d62695b`) |
-| **TASK-47** | **Hatalı Soru Raporlama & Yönetici İnceleme Paneli (`question_reports` + Supabase + UI)** | Test esnasında kullanıcının hatalı soruyu tek tıkla sebep ve notla bildirmesi (`ReportQuestionBottomSheet`); Supabase tablosu ve yöneticinin ders/test/soru bazlı inceleme ekranı | ⏳ **Planlandı** |
+| **TASK-47** | **Hatalı Soru Raporlama & Yönetici İnceleme Paneli (`question_reports` + Supabase + UI)** | Test esnasında kullanıcının hatalı soruyu tek tıkla sebep ve notla bildirmesi (`ReportQuestionBottomSheet`); Supabase tablosu ve yöneticinin ders/test/soru bazlı inceleme ekranı | ⏳ **Planlandı** |
+| **TASK-48** | **Canlı Soru Çözüm Modu Rozeti (`QuizScreen`) & Profil Mod Seçiminden Test Başlatma** | Soru ekranı AppBar'ına anında mod gösteren/değiştiren `_QuizModeBadge` eklenmesi ve Profil diyalogundan 'Bu Modla Hemen 10 Soru Çöz' butonuyla teste geçiş | ✅ **Tamamlandı** |
+| **TASK-48** | **Canlı Soru Çözüm Modu Rozeti (`QuizScreen`) & Profil Mod Seçiminden Test Başlatma** | Soru ekranı AppBar'ına anında mod gösteren/değiştiren `_QuizModeBadge` eklenmesi ve Profil diyalogundan 'Bu Modla Hemen 10 Soru Çöz' butonuyla teste geçiş | ✅ **Tamamlandı** |
 
 ---
 
@@ -2491,4 +2493,22 @@ ADIM 7: Birim & Widget Testleri (`test/question_report_test.dart`)
    - Bayrak butonuna tıklandığında `ReportQuestionBottomSheet` bileşeninin ve sebep seçeneklerinin ekrana geldiğini doğrula.
    - Bir sebep seçilip "Bildirimi Gönder" butonuna basıldığında alt sayfanın kapandığını ve başarı mesajının gösterildiğini doğrula.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+### 📦 TASK-48: Canlı Soru Çözüm Modu Rozeti (`QuizScreen`) & Profil Mod Seçiminden Test Başlatma
+
+```text
+GÖREV: TASK-48 — Soru Ekranı Canlı Mod Rozeti ve Profil Mod Seçiminden Hızlı Test Başlatma
+ÖNEMLİ: GEMINI.md kurallarına birebir uy.
+
+ADIM 1: `QuizScreen` Canlı Mod Rozeti & Hızlı Geçiş
+1. `_QuizScreenState` içine `_runtimeMode` ve `_toggleQuizMode()` ekle.
+2. AppBar içine `_QuizModeBadge` ekle; tıklandığında Öğrenme ve Sınav modları arasında anında geçiş yapsın ve SnackBar ile kullanıcıyı bilgilendirsin.
+
+ADIM 2: `ProfileScreen` Mod Diyaloğundan Test Başlatma
+1. `_showQuizModeDialog` içine 'Bu Modla Hemen 10 Soru Çöz' aksiyon butonu ekle.
+2. ListTile altına modun ne işe yaradığını açıklayan dinamik `subtitle` ekle.
 ```

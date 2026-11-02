@@ -1,3 +1,4 @@
+import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/auth/data/auth_notifier.dart';
@@ -119,50 +120,73 @@ class ProfileScreen extends ConsumerWidget {
     showDialog<void>(
       context: context,
       builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
+
         return SimpleDialog(
           title: const Text('Soru Çözüm Modu'),
-          children: QuizMode.values.map((mode) {
-            final isSelected = mode == currentMode;
-            final colorScheme = Theme.of(context).colorScheme;
-            final textTheme = Theme.of(context).textTheme;
-            return SimpleDialogOption(
-              onPressed: () {
-                ref.read(userPreferencesProvider.notifier).setQuizMode(mode);
-                Navigator.of(context).pop();
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            mode.label,
-                            style: textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: isSelected ? colorScheme.primary : null,
+          children: [
+            ...QuizMode.values.map((mode) {
+              final isSelected = mode == currentMode;
+              return SimpleDialogOption(
+                onPressed: () {
+                  ref.read(userPreferencesProvider.notifier).setQuizMode(mode);
+                  Navigator.of(context).pop();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              mode.label,
+                              style: textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: isSelected ? colorScheme.primary : null,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            mode.description,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
+                            const SizedBox(height: 2),
+                            Text(
+                              mode.description,
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
+                      ),
+                      if (isSelected)
+                        Icon(Icons.check, color: colorScheme.primary, size: 20),
+                    ],
+                  ),
+                ),
+              );
+            }),
+            const Divider(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: FilledButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => QuizScreen(
+                        mode: currentMode,
+                        customTitle: '${currentMode.label} Testi',
+                        limit: 10,
                       ),
                     ),
-                    if (isSelected)
-                      Icon(Icons.check, color: colorScheme.primary, size: 20),
-                  ],
-                ),
+                  );
+                },
+                icon: const Icon(LucideIcons.play, size: 16),
+                label: const Text('Bu Modla Hemen 10 Soru Çöz'),
               ),
-            );
-          }).toList(),
+            ),
+          ],
         );
       },
     );
@@ -257,6 +281,13 @@ class ProfileScreen extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.tune_outlined),
                 title: const Text('Soru Çözüm Modu'),
+                subtitle: Text(
+                  prefs.defaultQuizMode == QuizMode.learning
+                      ? 'Anında doğru/yanlış ve açıklama'
+                      : 'Sınav mantığıyla optik gizli çözüm',
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: colorScheme.onSurfaceVariant),
+                ),
                 trailing: Text(_quizModeLabel(prefs.defaultQuizMode)),
                 onTap: () =>
                     _showQuizModeDialog(context, ref, prefs.defaultQuizMode),
