@@ -45,140 +45,149 @@ class HomeScreen extends ConsumerWidget {
         ],
         const SizedBox(height: 16),
         const SectionTitle('Çalışma türleri'),
-        // 2x2 Tactile Bento Grid
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: _StudyTypeTile(
-                icon: LucideIcons.target,
-                title: 'Konu testi',
-                description: 'Bir konu seç, 10-20 soruluk test çöz.',
-                badgeText: '10-20 Soru',
-                actionText: 'Başla',
-                accentColor: colorScheme.primary,
-                accentContainerColor: colorScheme.primaryContainer,
-                onAccentContainerColor: colorScheme.onPrimaryContainer,
-                onTap: () {
-                  Navigator.of(
-                    context,
-                  ).push(MaterialPageRoute(builder: (_) => const QuizScreen()));
-                },
+        // 2x2 Tactile Bento Grid (Eşit kart yüksekliği ve justify-between hizalama)
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _StudyTypeTile(
+                  icon: LucideIcons.target,
+                  title: 'Konu testi',
+                  description: 'Bir konu seç, 10-20 soruluk test çöz.',
+                  badgeText: '10-20 Soru',
+                  actionText: 'Başla',
+                  accentColor: colorScheme.primary,
+                  accentContainerColor: colorScheme.primaryContainer,
+                  onAccentContainerColor: colorScheme.onPrimaryContainer,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const QuizScreen()),
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _StudyTypeTile(
-                icon: LucideIcons.layers,
-                title: 'Bilgi kartları',
-                description: 'Önünde soru, arkasında cevap. Hızlı tekrar için.',
-                badgeText: 'Hızlı Tekrar',
-                actionText: 'Başla',
-                accentColor: colorScheme.tertiary,
-                accentContainerColor: colorScheme.tertiaryContainer,
-                onAccentContainerColor: colorScheme.onTertiaryContainer,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const FlashcardsScreen()),
-                  );
-                },
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StudyTypeTile(
+                  icon: LucideIcons.layers,
+                  title: 'Bilgi kartları',
+                  description:
+                      'Önünde soru, arkasında cevap. Hızlı tekrar için.',
+                  badgeText: 'Hızlı Tekrar',
+                  actionText: 'Başla',
+                  accentColor: colorScheme.tertiary,
+                  accentContainerColor: colorScheme.tertiaryContainer,
+                  onAccentContainerColor: colorScheme.onTertiaryContainer,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const FlashcardsScreen(),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 12),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: _StudyTypeTile(
-                icon: LucideIcons.bookmark,
-                title: 'Yanlış defteri',
-                description: 'Yanlış yaptığın soruları tekrar çöz.',
-                badgeText: 'Akıllı Havuz',
-                actionText: 'Başla',
-                accentColor: colorScheme.error,
-                accentContainerColor: colorScheme.errorContainer,
-                onAccentContainerColor: colorScheme.onErrorContainer,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const MistakesScreen()),
-                  );
-                },
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _StudyTypeTile(
+                  icon: LucideIcons.bookmark,
+                  title: 'Yanlış defteri',
+                  description: 'Yanlış yaptığın soruları tekrar çöz.',
+                  badgeText: 'Akıllı Havuz',
+                  actionText: 'Başla',
+                  accentColor: colorScheme.error,
+                  accentContainerColor: colorScheme.errorContainer,
+                  onAccentContainerColor: colorScheme.onErrorContainer,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const MistakesScreen()),
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _StudyTypeTile(
-                icon: LucideIcons.timer,
-                title: 'Deneme sınavı',
-                description:
-                    '60 soru, 65 dakika. Gerçek Genel Kültür sınav düzeni.',
-                badgeText: '65 Dakika',
-                actionText: 'Başla',
-                accentColor: colorScheme.secondary,
-                accentContainerColor: colorScheme.secondaryContainer,
-                onAccentContainerColor: colorScheme.onSecondaryContainer,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const QuizScreen(
-                        examDuration: Duration(minutes: 65),
-                        customTitle: 'Genel Kültür Denemesi',
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StudyTypeTile(
+                  icon: LucideIcons.timer,
+                  title: 'Deneme sınavı',
+                  description:
+                      '60 soru, 65 dakika. Gerçek Genel Kültür sınav düzeni.',
+                  badgeText: '65 Dakika',
+                  actionText: 'Başla',
+                  accentColor: colorScheme.secondary,
+                  accentContainerColor: colorScheme.secondaryContainer,
+                  onAccentContainerColor: colorScheme.onSecondaryContainer,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const QuizScreen(
+                          examDuration: Duration(minutes: 65),
+                          customTitle: 'Genel Kültür Denemesi',
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: 16),
         const SectionTitle('Etkileşimli Mini Oyunlar'),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: _StudyTypeTile(
-                icon: LucideIcons.zap,
-                title: '60 Saniyede Pençe',
-                description: 'Doğru / Yanlış hızlı düello ile kombo yap.',
-                badgeText: 'Kombo XP',
-                actionText: 'Düelloya Gir',
-                accentColor: colorScheme.tertiary,
-                accentContainerColor: colorScheme.tertiaryContainer,
-                onAccentContainerColor: colorScheme.onTertiaryContainer,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const TrueFalseBlitzScreen(),
-                    ),
-                  );
-                },
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: _StudyTypeTile(
+                  icon: LucideIcons.zap,
+                  title: '60 Saniyede Pençe',
+                  description: 'Doğru / Yanlış hızlı düello ile kombo yap.',
+                  badgeText: 'Kombo XP',
+                  actionText: 'Düelloya Gir',
+                  accentColor: colorScheme.tertiary,
+                  accentContainerColor: colorScheme.tertiaryContainer,
+                  onAccentContainerColor: colorScheme.onTertiaryContainer,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const TrueFalseBlitzScreen(),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _StudyTypeTile(
-                icon: LucideIcons.puzzle,
-                title: 'Kavram Eşleştir',
-                description:
-                    'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.',
-                badgeText: 'Hafıza Oyunu',
-                actionText: 'Eşleştir',
-                accentColor: colorScheme.primary,
-                accentContainerColor: colorScheme.primaryContainer,
-                onAccentContainerColor: colorScheme.onPrimaryContainer,
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const ConceptMatchScreen(),
-                    ),
-                  );
-                },
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StudyTypeTile(
+                  icon: LucideIcons.puzzle,
+                  title: 'Kavram Eşleştir',
+                  description:
+                      'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.',
+                  badgeText: 'Hafıza Oyunu',
+                  actionText: 'Eşleştir',
+                  accentColor: colorScheme.primary,
+                  accentContainerColor: colorScheme.primaryContainer,
+                  onAccentContainerColor: colorScheme.onPrimaryContainer,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const ConceptMatchScreen(),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -358,60 +367,73 @@ class _StudyTypeTile extends StatelessWidget {
       borderColor: effectiveAccent.withAlpha(110),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Üst Bölüm: İkon, Rozet, Başlık ve Açıklama (Üste hizalı)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: effectiveAccentContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: effectiveOnAccentContainer, size: 24),
-              ),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: effectiveAccentContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    badgeText,
-                    style: textTheme.labelSmall?.copyWith(
-                      color: effectiveOnAccentContainer,
-                      fontWeight: FontWeight.w800,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: effectiveAccentContainer,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    overflow: TextOverflow.ellipsis,
+                    child: Icon(
+                      icon,
+                      color: effectiveOnAccentContainer,
+                      size: 24,
+                    ),
                   ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: effectiveAccentContainer,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        badgeText,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: effectiveOnAccentContainer,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w800,
                 ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            title,
-            style: textTheme.titleMedium?.copyWith(
-              color: colorScheme.onSurface,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            description,
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
           const SizedBox(height: 10),
+          // Alt Bölüm: Aksiyon butonu (justify-between ile en alta sabitlenir)
           Row(
             children: [
               Text(
