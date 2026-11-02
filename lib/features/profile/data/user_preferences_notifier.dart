@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class UserPreferencesState {
   final bool isPro;
   final int dailyFreeQuestionLimit;
+  final int targetDailyStudyGoal;
   final ThemeMode themeMode;
   final int targetKpssScore;
   final String focusLesson;
@@ -15,6 +16,7 @@ class UserPreferencesState {
   const UserPreferencesState({
     this.isPro = false,
     this.dailyFreeQuestionLimit = 30,
+    this.targetDailyStudyGoal = 30,
     this.themeMode = ThemeMode.system,
     this.targetKpssScore = 85,
     this.focusLesson = 'Tarih',
@@ -24,6 +26,7 @@ class UserPreferencesState {
   UserPreferencesState copyWith({
     bool? isPro,
     int? dailyFreeQuestionLimit,
+    int? targetDailyStudyGoal,
     ThemeMode? themeMode,
     int? targetKpssScore,
     String? focusLesson,
@@ -33,6 +36,7 @@ class UserPreferencesState {
       isPro: isPro ?? this.isPro,
       dailyFreeQuestionLimit:
           dailyFreeQuestionLimit ?? this.dailyFreeQuestionLimit,
+      targetDailyStudyGoal: targetDailyStudyGoal ?? this.targetDailyStudyGoal,
       themeMode: themeMode ?? this.themeMode,
       targetKpssScore: targetKpssScore ?? this.targetKpssScore,
       focusLesson: focusLesson ?? this.focusLesson,
@@ -67,6 +71,9 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
   }
 
   /// Kullanıcının KPSS hedef puanını, odak dersini ve günlük soru hedefini kaydeder.
+  ///
+  /// [dailyGoalQuestions] kullanıcının ders çalışma hedefidir (örn. 50 soru);
+  /// freemium soru limiti [dailyFreeQuestionLimit] bundan bağımsız olarak korunur.
   void saveOnboardingGoals({
     required int targetKpssScore,
     required String focusLesson,
@@ -75,7 +82,7 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
     state = state.copyWith(
       targetKpssScore: targetKpssScore,
       focusLesson: focusLesson,
-      dailyFreeQuestionLimit: dailyGoalQuestions,
+      targetDailyStudyGoal: dailyGoalQuestions,
       hasCompletedOnboarding: true,
     );
   }

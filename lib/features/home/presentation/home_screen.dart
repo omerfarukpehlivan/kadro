@@ -29,13 +29,13 @@ class HomeScreen extends ConsumerWidget {
         MascotCoachBanner(
           mood: MascotMood.coach,
           title: 'Hoş geldin',
-          message: stats.totalSolved == 0
+          message: stats.dailySolvedCount == 0
               ? 'Ben Kadro Koçun! KPSS Genel Kültür maratonunda bugün ilk pençeyi hangi konuya atıyoruz?'
-              : 'Harika uçuş! Bugün ${stats.totalSolved} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',
+              : 'Harika uçuş! Bugün ${stats.dailySolvedCount} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',
         ),
         const SizedBox(height: 16),
         // Riverpod ile anlık güncellenen 3D Tactile günlük hedef kartı
-        _DailyGoalCard(solved: stats.totalSolved, goal: stats.dailyGoal),
+        _DailyGoalCard(solved: stats.dailySolvedCount, goal: stats.dailyGoal),
         const SizedBox(height: 16),
         // Akıllı KPSS Günlük Çalışma Planı Kompakt Kartı
         const HomeDailyPlanCard(),

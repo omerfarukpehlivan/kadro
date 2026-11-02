@@ -235,7 +235,8 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     try {
       final prefs = ref.read(userPreferencesProvider);
       final stats = ref.read(studyStatsProvider);
-      if (!prefs.isPro && stats.totalSolved >= prefs.dailyFreeQuestionLimit) {
+      if (!prefs.isPro &&
+          stats.dailySolvedCount >= prefs.dailyFreeQuestionLimit) {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
         return;

@@ -197,8 +197,12 @@ void main() {
         expect(container.read(userPreferencesProvider).targetKpssScore, 90);
         expect(container.read(userPreferencesProvider).focusLesson, 'Coğrafya');
         expect(
-          container.read(userPreferencesProvider).dailyFreeQuestionLimit,
+          container.read(userPreferencesProvider).targetDailyStudyGoal,
           50,
+        );
+        expect(
+          container.read(userPreferencesProvider).dailyFreeQuestionLimit,
+          30,
         );
       },
     );

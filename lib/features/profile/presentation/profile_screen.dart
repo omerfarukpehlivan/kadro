@@ -499,7 +499,7 @@ class _StudyGoalWizardCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Odak Ders: ${prefs.focusLesson} · Günlük Hedef: ${prefs.dailyFreeQuestionLimit} Soru',
+                      'Odak Ders: ${prefs.focusLesson} · Günlük Hedef: ${prefs.targetDailyStudyGoal} Soru',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),

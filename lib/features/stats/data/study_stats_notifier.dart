@@ -10,6 +10,8 @@ class StudyStatsState {
   final int totalCorrect;
   final int totalWrong;
   final int dailyGoal;
+  final int dailySolvedCount;
+  final DateTime? lastStudyDate;
   final Map<String, int> wrongByLesson;
   final Map<String, int> solvedByLesson;
   final Map<String, int> correctByLesson;
@@ -23,6 +25,8 @@ class StudyStatsState {
     this.totalCorrect = 0,
     this.totalWrong = 0,
     this.dailyGoal = 30,
+    this.dailySolvedCount = 0,
+    this.lastStudyDate,
     this.wrongByLesson = const {},
     this.solvedByLesson = const {},
     this.correctByLesson = const {},
@@ -88,6 +92,8 @@ class StudyStatsState {
     int? totalCorrect,
     int? totalWrong,
     int? dailyGoal,
+    int? dailySolvedCount,
+    DateTime? lastStudyDate,
     Map<String, int>? wrongByLesson,
     Map<String, int>? solvedByLesson,
     Map<String, int>? correctByLesson,
@@ -101,6 +107,8 @@ class StudyStatsState {
       totalCorrect: totalCorrect ?? this.totalCorrect,
       totalWrong: totalWrong ?? this.totalWrong,
       dailyGoal: dailyGoal ?? this.dailyGoal,
+      dailySolvedCount: dailySolvedCount ?? this.dailySolvedCount,
+      lastStudyDate: lastStudyDate ?? this.lastStudyDate,
       wrongByLesson: wrongByLesson ?? this.wrongByLesson,
       solvedByLesson: solvedByLesson ?? this.solvedByLesson,
       correctByLesson: correctByLesson ?? this.correctByLesson,
@@ -144,8 +152,40 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
 
     final earnedXp = isCorrect ? 15 : 5;
 
+    // Gün dönümü & seri (streak) hesaplaması
+    final now = DateTime.now();
+    int newDailySolved;
+    int newStreak = state.streakDays;
+
+    if (state.lastStudyDate == null) {
+      newDailySolved = 1;
+      newStreak = state.streakDays <= 0 ? 1 : state.streakDays;
+    } else {
+      final last = state.lastStudyDate!;
+      final isSameDay =
+          last.year == now.year &&
+          last.month == now.month &&
+          last.day == now.day;
+      if (isSameDay) {
+        newDailySolved = state.dailySolvedCount + 1;
+      } else {
+        newDailySolved = 1;
+        final todayMidnight = DateTime(now.year, now.month, now.day);
+        final lastMidnight = DateTime(last.year, last.month, last.day);
+        final diffDays = todayMidnight.difference(lastMidnight).inDays;
+        if (diffDays == 1) {
+          newStreak = state.streakDays + 1;
+        } else {
+          newStreak = 1;
+        }
+      }
+    }
+
     state = state.copyWith(
       totalSolved: state.totalSolved + 1,
+      dailySolvedCount: newDailySolved,
+      lastStudyDate: now,
+      streakDays: newStreak,
       totalCorrect: isCorrect ? state.totalCorrect + 1 : state.totalCorrect,
       totalWrong: !isCorrect ? state.totalWrong + 1 : state.totalWrong,
       wrongByLesson: newWrongByLesson,

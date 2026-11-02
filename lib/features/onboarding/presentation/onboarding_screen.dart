@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
+import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -33,6 +34,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           focusLesson: _selectedLesson,
           dailyGoalQuestions: _selectedDailyGoal,
         );
+
+    ref.read(studyStatsProvider.notifier).updateDailyGoal(_selectedDailyGoal);
 
     ref
         .read(studyPlannerProvider.notifier)

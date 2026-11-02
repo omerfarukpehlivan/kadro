@@ -252,5 +252,24 @@ void main() {
         expect(find.text('Aynı Dersten Yeni Test Çöz'), findsOneWidget);
       },
     );
+
+    test('Gün dönümü ve günlük çözülen soru takibi doğru çalışmalı', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final notifier = container.read(studyStatsProvider.notifier);
+
+      // İlk soru çözüldüğünde
+      notifier.recordAnswer(lesson: 'Tarih', isCorrect: true);
+      expect(container.read(studyStatsProvider).dailySolvedCount, 1);
+      expect(container.read(studyStatsProvider).totalSolved, 1);
+      expect(container.read(studyStatsProvider).streakDays, 1);
+
+      // Aynı gün 2. soru
+      notifier.recordAnswer(lesson: 'Tarih', isCorrect: false);
+      expect(container.read(studyStatsProvider).dailySolvedCount, 2);
+      expect(container.read(studyStatsProvider).totalSolved, 2);
+      expect(container.read(studyStatsProvider).streakDays, 1);
+    });
   });
 }
