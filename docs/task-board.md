@@ -71,6 +71,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-44** | **`QuizScreen` İki Yönlü Soru Gezintisi (Önceki/Sonraki Soru) & Zarif Yanlış Bildirimi** | Test içinde geriye doğru 1'e kadar ve ileriye doğru en son soruya gidebilme (`_userAnswers` geçmişi) + İlk yanlışta tek seferlik dismissible Koç bilgilendirme kartı | ✅ **Tamamlandı** (`64b1a2b`) |
 | **TASK-45** | **`MistakesScreen` Ders Bazlı Filtreleme & Derse Özel Yanlış Çözüm Akışı** | Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler sekme/çip filtreleri, her dersin yanlış sayısı rozeti ve sadece seçilen dersin yanlışlarını test olarak başlatma | ✅ **Tamamlandı** (`ae86af6`) |
 | **TASK-46** | **Kadro Çalışma Modları (Öğrenme/Anında Çözüm vs. Sınav/Gizli Çözüm & Zayıf Konu Testi)** | Anında doğru/yanlış gösteren öğrenme modu ile sonuçları karneye saklayan sınav modu; moda duyarlı geriye dönük şık değiştirme kuralı; zayıf konudan otomatik 10 soru çıkarma | ✅ **Tamamlandı** (`d62695b`) |
+| **TASK-47** | **Hatalı Soru Raporlama & Yönetici İnceleme Paneli (`question_reports` + Supabase + UI)** | Test esnasında kullanıcının hatalı soruyu tek tıkla sebep ve notla bildirmesi (`ReportQuestionBottomSheet`); Supabase tablosu ve yöneticinin ders/test/soru bazlı inceleme ekranı | ⏳ **Planlandı** |
 
 ---
 
@@ -2341,5 +2342,153 @@ ADIM 2: Zayıf Konu Testi
 
 ADIM 3: Test ve Doğrulama
 1. `test/quiz_screen_test.dart` içine mod testlerini ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+## 🚩 15. Dalga 15: Soru Kalitesi & Geri Bildirim Döngüsü (`TASK-47`)
+
+Kullanıcıların test çözerken karşılaştıkları hatalı/itirazlı soruları tek tıkla sebep ve açıklamayla birlikte bildirebilmesi, bu bildirimlerin bulutta Supabase `question_reports` tablosuna kaydedilmesi ve yöneticinin (içerik ekibinin) raporlanan soruları ders, konu, test ve soru metni bazında inceleyebilmesi için tam döngü görev paketi:
+
+---
+
+### 📦 TASK-47: Hatalı Soru Raporlama Sistemi (`ReportQuestionBottomSheet`), Supabase Tablosu & Yönetici İnceleme Paneli
+
+```text
+GÖREV: TASK-47 — Hatalı Soru Raporlama (QuizScreen Bayrak Butonu + ReportQuestionBottomSheet), Supabase question_reports Tablosu & Yönetici İnceleme Ekranı
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Sabit Color(0xFF...) veya sabit fontSize KULLANMA; tüm renkleri Theme.of(context).colorScheme ve yazı stillerini textTheme üzerinden al. `lib/shared/` altında `widgets/` dışında klasör açma! Kodların içine eğitici Türkçe doc comment'ler (`///`) ekle.
+
+ADIM 1: Veri Modeli (`lib/features/reports/data/models/question_report.dart`)
+1. `lib/features/reports/data/models/question_report.dart` dosyasını oluştur:
+   - Sınıf: `class QuestionReport`
+   - Alanlar:
+     - `final String id;`
+     - `final String? userId;`
+     - `final String questionId;`
+     - `final String lesson;`
+     - `final String topic;`
+     - `final String testTitle;`
+     - `final String questionText;`
+     - `final String reason;`
+     - `final String? userNote;`
+     - `final String status;` (varsayılan: `'pending'`)
+     - `final DateTime createdAt;`
+   - Constructor: `const QuestionReport({ ... })`
+   - Metotlar:
+     - `Map<String, dynamic> toJson()` (ve Supabase için `toMap()`)
+     - `factory QuestionReport.fromJson(Map<String, dynamic> json)`
+
+ADIM 2: Supabase Veritabanı Şeması (`docs/supabase_schema.sql`)
+1. `docs/supabase_schema.sql` dosyasının en altına aşağıdaki tablo ve RLS politikalarını ekle:
+   ```sql
+   -- ==============================================================================
+   -- 10. Hatalı Soru Raporları (question_reports)
+   -- ==============================================================================
+   create table if not exists public.question_reports (
+     id uuid primary key default gen_random_uuid(),
+     user_id uuid references auth.users(id) on delete set null,
+     question_id text not null,
+     lesson text not null,
+     topic text not null,
+     test_title text not null,
+     question_text text not null,
+     reason text not null,
+     user_note text,
+     status text not null default 'pending', -- 'pending', 'resolved', 'dismissed'
+     created_at timestamptz default now()
+   );
+
+   alter table public.question_reports enable row level security;
+
+   -- Herkes (giriş yapmış veya misafir) soru bildirebilir
+   create policy "Anyone can submit question report"
+     on public.question_reports for insert
+     with check (true);
+
+   -- Raporları sadece kullanıcı kendi raporunu okuyabilir veya admin tümünü okuyabilir
+   create policy "Users can read their own reports or admin all"
+     on public.question_reports for select
+     using (auth.uid() = user_id or auth.jwt()->>'role' = 'service_role');
+   ```
+
+ADIM 3: Raporlama Repository (`lib/features/reports/data/question_report_repository.dart`)
+1. `lib/features/reports/data/question_report_repository.dart` dosyasını oluştur:
+   - Sınıf: `class QuestionReportRepository`
+   - Metotlar:
+     - `Future<bool> submitReport(QuestionReport report)`:
+       - `SupabaseConfig.clientOrNull` üzerinden `from('question_reports').insert(...)` çağırır.
+       - Hata alırsa veya çevrimdışıysa sessizce yakalar (offline fallback), yerel log yazar ve yine de `true` döner (kullanıcı deneyimini bozmaz).
+     - `Future<List<QuestionReport>> fetchPendingReports()`:
+       - `SupabaseConfig.clientOrNull` varsa `from('question_reports').select().order('created_at', ascending: false)` ile bekleyen raporları çeker.
+
+ADIM 4: Kullanıcı Raporlama Alt Sayfası (`lib/features/reports/presentation/report_question_bottom_sheet.dart`)
+1. `lib/features/reports/presentation/report_question_bottom_sheet.dart` dosyasını oluştur:
+   - Sınıf: `class ReportQuestionBottomSheet extends StatefulWidget`
+   - Parametreler: `final Question question;`, `final String testTitle;`, `final QuestionReportRepository? repository;`
+   - Başlık: `Hatalı Soru Bildir` ve sağda kapat butonu.
+   - Soru Bağlam Özeti:
+     - `lesson` ve `topic` etiketleri (chip şeklinde)
+     - `testTitle` bilgisi
+     - Sorunun ilk 80 karakteri (`...` ile kesilmiş)
+   - Hazır Rapor Sebepleri (`ChoiceChip` veya liste):
+     - `'Cevap anahtarı hatalı'`
+     - `'Soru kökünde / öncüllerde bilgi hatası'`
+     - `'Birden fazla doğru şık var'`
+     - `'Çözüm açıklaması yetersiz / yanlış'`
+     - `'Yazım / İmla hatası'`
+     - `'Diğer'`
+   - İsteğe Bağlı Açıklama Alanı (`TextField` - 3 satır, `maxLines: 3`, `maxLength: 250`, hint: `'Detay eklemek ister misiniz? (Opsiyonel)'`)
+   - Gönder Butonu (`FilledButton.icon(icon: Icon(LucideIcons.send), label: Text('Bildirimi Gönder'))`):
+     - Raporu `QuestionReportRepository.submitReport` ile iletir.
+     - `Navigator.of(context).pop();` yapar.
+     - `ScaffoldMessenger.of(context).showSnackBar` ile kullanıcıya zarif teşekkür iletir: `"Bildirimin için teşekkürler! Soru incelemeye alındı."`
+
+ADIM 5: `QuizScreen` (`lib/features/quiz/presentation/quiz_screen.dart`) AppBar Entegrasyonu
+1. `QuizScreen` AppBar `actions` listesine bir buton ekle:
+   ```dart
+   IconButton(
+     icon: const Icon(LucideIcons.flag, size: 20),
+     tooltip: 'Hatalı Soru Bildir',
+     onPressed: () {
+       showModalBottomSheet<void>(
+         context: context,
+         isScrollControlled: true,
+         backgroundColor: Theme.of(context).colorScheme.surface,
+         shape: const RoundedRectangleBorder(
+           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+         ),
+         builder: (ctx) => Padding(
+           padding: EdgeInsets.only(
+             bottom: MediaQuery.of(ctx).viewInsets.bottom,
+           ),
+           child: ReportQuestionBottomSheet(
+             question: _currentQuestion,
+             testTitle: widget.customTitle ?? '${_currentQuestion.lesson} Testi',
+           ),
+         ),
+       );
+     },
+   ),
+   ```
+
+ADIM 6: Yönetici İnceleme Ekranı (`lib/features/reports/presentation/admin_reports_screen.dart`) & Profil Menüsü
+1. `lib/features/reports/presentation/admin_reports_screen.dart` dosyasını oluştur:
+   - Geliştirici / içerik editörü olarak senin raporlanan soruları dersine, testine, soru metnine ve kullanıcının belirttiği sebebe göre görebileceğin temiz bir liste ekranı (`AdminReportsScreen`).
+   - Her kartta:
+     - `Ders` ve `Konu` rozeti (örn: `Tarih · İlk Türk Devletleri`)
+     - `Test Başlığı` (örn: `Genel Kültür Denemesi` veya `Tarih Konu Testi`)
+     - `Rapor Sebebi` ve varsa `Kullanıcı Notu`
+     - `Soru Metni` (tam metin)
+2. `lib/features/profile/presentation/profile_screen.dart` içinde en alt kısma (Uygulama veya Geliştirici bölümüne):
+   - `ListTile(leading: Icon(LucideIcons.shieldAlert), title: Text('Hatalı Soru Raporları (İçerik Editörü)'), onTap: () => Navigator.push(... AdminReportsScreen))` ekle.
+
+ADIM 7: Birim & Widget Testleri (`test/question_report_test.dart`)
+1. `test/question_report_test.dart` dosyasını oluştur:
+   - `QuestionReport` modelinin `toJson()` ve `fromJson()` serileştirmesini test et.
+   - `QuizScreen` açıldığında AppBar'da bayrak butonunun (`LucideIcons.flag`) render edildiğini doğrula.
+   - Bayrak butonuna tıklandığında `ReportQuestionBottomSheet` bileşeninin ve sebep seçeneklerinin ekrana geldiğini doğrula.
+   - Bir sebep seçilip "Bildirimi Gönder" butonuna basıldığında alt sayfanın kapandığını ve başarı mesajının gösterildiğini doğrula.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
