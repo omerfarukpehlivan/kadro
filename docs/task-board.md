@@ -57,7 +57,10 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-30** | **3 Adımlı Kişiselleştirilmiş KPSS Hedef Sihirbazı (`OnboardingScreen`) & Odak Ders Koçluğu** | Kadro Koçu eşliğinde Hedef KPSS Puanı (`80+`, `85+`, `90+`), Odak Ders ve Günlük Soru Hedefi seçimi (`OnboardingScreen`), seçilen odak derse göre otomatik çalışma görevi ataması ve `ProfileScreen` hedef kartı | ✅ **Tamamlandı** (`c27bb9c`) |
 | **TASK-31** | **Yüksek Kontrastlı Renk Paleti (`AppTheme`), Opak Yüzeyli `TactileCard` & Ferah `MascotCoachBanner` Revizyonu** | `TactileCard` içindeki şeffaf zemin + `BoxShadow` renk sızması hatasının `Color.alphaBlend` ile giderilmesi, `AppTheme` içinde `secondary` rengin siyah (`#0F172A`) yerine canlı Zümrüt/Teal (`#0D9488`) yapılması, `on*Container` WCAG AAA kontrast çiftlerinin tanımlanması ve `MascotCoachBanner`'ın yüksek okunaklı yüzeye kavuşturulması | ✅ **Tamamlandı** |
 | **TASK-32** | **`HomeScreen` Bento Kartları & `LessonsScreen` / `LessonTopicsScreen` Kart Kontrast ve Renk Uyumu Düzeltmesi** | `HomeScreen` 2x2 Bento ve Mini Oyun kartlarındaki kirli yarı-saydam arka planların kaldırılıp saf opak kart zemini (`surface`) + yüksek kontrastlı `Container/onContainer` rozet çiftlerine geçilmesi, `LessonsScreen` ve `LessonTopicsScreen` kartlarının netleştirilmesi | ✅ **Tamamlandı** |
-| **TASK-33** | **`QuizScreen`, `FlashcardsScreen`, `StatsScreen`, `ProfileScreen` & Oyun Ekranları Kart Bütünlüğü ve Kontrast Cilası** | Tüm ekranlardaki düz `Card` ve `TactileCard` bileşenlerinde yazı (`onSurface` / `onSurfaceVariant` / `on*Container`) ve arka plan (`surface` / `*Container`) uyumunun %100 standartlaştırılması | ✅ **Tamamlandı** |
+| **TASK-33** | **`QuizScreen`, `FlashcardsScreen`, `StatsScreen`, `ProfileScreen` & Oyun Ekranları Kart Bütünlüğü ve Kontrast Cilası** | Tüm ekranlardaki düz `Card` ve `TactileCard` bileşenlerinde yazı (`onSurface` / `onSurfaceVariant` / `on*Container`) ve arka plan (`surface` / `*Container`) uyumunun %100 standartlaştırılması | ✅ **Tamamlandı** (`1f77473`) |
+| **TASK-34** | **Zengin Deneme Sınavı Merkezi (`ExamsScreen` Prova Paketleri) & `QuizScreen` Tam Havuz (`fetchAllFromPool`) Bağlantısı** | `ExamsScreen` içine 3 farklı deneme paketi (Türkiye Geneli 65 Dk Prova, Tarih & Coğrafya Kamp Denemesi, 15 Dk Hızlı Mola Denemesi) eklenmesi ve `QuizScreen` üzerinden tüm bulut/yerel soru havuzunun çekilmesi | ⏳ **Sırada** |
+| **TASK-35** | **Yanlış Defteri Bulut Çözüm Senkronizasyonu (`is_resolved_in_mistakes`) & Ders Filtreli Hap Bilgi Kartları (`FlashcardsScreen` + XP)** | Yanlış defterinde doğru çözülen soruların Supabase `public.question_attempt_logs` üzerinde çözüldü işaretlenmesi, `FlashcardsScreen` içine 4 ders filtresi ve öğrenilen kart başına `+10 XP` ödülü eklenmesi | ⏳ **Sırada** |
+| **TASK-36** | **KPSS Başarım Rozetleri (`Achievements`) & Haftalık Kadro Lig Sıralaması (`Leaderboard` — Supabase `public.profiles`)** | `StatsScreen` üzerine kullanıcının ilerlemesine göre açılan 5 KPSS Başarım Rozeti (`İlk Pençe`, `Seri Ateşi`, `Keskin Nişancı`, `Deneme Fatihi`, `Kadro Ustası`) ve Supabase `public.profiles` tablosundan beslenen Haftalık Kadro Lig Sıralaması kartının eklenmesi | ⏳ **Sırada** |
 
 ---
 
@@ -1984,4 +1987,152 @@ ADIM 3: `ProfileScreen` (`lib/features/profile/presentation/profile_screen.dart`
 
 ADIM 4: Doğrulama
 1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+
+---
+
+## 🏆 12. Dalga 12: Zengin Deneme Sınavı Merkezi, Ders Filtreli Hap Kartlar (+XP), Yanlış Defteri Bulut Çözümü & KPSS Başarım/Liderlik Sistemi (`TASK-34`, `TASK-35`, `TASK-36`)
+
+---
+
+### 📦 TASK-34: Zengin Deneme Sınavı Merkezi (`ExamsScreen` Prova Paketleri) & `QuizScreen` Tam Havuz (`fetchAllFromPool`) Bağlantısı
+
+```text
+GÖREV: TASK-34 — ExamsScreen Deneme Paketleri (Türkiye Geneli Prova, Tarih/Coğrafya Kamp Denemesi, 15 Dk Hızlı Mola Denemesi) ve QuizScreen `fetchAllFromPool` Entegrasyonu
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. Mevcut testlerde aranan metinleri ('Deneme sınavları', 'Sınav düzeni', 'Soru sayısı', '60', 'Süre', '65 dakika', 'Net hesabı', '4 yanlış 1 doğruyu götürür', 'Genel Kültür Denemesi Başlat') BİREBİR koru.
+
+ADIM 1: `QuizScreen` (`lib/features/quiz/presentation/quiz_screen.dart`) Tam Havuz Yükleme Desteği
+1. `QuizScreen` sınıfına opsiyonel `final bool fetchAllFromPool;` (varsayılan `false`) parametresi ekle:
+   - `initState()` içinde:
+     ```dart
+     if (widget.questions != null && widget.questions!.isNotEmpty) {
+       _questions = widget.questions!;
+     } else {
+       _questions = defaultSampleQuestions;
+       if (widget.fetchAllFromPool ||
+           widget.lessonFilter != null ||
+           widget.topicFilter != null) {
+         _isLoading = true;
+         _fetchFilteredQuestions();
+       }
+     }
+     ```
+   - Böylece `const QuizScreen()` (argümansız çağrıldığında) birim testlerde senkron olarak 3 soruluk `defaultSampleQuestions` ile çalışmaya devam ederken, `fetchAllFromPool: true` verildiğinde Supabase / `sample_questions.json` içindeki tüm soru havuzunu çeker!
+
+ADIM 2: `ExamsScreen` (`lib/features/exams/presentation/exams_screen.dart`) Deneme Paketleri Vitrini
+1. `lib/features/exams/presentation/exams_screen.dart` içinde mevcut `MascotCoachBanner`, `'Sınav düzeni'` `TactileCard`'ı (`60`, `65 dakika`, `4 yanlış 1 doğruyu götürür`) ve `'Genel Kültür Denemesi Başlat'` (`FilledButton.icon`) bileşenlerini koruyarak, altına **`const SectionTitle('Hazır Deneme Paketleri')`** ve 3 adet yüksek kontrastlı `_ExamPackCard` (`TactileCard`) ekle:
+   - **Paket 1:**
+     - `title: 'Türkiye Geneli Genel Kültür Provası #1'`
+     - `subtitle: 'Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler karma sınav provası'`
+     - `badgeText: '65 Dakika'`
+     - `icon: LucideIcons.award`
+     - Tıklandığında: `QuizScreen(examDuration: const Duration(minutes: 65), fetchAllFromPool: true, customTitle: 'TG Genel Kültür Provası #1')`
+   - **Paket 2:**
+     - `title: 'Tarih & Coğrafya Lokomotif Kamp Denemesi'`
+     - `subtitle: 'Sınavın %75 ağırlığını oluşturan Tarih odaklı yoğun kamp testi'`
+     - `badgeText: '40 Dakika'`
+     - `icon: LucideIcons.flame`
+     - Tıklandığında: `QuizScreen(examDuration: const Duration(minutes: 40), lessonFilter: 'Tarih', customTitle: 'Tarih Kamp Denemesi')`
+   - **Paket 3:**
+     - `title: '15 Dakika Hızlı Mola Denemesi'`
+     - `subtitle: 'Molada veya yolda hızlı net ve süre kontrolü'`
+     - `badgeText: '15 Dakika'`
+     - `icon: LucideIcons.zap`
+     - Tıklandığında: `QuizScreen(examDuration: const Duration(minutes: 15), fetchAllFromPool: true, customTitle: 'Hızlı Mola Denemesi')`
+
+ADIM 3: Test ve Doğrulama
+1. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-35: Yanlış Defteri Bulut Çözüm Senkronizasyonu (`is_resolved_in_mistakes`) & Ders Filtreli Hap Bilgi Kartları (`FlashcardsScreen` + XP)
+
+```text
+GÖREV: TASK-35 — Yanlış Defterinde Çözülen Soruların Supabase (`public.question_attempt_logs`) Üzerinde Güncellenmesi ve FlashcardsScreen Ders Filtresi + XP Ödülü
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. TASK-34 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `CloudSyncRepository` (`lib/features/stats/data/cloud_sync_repository.dart`) Yanlış Çözüm Güncellemesi
+1. `lib/features/stats/data/cloud_sync_repository.dart` içine şu metodu ekle:
+   ```dart
+   /// Yanlış defterindeki bir soru doğru çözüldüğünde veya silindiğinde
+   /// Supabase `public.question_attempt_logs` tablosunda `is_resolved_in_mistakes = true` yapar.
+   Future<void> markMistakeResolved({required String questionText}) async {
+     final client = SupabaseConfig.clientOrNull;
+     final userId = client?.auth.currentUser?.id;
+     if (client == null || userId == null) return;
+
+     try {
+       await client
+           .from('question_attempt_logs')
+           .update({'is_resolved_in_mistakes': true})
+           .eq('user_id', userId)
+           .eq('question_text', questionText);
+     } catch (e) {
+       debugPrint('Supabase markMistakeResolved hatası: $e');
+     }
+   }
+   ```
+2. `lib/features/quiz/presentation/quiz_screen.dart` içinde `_submitAnswer()` metodunda soru doğru çözüldüğünde (`if (isCorrect)` bloğunda `widget.mistakeRepository.removeMistake(_currentQuestion.id);` satırının yanında) `const CloudSyncRepository().markMistakeResolved(questionText: _currentQuestion.text);` çağır.
+
+ADIM 2: `sample_flashcards.dart` Zenginleştirmesi & `FlashcardsScreen` Ders Filtresi + XP Kazanımı
+1. `lib/features/flashcards/data/sample_flashcards.dart` dosyasına mevcut kartları koruyarak 4 dersi (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`) kapsayacak şekilde en az 4 yeni özgün KPSS bilgi kartı daha ekle.
+2. `lib/features/flashcards/presentation/flashcards_screen.dart` içinde `FlashcardsScreen` sınıfını `ConsumerStatefulWidget` / `ConsumerState<FlashcardsScreen>` yapısına dönüştür:
+   - `String _selectedLesson = 'Tümü';` (`'Tümü'`, `'Tarih'`, `'Coğrafya'`, `'Vatandaşlık'`, `'Güncel Bilgiler'`) filtre durumu ekle.
+   - `List<Flashcard> get _filteredCards`: `_selectedLesson == 'Tümü'` ise `widget.flashcards`, değilse ders filtreli liste döner (boşsa `widget.flashcards` döner).
+   - Ekranın en üstüne yatay kaydırılabilir `ChoiceChip` ders filtre şeridi ekle; ders değiştiğinde `_currentIndex = 0; _isBackVisible = false;` sıfırlansın.
+   - `_onLearned()` metodunda kullanıcı `'Biliyorum'` butonuna bastığında `try { ref.read(studyStatsProvider.notifier).recordAnswer(lesson: _currentCard.lesson, topic: _currentCard.topic, isCorrect: true, timeSpentSeconds: 10); } catch (_) {}` çağırarak hem o dersin istatistiğine hem de kullanıcının XP puanına katkı sağla!
+
+ADIM 3: Test ve Doğrulama
+1. `test/cloud_sync_test.dart` içine `markMistakeResolved` metodunun offline-safe çalıştığını doğrulayan testi ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-36: KPSS Başarım Rozetleri (`Achievements`) & Haftalık Kadro Lig Sıralaması (`Leaderboard` — Supabase `public.profiles`)
+
+```text
+GÖREV: TASK-36 — StatsScreen Üzerine KPSS Başarım Rozetleri (Achievements) ve Supabase `public.profiles` Destekli Haftalık Kadro Lig Sıralaması (Leaderboard) Eklenmesi
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...), Colors.* veya sabit fontSize KULLANMA. TASK-35 tamamlandıktan sonra bu görevi uygula.
+
+ADIM 1: `CloudSyncRepository` (`lib/features/stats/data/cloud_sync_repository.dart`) Liderlik Tablosu Sorgusu
+1. `lib/features/stats/data/cloud_sync_repository.dart` içine `LeaderboardEntry` modeli ve `fetchLeaderboard()` metodunu ekle:
+   ```dart
+   class LeaderboardEntry {
+     final String displayName;
+     final int totalXp;
+     final String leagueTier;
+
+     const LeaderboardEntry({
+       required this.displayName,
+       required this.totalXp,
+       required this.leagueTier,
+     });
+   }
+   ```
+   - `Future<List<LeaderboardEntry>> fetchLeaderboard()`:
+     - `SupabaseConfig.clientOrNull` aktifse `public.profiles` tablosundan `.select('display_name, total_xp, league_tier').order('total_xp', ascending: false).limit(5)` sorgusunu çalıştırır ve `List<LeaderboardEntry>` döndürür (boş dönerse veya offline ise aşağıdaki varsayılan aday listesini döndürür):
+       1. `'Zeynep K. (90+ Hedef)'` — `640 XP` (`'Altın Kadro'`)
+       2. `'Burak T. (Merkez Kadro)'` — `420 XP` (`'Gümüş Kadro'`)
+       3. `'Elif A. (A Grubu)'` — `285 XP` (`'Gümüş Kadro'`)
+       4. `'Mert D. (Memur Adayı)'` — `140 XP` (`'Bronz Kadro'`)
+
+ADIM 2: `StatsScreen` (`lib/features/stats/presentation/stats_screen.dart`) — Başarım Rozetleri & Lig Sıralaması Kartları
+1. `lib/features/stats/presentation/stats_screen.dart` içine (`_MasteryHeatmapCard` altına):
+   - **1. `_AchievementsCard(stats: stats)` (`TactileCard`):**
+     - Başlık: `'KPSS Başarım Rozetleri'`
+     - 4 adet rozet satırı veya 2x2 kutu (açık olanlar `primaryContainer` / `tertiaryContainer` vurgulu, kilitli olanlar `surfaceContainerHighest` + `LucideIcons.lock`):
+       1. `'İlk Pençe'` (`stats.totalSolved >= 1`): `'İlk KPSS sorunu çözdün'`
+       2. `'Keskin Nişancı'` (`stats.accuracyPercent >= 70 && stats.totalSolved >= 3`): `'%70 ve üzeri doğruluk oranı'`
+       3. `'Deneme Fatihi'` (`stats.sessionHistory.isNotEmpty`): `'İlk test veya deneme oturumunu tamamladın'`
+       4. `'Gümüş Kadro Adayı'` (`stats.totalXp >= 200`): `'200+ XP barajını aştın'`
+   - **2. `_LeaderboardCard(stats: stats)` (`TactileCard`):**
+     - Başlık: `'Haftalık Kadro Lig Sıralaması'`
+     - Örnek aday listesi ile kullanıcının kendi puanını (`'Sen (Kadro Adayı)'`, `stats.totalXp`, `stats.leagueTier`) birleştirip `totalXp`'ye göre büyükten küçüğe sıralar ve ilk 5 sırayı `1.`, `2.`, `3.` rozetleriyle listeler; kullanıcının kendi satırını `primaryContainer` arka planıyla vurgular!
+
+ADIM 3: Test ve Doğrulama
+1. `test/study_stats_test.dart` içine `StatsScreen` üzerinde `'KPSS Başarım Rozetleri'` ve `'Haftalık Kadro Lig Sıralaması'` başlıklarının render edildiğini doğrulayan kontrolü ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
