@@ -11,9 +11,10 @@ import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
 import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
-import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Varsayılan olarak gösterilen 3 özgün KPSS Lisans Genel Kültür sorusu.
 const List<Question> defaultSampleQuestions = [
@@ -107,6 +108,15 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   Timer? _timer;
   int _remainingSeconds = 0;
 
+  // İki yönlü soru gezintisi (1..N) için soru durumu hafızası
+  final Map<int, int?> _userAnswers = {};
+  final Map<int, bool> _answeredStatus = {};
+  int _maxReachedIndex = 0;
+
+  // Yanlış Defteri bilgilendirme kartının tek seferlik gösterim durumu
+  bool _hasDismissedMistakeNotice = false;
+  bool _showMistakeNotice = false;
+
   Question get _currentQuestion => _questions[_currentIndex];
   bool get _isLastQuestion => _currentIndex == _questions.length - 1;
 
@@ -193,6 +203,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
     setState(() {
       _selectedOptionIndex = index;
+      _userAnswers[_currentIndex] = index;
     });
   }
 
@@ -217,6 +228,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
     setState(() {
       _isAnswered = true;
+      _answeredStatus[_currentIndex] = true;
+      _userAnswers[_currentIndex] = _selectedOptionIndex;
+
       if (isCorrect) {
         _correctCount++;
         widget.mistakeRepository.removeMistake(_currentQuestion.id);
@@ -226,17 +240,31 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       } else {
         _wrongCount++;
         widget.mistakeRepository.addMistake(_currentQuestion);
+        if (!_hasDismissedMistakeNotice) {
+          _showMistakeNotice = true;
+        }
       }
     });
+  }
 
-    if (!isCorrect) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Bu soru Yanlış Defteri listene eklendi.'),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-    }
+  void _previousQuestion() {
+    if (_currentIndex <= 0) return;
+    setState(() {
+      _currentIndex--;
+      _selectedOptionIndex = _userAnswers[_currentIndex];
+      _isAnswered = _answeredStatus[_currentIndex] ?? false;
+      _showMistakeNotice = false;
+    });
+  }
+
+  void _goToNextQuestion() {
+    if (_currentIndex >= _maxReachedIndex) return;
+    setState(() {
+      _currentIndex++;
+      _selectedOptionIndex = _userAnswers[_currentIndex];
+      _isAnswered = _answeredStatus[_currentIndex] ?? false;
+      _showMistakeNotice = false;
+    });
   }
 
   void _nextQuestion() {
@@ -255,8 +283,12 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
     setState(() {
       _currentIndex++;
-      _selectedOptionIndex = null;
-      _isAnswered = false;
+      if (_currentIndex > _maxReachedIndex) {
+        _maxReachedIndex = _currentIndex;
+      }
+      _selectedOptionIndex = _userAnswers[_currentIndex];
+      _isAnswered = _answeredStatus[_currentIndex] ?? false;
+      _showMistakeNotice = false;
     });
   }
 
@@ -312,11 +344,16 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     final question = _currentQuestion;
 
     // Alt butonun fonksiyonu, ikonu ve metnini duruma göre belirliyoruz
+    final isAtHistory = _currentIndex < _maxReachedIndex;
     final VoidCallback? buttonAction;
     final IconData buttonIcon;
     final String buttonLabel;
 
-    if (!_isAnswered) {
+    if (isAtHistory) {
+      buttonAction = _goToNextQuestion;
+      buttonIcon = LucideIcons.arrowRight;
+      buttonLabel = 'Sonraki Soru';
+    } else if (!_isAnswered) {
       buttonAction = _selectedOptionIndex != null ? _submitAnswer : null;
       buttonIcon = Icons.check_circle_outline;
       buttonLabel = 'Cevabı Onayla';
@@ -375,12 +412,48 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             const SizedBox(height: 16),
           ],
 
-          // Aksiyon Butonu (Onayla / Sonraki Soru / Testi Bitir)
-          FilledButton.icon(
-            onPressed: buttonAction,
-            icon: Icon(buttonIcon),
-            label: Text(buttonLabel),
-          ),
+          // Zarif Yanlış Defteri Bilgilendirme Kartı (Tek seferlik / kapatılabilir)
+          if (_showMistakeNotice && !_hasDismissedMistakeNotice) ...[
+            _MistakeNoticeCard(
+              onDismiss: () {
+                setState(() {
+                  _showMistakeNotice = false;
+                  _hasDismissedMistakeNotice = true;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+          ],
+
+          // Aksiyon Butonları (Önceki Soru + Birincil Buton)
+          if (_currentIndex > 0)
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: OutlinedButton.icon(
+                    onPressed: _previousQuestion,
+                    icon: const Icon(LucideIcons.arrowLeft, size: 18),
+                    label: const Text('Önceki Soru'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 3,
+                  child: FilledButton.icon(
+                    onPressed: buttonAction,
+                    icon: Icon(buttonIcon),
+                    label: Text(buttonLabel),
+                  ),
+                ),
+              ],
+            )
+          else
+            FilledButton.icon(
+              onPressed: buttonAction,
+              icon: Icon(buttonIcon),
+              label: Text(buttonLabel),
+            ),
         ],
       ),
     );
@@ -458,6 +531,71 @@ class _QuestionCard extends StatelessWidget {
           height: 1.5,
           fontWeight: FontWeight.w600,
         ),
+      ),
+    );
+  }
+}
+
+/// Kullanıcı ilk yanlışını yaptığında çıkan tek seferlik zarif Koç bilgilendirme kartı.
+class _MistakeNoticeCard extends StatelessWidget {
+  final VoidCallback onDismiss;
+
+  const _MistakeNoticeCard({required this.onDismiss});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.primary.withAlpha(120),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              LucideIcons.bookmarkCheck,
+              size: 20,
+              color: colorScheme.onPrimaryContainer,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Yanlış Defterine Eklendi',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Bu soru Ana Sayfa > Yanlış Defteri\'ne eklendi. Eksiklerini kapatmak için dilediğin zaman oradan tekrar çözebilirsin.',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(LucideIcons.x, size: 18),
+            color: colorScheme.onSurfaceVariant,
+            tooltip: 'Kapat',
+            onPressed: onDismiss,
+          ),
+        ],
       ),
     );
   }

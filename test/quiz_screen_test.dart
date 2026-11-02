@@ -51,7 +51,7 @@ void main() {
     });
 
     testWidgets(
-      'Cevabı Onayla butonuna basıldığında Çözüm Açıklaması ve SnackBar görünmeli',
+      'Cevabı Onayla butonuna basıldığında Çözüm Açıklaması ve Yanlış Defteri Kartı görünmeli',
       (WidgetTester tester) async {
         tester.view.physicalSize = const Size(1080, 2400);
         tester.view.devicePixelRatio = 1.0;
@@ -75,9 +75,10 @@ void main() {
         expect(find.text('Çözüm Açıklaması'), findsOneWidget);
         expect(find.textContaining('Kut inancı'), findsOneWidget);
 
-        // Yanlış cevap verildiği için SnackBar çıktığını doğrula
+        // Yanlış cevap verildiği için zarif Yanlış Defteri kartı çıktığını doğrula
+        expect(find.text('Yanlış Defterine Eklendi'), findsOneWidget);
         expect(
-          find.text('Bu soru Yanlış Defteri listene eklendi.'),
+          find.textContaining('Bu soru Ana Sayfa > Yanlış Defteri'),
           findsOneWidget,
         );
       },
@@ -197,5 +198,47 @@ void main() {
         expect(find.text('Ana Sayfaya Dön'), findsOneWidget);
       },
     );
+
+    testWidgets('Sorular arasında geriye ve ileriye gezinti doğru çalışmalı', (
+      WidgetTester tester,
+    ) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      await tester.pumpWidget(const MaterialApp(home: QuizScreen()));
+
+      // Soru 1: Şık seç ve onayla
+      await tester.tap(find.text('Tapınak ve saray mimarisinin gelişmesi'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Cevabı Onayla'));
+      await tester.pumpAndSettle();
+
+      // Sonraki soruya geç (Soru 2)
+      await tester.tap(find.widgetWithText(FilledButton, 'Sonraki Soru'));
+      await tester.pumpAndSettle();
+      expect(find.text('Soru 2 / 3'), findsOneWidget);
+
+      // Soru 2'deyken sol tarafta 'Önceki Soru' butonu olmalı
+      expect(
+        find.widgetWithText(OutlinedButton, 'Önceki Soru'),
+        findsOneWidget,
+      );
+
+      // 'Önceki Soru'ya tıkla -> Soru 1'e geri dönmeli
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Önceki Soru'));
+      await tester.pumpAndSettle();
+      expect(find.text('Soru 1 / 3'), findsOneWidget);
+      // Soru 1'de daha önce verilen cevabın açıklaması görünmeli
+      expect(find.text('Çözüm Açıklaması'), findsOneWidget);
+
+      // Şimdi sağda 'Sonraki Soru' butonu olmalı ve 2'ye geri dönülebilmeli
+      await tester.tap(find.widgetWithText(FilledButton, 'Sonraki Soru'));
+      await tester.pumpAndSettle();
+      expect(find.text('Soru 2 / 3'), findsOneWidget);
+    });
   });
 }
