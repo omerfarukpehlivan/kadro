@@ -199,6 +199,14 @@ void main() {
         expect(find.text('Ders Ustalık Isı Haritası'), findsOneWidget);
         expect(find.text('TAR · Tarih'), findsOneWidget);
         expect(find.text('Çözülen Testler Arşivi (0)'), findsOneWidget);
+
+        // TASK-38: KPSS Başarım Rozetleri ve Haftalık Kadro Ligi
+        expect(find.text('KPSS Başarım Rozetleri'), findsOneWidget);
+        expect(find.text('İlk Pençe'), findsOneWidget);
+        expect(find.text('Keskin Nişancı'), findsOneWidget);
+        expect(find.text('Deneme Fatihi'), findsOneWidget);
+        expect(find.text('Gümüş Kadro Adayı'), findsOneWidget);
+        expect(find.text('Haftalık Kadro Ligi'), findsOneWidget);
       },
     );
 

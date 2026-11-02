@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/features/stats/presentation/quiz_history_screen.dart';
 import 'package:kadro/features/stats/presentation/quiz_session_detail_screen.dart';
@@ -9,7 +10,8 @@ import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-/// İstatistik sayfası: Riverpod üzerinden canlı soru, XP/Lig, Ustalık Haritası ve Test Geçmişini gösterir.
+/// İstatistik sayfası: Riverpod üzerinden canlı soru, XP/Lig, Ustalık Haritası,
+/// Başarım Rozetleri (Achievements), Haftalık Kadro Ligi ve Test Geçmişini gösterir.
 class StatsScreen extends ConsumerWidget {
   const StatsScreen({super.key});
 
@@ -63,15 +65,23 @@ class StatsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
 
-        // 3. Ders Bazlı Başarı Oranı Grafiği (fl_chart BarChart)
+        // 3. KPSS Başarım Rozetleri (Achievements)
+        _AchievementsCard(stats: stats),
+        const SizedBox(height: 16),
+
+        // 4. Haftalık Kadro Lig Sıralaması (Leaderboard)
+        _LeaderboardCard(stats: stats),
+        const SizedBox(height: 16),
+
+        // 5. Ders Bazlı Başarı Oranı Grafiği (fl_chart BarChart)
         _LessonAccuracyChartCard(stats: stats),
         const SizedBox(height: 16),
 
-        // 4. Ders Ustalık Isı Haritası
+        // 6. Ders Ustalık Isı Haritası
         _MasteryHeatmapCard(stats: stats),
         const SizedBox(height: 16),
 
-        // 5. Çözülen Testler Arşivi
+        // 7. Çözülen Testler Arşivi
         _RecentSessionsCard(stats: stats),
       ],
     );
@@ -166,6 +176,377 @@ class _LeagueAndStreakCard extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// KPSS Başarım Rozetleri (Achievements) Kartı
+class _AchievementsCard extends StatelessWidget {
+  final StudyStatsState stats;
+
+  const _AchievementsCard({required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final badges = [
+      _AchievementData(
+        title: 'İlk Pençe',
+        description: '1 soru çöz',
+        icon: LucideIcons.flame,
+        isUnlocked: stats.totalSolved >= 1,
+      ),
+      _AchievementData(
+        title: 'Keskin Nişancı',
+        description: '%70+ Doğruluk',
+        icon: LucideIcons.target,
+        isUnlocked: stats.totalSolved >= 5 && stats.accuracyPercent >= 70,
+      ),
+      _AchievementData(
+        title: 'Deneme Fatihi',
+        description: '1 Deneme bitir',
+        icon: LucideIcons.trophy,
+        isUnlocked: stats.sessionHistory.isNotEmpty,
+      ),
+      _AchievementData(
+        title: 'Gümüş Kadro Adayı',
+        description: '250+ XP topla',
+        icon: LucideIcons.shieldCheck,
+        isUnlocked: stats.totalXp >= 250 || stats.leagueTier != 'Bronz Kadro',
+      ),
+    ];
+
+    final unlockedCount = badges.where((b) => b.isUnlocked).length;
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.outlineVariant,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    LucideIcons.medal,
+                    color: colorScheme.tertiary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'KPSS Başarım Rozetleri',
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: colorScheme.tertiaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '$unlockedCount / 4 Açık',
+                  style: textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onTertiaryContainer,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(child: _BadgeTile(data: badges[0])),
+              const SizedBox(width: 8),
+              Expanded(child: _BadgeTile(data: badges[1])),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: _BadgeTile(data: badges[2])),
+              const SizedBox(width: 8),
+              Expanded(child: _BadgeTile(data: badges[3])),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AchievementData {
+  final String title;
+  final String description;
+  final IconData icon;
+  final bool isUnlocked;
+
+  const _AchievementData({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.isUnlocked,
+  });
+}
+
+class _BadgeTile extends StatelessWidget {
+  final _AchievementData data;
+
+  const _BadgeTile({required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final bgColor = data.isUnlocked
+        ? colorScheme.primaryContainer.withAlpha(90)
+        : colorScheme.surfaceContainerHighest.withAlpha(90);
+    final iconColor = data.isUnlocked
+        ? colorScheme.primary
+        : colorScheme.onSurfaceVariant.withAlpha(120);
+    final titleColor = data.isUnlocked
+        ? colorScheme.onSurface
+        : colorScheme.onSurfaceVariant;
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: data.isUnlocked
+              ? colorScheme.primary.withAlpha(100)
+              : colorScheme.outlineVariant.withAlpha(60),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Icon(data.icon, color: iconColor, size: 20),
+              Icon(
+                data.isUnlocked ? LucideIcons.circleCheck : LucideIcons.lock,
+                size: 14,
+                color: data.isUnlocked
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant.withAlpha(120),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            data.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: titleColor,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            data.description,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Haftalık Kadro Lig Sıralaması (Leaderboard) Kartı
+class _LeaderboardCard extends StatefulWidget {
+  final StudyStatsState stats;
+
+  const _LeaderboardCard({required this.stats});
+
+  @override
+  State<_LeaderboardCard> createState() => _LeaderboardCardState();
+}
+
+class _LeaderboardCardState extends State<_LeaderboardCard> {
+  final CloudSyncRepository _cloudSync = const CloudSyncRepository();
+  late Future<List<LeaderboardEntry>> _leaderboardFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _leaderboardFuture = _cloudSync.fetchLeaderboard();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.outlineVariant,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    LucideIcons.crown,
+                    color: colorScheme.tertiary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Haftalık Kadro Ligi',
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: colorScheme.secondaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'Bu Hafta',
+                  style: textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSecondaryContainer,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          FutureBuilder<List<LeaderboardEntry>>(
+            future: _leaderboardFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+
+              final entries = List<LeaderboardEntry>.from(snapshot.data ?? []);
+
+              // Kullanıcının kendi kaydını ekleyip sıralayalım
+              final userEntry = LeaderboardEntry(
+                displayName: 'Sen (Kadro Adayı)',
+                totalXp: widget.stats.totalXp,
+                leagueTier: widget.stats.leagueTier,
+              );
+
+              final allEntries = [...entries, userEntry];
+              allEntries.sort((a, b) => b.totalXp.compareTo(a.totalXp));
+
+              return Column(
+                children: allEntries.take(5).toList().asMap().entries.map((
+                  entry,
+                ) {
+                  final rank = entry.key + 1;
+                  final item = entry.value;
+                  final isCurrentUser = item.displayName.startsWith('Sen');
+
+                  return Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isCurrentUser
+                          ? colorScheme.primaryContainer.withAlpha(80)
+                          : colorScheme.surfaceContainerHighest.withAlpha(50),
+                      borderRadius: BorderRadius.circular(10),
+                      border: isCurrentUser
+                          ? Border.all(
+                              color: colorScheme.primary.withAlpha(120),
+                            )
+                          : null,
+                    ),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 28,
+                          child: Text(
+                            rank == 1
+                                ? '🥇'
+                                : rank == 2
+                                ? '🥈'
+                                : rank == 3
+                                ? '🥉'
+                                : '#$rank',
+                            style: textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.displayName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  fontWeight: isCurrentUser
+                                      ? FontWeight.w800
+                                      : FontWeight.w600,
+                                  color: isCurrentUser
+                                      ? colorScheme.primary
+                                      : colorScheme.onSurface,
+                                ),
+                              ),
+                              Text(
+                                item.leagueTier,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          '${item.totalXp} XP',
+                          style: textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              );
+            },
           ),
         ],
       ),
