@@ -1,3 +1,5 @@
+import 'package:kadro/features/reports/presentation/report_question_bottom_sheet.dart';
+
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -474,6 +476,31 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           _QuizModeBadge(mode: _effectiveMode, onToggle: _toggleQuizMode),
           if (widget.examDuration != null)
             _ExamTimerBadge(remainingSeconds: _remainingSeconds),
+          IconButton(
+            icon: const Icon(LucideIcons.flag, size: 20),
+            tooltip: 'Hatalı Soru Bildir',
+            onPressed: () {
+              showModalBottomSheet<void>(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                ),
+                builder: (ctx) => Padding(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                  ),
+                  child: ReportQuestionBottomSheet(
+                    question: _currentQuestion,
+                    testTitle:
+                        widget.customTitle ??
+                        '${_currentQuestion.lesson} Testi',
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
       body: ListView(

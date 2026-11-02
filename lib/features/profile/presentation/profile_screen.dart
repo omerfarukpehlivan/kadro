@@ -1,3 +1,4 @@
+import 'package:kadro/features/reports/presentation/admin_reports_screen.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -305,6 +306,25 @@ class ProfileScreen extends ConsumerWidget {
                 subtitle: Text('Kadro 1.0.0'),
               ),
             ],
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        const SectionTitle('İçerik Yönetimi'),
+        TactileCard(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          backgroundColor: colorScheme.surface,
+          borderColor: colorScheme.outlineVariant,
+          child: ListTile(
+            leading: const Icon(LucideIcons.shieldAlert),
+            title: const Text('Hatalı Soru Raporları'),
+            subtitle: const Text('İçerik editörü inceleme paneli'),
+            trailing: const Icon(LucideIcons.chevronRight),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const AdminReportsScreen()),
+              );
+            },
           ),
         ),
       ],

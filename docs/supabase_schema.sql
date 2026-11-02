@@ -2050,3 +2050,33 @@ Aşağıdakilerden hangisi bu değişimlerin doğrudan bir sonucu olarak göster
     '{"options": ["Tuna-1 / Sakarya Gaz Sahası", "Çaycuma-1", "Amasra-1", "Silivri Sahası", "Akçakoca Sahası"], "correctIndex": 0}'::jsonb,
     'Sakarya Gaz Sahası (Tuna-1 kuyusu), 710 milyar metreküplük rezerviyle Karadeniz''deki en büyük derin deniz doğalgaz keşfimizdir.'
   );
+
+
+-- ==============================================================================
+-- 10. Hatalı Soru Raporları (question_reports)
+-- ==============================================================================
+create table if not exists public.question_reports (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
+  question_id text not null,
+  lesson text not null,
+  topic text not null,
+  test_title text not null,
+  question_text text not null,
+  reason text not null,
+  user_note text,
+  status text not null default 'pending', -- 'pending', 'resolved', 'dismissed'
+  created_at timestamptz default now()
+);
+
+alter table public.question_reports enable row level security;
+
+-- Herkes (giriş yapmış veya misafir) soru bildirebilir
+create policy "Anyone can submit question report"
+  on public.question_reports for insert
+  with check (true);
+
+-- Raporları sadece kullanıcı kendi raporunu okuyabilir veya admin tümünü okuyabilir
+create policy "Users can read their own reports or admin all"
+  on public.question_reports for select
+  using (auth.uid() = user_id or auth.jwt()->>'role' = 'service_role');
