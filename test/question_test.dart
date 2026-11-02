@@ -14,6 +14,7 @@ void main() {
         'correctIndex': 2,
         'explanation': 'Açıklama metni',
         'difficulty': 'medium',
+        'distractor_trap': null,
       };
 
       final question = Question.fromJson(json);
@@ -24,8 +25,46 @@ void main() {
       expect(question.isCorrect(2), true);
       expect(question.isCorrect(0), false);
       expect(question.isCorrect(null), false);
+      expect(question.distractorTrap, isNull);
 
       expect(question.toJson(), json);
+    });
+
+    test('Question distractorTrap alanı serileştirilip geri okunabilmeli', () {
+      final jsonSnake = {
+        'id': 'tar_002',
+        'lesson': 'Tarih',
+        'topic': 'İlk Türk Devletleri',
+        'text': 'Uygurlar hakkında soru 2',
+        'options': ['A', 'B', 'C', 'D', 'E'],
+        'correctIndex': 1,
+        'explanation': 'Detaylı açıklama',
+        'difficulty': 'hard',
+        'distractor_trap': 'ÖSYM çeldirici uyarısı analizi',
+      };
+
+      final questionSnake = Question.fromJson(jsonSnake);
+      expect(questionSnake.distractorTrap, 'ÖSYM çeldirici uyarısı analizi');
+      expect(
+        questionSnake.toJson()['distractor_trap'],
+        'ÖSYM çeldirici uyarısı analizi',
+      );
+
+      // camelCase geriye dönük uyumluluk testi
+      final jsonCamel = {
+        'id': 'tar_003',
+        'lesson': 'Tarih',
+        'topic': 'İlk Türk Devletleri',
+        'text': 'Uygurlar hakkında soru 3',
+        'options': ['A', 'B', 'C', 'D', 'E'],
+        'correctIndex': 0,
+        'explanation': 'Açıklama',
+        'difficulty': 'easy',
+        'distractorTrap': 'camelCase tuzak deşifresi',
+      };
+
+      final questionCamel = Question.fromJson(jsonCamel);
+      expect(questionCamel.distractorTrap, 'camelCase tuzak deşifresi');
     });
   });
 

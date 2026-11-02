@@ -364,5 +364,40 @@ void main() {
         expect(find.byType(QuizScreen), findsOneWidget);
       },
     );
+
+    testWidgets(
+      'TASK-51: Soru cevaplandığında ÖSYM Çeldirici Tuzağı kartı render edilmeli',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        await tester.pumpWidget(const MaterialApp(home: QuizScreen()));
+        await tester.pumpAndSettle();
+
+        // Henüz cevaplanmadan önce çeldirici tuzağı görünmemeli
+        expect(find.text('ÖSYM ÇELDİRİCİ TUZAĞI'), findsNothing);
+
+        // Bir şık seç
+        await tester.tap(find.text('Tapınak ve saray mimarisinin gelişmesi'));
+        await tester.pumpAndSettle();
+
+        // Cevabı Onayla butonuna bas
+        final buttonFinder = find.widgetWithText(FilledButton, 'Cevabı Onayla');
+        await tester.tap(buttonFinder);
+        await tester.pumpAndSettle();
+
+        // Çözüm Açıklaması ve ÖSYM Çeldirici Tuzağı görünmeli
+        expect(find.text('Çözüm Açıklaması'), findsOneWidget);
+        expect(find.text('ÖSYM ÇELDİRİCİ TUZAĞI'), findsOneWidget);
+        expect(
+          find.textContaining('din değiştiyse yönetim anlayışı da değişmiştir'),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }

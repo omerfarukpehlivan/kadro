@@ -35,6 +35,7 @@ const List<Question> defaultSampleQuestions = [
     ],
     correctIndex: 2,
     explanation: 'Kut inancı (hükümdarlığın tanrısal kaynaklı olduğuna inanılması) Türk devlet geleneğinde varlığını sürdürmüştür. Yerleşik hayat bu inancı sona erdirmemiştir.',
+    distractorTrap: 'Uygurların yerleşik hayata geçmesiyle din ve alfabe değişmiş, tapınak mimarisi başlamıştır. Ancak Kut anlayışı (egemenliğin kaynağının ilahi olması) İslamiyet öncesi Türk devletlerinin tamamında olduğu gibi Uygurlarda da aynen devam etmiştir. ÖSYM adayın \'din değiştiyse yönetim anlayışı da değişmiştir\' ön yargısını en büyük çeldirici olarak kullanır.',
   ),
   Question(
     id: 'cog_001',
@@ -50,6 +51,7 @@ const List<Question> defaultSampleQuestions = [
     ],
     correctIndex: 1,
     explanation: 'Karstik şekillerin oluşabilmesi için kimyasal tortul kayaçların (kalker, jips gibi eriyebilen taşların) bulunması şarttır. Akdeniz\'deki temel etken kalkerli kayaç yapısıdır.',
+    distractorTrap: 'Akdeniz Bölgesi\'nde karstik şekillerin varlığı yağış miktarına DEĞİL, arazinin kolay eriyebilen kalkerli (kireçtaşı) kimyasal tortul kayaç yapısına bağlıdır. Karadeniz Akdeniz\'den çok daha fazla yağış almasına rağmen karstik şekil azdır. ÖSYM \'yağış fazlalığı\' şıkkını en sık kullanılan tuzak olarak koyar.',
   ),
   Question(
     id: 'vat_001',
@@ -65,6 +67,7 @@ const List<Question> defaultSampleQuestions = [
     ],
     correctIndex: 0,
     explanation: 'Din ve vicdan hürriyeti kişinin temel hak ve ödevleri (koruyucu/negatif statü) arasındadır. Çalışma ve eğitim sosyal-ekonomik haklar; dilekçe ve vergi ise siyasi haklardır.',
+    distractorTrap: 'Çalışma ve sözleşme hürriyeti ile eğitim hakkı sosyal ve ekonomik haklardır (pozitif statü). Dilekçe ve vergi ise siyasi haklardır (aktif statü). Din ve vicdan hürriyeti ise devletin dahi dokunamayacağı negatif (koruyucu) statü hakkıdır. ÖSYM hak kategorilerini birbiriyle karıştırmayı çok sever.',
   ),
 ];
 
@@ -541,7 +544,10 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
           // Çözüm Açıklaması Kartı (Yalnızca Öğrenme modunda ve cevaplandıysa gösterilir)
           if (!_isExamMode && _isAnswered) ...[
-            _ExplanationCard(explanation: question.explanation),
+            _ExplanationCard(
+              explanation: question.explanation,
+              distractorTrap: question.distractorTrap,
+            ),
             const SizedBox(height: 16),
           ],
 
@@ -739,8 +745,9 @@ class _MistakeNoticeCard extends StatelessWidget {
 /// Soru cevaplandıktan sonra gösterilen çözüm açıklaması kartı.
 class _ExplanationCard extends StatelessWidget {
   final String explanation;
+  final String? distractorTrap;
 
-  const _ExplanationCard({required this.explanation});
+  const _ExplanationCard({required this.explanation, this.distractorTrap});
 
   @override
   Widget build(BuildContext context) {
@@ -778,6 +785,51 @@ class _ExplanationCard extends StatelessWidget {
               height: 1.4,
             ),
           ),
+          if (distractorTrap != null && distractorTrap!.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: colorScheme.tertiaryContainer.withAlpha(90),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: colorScheme.tertiary.withAlpha(150),
+                  width: 1.2,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        LucideIcons.triangleAlert,
+                        size: 16,
+                        color: colorScheme.onTertiaryContainer,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'ÖSYM ÇELDİRİCİ TUZAĞI',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onTertiaryContainer,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    distractorTrap!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onTertiaryContainer,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );

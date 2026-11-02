@@ -12,6 +12,10 @@ class Question {
   final String explanation;
   final String difficulty;
 
+  /// UWorld modeline uygun olarak sorudaki en güçlü çeldiriciyi
+  /// ve adayın neden bu şıkka düşebileceğini deşifre eden açıklama.
+  final String? distractorTrap;
+
   const Question({
     required this.id,
     required this.lesson,
@@ -21,10 +25,36 @@ class Question {
     required this.correctIndex,
     required this.explanation,
     this.difficulty = 'medium',
+    this.distractorTrap,
   });
 
   /// Kullanıcının seçtiği şıkkın doğru olup olmadığını kontrol eden yardımcı metot.
   bool isCorrect(int? selectedIndex) => selectedIndex == correctIndex;
+
+  /// Nesnenin belirli alanlarını güncelleyerek kopyasını üreten yardımcı metot.
+  Question copyWith({
+    String? id,
+    String? lesson,
+    String? topic,
+    String? text,
+    List<String>? options,
+    int? correctIndex,
+    String? explanation,
+    String? difficulty,
+    String? distractorTrap,
+  }) {
+    return Question(
+      id: id ?? this.id,
+      lesson: lesson ?? this.lesson,
+      topic: topic ?? this.topic,
+      text: text ?? this.text,
+      options: options ?? this.options,
+      correctIndex: correctIndex ?? this.correctIndex,
+      explanation: explanation ?? this.explanation,
+      difficulty: difficulty ?? this.difficulty,
+      distractorTrap: distractorTrap ?? this.distractorTrap,
+    );
+  }
 
   /// JSON (`Map<String, dynamic>`) verisinden Question nesnesi üreten factory constructor.
   /// Angular'daki `Object.assign(new Question(), json)` veya mapper fonksiyonu gibi düşünebilirsin.
@@ -38,6 +68,9 @@ class Question {
       correctIndex: json['correctIndex'] as int,
       explanation: json['explanation'] as String,
       difficulty: json['difficulty'] as String? ?? 'medium',
+      distractorTrap:
+          json['distractor_trap'] as String? ??
+          json['distractorTrap'] as String?,
     );
   }
 
@@ -58,6 +91,8 @@ class Question {
       correctIndex: interaction['correctIndex'] as int? ?? 0,
       explanation: row['explanation']?.toString() ?? '',
       difficulty: row['difficulty']?.toString() ?? 'medium',
+      distractorTrap:
+          row['distractor_trap'] as String? ?? row['distractorTrap'] as String?,
     );
   }
 
@@ -72,6 +107,7 @@ class Question {
       'correctIndex': correctIndex,
       'explanation': explanation,
       'difficulty': difficulty,
+      'distractor_trap': distractorTrap,
     };
   }
 }
@@ -92,6 +128,7 @@ const List<Question> defaultSampleQuestions = [
     ],
     correctIndex: 2,
     explanation: 'Kut inancı (hükümdarlığın tanrısal kaynaklı olduğuna inanılması) Türk devlet geleneğinde varlığını sürdürmüştür. Yerleşik hayat bu inancı sona erdirmemiştir.',
+    distractorTrap: 'Uygurların yerleşik hayata geçmesiyle din ve alfabe değişmiş, tapınak mimarisi başlamıştır. Ancak Kut anlayışı (egemenliğin kaynağının ilahi olması) İslamiyet öncesi Türk devletlerinin tamamında olduğu gibi Uygurlarda da aynen devam etmiştir. ÖSYM adayın \'din değiştiyse yönetim anlayışı da değişmiştir\' ön yargısını en büyük çeldirici olarak kullanır.',
   ),
   Question(
     id: 'cog_001',
@@ -107,6 +144,7 @@ const List<Question> defaultSampleQuestions = [
     ],
     correctIndex: 1,
     explanation: 'Karstik şekillerin oluşabilmesi için kimyasal tortul kayaçların (kalker, jips gibi eriyebilen taşların) bulunması şarttır. Akdeniz\'deki temel etken kalkerli kayaç yapısıdır.',
+    distractorTrap: 'Akdeniz Bölgesi\'nde karstik şekillerin varlığı yağış miktarına DEĞİL, arazinin kolay eriyebilen kalkerli (kireçtaşı) kimyasal tortul kayaç yapısına bağlıdır. Karadeniz Akdeniz\'den çok daha fazla yağış almasına rağmen karstik şekil azdır. ÖSYM \'yağış fazlalığı\' şıkkını en sık kullanılan tuzak olarak koyar.',
   ),
   Question(
     id: 'vat_001',
@@ -122,5 +160,6 @@ const List<Question> defaultSampleQuestions = [
     ],
     correctIndex: 0,
     explanation: 'Din ve vicdan hürriyeti kişinin temel hak ve ödevleri (koruyucu/negatif statü) arasındadır. Çalışma ve eğitim sosyal-ekonomik haklar; dilekçe ve vergi ise siyasi haklardır.',
+    distractorTrap: 'Çalışma ve sözleşme hürriyeti ile eğitim hakkı sosyal ve ekonomik haklardır (pozitif statü). Dilekçe ve vergi ise siyasi haklardır (aktif statü). Din ve vicdan hürriyeti ise devletin dahi dokunamayacağı negatif (koruyucu) statü hakkıdır. ÖSYM hak kategorilerini birbiriyle karıştırmayı çok sever.',
   ),
 ];

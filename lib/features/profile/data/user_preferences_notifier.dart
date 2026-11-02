@@ -49,8 +49,7 @@ class UserPreferencesState {
       focusLesson: focusLesson ?? this.focusLesson,
       hasCompletedOnboarding:
           hasCompletedOnboarding ?? this.hasCompletedOnboarding,
-      defaultQuizMode:
-          defaultQuizMode ?? this.defaultQuizMode,
+      defaultQuizMode: defaultQuizMode ?? this.defaultQuizMode,
     );
   }
 

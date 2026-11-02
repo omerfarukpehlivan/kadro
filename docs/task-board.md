@@ -2659,6 +2659,13 @@ KPSS adaylarına dershane hocalarından daha iyi soru çözüm mantığı sunan 
 
 ### 📦 TASK-51: "ÖSYM Çeldirici Tuzağı" (UWorld Modeli) Açıklama Formatı & Çözüm Kartı Revizyonu
 
+- **Durum:** ✅ **Tamamlandı** (2026-11-02)
+- **Kapsam:**
+  - `Question` modeline `distractorTrap` opsiyonel alanı, `copyWith`, `toJson` (`distractor_trap`), `fromJson` (hem snake_case hem camelCase desteği) eklendi.
+  - `defaultSampleQuestions` (Tarih, Coğrafya, Vatandaşlık) zengin UWorld modeli çeldirici tuzak analizleriyle donatıldı.
+  - `_ExplanationCard` bileşeni güncellendi; `distractorTrap` mevcut olduğunda altın/kehribar vurgulu (`tertiaryContainer`, `LucideIcons.triangleAlert`) "⚠️ ÖSYM ÇELDİRİCİ TUZAĞI" kartı gösterimi entegre edildi.
+  - `test/question_test.dart` ve `test/quiz_screen_test.dart` testleri güncellendi, 95 testin tamamı yeşile ulaştı.
+
 ```text
 GÖREV: TASK-51 — Question Modeline distractorTrap Eklenmesi, _ExplanationCard Çeldirici Bölümü ve Örnek Soru Zenginleştirmesi
 ÖNEMLİ: GEMINI.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme ve textTheme üzerinden al. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
