@@ -74,8 +74,23 @@ void main() {
         expect(find.text('Kadro PRO'), findsOneWidget);
         expect(find.text('KPSS Hazırlığını Zirveye Taşı'), findsOneWidget);
 
+        // 3 Paket seçeneğinin render edildiğini doğrula
+        expect(find.text('Aylık Abonelik'), findsOneWidget);
+        expect(find.text('Yıllık Abonelik'), findsOneWidget);
+        expect(find.text('2026 Sınava Kadar'), findsOneWidget);
+        expect(find.text('En Çok Tercih Edilen'), findsOneWidget);
+
+        // 'Aylık Abonelik' seç
+        await tester.tap(find.text('Aylık Abonelik'));
+        await tester.pumpAndSettle();
+
+        // CTA butonu seçilen pakete göre güncellenmeli
+        expect(find.text('Kadro PRO\'ya Geç (89 ₺ / Ay)'), findsOneWidget);
+
         // PRO Satın Alma butonuna tıkla
-        final proButtonFinder = find.text('Kadro PRO\'ya Geç (Aylık 79,90 TL)');
+        final proButtonFinder = find.byKey(
+          const ValueKey('paywall_cta_button'),
+        );
         expect(proButtonFinder, findsOneWidget);
         await tester.tap(proButtonFinder);
         await tester.pumpAndSettle();
