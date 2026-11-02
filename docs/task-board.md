@@ -73,6 +73,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-46** | **Kadro Çalışma Modları (Öğrenme/Anında Çözüm vs. Sınav/Gizli Çözüm & Zayıf Konu Testi)** | Anında doğru/yanlış gösteren öğrenme modu ile sonuçları karneye saklayan sınav modu; moda duyarlı geriye dönük şık değiştirme kuralı; zayıf konudan otomatik 10 soru çıkarma | ✅ **Tamamlandı** (`d62695b`) |
 | **TASK-47** | **Hatalı Soru Raporlama & Yönetici İnceleme Paneli (`question_reports` + Supabase + UI)** | Test esnasında kullanıcının hatalı soruyu tek tıkla sebep ve notla bildirmesi (`ReportQuestionBottomSheet`); Supabase tablosu ve yöneticinin ders/test/soru bazlı inceleme ekranı | ✅ **Tamamlandı** (`d8b3b3a`) |
 | **TASK-48** | **Canlı Soru Çözüm Modu Rozeti (`QuizScreen`) & Profil Mod Seçiminden Test Başlatma** | Soru ekranı AppBar'ına anında mod gösteren/değiştiren `_QuizModeBadge` eklenmesi ve Profil diyalogundan 'Bu Modla Hemen 10 Soru Çöz' butonuyla teste geçiş | ✅ **Tamamlandı** |
+| **TASK-49** | **`QuizScreen` QuizMode Null-Safety & Geriye Dönük Uyumluluk Yaması (Hot-Reload / Web TypeError Fix)** | Web ve eski yerel depolama verilerinde `QuizMode` değerinin `null` dönmesiyle AppBar'da oluşan `TypeError: null is not a subtype of type QuizMode` hatasını gideren defansif kontrol ve yedekleme | ⏳ **Planlandı** |
 
 ---
 
@@ -2510,4 +2511,86 @@ ADIM 1: `QuizScreen` Canlı Mod Rozeti & Hızlı Geçiş
 ADIM 2: `ProfileScreen` Mod Diyaloğundan Test Başlatma
 1. `_showQuizModeDialog` içine 'Bu Modla Hemen 10 Soru Çöz' aksiyon butonu ekle.
 2. ListTile altına modun ne işe yaradığını açıklayan dinamik `subtitle` ekle.
+```
+
+
+---
+
+### 📦 TASK-49: `QuizScreen` QuizMode Null-Safety & Geriye Dönük Uyumluluk Yaması (Hot-Reload / Web TypeError Fix)
+
+```text
+GÖREV: TASK-49 — Soru Ekranı (QuizScreen) AppBar'ında Oluşan "TypeError: null: type 'Null' is not a subtype of type 'QuizMode'" Hatasının Giderilmesi
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+HATA ANALİZİ:
+Kullanıcı Web/Masaüstü ortamında veya sıcak yeniden başlatma (hot-reload/restart) sonrasında ders konularından ("Dersler > Coğrafya > Türkiye'nin Coğrafi Konumu > Test Çöz") bir teste girdiğinde, QuizScreen AppBar'ı kırmızı hata şeridiyle patlıyor:
+"TypeError: null: type 'Null' is not a subtype of type 'QuizMode'"
+Kök Neden:
+1. `_effectiveMode` getter'ı `ref.read(userPreferencesProvider).defaultQuizMode` çağrısı yaptığında, eski bellek/localStorage oturumundan kalan nesnede `defaultQuizMode` alanı JavaScript/Dart çalışma zamanında henüz `null` olarak okunabilmektedir.
+2. `_QuizModeBadge` bileşeni `final QuizMode mode;` parametresi beklemekte ve `null` geldiğinde AppBar içinde Type casting hatasıyla çökmektedir.
+
+ADIM 1: `lib/features/quiz/presentation/quiz_screen.dart` Defansif Getter ve Rozet Düzeltmesi
+1. `_effectiveMode` getter'ını null-safe hale getir:
+   ```dart
+   QuizMode get _effectiveMode {
+     if (_runtimeMode != null) return _runtimeMode!;
+     if (widget.mode != null) return widget.mode!;
+     try {
+       final prefs = ref.read(userPreferencesProvider);
+       // ignore: unnecessary_null_comparison
+       if (prefs != null && prefs.defaultQuizMode != null) {
+         return prefs.defaultQuizMode;
+       }
+     } catch (_) {
+       // ProviderScope bulunmayan izole test veya hot-reload fallback
+     }
+     return QuizMode.learning;
+   }
+   ```
+2. `_QuizModeBadge` bileşenini nullable parametre kabul edecek şekilde güncelle:
+   ```dart
+   class _QuizModeBadge extends StatelessWidget {
+     final QuizMode? mode;
+     final VoidCallback onToggle;
+
+     const _QuizModeBadge({this.mode, required this.onToggle});
+
+     @override
+     Widget build(BuildContext context) {
+       final theme = Theme.of(context);
+       final colorScheme = theme.colorScheme;
+       final effectiveMode = mode ?? QuizMode.learning;
+       final isExam = effectiveMode == QuizMode.exam;
+       ...
+   ```
+
+ADIM 2: `lib/features/profile/data/user_preferences_notifier.dart` Geriye Dönük Uyumluluk (Legacy Fallback)
+1. `UserPreferencesState.copyWith` içinde `defaultQuizMode` birleşimini güvenli yap:
+   ```dart
+   defaultQuizMode: defaultQuizMode ?? this.defaultQuizMode,
+   ```
+   yerine:
+   ```dart
+   defaultQuizMode: defaultQuizMode ?? this.defaultQuizMode,
+   ```
+   (Eğer `this.defaultQuizMode` null ise bile constructor varsayılanı `QuizMode.learning` olmalıdır).
+2. `UserPreferencesState.fromJson` içinde:
+   ```dart
+   final modeName = json['defaultQuizMode'] as String?;
+   final defaultQuizMode = modeName == null
+       ? QuizMode.learning
+       : QuizMode.values.firstWhere(
+           (e) => e.name == modeName,
+           orElse: () => QuizMode.learning,
+         );
+   ```
+
+ADIM 3: `lib/features/profile/presentation/profile_screen.dart` Null Güvenliği
+1. `_quizModeLabel(QuizMode? mode)` metoduna `mode ?? QuizMode.learning` fallback'i ekle.
+2. `_showQuizModeDialog` içinde `currentMode ?? QuizMode.learning` kontrolü koy.
+
+ADIM 4: Test ve Doğrulama
+1. `test/quiz_screen_test.dart` içine:
+   - `_QuizModeBadge mode parametresi null gelse dahi çökmeksizin varsayılan Öğrenme modu ile render edilmeli` testini ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
