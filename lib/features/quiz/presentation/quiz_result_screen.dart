@@ -1,6 +1,8 @@
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:kadro/features/quiz/presentation/widgets/victory_story_card.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
@@ -13,8 +15,71 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 /// Kullanıcının test performansını özetleyen salt okunur (StatelessWidget) bir ekrandır.
 class QuizResultScreen extends StatelessWidget {
   final QuizResult result;
+  final String? testTitle;
 
-  const QuizResultScreen({super.key, required this.result});
+  const QuizResultScreen({super.key, required this.result, this.testTitle});
+
+  void _showShareModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 24,
+            vertical: 24,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: 320,
+                    maxHeight: 540,
+                  ),
+                  child: AspectRatio(
+                    aspectRatio: 9 / 16,
+                    child: VictoryStoryCard(
+                      result: result,
+                      testTitle: testTitle,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: () async {
+                    await Clipboard.setData(
+                      ClipboardData(
+                        text:
+                            '🦅 Kadro KPSS Genel Kültür testimde ${result.net} NET yaptım! (%${result.successRate} Başarı). Hedef 2026 KPSS Derecesi! Sen de netini test et: https://kadro.app',
+                      ),
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            '📸 Zafer metni panoya kopyalandı! Instagram veya WhatsApp durumunda paylaşabilirsin.',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  icon: const Icon(LucideIcons.copy, size: 16),
+                  label: const Text('Skorumu & Metni Kopyala'),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text('Kapat'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +140,15 @@ class QuizResultScreen extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 16),
+
+              // Zafer Karnesi Paylaşım Butonu (TASK-52)
+              FilledButton.tonalIcon(
+                onPressed: () => _showShareModal(context),
+                icon: const Icon(LucideIcons.share2, size: 18),
+                label: const Text('Zafer Karneni Paylaş 📸'),
+              ),
+
               const Spacer(),
 
               // Akıllı İkili Aksiyon Köprüsü (TASK-50: Zero Dead-Ends UX)

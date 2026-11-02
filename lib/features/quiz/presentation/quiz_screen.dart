@@ -419,7 +419,16 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     }
 
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => QuizResultScreen(result: result)),
+      MaterialPageRoute(
+        builder: (context) => QuizResultScreen(
+          result: result,
+          testTitle:
+              widget.customTitle ??
+              (widget.lessonFilter != null
+                  ? '${widget.lessonFilter} Testi'
+                  : 'Genel Kültür Testi'),
+        ),
+      ),
     );
   }
 

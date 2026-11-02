@@ -1,3 +1,4 @@
+import 'package:kadro/features/quiz/presentation/widgets/victory_story_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
@@ -110,6 +111,59 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(FlashcardsScreen), findsOneWidget);
+      },
+    );
+  });
+
+  group('TASK-52: Zafer Karnesi Paylaşım Modalı Testleri', () {
+    testWidgets(
+      'QuizResultScreen üzerinde Zafer Karneni Paylaş butonu bulunmalı ve tıklandığında modal açılmalı',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        const result = QuizResult(
+          totalQuestions: 10,
+          correctCount: 9,
+          wrongCount: 1,
+          emptyCount: 0,
+        );
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: QuizResultScreen(
+              result: result,
+              testTitle: 'Tarih Deneme Testi',
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // 1. 'Zafer Karneni Paylaş 📸' butonunu doğrula
+        final shareButton = find.text('Zafer Karneni Paylaş 📸');
+        expect(shareButton, findsOneWidget);
+
+        // 2. Butona tıkla
+        await tester.tap(shareButton);
+        await tester.pumpAndSettle();
+
+        // 3. VictoryStoryCard modal içeriğini doğrula
+        expect(find.byType(VictoryStoryCard), findsOneWidget);
+        expect(find.text('KADRO · KPSS GENEL KÜLTÜR'), findsOneWidget);
+        expect(find.textContaining('NET'), findsWidgets);
+        expect(find.text('Tarih Deneme Testi'), findsOneWidget);
+        expect(find.text('Skorumu & Metni Kopyala'), findsOneWidget);
+
+        expect(find.text('Kapat'), findsOneWidget);
+
+        // 4. Kapat butonuna basıldığında modal kapanmalı
+        await tester.tap(find.text('Kapat'));
+        await tester.pumpAndSettle();
+        expect(find.byType(VictoryStoryCard), findsNothing);
       },
     );
   });
