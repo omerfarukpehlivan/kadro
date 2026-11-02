@@ -131,7 +131,8 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     if (widget.mode != null) return widget.mode!;
     try {
       final prefs = ref.read(userPreferencesProvider);
-      return prefs.defaultQuizMode;
+      final dynamic mode = prefs.defaultQuizMode;
+      if (mode is QuizMode) return mode;
     } catch (_) {
       // ProviderScope bulunmayan izole test veya hot-reload fallback
     }
