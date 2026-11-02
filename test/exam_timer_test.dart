@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kadro/features/exams/presentation/exams_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 
@@ -58,6 +59,47 @@ void main() {
         expect(find.text('Test Tamamlandı!'), findsOneWidget);
         expect(find.text('Test Sonucu'), findsOneWidget);
         expect(find.text('Ana Sayfaya Dön'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'ExamsScreen sınav düzeni ve hazır deneme paketlerini eksiksiz render eder',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        await tester.pumpWidget(
+          const MaterialApp(home: Scaffold(body: ExamsScreen())),
+        );
+        await tester.pumpAndSettle();
+
+        // Temel sınav düzeni metinleri
+        expect(find.text('Deneme sınavları'), findsOneWidget);
+        expect(find.text('Sınav düzeni'), findsOneWidget);
+        expect(find.text('Soru sayısı'), findsOneWidget);
+        expect(find.text('60'), findsOneWidget);
+        expect(find.text('Süre'), findsOneWidget);
+        expect(find.text('65 dakika'), findsOneWidget);
+        expect(find.text('Net hesabı'), findsOneWidget);
+        expect(find.text('4 yanlış 1 doğruyu götürür'), findsOneWidget);
+        expect(find.text('Genel Kültür Denemesi Başlat'), findsOneWidget);
+
+        // Hazır deneme paketleri
+        expect(find.text('Hazır Deneme Paketleri'), findsOneWidget);
+        expect(find.text('Türkiye Geneli GK Provası #1'), findsOneWidget);
+        expect(find.text('Tarih & Coğrafya Kamp Denemesi'), findsOneWidget);
+        expect(find.text('15 Dakika Hızlı Mola Denemesi'), findsOneWidget);
+
+        // Bir deneme paketine tıklandığında QuizScreen açılır
+        await tester.tap(find.text('Türkiye Geneli GK Provası #1'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(QuizScreen), findsOneWidget);
+        expect(find.text('Türkiye Geneli GK Provası #1'), findsOneWidget);
       },
     );
   });

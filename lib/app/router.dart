@@ -25,6 +25,7 @@ class QuizRouteArgs {
   final String? customTitle;
   final String? lessonFilter;
   final String? topicFilter;
+  final bool fetchAllFromPool;
 
   const QuizRouteArgs({
     this.questions,
@@ -32,6 +33,7 @@ class QuizRouteArgs {
     this.customTitle,
     this.lessonFilter,
     this.topicFilter,
+    this.fetchAllFromPool = false,
   });
 }
 
@@ -110,6 +112,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
               customTitle: args.customTitle,
               lessonFilter: args.lessonFilter,
               topicFilter: args.topicFilter,
+              fetchAllFromPool: args.fetchAllFromPool,
             );
           } else if (state.extra is List<Question>) {
             return QuizScreen(questions: state.extra as List<Question>);

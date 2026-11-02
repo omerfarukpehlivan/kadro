@@ -78,6 +78,7 @@ class QuizScreen extends ConsumerStatefulWidget {
   final QuestionRepository questionRepository;
   final Duration? examDuration;
   final String? customTitle;
+  final bool fetchAllFromPool;
 
   const QuizScreen({
     super.key,
@@ -88,6 +89,7 @@ class QuizScreen extends ConsumerStatefulWidget {
     this.questionRepository = const QuestionRepository(),
     this.examDuration,
     this.customTitle,
+    this.fetchAllFromPool = false,
   });
 
   @override
@@ -115,7 +117,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       _questions = widget.questions!;
     } else {
       _questions = defaultSampleQuestions;
-      if (widget.lessonFilter != null || widget.topicFilter != null) {
+      if (widget.fetchAllFromPool ||
+          widget.lessonFilter != null ||
+          widget.topicFilter != null) {
         _isLoading = true;
         _fetchFilteredQuestions();
       }

@@ -41,6 +41,9 @@ class QuestionRepository {
   /// `loadAllQuestions` için alias (geriye dönük uyumluluk).
   Future<List<Question>> loadSampleQuestions() => loadAllQuestions();
 
+  /// Havuzdaki tüm soruları (varsa Supabase, yoksa yerel JSON) yükler.
+  Future<List<Question>> fetchAllFromPool() => fetchQuestions();
+
   /// Belirli bir derse (`lessonName`) ait soruları yerel dosyadan filtreleyerek döner.
   Future<List<Question>> getQuestionsByLesson(String lessonName) async {
     final allQuestions = await loadAllQuestions();
