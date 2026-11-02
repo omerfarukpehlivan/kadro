@@ -300,18 +300,24 @@ class _MistakeQuestionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.check_circle,
-                        color: colorScheme.onTertiaryContainer,
-                        size: 16,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Icon(
+                          Icons.check_circle,
+                          color: colorScheme.onTertiaryContainer,
+                          size: 16,
+                        ),
                       ),
                       const SizedBox(width: 6),
-                      Text(
-                        'Doğru Cevap: ${question.options[question.correctIndex]}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onTertiaryContainer,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Text(
+                          'Doğru Cevap: ${question.options[question.correctIndex]}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onTertiaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
