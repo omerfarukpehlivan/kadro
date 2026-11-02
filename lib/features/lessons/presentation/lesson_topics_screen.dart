@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/services/offline_download_service.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
+import 'package:kadro/features/profile/presentation/paywall_screen.dart';
+import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Bir derse ait KPSS konularını Duolingo/Brilliant tarzı dikey yol haritası (learning path)
 /// olarak listeleyen ekran.
 ///
-/// Angular/Web karşılığı: `TopicHierarchyComponent` veya `SkillTreeComponent`.
-/// TASK-53 kapsamında derse özel Tuğrul karakteri (Selçuklu Alp, Kâşif, Hukukçu, Haberci)
-/// dinamik olarak konuşma balonunda gösterilir.
-class LessonTopicsScreen extends StatelessWidget {
+/// TASK-55 kapsamında Kadro PRO çevrimdışı konu indirme ve internetsiz açılış desteği eklenmiştir.
+class LessonTopicsScreen extends ConsumerWidget {
   final Lesson lesson;
 
   const LessonTopicsScreen({super.key, required this.lesson});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: Text('${lesson.name} Konuları')),
       body: ListView(
@@ -39,17 +43,6 @@ class LessonTopicsScreen extends StatelessWidget {
               totalCount: lesson.topics.length,
               lessonName: lesson.name,
               topic: lesson.topics[i],
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => QuizScreen(
-                      lessonFilter: lesson.name,
-                      topicFilter: lesson.topics[i],
-                      customTitle: '${lesson.name} · ${lesson.topics[i]}',
-                    ),
-                  ),
-                );
-              },
             ),
         ],
       ),
@@ -58,25 +51,134 @@ class LessonTopicsScreen extends StatelessWidget {
 }
 
 /// Duolingo/Brilliant tarzı dikey bağlantı çizgili yol haritası düğümü bileşeni.
-class _TopicPathNode extends StatelessWidget {
+class _TopicPathNode extends ConsumerWidget {
   final int index;
   final int totalCount;
   final String lessonName;
   final String topic;
-  final VoidCallback onTap;
 
   const _TopicPathNode({
     required this.index,
     required this.totalCount,
     required this.lessonName,
     required this.topic,
-    required this.onTap,
   });
 
+  String get packageId => 'topic_${lessonName}_$topic';
+
+  Future<void> _handleDownload(BuildContext context, WidgetRef ref) async {
+    final isPro = ref.read(userPreferencesProvider).isPro;
+    if (!isPro) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            '🔒 Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    try {
+      final questionRepo = ref.read(questionRepositoryProvider);
+      final questions = await questionRepo.fetchQuestions(
+        lesson: lessonName,
+        topic: topic,
+      );
+      final finalQuestions = questions.isNotEmpty
+          ? questions
+          : await questionRepo.getQuestionsByLesson(lessonName);
+
+      await ref
+          .read(downloadedPackagesProvider.notifier)
+          .downloadPackage(
+            packageId: packageId,
+            questions: finalQuestions,
+            isPro: isPro,
+          );
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('✅ $topic çevrimdışı kullanım için hazır!')),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('İndirme hatası: $e')));
+    }
+  }
+
+  Future<void> _startTopicTest(BuildContext context, WidgetRef ref) async {
+    final isOnline = ref.read(isOnlineProvider);
+    final downloadedPackages = ref.read(downloadedPackagesProvider);
+    final isDownloaded = downloadedPackages.contains(packageId);
+
+    if (!isOnline) {
+      if (isDownloaded) {
+        final downloadedQuestions = await ref
+            .read(offlineDownloadServiceProvider)
+            .getDownloadedQuestions(packageId);
+        if (!context.mounted) return;
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => QuizScreen(
+              questions: downloadedQuestions ?? [],
+              customTitle: '$lessonName · $topic (Çevrimdışı)',
+            ),
+          ),
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (dialogCtx) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(LucideIcons.wifiOff),
+                SizedBox(width: 8),
+                Text('İnternet Bağlantısı Yok'),
+              ],
+            ),
+            content: const Text(
+              'Bu denemeyi internetsiz çözebilmek için internet varken Kadro PRO ile indirmiş olmanız gerekir.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogCtx).pop(),
+                child: const Text('Tamam'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  Navigator.of(dialogCtx).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PaywallScreen()),
+                  );
+                },
+                child: const Text("Kadro PRO'ya Geç"),
+              ),
+            ],
+          ),
+        );
+      }
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => QuizScreen(
+            lessonFilter: lessonName,
+            topicFilter: topic,
+            customTitle: '$lessonName · $topic',
+          ),
+        ),
+      );
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final downloadedPackages = ref.watch(downloadedPackagesProvider);
+    final isDownloaded = downloadedPackages.contains(packageId);
 
     return IntrinsicHeight(
       child: Row(
@@ -134,7 +236,7 @@ class _TopicPathNode extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: TactileCard(
-                onTap: onTap,
+                onTap: () => _startTopicTest(context, ref),
                 child: Row(
                   children: [
                     Expanded(
@@ -175,9 +277,26 @@ class _TopicPathNode extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 6),
+                    // Çevrimdışı İndirme İkon Butonu
+                    IconButton(
+                      icon: Icon(
+                        isDownloaded
+                            ? LucideIcons.checkCircle
+                            : LucideIcons.download,
+                        size: 20,
+                        color: isDownloaded
+                            ? colorScheme.primary
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                      tooltip: isDownloaded
+                          ? 'Cihazda Hazır ✅'
+                          : 'Çevrimdışı İndir',
+                      onPressed: () => _handleDownload(context, ref),
+                    ),
+                    const SizedBox(width: 4),
                     FilledButton.tonal(
-                      onPressed: onTap,
+                      onPressed: () => _startTopicTest(context, ref),
                       child: const Text('Test Çöz'),
                     ),
                   ],

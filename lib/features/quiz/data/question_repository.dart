@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/config/supabase_config.dart';
 import 'package:kadro/features/games/data/models/concept_match_set.dart';
 import 'package:kadro/features/games/data/models/true_false_item.dart';
@@ -235,3 +236,8 @@ class QuestionRepository {
     return sampleConceptMatchSets;
   }
 }
+
+/// [QuestionRepository] Riverpod sağlayıcısı.
+final questionRepositoryProvider = Provider<QuestionRepository>((ref) {
+  return const QuestionRepository();
+});

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/exams/presentation/exams_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
@@ -73,7 +74,9 @@ void main() {
         });
 
         await tester.pumpWidget(
-          const MaterialApp(home: Scaffold(body: ExamsScreen())),
+          const ProviderScope(
+            child: MaterialApp(home: Scaffold(body: ExamsScreen())),
+          ),
         );
         await tester.pumpAndSettle();
 

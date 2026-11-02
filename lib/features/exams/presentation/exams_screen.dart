@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/services/offline_download_service.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
+import 'package:kadro/features/profile/presentation/paywall_screen.dart';
+import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
@@ -7,11 +12,13 @@ import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Denemeler sekmesi: sınav düzeni, süreli prova paketleri ve deneme başlatma.
-class ExamsScreen extends StatelessWidget {
+///
+/// TASK-55 kapsamında Kadro PRO çevrimdışı indirme motoru ve internetsiz açılış kontrolü entegre edilmiştir.
+class ExamsScreen extends ConsumerWidget {
   const ExamsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -54,16 +61,72 @@ class ExamsScreen extends StatelessWidget {
         const SizedBox(height: 16),
         // 65 dakikalık süreli Genel Kültür denemesini başlatır
         FilledButton.icon(
-          onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => const QuizScreen(
-                  examDuration: Duration(minutes: 65),
-                  customTitle: 'Genel Kültür Denemesi',
-                  fetchAllFromPool: true,
+          onPressed: () async {
+            final isOnline = ref.read(isOnlineProvider);
+            final isDownloaded = ref
+                .read(downloadedPackagesProvider)
+                .contains('exam_gk_prova_1');
+
+            if (!isOnline) {
+              if (isDownloaded) {
+                final questions = await ref
+                    .read(offlineDownloadServiceProvider)
+                    .getDownloadedQuestions('exam_gk_prova_1');
+                if (!context.mounted) return;
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => QuizScreen(
+                      questions: questions ?? [],
+                      examDuration: const Duration(minutes: 65),
+                      customTitle: 'Genel Kültür Denemesi (Çevrimdışı)',
+                    ),
+                  ),
+                );
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (dialogCtx) => AlertDialog(
+                    title: const Row(
+                      children: [
+                        Icon(LucideIcons.wifiOff),
+                        SizedBox(width: 8),
+                        Text('İnternet Bağlantısı Yok'),
+                      ],
+                    ),
+                    content: const Text(
+                      'Bu denemeyi internetsiz çözebilmek için internet varken Kadro PRO ile indirmiş olmanız gerekir.',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(dialogCtx).pop(),
+                        child: const Text('Tamam'),
+                      ),
+                      FilledButton(
+                        onPressed: () {
+                          Navigator.of(dialogCtx).pop();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const PaywallScreen(),
+                            ),
+                          );
+                        },
+                        child: const Text("Kadro PRO'ya Geç"),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            } else {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const QuizScreen(
+                    examDuration: Duration(minutes: 65),
+                    customTitle: 'Genel Kültür Denemesi',
+                    fetchAllFromPool: true,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
           },
           icon: const Icon(LucideIcons.play),
           label: const Text('Genel Kültür Denemesi Başlat'),
@@ -71,6 +134,7 @@ class ExamsScreen extends StatelessWidget {
         const SizedBox(height: 24),
         const SectionTitle('Hazır Deneme Paketleri'),
         _ExamPackCard(
+          packageId: 'exam_gk_prova_1',
           title: 'Türkiye Geneli GK Provası #1',
           subtitle: '65 Dakika · 60 Soru',
           description: 'Gerçek sınav simülasyonu. Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler.',
@@ -83,6 +147,7 @@ class ExamsScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _ExamPackCard(
+          packageId: 'exam_tarih_cografya_kamp',
           title: 'Tarih & Coğrafya Kamp Denemesi',
           subtitle: '40 Dakika · 45 Soru',
           description: 'Ağırlıklı derslere özel maraton kamp denemesi ile netlerini artır.',
@@ -95,6 +160,7 @@ class ExamsScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _ExamPackCard(
+          packageId: 'exam_hizli_mola',
           title: '15 Dakika Hızlı Mola Denemesi',
           subtitle: '15 Dakika · 15 Soru',
           description:
@@ -112,7 +178,8 @@ class ExamsScreen extends StatelessWidget {
 }
 
 /// Deneme sınavı paket kartı.
-class _ExamPackCard extends StatelessWidget {
+class _ExamPackCard extends ConsumerWidget {
+  final String packageId;
   final String title;
   final String subtitle;
   final String description;
@@ -124,6 +191,7 @@ class _ExamPackCard extends StatelessWidget {
   final Duration duration;
 
   const _ExamPackCard({
+    required this.packageId,
     required this.title,
     required this.subtitle,
     required this.description,
@@ -135,23 +203,119 @@ class _ExamPackCard extends StatelessWidget {
     required this.duration,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+  Future<void> _handleDownload(BuildContext context, WidgetRef ref) async {
+    final isPro = ref.read(userPreferencesProvider).isPro;
+    if (!isPro) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            '🔒 Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
+          ),
+        ),
+      );
+      return;
+    }
 
-    return TactileCard(
-      onTap: () {
+    try {
+      final questionRepo = ref.read(questionRepositoryProvider);
+      final questions = await questionRepo.loadAllQuestions();
+      await ref
+          .read(downloadedPackagesProvider.notifier)
+          .downloadPackage(
+            packageId: packageId,
+            questions: questions,
+            isPro: isPro,
+          );
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✅ $title paketi çevrimdışı kullanım için hazır!'),
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('İndirme sırasında hata oluştu: $e')),
+      );
+    }
+  }
+
+  Future<void> _startExam(BuildContext context, WidgetRef ref) async {
+    final isOnline = ref.read(isOnlineProvider);
+    final downloadedPackages = ref.read(downloadedPackagesProvider);
+    final isDownloaded = downloadedPackages.contains(packageId);
+
+    if (!isOnline) {
+      if (isDownloaded) {
+        final downloadedQuestions = await ref
+            .read(offlineDownloadServiceProvider)
+            .getDownloadedQuestions(packageId);
+        if (!context.mounted) return;
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => QuizScreen(
+              questions: downloadedQuestions ?? [],
               examDuration: duration,
-              customTitle: title,
-              fetchAllFromPool: true,
+              customTitle: '$title (Çevrimdışı)',
             ),
           ),
         );
-      },
+      } else {
+        showDialog(
+          context: context,
+          builder: (dialogCtx) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(LucideIcons.wifiOff),
+                SizedBox(width: 8),
+                Text('İnternet Bağlantısı Yok'),
+              ],
+            ),
+            content: const Text(
+              'Bu denemeyi internetsiz çözebilmek için internet varken Kadro PRO ile indirmiş olmanız gerekir.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogCtx).pop(),
+                child: const Text('Tamam'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  Navigator.of(dialogCtx).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PaywallScreen()),
+                  );
+                },
+                child: const Text("Kadro PRO'ya Geç"),
+              ),
+            ],
+          ),
+        );
+      }
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => QuizScreen(
+            examDuration: duration,
+            customTitle: title,
+            fetchAllFromPool: true,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final downloadedPackages = ref.watch(downloadedPackagesProvider);
+    final isDownloaded = downloadedPackages.contains(packageId);
+
+    return TactileCard(
+      onTap: () => _startExam(context, ref),
       backgroundColor: colorScheme.surface,
       borderColor: colorScheme.outlineVariant,
       child: Column(
@@ -214,19 +378,65 @@ class _ExamPackCard extends StatelessWidget {
               color: colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Denemeyi Başlat',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: accentColor,
-                  fontWeight: FontWeight.w800,
+              // Sol: Çevrimdışı İndirme Butonu / Rozeti
+              InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () => _handleDownload(context, ref),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDownloaded
+                        ? colorScheme.primaryContainer
+                        : colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isDownloaded
+                            ? LucideIcons.checkCircle
+                            : LucideIcons.download,
+                        size: 14,
+                        color: isDownloaded
+                            ? colorScheme.onPrimaryContainer
+                            : colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        isDownloaded ? 'Cihazda Hazır ✅' : 'İndir ⬇️',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: isDownloaded
+                              ? colorScheme.onPrimaryContainer
+                              : colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(width: 4),
-              Icon(LucideIcons.arrowRight, size: 16, color: accentColor),
+              // Sağ: Denemeyi Başlat
+              Row(
+                children: [
+                  Text(
+                    'Denemeyi Başlat',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: accentColor,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(LucideIcons.arrowRight, size: 16, color: accentColor),
+                ],
+              ),
             ],
           ),
         ],

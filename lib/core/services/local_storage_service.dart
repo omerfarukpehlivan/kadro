@@ -16,6 +16,9 @@ class LocalStorageService {
   static const String _keyStudyStats = 'kadro_study_stats';
   static const String _keyMistakes = 'kadro_mistakes';
   static const String _keyStudyTasks = 'kadro_study_tasks';
+  static const String _keyDownloadedPackages = 'kadro_downloaded_packages';
+  static String _keyOfflinePackage(String packageId) =>
+      'offline_pkg_$packageId';
 
   SharedPreferences? _prefs;
 
@@ -160,11 +163,93 @@ class LocalStorageService {
     return null;
   }
 
+  // --- 5. Çevrimdışı İndirilen Soru Paketleri (Offline Packages) ---
+
+  /// Kadro PRO çevrimdışı paketini cihaz hafızasına kaydeder.
+  Future<void> saveDownloadedPackage(
+    String packageId,
+    List<Question> questions,
+  ) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return;
+      final list = questions.map((q) => q.toJson()).toList();
+      await prefs.setString(_keyOfflinePackage(packageId), jsonEncode(list));
+
+      final existingIds = (await getDownloadedPackageIds()).toSet();
+      existingIds.add(packageId);
+      await prefs.setStringList(_keyDownloadedPackages, existingIds.toList());
+    } catch (e) {
+      debugPrint('saveDownloadedPackage hatası: $e');
+    }
+  }
+
+  /// Cihazda saklanan çevrimdışı soru paketini okur. Bulunamazsa `null` döner.
+  Future<List<Question>?> loadDownloadedPackage(String packageId) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return null;
+      final jsonStr = prefs.getString(_keyOfflinePackage(packageId));
+      if (jsonStr != null && jsonStr.isNotEmpty) {
+        final list = jsonDecode(jsonStr) as List;
+        return list
+            .map((item) => Question.fromJson(item as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (e) {
+      debugPrint('loadDownloadedPackage hatası: $e');
+    }
+    return null;
+  }
+
+  /// İndirilen paketi cihaz hafızasından kaldırır.
+  Future<void> removeDownloadedPackage(String packageId) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return;
+      await prefs.remove(_keyOfflinePackage(packageId));
+      final existingIds = (await getDownloadedPackageIds()).toSet();
+      existingIds.remove(packageId);
+      await prefs.setStringList(_keyDownloadedPackages, existingIds.toList());
+    } catch (e) {
+      debugPrint('removeDownloadedPackage hatası: $e');
+    }
+  }
+
+  /// İndirilmiş tüm paket ID'lerini listeler.
+  Future<List<String>> getDownloadedPackageIds() async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return [];
+      return prefs.getStringList(_keyDownloadedPackages) ?? [];
+    } catch (e) {
+      debugPrint('getDownloadedPackageIds hatası: $e');
+      return [];
+    }
+  }
+
+  /// Belirtilen paketin indirilip indirilmediğini kontrol eder.
+  Future<bool> hasDownloadedPackage(String packageId) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return false;
+      return prefs.containsKey(_keyOfflinePackage(packageId));
+    } catch (e) {
+      debugPrint('hasDownloadedPackage hatası: $e');
+      return false;
+    }
+  }
+
   /// Test izolasyonu veya fabrika ayarlarına dönüş için tüm anahtarları temizler.
   Future<void> clearAll() async {
     try {
       final prefs = await _getPrefs();
       if (prefs == null) return;
+      final ids = await getDownloadedPackageIds();
+      for (final id in ids) {
+        await prefs.remove(_keyOfflinePackage(id));
+      }
+      await prefs.remove(_keyDownloadedPackages);
       await prefs.remove(_keyUserPreferences);
       await prefs.remove(_keyStudyStats);
       await prefs.remove(_keyMistakes);
