@@ -7,7 +7,8 @@ import 'package:kadro/shared/widgets/tactile_card.dart';
 /// Kullanıcının testlerde yanlış çözdüğü soruları gösteren Yanlış Defteri ekranı.
 ///
 /// Angular'daki `MistakesComponent` karşılığıdır.
-/// Yanlış sorular listeden silinebilir veya toplu olarak yeniden çözülebilir.
+/// Yanlış sorular ders bazında filtrelenebilir, silinebilir veya seçilen ders
+/// özelinde toplu olarak yeniden çözülebilir.
 class MistakesScreen extends StatefulWidget {
   final MistakeRepository mistakeRepository;
 
@@ -21,12 +22,18 @@ class MistakesScreen extends StatefulWidget {
 }
 
 class _MistakesScreenState extends State<MistakesScreen> {
+  String _selectedLesson = 'Tümü';
+
   Future<void> _solveMistakes(List<Question> mistakes) async {
+    if (mistakes.isEmpty) return;
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => QuizScreen(
           questions: mistakes,
           mistakeRepository: widget.mistakeRepository,
+          customTitle: _selectedLesson == 'Tümü'
+              ? 'Yanlış Defteri Testi'
+              : '$_selectedLesson Yanlışları Testi',
         ),
       ),
     );
@@ -48,38 +55,100 @@ class _MistakesScreenState extends State<MistakesScreen> {
   Widget build(BuildContext context) {
     final mistakes = widget.mistakeRepository.getMistakes();
 
+    if (mistakes.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Yanlış Defteri')),
+        body: const _EmptyMistakesView(),
+      );
+    }
+
+    final tarihCount = mistakes.where((q) => q.lesson == 'Tarih').length;
+    final cografyaCount = mistakes.where((q) => q.lesson == 'Coğrafya').length;
+    final vatandaslikCount = mistakes
+        .where((q) => q.lesson == 'Vatandaşlık')
+        .length;
+    final guncelCount = mistakes
+        .where((q) => q.lesson == 'Güncel Bilgiler')
+        .length;
+
+    final filteredMistakes = _selectedLesson == 'Tümü'
+        ? mistakes
+        : mistakes.where((q) => q.lesson == _selectedLesson).toList();
+
+    final lessonChips = [
+      {'id': 'Tümü', 'label': 'Tümü (${mistakes.length})'},
+      {'id': 'Tarih', 'label': 'Tarih ($tarihCount)'},
+      {'id': 'Coğrafya', 'label': 'Coğrafya ($cografyaCount)'},
+      {'id': 'Vatandaşlık', 'label': 'Vatandaşlık ($vatandaslikCount)'},
+      {'id': 'Güncel Bilgiler', 'label': 'Güncel Bilgiler ($guncelCount)'},
+    ];
+
     return Scaffold(
       appBar: AppBar(title: const Text('Yanlış Defteri')),
-      body: mistakes.isEmpty
-          ? const _EmptyMistakesView()
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Üst Bilgi Kartı ve Tekrar Çöz Butonu (Dedektif Koç ile)
-                  _MistakeHeaderCard(
-                    mistakeCount: mistakes.length,
-                    onSolveAll: () => _solveMistakes(mistakes),
-                  ),
-                  const SizedBox(height: 16),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Ders Filtre Şeridi
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: lessonChips.map((chip) {
+                  final isSelected = _selectedLesson == chip['id'];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                      label: Text(chip['label']!),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() {
+                            _selectedLesson = chip['id']!;
+                          });
+                        }
+                      },
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: 12),
 
-                  // Yanlış Soruların Listesi
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: mistakes.length,
+            // Üst Bilgi Kartı ve Tekrar Çöz Butonu (Dedektif Koç ile)
+            _MistakeHeaderCard(
+              mistakeCount: filteredMistakes.length,
+              lessonName: _selectedLesson,
+              totalMistakes: mistakes.length,
+              onSolveAll: () => _solveMistakes(filteredMistakes),
+            ),
+            const SizedBox(height: 16),
+
+            // Yanlış Soruların Listesi
+            Expanded(
+              child: filteredMistakes.isEmpty
+                  ? Center(
+                      child: Text(
+                        '$_selectedLesson dersinden yanlışın bulunmuyor.',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: filteredMistakes.length,
                       itemBuilder: (context, index) {
-                        final question = mistakes[index];
+                        final question = filteredMistakes[index];
                         return _MistakeQuestionCard(
                           question: question,
                           onDelete: () => _removeMistake(question.id),
                         );
                       },
                     ),
-                  ),
-                ],
-              ),
             ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -148,17 +217,29 @@ class _EmptyMistakesView extends StatelessWidget {
 /// Yanlış sayısını, Dedektif Kadro Koçu avatarını ve 'Tüm Yanlışları Tekrar Çöz' butonunu içeren 3D kart.
 class _MistakeHeaderCard extends StatelessWidget {
   final int mistakeCount;
+  final String lessonName;
+  final int totalMistakes;
   final VoidCallback onSolveAll;
 
   const _MistakeHeaderCard({
     required this.mistakeCount,
     required this.onSolveAll,
+    this.lessonName = 'Tümü',
+    this.totalMistakes = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    final titleText = lessonName == 'Tümü'
+        ? '$mistakeCount Yanlış Soru'
+        : '$lessonName: $mistakeCount Yanlış';
+
+    final buttonText = lessonName == 'Tümü'
+        ? 'Tüm Yanlışları Tekrar Çöz'
+        : '$lessonName Yanlışlarını Çöz ($mistakeCount)';
 
     return TactileCard(
       backgroundColor: colorScheme.errorContainer.withAlpha(80),
@@ -196,7 +277,7 @@ class _MistakeHeaderCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '$mistakeCount Yanlış Soru',
+                      titleText,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onErrorContainer,
@@ -217,9 +298,9 @@ class _MistakeHeaderCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: FilledButton.icon(
-              onPressed: onSolveAll,
+              onPressed: mistakeCount > 0 ? onSolveAll : null,
               icon: const Icon(Icons.quiz_outlined),
-              label: const Text('Tüm Yanlışları Tekrar Çöz'),
+              label: Text(buttonText),
             ),
           ),
         ],

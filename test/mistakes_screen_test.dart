@@ -133,5 +133,58 @@ void main() {
         expect(repository.getMistakes(), isEmpty);
       },
     );
+
+    testWidgets(
+      'MistakesScreen ders filtre şeridi ile ilgili dersin yanlışlarını filtrelemeli',
+      (WidgetTester tester) async {
+        const tarihQuestion = Question(
+          id: 'm_tar',
+          lesson: 'Tarih',
+          topic: 'İlk Türk Devletleri',
+          text: 'Tarih yanlış sorusu',
+          options: ['A', 'B', 'C', 'D', 'E'],
+          correctIndex: 0,
+          explanation: '',
+        );
+        const cografyaQuestion = Question(
+          id: 'm_cog',
+          lesson: 'Coğrafya',
+          topic: 'İklim',
+          text: 'Coğrafya yanlış sorusu',
+          options: ['A', 'B', 'C', 'D', 'E'],
+          correctIndex: 1,
+          explanation: '',
+        );
+
+        repository.addMistake(tarihQuestion);
+        repository.addMistake(cografyaQuestion);
+
+        await tester.pumpWidget(const MaterialApp(home: MistakesScreen()));
+
+        // Tümü seçili: 2 soru görünür
+        expect(find.text('2 Yanlış Soru'), findsOneWidget);
+        expect(find.text('Tarih yanlış sorusu'), findsOneWidget);
+        expect(find.text('Coğrafya yanlış sorusu'), findsOneWidget);
+
+        // 'Coğrafya (1)' çipine dokun
+        await tester.tap(find.text('Coğrafya (1)'));
+        await tester.pumpAndSettle();
+
+        // Artık sadece Coğrafya sorusu görünmeli
+        expect(find.text('Coğrafya: 1 Yanlış'), findsOneWidget);
+        expect(find.text('Coğrafya Yanlışlarını Çöz (1)'), findsOneWidget);
+        expect(find.text('Coğrafya yanlış sorusu'), findsOneWidget);
+        expect(find.text('Tarih yanlış sorusu'), findsNothing);
+
+        // 'Vatandaşlık (0)' çipine dokun -> Boş durum mesajı çıkmalı
+        await tester.tap(find.text('Vatandaşlık (0)'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Vatandaşlık dersinden yanlışın bulunmuyor.'),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }
