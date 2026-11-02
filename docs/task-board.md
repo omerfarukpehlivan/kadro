@@ -68,6 +68,9 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-41** | **AdMob Ödüllü Video Reklam Motoru (`google_mobile_ads`)** | Günlük 30 soru limiti bittiğinde izlenen reklam ile +20 soru hakkı kazandıran gerçek AdMob Rewarded Ad motoru | ✅ **Tamamlandı** |
 | **TASK-42** | **200 Soruluk Zengin Çekirdek KPSS Genel Kültür Havuzu** | Tarih (50), Coğrafya (50), Vatandaşlık (50), Güncel Bilgiler (50) özgün soru JSON ve Supabase seed verisinin oluşturulması | ✅ **Tamamlandı** |
 | **TASK-43** | **Akıllı Çalışma Bildirimleri (`flutter_local_notifications`) & Çökme Takibi (`sentry_flutter`)** | Günlük soru çözme ve seri koruma bildirimleri ile Sentry hata takip entegrasyonu | ✅ **Tamamlandı** |
+| **TASK-44** | **`QuizScreen` İki Yönlü Soru Gezintisi (Önceki/Sonraki Soru) & Zarif Yanlış Bildirimi** | Test içinde geriye doğru 1'e kadar ve ileriye doğru en son soruya gidebilme (`_userAnswers` geçmişi) + İlk yanlışta tek seferlik dismissible Koç bilgilendirme kartı | ⏳ **Sırada** |
+| **TASK-45** | **`MistakesScreen` Ders Bazlı Filtreleme & Derse Özel Yanlış Çözüm Akışı** | Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler sekme/çip filtreleri, her dersin yanlış sayısı rozeti ve sadece seçilen dersin yanlışlarını test olarak başlatma | ⏳ **Planlandı** |
+| **TASK-46** | **Kadro Çalışma Modları (Öğrenme/Anında Çözüm vs. Sınav/Gizli Çözüm & Zayıf Konu Testi)** | Anında doğru/yanlış gösteren öğrenme modu ile sonuçları karneye saklayan sınav modu; moda duyarlı geriye dönük şık değiştirme kuralı; zayıf konudan otomatik 10 soru çıkarma | ⏳ **Planlandı** |
 
 ---
 
@@ -2254,4 +2257,89 @@ ADIM 1: `NotificationService`
 1. Akşam 20:00'de "Kadro Koçun: Bugünkü serin bozulmasın, 10 soru çöz!" hatırlatması.
 ADIM 2: `sentry_flutter` Entegrasyonu
 1. `main.dart` içinde Sentry başlatma ve hata yakalama.
+```
+
+
+---
+
+## 🎯 14. Dalga 14: İki Yönlü Soru Gezintisi, Yanlış Defteri Ders Filtresi & Sınav/Öğrenme Modları (`TASK-44` - `TASK-46`)
+
+---
+
+### 📦 TASK-44: `QuizScreen` İki Yönlü Soru Gezintisi (Önceki/Sonraki Soru) & Zarif Yanlış Bildirimi
+
+```text
+GÖREV: TASK-44 — Test İçinde Geriye/İleriye Gezinme (1..N Soru Geçmişi) ve İlk Yanlışta Kapatılabilir Tek Seferlik Zarif Koç Kartı
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...) ve fontSize KULLANMA.
+
+ADIM 1: `QuizScreen` (`lib/features/quiz/presentation/quiz_screen.dart`) Soru Gezinti Durumu
+1. `Map<int, int?> _userAnswers = {};` ve `int _maxReachedIndex = 0;` durumlarını ekle.
+2. Soru cevaplandığında veya şık seçildiğinde `_userAnswers[_currentIndex] = _selectedOptionIndex;` sakla.
+3. Alt navigasyon butonlarını güncelle:
+   - Eğer `_currentIndex > 0` ise: Sol tarafta `FilledButton.tonalIcon` veya `OutlinedButton.icon` ile `'< Önceki Soru'` butonu yer alsın. Tıklandığında `_currentIndex--` yapılsın ve o sorunun daha önce verilmiş cevabı yüklensin.
+   - Eğer `_currentIndex < _maxReachedIndex`: Sağ tarafta `'Sonraki Soru >'` butonu yer alsın. Tıklandığında `_currentIndex++` yapılsın.
+   - Eğer `_currentIndex == _maxReachedIndex`:
+     - Soru cevaplanmadıysa: `'Cevabı Onayla'` butonu.
+     - Soru cevaplandıysa ve son soru değilse: `'Sonraki Soru >'` butonu (tıklanınca `_currentIndex++; _maxReachedIndex++;`).
+     - Soru cevaplandıysa ve son soruysa: `'Testi Bitir'` butonu.
+
+ADIM 2: İlk Yanlışta Çıkan Zarif Bilgilendirme Kartı
+1. Hantal SnackBar yerine, `bool _hasDismissedMistakeNotice = false;` durumu oluştur.
+2. Kullanıcı testte ilk kez yanlış yaptığında, çözüm açıklamasının üstünde zarif bir `TactileCard` açılsın:
+   - İkon: `LucideIcons.bookmarkCheck`
+   - Metin: "Bu soru Ana Sayfa > Yanlış Defteri'ne eklendi. Eksiklerini kapatmak için dilediğin zaman oradan tekrar çözebilirsin."
+   - Sağ üstte kapatma butonu ('X' veya 'Anladım' aksiyonu).
+   - Kapatıldığında veya sonraki yanlışlarda bu kart bir daha çıkmasın.
+
+ADIM 3: Test ve Doğrulama
+1. Birim/widget testlerinde 1'den 5'e kadar çözüp 1'e geri dönme ve tekrar ileri gitme akışını doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-45: `MistakesScreen` Ders Bazlı Filtreleme & Derse Özel Yanlış Çözüm Akışı
+
+```text
+GÖREV: TASK-45 — Yanlış Defterinde Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler Filtreleri ve Sadece İlgili Dersi Çözme Butonu
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...) ve fontSize KULLANMA.
+
+ADIM 1: `MistakesScreen` (`lib/features/mistakes/presentation/mistakes_screen.dart`)
+1. Ekranın üst kısmına yatay kaydırılabilir ders filtre şeridi (`ChoiceChip`) ekle:
+   - `'Tümü (${mistakes.length})'`
+   - `'Tarih (${tarihCount})'`
+   - `'Coğrafya (${cografyaCount})'`
+   - `'Vatandaşlık (${vatandaslikCount})'`
+   - `'Güncel Bilgiler (${guncelCount})'`
+2. Seçilen derse göre alt liste filtrelensin.
+3. Üstteki aksiyon butonu seçilen derse göre dinamikleşsin:
+   - Tümü seçiliyse: `'Tüm Yanlışları Çöz (${mistakes.length})'`
+   - Coğrafya seçiliyse: `'Coğrafya Yanlışlarını Çöz (${filtered.length})'`
+4. Butona tıklandığında yalnızca o dersin yanlış soruları `QuizScreen`'e gönderilerek test başlatılsın.
+
+ADIM 2: Test ve Doğrulama
+1. `test/mistakes_screen_test.dart` içine ders filtreleme ve derse özel test başlatma kontrollerini ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-46: Kadro Çalışma Modları (Öğrenme/Anında Çözüm vs. Sınav/Gizli Çözüm & Zayıf Konu Testi)
+
+```text
+GÖREV: TASK-46 — Anında Çözüm Modu vs. Sınav/Gizli Çözüm Modu, Moda Duyarlı Geri Dönüş Şık Değiştirme Kuralı ve Zayıf Konu Testi
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Sabit Color(0xFF...) ve fontSize KULLANMA.
+
+ADIM 1: `QuizMode` Modeli & Ayarlar Entegrasyonu
+1. `enum QuizMode { learning, exam }` tanımı oluştur.
+   - `learning` (Öğrenme / Anında Çözüm): Şık onaylanınca doğru/yanlış anında gösterilir, açıklama açılır. Geri dönüldüğünde şık kilitlidir (değiştirilemez).
+   - `exam` (Sınav / Gizli Çözüm): Şık işaretlenir ama doğruluğu hemen söylenmez, açıklama gösterilmez. Geri dönüldüğünde optik form mantığıyla şık değiştirilebilir. Tüm sonuçlar test bitince karnede topluca gösterilir.
+2. `UserPreferencesState` içine `final QuizMode defaultQuizMode;` ekle ve `ProfileScreen` Ayarlar bölümüne mod seçici ekle.
+
+ADIM 2: Zayıf Konu Testi
+1. `StatsScreen` ve `HomeScreen` üzerine, kullanıcının `weakestLesson` verisine dayanarak tek tıkla 'Zayıf Konuyu Güçlendir (10 Soru)' butonu ekle.
+
+ADIM 3: Test ve Doğrulama
+1. `test/quiz_screen_test.dart` içine mod testlerini ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
