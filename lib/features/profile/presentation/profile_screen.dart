@@ -116,8 +116,9 @@ class ProfileScreen extends ConsumerWidget {
   void _showQuizModeDialog(
     BuildContext context,
     WidgetRef ref,
-    QuizMode currentMode,
+    QuizMode? currentMode,
   ) {
+    final effectiveCurrentMode = currentMode ?? QuizMode.learning;
     showDialog<void>(
       context: context,
       builder: (context) {
@@ -128,7 +129,7 @@ class ProfileScreen extends ConsumerWidget {
           title: const Text('Soru Çözüm Modu'),
           children: [
             ...QuizMode.values.map((mode) {
-              final isSelected = mode == currentMode;
+              final isSelected = mode == effectiveCurrentMode;
               return SimpleDialogOption(
                 onPressed: () {
                   ref.read(userPreferencesProvider.notifier).setQuizMode(mode);
@@ -176,8 +177,8 @@ class ProfileScreen extends ConsumerWidget {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => QuizScreen(
-                        mode: currentMode,
-                        customTitle: '${currentMode.label} Testi',
+                        mode: effectiveCurrentMode,
+                        customTitle: '${effectiveCurrentMode.label} Testi',
                         limit: 10,
                       ),
                     ),
@@ -193,8 +194,9 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  String _quizModeLabel(QuizMode mode) {
-    switch (mode) {
+  String _quizModeLabel(QuizMode? mode) {
+    final effective = mode ?? QuizMode.learning;
+    switch (effective) {
       case QuizMode.learning:
         return 'Öğrenme';
       case QuizMode.exam:

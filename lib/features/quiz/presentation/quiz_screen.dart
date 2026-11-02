@@ -130,10 +130,12 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     if (_runtimeMode != null) return _runtimeMode!;
     if (widget.mode != null) return widget.mode!;
     try {
-      return ref.read(userPreferencesProvider).defaultQuizMode;
+      final prefs = ref.read(userPreferencesProvider);
+      return prefs.defaultQuizMode;
     } catch (_) {
-      return QuizMode.learning;
+      // ProviderScope bulunmayan izole test veya hot-reload fallback
     }
+    return QuizMode.learning;
   }
 
   bool get _isExamMode => _effectiveMode == QuizMode.exam;
@@ -844,16 +846,17 @@ class _ExamTimerBadge extends StatelessWidget {
 /// Soru ekranında o anki çalışma modunu gösteren ve tek tıkla Öğrenme/Sınav modu
 /// arasında geçiş sağlayan interaktif AppBar rozeti (TASK-48).
 class _QuizModeBadge extends StatelessWidget {
-  final QuizMode mode;
+  final QuizMode? mode;
   final VoidCallback onToggle;
 
-  const _QuizModeBadge({required this.mode, required this.onToggle});
+  const _QuizModeBadge({this.mode, required this.onToggle});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isExam = mode == QuizMode.exam;
+    final effectiveMode = mode ?? QuizMode.learning;
+    final isExam = effectiveMode == QuizMode.exam;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),

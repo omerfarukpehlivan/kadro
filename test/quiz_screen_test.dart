@@ -345,5 +345,24 @@ void main() {
         expect(find.text('Soru 1 / 1'), findsOneWidget);
       },
     );
+    testWidgets(
+      'TASK-49: QuizScreen mode parametresi null gelse dahi çökmeksizin varsayılan Öğrenme modu ile render edilmeli',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        await tester.pumpWidget(
+          const MaterialApp(home: QuizScreen(mode: null)),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Öğrenme'), findsOneWidget);
+        expect(find.byType(QuizScreen), findsOneWidget);
+      },
+    );
   });
 }

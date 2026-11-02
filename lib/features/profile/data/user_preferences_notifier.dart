@@ -74,11 +74,13 @@ class UserPreferencesState {
       (e) => e.name == themeName,
       orElse: () => ThemeMode.system,
     );
-    final modeName = (json['defaultQuizMode'] as String?) ?? 'learning';
-    final defaultQuizMode = QuizMode.values.firstWhere(
-      (e) => e.name == modeName,
-      orElse: () => QuizMode.learning,
-    );
+    final modeName = json['defaultQuizMode'] as String?;
+    final defaultQuizMode = modeName == null
+        ? QuizMode.learning
+        : QuizMode.values.firstWhere(
+            (e) => e.name == modeName,
+            orElse: () => QuizMode.learning,
+          );
     return UserPreferencesState(
       isPro: (json['isPro'] as bool?) ?? false,
       dailyFreeQuestionLimit:
