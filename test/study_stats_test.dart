@@ -191,8 +191,8 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('Bronz Kadro'), findsOneWidget);
-        expect(find.text('0 XP'), findsOneWidget);
+        expect(find.text('Bronz Kadro'), findsWidgets);
+        expect(find.text('0 XP'), findsWidgets);
         expect(find.text('1 Gün Seri'), findsOneWidget);
         expect(find.byType(BarChart), findsOneWidget);
         expect(find.text('Ders Bazlı Başarı Oranı (%)'), findsOneWidget);

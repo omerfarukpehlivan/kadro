@@ -43,6 +43,5 @@ class MistakeRepository {
   /// Birim ve widget testlerinde state izolasyonu sağlamak için listeyi temizler.
   void clearForTest() {
     _mistakes.clear();
-    unawaited(_storage.saveMistakes(_mistakes));
   }
 }

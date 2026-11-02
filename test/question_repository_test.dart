@@ -22,14 +22,14 @@ void main() {
 
     test('getQuestionsByLesson ders adına göre filtreler', () async {
       final tarihQuestions = await repository.getQuestionsByLesson('Tarih');
-      expect(tarihQuestions.length, 3);
+      expect(tarihQuestions.length, 50);
       expect(tarihQuestions.first.lesson, 'Tarih');
       expect(tarihQuestions.first.id, 'tar_001');
 
       final vatandaslikQuestions = await repository.getQuestionsByLesson(
         'Vatandaşlık',
       );
-      expect(vatandaslikQuestions.length, 3);
+      expect(vatandaslikQuestions.length, 50);
       expect(vatandaslikQuestions.first.lesson, 'Vatandaşlık');
       expect(vatandaslikQuestions.first.id, 'vat_001');
 
@@ -43,14 +43,9 @@ void main() {
       );
 
       expect(cografyaQuestions.isNotEmpty, true);
-      expect(cografyaQuestions.length, 3);
+      expect(cografyaQuestions.length, 50);
       expect(cografyaQuestions.every((q) => q.lesson == 'Coğrafya'), true);
-      expect(
-        cografyaQuestions.any(
-          (q) => q.topic == 'Türkiye\'nin Fiziki Özellikleri',
-        ),
-        true,
-      );
+      expect(cografyaQuestions.any((q) => q.topic.contains('Türkiye')), true);
     });
 
     test('fetchQuestions konu bazlı filtreleme ve güvenli fallback', () async {

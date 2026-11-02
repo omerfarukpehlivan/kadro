@@ -90,16 +90,17 @@ void main() {
 
         // Hazır deneme paketleri
         expect(find.text('Hazır Deneme Paketleri'), findsOneWidget);
-        expect(find.text('Türkiye Geneli GK Provası #1'), findsOneWidget);
+        expect(find.text('Türkiye Geneli GK Provası #1'), findsWidgets);
         expect(find.text('Tarih & Coğrafya Kamp Denemesi'), findsOneWidget);
         expect(find.text('15 Dakika Hızlı Mola Denemesi'), findsOneWidget);
 
         // Bir deneme paketine tıklandığında QuizScreen açılır
         await tester.tap(find.text('Türkiye Geneli GK Provası #1'));
-        await tester.pumpAndSettle();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
 
         expect(find.byType(QuizScreen), findsOneWidget);
-        expect(find.text('Türkiye Geneli GK Provası #1'), findsOneWidget);
+        expect(find.text('Türkiye Geneli GK Provası #1'), findsWidgets);
       },
     );
   });

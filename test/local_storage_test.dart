@@ -147,6 +147,7 @@ void main() {
       );
 
       repo.addMistake(q);
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       expect(repo.getMistakes().length, equals(1));
 
       // Depoya yazıldığını doğrula
@@ -156,6 +157,7 @@ void main() {
 
       // Soruyu sil
       repo.removeMistake('q_mistake_1');
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       expect(repo.getMistakes(), isEmpty);
     });
 
