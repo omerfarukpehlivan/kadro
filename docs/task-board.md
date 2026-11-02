@@ -77,6 +77,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-50** | **Kesintisiz Çalışma Döngüsü & Akıllı Sayfa İçi Yönlendirmeler (Zero Dead-Ends UX)** | Test karnesinde yanlış varsa tek tıkla Yanlış Defteri'ne yönlendirme; Yanlış Defteri boşken teste yönlendirme; Bilgi kartları bitince konu testine geçiş köprüsü | ✅ **Tamamlandı** |
 | **TASK-51** | **"ÖSYM Çeldirici Tuzağı" (UWorld Modeli) Açıklama Formatı & Çözüm Kartı Revizyonu** | `Question` modeline `distractorTrap` eklenmesi, soru çözüm açıklaması içine altın/kehribar vurgulu '⚠️ ÖSYM Çeldirici Tuzağı' analizi ve örnek soruların zenginleştirilmesi | ✅ **Tamamlandı** (`84bbe59`) |
 | **TASK-52** | **Instagram & WhatsApp Uyumlu 9:16 "Zafer Karnesi" Hikaye Paylaşım Kartı (`ShareVictoryCard`)** | Test sonu karnesinde tek tıkla açılan 9:16 Story formatında viral karne kartı, net/başarı özeti, Koç Tuğrul görseli, pano kopyalama ve native paylaşım köprüsü | ✅ **Tamamlandı** (`82a9429`) |
+| **TASK-53** | **Çerçevesiz & Büyük Pop-Out Maskot Tasarımı ve Derse Özel Tuğrul Varyasyonları** | Tuğrul maskotunu 84x84'lük kısıtlayıcı kutudan çıkarıp büyük (100px) çerçevesiz pop-out yapıya kavuşturma; Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler için 4 yeni tematik Tuğrul karakteri entegrasyonu | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 
 ---
 
@@ -2773,5 +2774,102 @@ ADIM 3: Test ve Doğrulama
 1. `test/quiz_result_test.dart` dosyasını güncelle:
    - `QuizResultScreen` üzerinde 'Zafer Karneni Paylaş 📸' butonunun render edildiğini doğrula.
    - Butona tıklandığında `VictoryStoryCard` modalının açıldığını ve 'NET', 'KADRO · KPSS GENEL KÜLTÜR' metinlerinin ekranda olduğunu test et.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-53: Çerçevesiz & Büyük Pop-Out Maskot Tasarımı ve Derse Özel Tuğrul Varyasyonları
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - `MascotCoachBanner` içindeki 84x84 piksellik kısıtlayıcı iç çerçeve kutusunu (`Container(width: 84, height: 84, decoration: ...)`), katı kenarlıkları ve gri dolguyu tamamen kaldırma.
+  - Tuğrul maskotunu daha büyük (`100x100` veya `104x104` px), konuşma balonunun hemen yanından fırlayan (Duolingo/Babbel pop-out stili) çerçevesiz ve ferah bir yapıya dönüştürme.
+  - KPSS Lisans Genel Kültür'ün 4 ana dersine özel 4 yeni Tuğrul karakter varyasyonu ekleme:
+    1. **Tarih (`history`):** Selçuklu miğferli, fermanlı ve kılıçlı Tuğrul Alp (`assets/images/mascot/tugrul_history.png`).
+    2. **Coğrafya (`geography`):** Safari/dağcı yelekli, pusulalı ve dürbünlü Kâşif Tuğrul (`assets/images/mascot/tugrul_geography.png`).
+    3. **Vatandaşlık (`citizenship`):** Hukukçu cübbeli, adalet terazili ve anayasa kitapçıklı Hakim Tuğrul (`assets/images/mascot/tugrul_citizenship.png`).
+    4. **Güncel Bilgiler (`current`):** Gazeteci mikrofonlu, şık gözlüklü Haberci Tuğrul (`assets/images/mascot/tugrul_current.png`).
+  - `MascotMood` enum'unu `history`, `geography`, `citizenship`, `current` mood'ları ile genişletme ve derse göre otomatik mood seçen `MascotMoodExtension.fromLesson(String? lesson)` yardımcı metodunu oluşturma.
+  - `LessonTopicsScreen` gibi derse özel ekranlarda ilgili dersin Tuğrul karakterini otomatik gösterme.
+
+```text
+GÖREV: TASK-53 — MascotCoachBanner Çerçevesiz Pop-Out Dönüşümü ve 4 Temel KPSS Dersi İçin Tuğrul Varyasyonları Entegrasyonu
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme ve textTheme üzerinden al. Sabit Color(0xFF...) KULLANMA. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: Derse Özel Tuğrul Varlıkları ve Görseller
+1. 4 adet derse özel Tuğrul PNG dosyasının assets klasöründe yer aldığını doğrula:
+   - Tarih: `assets/images/mascot/tugrul_history.png`
+   - Coğrafya: `assets/images/mascot/tugrul_geography.png`
+   - Vatandaşlık: `assets/images/mascot/tugrul_citizenship.png`
+   - Güncel Bilgiler: `assets/images/mascot/tugrul_current.png`
+   (Mevcut görsel dosyası yoksa veya görsel üretilene kadar placeholder/fallback olarak mevcut `tugrul_coach.png` ve `tugrul_detective.png` kullanılarak hata fırlatması önlenir.)
+
+ADIM 2: `MascotMood` Enum ve Yardımcı Metotların Genişletilmesi (`lib/shared/widgets/mascot_coach_banner.dart`)
+1. `MascotMood` enum'una 4 yeni durum ekle:
+   ```dart
+   enum MascotMood {
+     coach,
+     victory,
+     detective,
+     pro,
+     history,
+     geography,
+     citizenship,
+     current,
+   }
+   ```
+2. `MascotMoodExtension` içine yeni asset yollarını ve `fromLesson` fabrika fonksiyonunu ekle:
+   ```dart
+   extension MascotMoodExtension on MascotMood {
+     String get assetPath {
+       switch (this) {
+         case MascotMood.coach:
+           return 'assets/images/mascot/tugrul_coach.png';
+         case MascotMood.victory:
+           return 'assets/images/mascot/tugrul_victory.png';
+         case MascotMood.detective:
+           return 'assets/images/mascot/tugrul_detective.png';
+         case MascotMood.pro:
+           return 'assets/images/mascot/tugrul_pro.png';
+         case MascotMood.history:
+           return 'assets/images/mascot/tugrul_history.png';
+         case MascotMood.geography:
+           return 'assets/images/mascot/tugrul_geography.png';
+         case MascotMood.citizenship:
+           return 'assets/images/mascot/tugrul_citizenship.png';
+         case MascotMood.current:
+           return 'assets/images/mascot/tugrul_current.png';
+       }
+     }
+
+     static MascotMood fromLesson(String? lesson) {
+       final normalized = (lesson ?? '').toLowerCase().trim();
+       if (normalized.contains('tarih')) return MascotMood.history;
+       if (normalized.contains('coğrafya') || normalized.contains('cografya')) return MascotMood.geography;
+       if (normalized.contains('vatandaşlık') || normalized.contains('vatandaslik')) return MascotMood.citizenship;
+       if (normalized.contains('güncel') || normalized.contains('guncel')) return MascotMood.current;
+       return MascotMood.coach;
+     }
+   }
+   ```
+
+ADIM 3: `MascotCoachBanner` Çerçevesiz (Frameless) ve Büyük Pop-Out Düzeni
+1. `lib/shared/widgets/mascot_coach_banner.dart` dosyasındaki sol maskot container'ını revize et:
+   - 84x84'lük `Container` çerçevesini, `border`, `borderRadius` ve `colorScheme.primaryContainer` arka planını kaldır.
+   - Yerine doğrudan maskotun silüetini öne çıkaran `SizedBox(width: 96, height: 96)` veya `100x100` boyutunda şeffaf, çerçevesiz bir yapı koy.
+   - `Image.asset(mood.assetPath, fit: BoxFit.contain)` kullan. Görsel bulunamazsa `errorBuilder` içinde `fallback` olarak `Icon(LucideIcons.award, size: 48)` göster.
+   - Yanındaki parıltı (sparkles) rozetini çerçeveye bağlı kalmadan maskotun sağ alt köşesine zarif bir minyatür rozet olarak yerleştir.
+
+ADIM 4: `LessonTopicsScreen` ve İlgili Sayfalarda Derse Özel Maskot Entegrasyonu
+1. `lib/features/lessons/presentation/lesson_topics_screen.dart` dosyasında:
+   - Eğer `MascotCoachBanner` kullanılıyorsa, mood parametresine `MascotMoodExtension.fromLesson(widget.lesson.title)` geçilmesini sağla.
+   - Böylece Tarih konuları açıldığında otomatik olarak Tarih Tuğrul'u, Coğrafya konularında Coğrafya Tuğrul'u konuşsun.
+
+ADIM 5: Test ve Doğrulama
+1. `test/mascot_coach_banner_test.dart` (veya mevcut ilgili test dosyası) içine:
+   - `MascotMoodExtension.fromLesson('Tarih') == MascotMood.history` doğrulaması,
+   - `MascotMoodExtension.fromLesson('Coğrafya') == MascotMood.geography` doğrulaması,
+   - Tüm yeni `MascotMood` değerlerinin geçerli ve boş olmayan `assetPath` döndürdüğünü doğrulayan birim testini ekle.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
