@@ -80,6 +80,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-53** | **Çerçevesiz & Büyük Pop-Out Maskot Tasarımı ve Derse Özel Tuğrul Varyasyonları** | Tuğrul maskotunu 84x84'lük kısıtlayıcı kutudan çıkarıp büyük (100px) çerçevesiz pop-out yapıya kavuşturma; Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler için 4 yeni tematik Tuğrul karakteri entegrasyonu | ✅ **Tamamlandı** |
 | **TASK-54** | **Mağaza Yayın Hazırlığı (App Icon, Splash Screen & Production Release Setup)** | Tuğrul maskotundan Android/iOS adaptive app icon (`flutter_launcher_icons`), derin indigo açılış ekranı (`flutter_native_splash`), Android v2 embedding / app label ve release build altyapısı | ✅ **Tamamlandı** |
 | **TASK-55** | **Kadro PRO Çevrimdışı Soru & Deneme İndirme Motoru (Offline-First Sync & Pro Paywall Kilidi)** | Sadece Kadro PRO üyelerine özel soru paketlerini ve denemeleri çevrimdışı kullanım için cihaza indirme (`OfflineDownloadService`), internet yokken indirilmemiş içerikte PRO Paywall yönlendirmesi | ✅ **Tamamlandı** |
+| **TASK-56** | **"De-AI" Tasarım ve Renk Restorasyonu: Yapay Zeka Morundan Kurtulma, Prestijli Devlet & Akademi Laciverti (`#1E3A5F`) ve Pedagojik UI Standartları** | Jenerik Tailwind/ChatGPT AI morunun (`#4F46E5`, `#818CF8`) tamamen sökülmesi; yerine ciddi, saygın ve göz yormayan Devlet & Akademi Gece Laciverti (`#1E3A5F`) + Zümrüt Teal (`#0D9488`) + Tok Altın (`#D97706`) paletine geçiş; `LucideIcons.sparkles` parıltı ikon enflasyonunun ve neon/violet parıltıların temizlenmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -2970,6 +2971,74 @@ ADIM 4: Test ve Doğrulama
 1. `test/offline_download_test.dart` dosyasını oluştur:
    - PRO olmayan kullanıcının indirme yapamadığını ve Paywall kuralını test et.
    - PRO kullanıcının soruları yerel depolamaya başarıyla kaydedip geri okuduğunu doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-56: "De-AI" Tasarım ve Renk Restorasyonu: Yapay Zeka Morundan Kurtulma, Prestijli Devlet & Akademi Laciverti (`#1E3A5F`) ve Pedagojik UI Standartları
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - **Yapay Zeka Morunun / Tailwind İndigo'sunun Sökülmesi:** Bütün AI şablonlarının varsayılan rengi olan `#4F46E5` (İndigo), `#818CF8` (Lila) ve `#312E81` (Koyu mor) tonlarının projeden tamamen temizlenmesi.
+  - **Prestijli Devlet & Akademi Kimliğine Geçiş:** Türkiye Cumhuriyeti kamu personeli hazırlık ciddiyetine yakışan, Harvard/Oxford veya köklü kamu kurumlarının asaletini taşıyan **Devlet & Akademi Gece Laciverti (`#1E3A5F`)**, ferah fildişi/buz beyazı (`#F0F4F8`), odaklanmayı artıran Zümrüt Yeşili (`#0D9488`) ve tok Başarı Altını (`#D97706`) paletine geçiş.
+  - **"Sparkles (✨)" İkon Enflasyonunun Temizlenmesi:** Yapay zeka çıktısı olduğunu ele veren jenerik `LucideIcons.sparkles` ikonlarının yerine gerçek pedagojik ikonların konulması:
+    - Öğrenme Modu rozeti (`_QuizModeBadge`): `LucideIcons.sparkles` ➡️ `LucideIcons.lightbulb` (Aydınlanma / Öğrenme)
+    - Tuğrul maskot rozeti (`MascotCoachBanner`): `LucideIcons.sparkles` ➡️ `LucideIcons.award` (Başarı Rozeti)
+    - Güncel Bilgiler ders ikonu (`kpss_lessons.dart`): `LucideIcons.sparkles` ➡️ `LucideIcons.flame` (Gündem Ateşi) veya `LucideIcons.newspaper`
+    - Zafer Karnesi (`VictoryStoryCard`): `LucideIcons.sparkles` ➡️ `LucideIcons.trophy` (Kupa / Derece)
+    - Onboarding bitiş butonu (`OnboardingScreen`): `LucideIcons.sparkles` ➡️ `LucideIcons.compass` (Yol Haritası)
+  - **Neon/Glow Mor Parıltıların Kaldırılması:** Kart kenarlıklarındaki ve butonlardaki yapay zeka ürünü yarı-saydam mor parlamaların kaldırılması; temiz, yüksek kontrastlı ve göz yormayan sınav ortamı hissinin kazandırılması.
+
+```text
+GÖREV: TASK-56 — "De-AI" Tasarım ve Renk Restorasyonu (Devlet & Akademi Laciverti, İnsan Eliyle Tasarlanmış Doğal Palet ve AI Klişelerinden Arınma)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Renkleri Theme.of(context).colorScheme ve textTheme üzerinden al. Sabit Color(0xFF...) yalnızca lib/app/theme.dart içinde tanımlanabilir. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: `lib/app/theme.dart` İçinde "De-AI" Prestij Paletine Geçiş
+1. Marka renk sabitlerini revize et:
+   - `seedColor`: `Color(0xFF1E3A5F)` (Academic & State Navy - Asil Gece Laciverti; eski #4F46E5 moru yerine)
+   - `secondaryColor`: `Color(0xFF0D9488)` (Academic Emerald Teal - Zümrüt Yeşili)
+   - `tertiaryColor`: `Color(0xFFD97706)` (Achievement Amber Gold - Tok Başarı Altını)
+   - `darkPrimaryColor`: `Color(0xFF38BDF8)` (Sky/Steel Blue - Çelik Mavisi; eski #818CF8 lila/mor yerine)
+   - `darkSecondaryColor`: `Color(0xFF2DD4BF)` (Teal)
+   - `darkTertiaryColor`: `Color(0xFFFBBF24)` (Gold)
+2. `light` tema ayarlarını revize et:
+   - `primary`: `Color(0xFF1E3A5F)`
+   - `primaryContainer`: `Color(0xFFF0F4F8)` (Eski lavanta/mor #EEF2FF yerine steril açık fildişi/buz kağıt tonu)
+   - `onPrimaryContainer`: `Color(0xFF0C2138)`
+   - `scaffoldBackgroundColor`: `Color(0xFFF8FAFC)`
+   - `cardColor`: `Color(0xFFFFFFFF)`
+   - `surfaceContainerLow`: `Color(0xFFF8FAFC)`
+   - `surfaceContainerHighest`: `Color(0xFFF1F5F9)`
+   - `outlineVariant`: `Color(0xFFE2E8F0)`
+3. `dark` tema ayarlarını revize et:
+   - `primary`: `Color(0xFF38BDF8)` (Eski mor yerine tok çelik mavisi)
+   - `primaryContainer`: `Color(0xFF172A45)` (Eski #312E81 mor yerine derin gece mavisi)
+   - `onPrimaryContainer`: `Color(0xFFE0F2FE)`
+   - `appBarColor`: `Color(0xFF0B1120)` (Eski morumsu #0F172A yerine saf gece laciverti)
+   - `scaffoldBackgroundColor`: `Color(0xFF0B1120)`
+   - `cardColor`: `Color(0xFF1E293B)`
+
+ADIM 2: `design-system/kadro/MASTER.md` Dosyasını Güncelleme
+1. Tasarım sistemi dosyasındaki renk tanımlarını `Academic Royal Indigo (#4F46E5)` yerine `Devlet & Akademi Gece Laciverti (#1E3A5F)` olarak güncelle ve palet gerekçesini "De-AI: Saygın kamu ve akademi kimliği" olarak belgele.
+
+ADIM 3: AI Sparkles (✨) İkon Enflasyonunu Temizleme
+1. `lib/features/quiz/presentation/quiz_screen.dart`:
+   - `_QuizModeBadge` içinde `isExam ? LucideIcons.fileText : LucideIcons.sparkles` satırını:
+     `isExam ? LucideIcons.fileText : LucideIcons.lightbulb` olarak değiştir (Öğrenme modu ampul/aydınlanma ikonu alır).
+2. `lib/shared/widgets/mascot_coach_banner.dart`:
+   - Tuğrul maskotunun sağ altındaki mini rozet ikonunu `LucideIcons.sparkles` yerine `LucideIcons.award` yap.
+3. `lib/features/lessons/data/kpss_lessons.dart`:
+   - Güncel Bilgiler dersinin ikonunu `LucideIcons.sparkles` yerine `LucideIcons.flame` veya `LucideIcons.newspaper` yap.
+4. `lib/features/quiz/presentation/widgets/victory_story_card.dart`:
+   - Üst rozet ikonunu `LucideIcons.sparkles` yerine `LucideIcons.trophy` yap.
+5. `lib/features/onboarding/presentation/onboarding_screen.dart`:
+   - Tamamlama butonu ikonunu `LucideIcons.sparkles` yerine `LucideIcons.compass` yap.
+6. `lib/features/games/presentation/true_false_blitz_screen.dart`:
+   - Kombo rozetlerindeki `LucideIcons.sparkles` ikonunu `LucideIcons.zap` yap.
+
+ADIM 4: Test ve Doğrulama
+1. `test/mascot_coach_banner_test.dart` içindeki `LucideIcons.sparkles` beklentisini `LucideIcons.award` olarak güncelle.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 
