@@ -155,19 +155,15 @@ void main() {
         id: 'q_compact_test',
         lesson: 'Tarih',
         topic: 'İslamiyet Öncesi Türk Tarihi',
-        text:
-            'Aşağıdakilerden hangisi İslamiyet öncesi Türk devletlerinde hükümdara verilen unvanlar arasında yer almaz?',
+        text: 'Aşağıdakilerden hangisi İslamiyet öncesi Türk devletlerinde hükümdara verilen unvanlar arasında yer almaz?',
         options: ['Kağan', 'Hakan', 'Sultan', 'Yabgu', 'İlteriş'],
         correctIndex: 2,
-        explanation:
-            'Sultan unvanı ilk kez Gazneli Mahmud tarafından Türk-İslam döneminde kullanılmıştır.',
+        explanation: 'Sultan unvanı ilk kez Gazneli Mahmud tarafından Türk-İslam döneminde kullanılmıştır.',
       );
 
       await tester.pumpWidget(
         const ProviderScope(
-          child: MaterialApp(
-            home: QuizScreen(questions: [sampleQuestion]),
-          ),
+          child: MaterialApp(home: QuizScreen(questions: [sampleQuestion])),
         ),
       );
       await tester.pumpAndSettle();
