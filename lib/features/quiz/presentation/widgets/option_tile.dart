@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 
 /// Test ekranındaki şıkların durumunu temsil eden enum.
 ///
@@ -25,6 +26,7 @@ class OptionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isCompact = ResponsiveBreakpoints.isCompact(context);
 
     // Renkleri ve sağdaki durum ikonunu status değerine göre belirliyoruz
     final Color borderColor;
@@ -85,6 +87,13 @@ class OptionTile extends StatelessWidget {
         ),
       ),
       child: ListTile(
+        visualDensity: isCompact
+            ? VisualDensity.compact
+            : VisualDensity.standard,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: isCompact ? 10 : 16,
+          vertical: isCompact ? 0 : 2,
+        ),
         onTap: onTap,
         leading: CircleAvatar(
           radius: 14,

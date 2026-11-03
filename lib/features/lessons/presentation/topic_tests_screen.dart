@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/test_difficulty_tier.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
@@ -135,24 +136,34 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _testChunks.isEmpty
           ? _buildEmptyState(context)
-          : ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                MascotCoachBanner(
-                  mood: MascotMoodExtension.fromLesson(widget.lessonName),
-                  badgeLabel:
-                      '${widget.lessonName.toUpperCase()} · ${_testChunks.length} TEST',
-                  title: '${widget.topic} Testleri',
-                  message: 'Bu konudaki sorular kolaydan zora doğru 10\'ar soruluk testlere ayrılmıştır. Sırayla tamamla, netlerini zirveye taşı!',
-                ),
-                const SizedBox(height: 16),
-                for (var i = 0; i < _testChunks.length; i++)
-                  _buildTestCard(
-                    context: context,
-                    index: i,
-                    chunk: _testChunks[i],
+          : Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 720),
+                child: ListView(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: ResponsiveBreakpoints.horizontalPadding(
+                      context,
+                    ),
+                    vertical: 16,
                   ),
-              ],
+                  children: [
+                    MascotCoachBanner(
+                      mood: MascotMoodExtension.fromLesson(widget.lessonName),
+                      badgeLabel:
+                          '${widget.lessonName.toUpperCase()} · ${_testChunks.length} TEST',
+                      title: '${widget.topic} Testleri',
+                      message: 'Bu konudaki sorular kolaydan zora doğru 10\'ar soruluk testlere ayrılmıştır. Sırayla tamamla, netlerini zirveye taşı!',
+                    ),
+                    const SizedBox(height: 16),
+                    for (var i = 0; i < _testChunks.length; i++)
+                      _buildTestCard(
+                        context: context,
+                        index: i,
+                        chunk: _testChunks[i],
+                      ),
+                  ],
+                ),
+              ),
             ),
     );
   }
@@ -216,8 +227,11 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Üst Satır: Test Numarası Rozeti ve Dikkat Çekici Seviye Rozeti
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 6,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(

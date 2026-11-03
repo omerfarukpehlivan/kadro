@@ -85,7 +85,9 @@ class AuthNotifier extends Notifier<AuthUserState> {
             errorMessage: null,
           );
           ref.read(studyStatsProvider.notifier).loadFromCloud();
-          unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
+          unawaited(
+            ref.read(studyPlannerProvider.notifier).loadTasksFromCloud(),
+          );
         } else if (data.event == AuthChangeEvent.signedOut) {
           state = const AuthUserState();
         }

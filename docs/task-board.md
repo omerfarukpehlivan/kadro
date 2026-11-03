@@ -85,6 +85,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-58** | **Dikkat Çekici & Motive Edici Test Zorluk Rozetleri (Basit Alıştırma, Sınav Ayarı, Net Sıçratan, Kurtlar Sofrası / ÖSYM Tuzağı)** | Sıkıcı akademik zorluk etiketlerinin yerine adayın ilgisini çeken 4 seviyeli vurucu rozet sistemi ('Basit Alıştırma (Isınma)', 'Tam Sınav Ayarı', 'Net Sıçratan', 'Kurtlar Sofrası'); kart altı motive edici mini açıklamalar ve ColorScheme standardizasyonu | ✅ **Tamamlandı** |
 | **TASK-59** | **Tüm Sistemde Duyarlı & Uyarlanabilir Ekran (Responsive & Adaptive) Mimarisi (Kompakt Telefon, Standart Telefon, Tablet & Katlanabilir)** | `ui-ux-pro-max` disipliniyle küçük ekranlar (<380px) için sıfır taşma (overflow), esnek padding/font ölçeklemesi ve kat altı koruması; tabletler (>=600px) için maxWidth kısıtı (720px) ve adaptif 3-4 sütunlu grid yapısı | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | **TASK-60** | **Ders Kartlarında Dairesel İlerleme Halkası (Animated Lesson Progress Ring) & Çözülen Test Oranı Göstergesi** | `LessonsScreen` ders kartlarındaki ikonların etrafına çözülen test / toplam test oranını gösteren animasyonlu dairesel ilerleme halkası (`LessonProgressRing`); kart içinde 'X / Y Test Tamamlandı' ve yüzde ilerleme rozeti | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-61** | **UI Taşma (RenderFlex Overflow) ve Görsel Hata Düzeltme Paketi (Dersler, İstatistik, Paywall, Navbar & BottomSheet)** | Güncel Bilgiler ders kartındaki 6.1px taşmanın `Flexible`/`Wrap` ile çözülmesi; İstatistik çözülen testler başlığının `Expanded` ile sarılması; Paywall plan kartlarında `Wrap` düzeltmesi; AppNavigationBar 'Ana Sayfa' taşmasının kompakt padding ile giderilmesi; Hatalı soru bildirme BottomSheet'inde `clipBehavior: Clip.antiAlias` ile köşe sızıntısının önlenmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3261,7 +3262,7 @@ ADIM 3: Test ve Doğrulama
 
 ### 📦 TASK-59: Tüm Sistemde Duyarlı & Uyarlanabilir Ekran (Responsive & Adaptive) Mimarisi (Kompakt Telefon, Standart Telefon, Tablet & Katlanabilir)
 
-- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Durum:** ✅ **Tamamlandı**
 - **Kapsam:**
   - `ui-ux-pro-max` disipliniyle projenin tüm ekranlarında küçük telefonlar (`< 380px` genişlik veya `< 720px` yükseklik) ve büyük tabletler (`>= 600px`) için kusursuz bir adaptif yerleşim kurgulanması.
   - **Kompakt Telefon İyileştirmeleri (<380px — iPhone SE / mini / 360px Android):**
@@ -3374,6 +3375,109 @@ ADIM 3: Test ve Doğrulama
 1. `test/lessons_screen_test.dart` içine:
    - `LessonProgressRing` bileşeninin render edildiğini,
    - Yüzde ve çözülen test sayacının ekranda göründüğünü doğrulayan widget testi ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-61: UI Taşma (RenderFlex Overflow) ve Görsel Hata Düzeltme Paketi (Dersler, İstatistik, Paywall, Navbar & BottomSheet)
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - Gerçek fiziksel cihazlarda (özellikle kompakt ve dar ekranlarda) görülen 5 kritik UI taşma ve görsel uyarı hatasının `ui-ux-pro-max` disipliniyle kalıcı olarak çözülmesi:
+    1. **Dersler Ekranı (`LessonsScreen`):** Güncel Bilgiler ders kartındaki `Text('Güncel Bilgiler')` ile `'Her Hafta Yeni'` rozetinin dar ekranda çarpışıp sebep olduğu **`right overflowed by 6.1 pixels`** hatasının `Wrap` ve `Flexible(child: Text(..., overflow: TextOverflow.ellipsis))` ile giderilmesi.
+    2. **İstatistik Ekranı (`StatsScreen`):** `_RecentSessionsCard` içindeki `Row(children: [Text('Çözülen Testler Arşivi (${stats.sessionHistory.length})'), TextButton('Tümünü Gör →')])` satırında başlık metninin `Expanded` ile sarılarak butonla çakışmasının ve sarı/siyah şerit hatasının önlenmesi.
+    3. **Hatalı Soru Bildirme Alt Sayfası (`ReportQuestionBottomSheet` / `QuizScreen`):** `showModalBottomSheet` çağrısına `clipBehavior: Clip.antiAlias` eklenmesi; üst köşelerdeki 20-24px yuvarlatmanın arkasından modal container ve arka plan sızıntısının tamamen kesilmesi.
+    4. **Alt Menü Çubuğu (`AppNavigationBar`):** Dar ekranlarda (`< 380px`) 5 sekmenin sıkışmasıyla 'Ana Sayfa' metninin gösterge dışına taşmasını önlemek için bar dış padding'inin kompakt ekranda `EdgeInsets.fromLTRB(8, 2, 8, 8)` yapılması, yazı tipinin `fontSize: 11` ve `letterSpacing: -0.2` ile taşmasız sığdırılması.
+    5. **Kadro PRO Ekranı (`PaywallScreen`):** Yıllık (`%53 İndirim`) ve 2026 Sınava Kadar (`En Popüler`) plan kartlarında plan başlığı, indirim rozeti ve fiyat metninin dar ekranda yan yana sığmayıp overflow vermesinin `Wrap` ve `Flexible` ile çözülmesi.
+
+```text
+GÖREV: TASK-61 — UI Taşma (RenderFlex Overflow) ve Görsel Hata Temizleme Paketi
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: `LessonsScreen` Güncel Bilgiler Taşma Düzeltmesi (`lib/features/lessons/presentation/lessons_screen.dart`)
+1. `_LessonCard` içindeki başlık satırını (`Row(children: [Text(lesson.name, ...), if (lesson.badgeText != null) ...])`) revize et:
+   - `Row` yerine `Wrap` veya `Flexible(child: Text(lesson.name, overflow: TextOverflow.ellipsis))` kullan:
+     ```dart
+     Row(
+       children: [
+         Flexible(
+           child: Text(
+             lesson.name,
+             style: theme.textTheme.titleMedium?.copyWith(
+               color: colorScheme.onSurface,
+               fontWeight: FontWeight.w800,
+             ),
+             maxLines: 1,
+             overflow: TextOverflow.ellipsis,
+           ),
+         ),
+         if (lesson.badgeText != null) ...[
+           const SizedBox(width: 6),
+           Container(
+             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+             decoration: BoxDecoration(
+               color: colorScheme.tertiaryContainer,
+               borderRadius: BorderRadius.circular(8),
+             ),
+             child: Text(
+               lesson.badgeText!,
+               style: theme.textTheme.labelSmall?.copyWith(
+                 color: colorScheme.onTertiaryContainer,
+                 fontWeight: FontWeight.bold,
+               ),
+             ),
+           ),
+         ],
+       ],
+     )
+     ```
+
+ADIM 2: `StatsScreen` Çözülen Testler Arşivi Taşma Düzeltmesi (`lib/features/stats/presentation/stats_screen.dart`)
+1. `_RecentSessionsCard` içindeki başlık `Row` bileşeninde başlık `Text` widget'ını `Expanded` ile sar:
+   ```dart
+   Row(
+     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+     children: [
+       Expanded(
+         child: Text(
+           'Çözülen Testler Arşivi (${stats.sessionHistory.length})',
+           style: textTheme.titleMedium?.copyWith(
+             fontWeight: FontWeight.w800,
+           ),
+           maxLines: 1,
+           overflow: TextOverflow.ellipsis,
+         ),
+       ),
+       TextButton(
+         onPressed: () { ... },
+         child: const Text('Tümünü Gör →'),
+       ),
+     ],
+   )
+   ```
+
+ADIM 3: `QuizScreen` Hatalı Soru Bildirme BottomSheet Köşe Sızıntısı (`lib/features/quiz/presentation/quiz_screen.dart`)
+1. Line ~498'deki `showModalBottomSheet` çağrısını güncelle:
+   - `clipBehavior: Clip.antiAlias` ekle.
+   - `backgroundColor: Theme.of(context).colorScheme.surface` kalsın.
+   - `shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24)))` ayarla.
+   - Böylece modalın üst yuvarlatılmış köşelerinden arkadaki siyah/gri zemin hiçbir şekilde sızamaz.
+
+ADIM 4: `AppNavigationBar` 'Ana Sayfa' Taşma Düzeltmesi (`lib/app/widgets/app_navigation_bar.dart`)
+1. Dar ekranlar için padding ve navigation bar stili koruması ekle:
+   - `final isCompact = MediaQuery.sizeOf(context).width < 380;`
+   - Dış padding: `EdgeInsets.fromLTRB(isCompact ? 8 : 16, 4, isCompact ? 8 : 16, 12)`
+   - `NavigationBarTheme` veya `NavigationDestination` içindeki `label` yazı boyutunu `labelSmall` ile güvenceye al; gerekirse `isCompact` modda 'Ana Sayfa' yerine 'Giriş' göster veya fontu 11px yap.
+
+ADIM 5: `PaywallScreen` Plan Kartları Taşma Düzeltmesi (`lib/features/profile/presentation/paywall_screen.dart`)
+1. Plan kartı içindeki `Row(children: [Text(plan.title), Container(plan.badge)])` satırını `Wrap` ile sar:
+   - `Wrap(crossAxisAlignment: WrapCrossAlignment.center, spacing: 6, children: [Text(plan.title, ...), if (plan.badge != null) ...])`
+   - Başlık ve indirim rozeti yan yana sığmadığında otomatik olarak alt satıra kırılsın, sağdaki fiyata (`plan.priceText`) çarpıp sarı-siyah overflow uyarısı vermesin.
+
+ADIM 6: Test ve Doğrulama
+1. `test/overflow_fix_test.dart` (veya ilgili ekran testleri) içine dar ekran (`width: 360`, `width: 320`) testleri ekle:
+   - `LessonsScreen`, `StatsScreen`, `PaywallScreen`, `AppNavigationBar` dar ekranda render edildiğinde sıfır taşma doğrula.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 

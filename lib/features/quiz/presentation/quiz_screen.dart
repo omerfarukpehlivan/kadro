@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
@@ -518,93 +519,101 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Konu Başlığı ve Soru Sayacı (Meta Bar)
-          _QuestionMetaBar(
-            topic: question.topic,
-            questionNumber: _currentIndex + 1,
-            totalQuestions: _questions.length,
-          ),
-          const SizedBox(height: 8),
-
-          // İlerleme Çubuğu (Progress Indicator)
-          LinearProgressIndicator(
-            value: (_currentIndex + 1) / _questions.length,
-          ),
-          const SizedBox(height: 16),
-
-          // Soru Metni Kartı
-          _QuestionCard(text: question.text),
-          const SizedBox(height: 16),
-
-          // Şıklar (A - E)
-          for (var i = 0; i < question.options.length; i++)
-            OptionTile(
-              label: labels[i],
-              text: question.options[i],
-              status: _getOptionStatus(i),
-              onTap: (_isExamMode || !_isAnswered)
-                  ? () => _onOptionTap(i)
-                  : null,
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: ListView(
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveBreakpoints.horizontalPadding(context),
+              vertical: 16,
             ),
-          const SizedBox(height: 16),
+            children: [
+              // Konu Başlığı ve Soru Sayacı (Meta Bar)
+              _QuestionMetaBar(
+                topic: question.topic,
+                questionNumber: _currentIndex + 1,
+                totalQuestions: _questions.length,
+              ),
+              const SizedBox(height: 8),
 
-          // Çözüm Açıklaması Kartı (Yalnızca Öğrenme modunda ve cevaplandıysa gösterilir)
-          if (!_isExamMode && _isAnswered) ...[
-            _ExplanationCard(
-              explanation: question.explanation,
-              distractorTrap: question.distractorTrap,
-            ),
-            const SizedBox(height: 16),
-          ],
+              // İlerleme Çubuğu (Progress Indicator)
+              LinearProgressIndicator(
+                value: (_currentIndex + 1) / _questions.length,
+              ),
+              const SizedBox(height: 16),
 
-          // Zarif Yanlış Defteri Bilgilendirme Kartı (Tek seferlik / kapatılabilir, yalnızca Öğrenme modunda)
-          if (!_isExamMode &&
-              _showMistakeNotice &&
-              !_hasDismissedMistakeNotice) ...[
-            _MistakeNoticeCard(
-              onDismiss: () {
-                setState(() {
-                  _showMistakeNotice = false;
-                  _hasDismissedMistakeNotice = true;
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-          ],
+              // Soru Metni Kartı
+              _QuestionCard(text: question.text),
+              const SizedBox(height: 16),
 
-          // Aksiyon Butonları (Önceki Soru + Birincil Buton)
-          if (_currentIndex > 0)
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: OutlinedButton.icon(
-                    onPressed: _previousQuestion,
-                    icon: const Icon(LucideIcons.arrowLeft, size: 18),
-                    label: const Text('Önceki Soru'),
-                  ),
+              // Şıklar (A - E)
+              for (var i = 0; i < question.options.length; i++)
+                OptionTile(
+                  label: labels[i],
+                  text: question.options[i],
+                  status: _getOptionStatus(i),
+                  onTap: (_isExamMode || !_isAnswered)
+                      ? () => _onOptionTap(i)
+                      : null,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 3,
-                  child: FilledButton.icon(
-                    onPressed: buttonAction,
-                    icon: Icon(buttonIcon),
-                    label: Text(buttonLabel),
-                  ),
+              const SizedBox(height: 16),
+
+              // Çözüm Açıklaması Kartı (Yalnızca Öğrenme modunda ve cevaplandıysa gösterilir)
+              if (!_isExamMode && _isAnswered) ...[
+                _ExplanationCard(
+                  explanation: question.explanation,
+                  distractorTrap: question.distractorTrap,
                 ),
+                const SizedBox(height: 16),
               ],
-            )
-          else
-            FilledButton.icon(
-              onPressed: buttonAction,
-              icon: Icon(buttonIcon),
-              label: Text(buttonLabel),
-            ),
-        ],
+
+              // Zarif Yanlış Defteri Bilgilendirme Kartı (Tek seferlik / kapatılabilir, yalnızca Öğrenme modunda)
+              if (!_isExamMode &&
+                  _showMistakeNotice &&
+                  !_hasDismissedMistakeNotice) ...[
+                _MistakeNoticeCard(
+                  onDismiss: () {
+                    setState(() {
+                      _showMistakeNotice = false;
+                      _hasDismissedMistakeNotice = true;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Aksiyon Butonları (Önceki Soru + Birincil Buton)
+              if (_currentIndex > 0)
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: OutlinedButton.icon(
+                        onPressed: _previousQuestion,
+                        icon: const Icon(LucideIcons.arrowLeft, size: 18),
+                        label: const Text('Önceki Soru'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      flex: 3,
+                      child: FilledButton.icon(
+                        onPressed: buttonAction,
+                        icon: Icon(buttonIcon),
+                        label: Text(buttonLabel),
+                      ),
+                    ),
+                  ],
+                )
+              else
+                FilledButton.icon(
+                  onPressed: buttonAction,
+                  icon: Icon(buttonIcon),
+                  label: Text(buttonLabel),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

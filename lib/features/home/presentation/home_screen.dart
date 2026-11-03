@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/games/presentation/concept_match_screen.dart';
 import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
@@ -21,175 +22,198 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(studyStatsProvider);
     final colorScheme = Theme.of(context).colorScheme;
+    final isCompact = ResponsiveBreakpoints.isCompact(context);
+    final isTablet = ResponsiveBreakpoints.isTablet(context);
+    final gridSpacing = isCompact ? 8.0 : 12.0;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        // Kadro Koçu maskot konuşma balonu
-        MascotCoachBanner(
-          mood: MascotMood.coach,
-          title: 'Hoş geldin',
-          message: stats.dailySolvedCount == 0
-              ? 'Ben Kadro Koçun! KPSS Genel Kültür maratonunda bugün ilk pençeyi hangi konuya atıyoruz?'
-              : 'Harika uçuş! Bugün ${stats.dailySolvedCount} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',
-        ),
-        const SizedBox(height: 16),
-        // Riverpod ile anlık güncellenen 3D Tactile günlük hedef kartı
-        _DailyGoalCard(solved: stats.dailySolvedCount, goal: stats.dailyGoal),
-        const SizedBox(height: 16),
-        // Akıllı KPSS Günlük Çalışma Planı Kompakt Kartı
-        const HomeDailyPlanCard(),
-        if (stats.weakestLesson != 'Henüz veri yok') ...[
-          const SizedBox(height: 16),
-          _WeakLessonHomeBanner(weakestLesson: stats.weakestLesson),
-        ],
-        const SizedBox(height: 16),
-        const SectionTitle('Çalışma türleri'),
-        // 2x2 Tactile Bento Grid (Eşit kart yüksekliği ve justify-between hizalama)
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: _StudyTypeTile(
-                  icon: LucideIcons.target,
-                  title: 'Konu testi',
-                  description: 'Bir konu seç, 10-20 soruluk test çöz.',
-                  badgeText: '10-20 Soru',
-                  actionText: 'Başla',
-                  accentColor: colorScheme.primary,
-                  accentContainerColor: colorScheme.primaryContainer,
-                  onAccentContainerColor: colorScheme.onPrimaryContainer,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const QuizScreen()),
-                    );
-                  },
+    final tile1 = _StudyTypeTile(
+      icon: LucideIcons.target,
+      title: 'Konu testi',
+      description: 'Bir konu seç, 10-20 soruluk test çöz.',
+      badgeText: '10-20 Soru',
+      actionText: 'Başla',
+      accentColor: colorScheme.primary,
+      accentContainerColor: colorScheme.primaryContainer,
+      onAccentContainerColor: colorScheme.onPrimaryContainer,
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const QuizScreen()));
+      },
+    );
+
+    final tile2 = _StudyTypeTile(
+      icon: LucideIcons.layers,
+      title: 'Bilgi kartları',
+      description: 'Önünde soru, arkasında cevap. Hızlı tekrar için.',
+      badgeText: 'Hızlı Tekrar',
+      actionText: 'Başla',
+      accentColor: colorScheme.tertiary,
+      accentContainerColor: colorScheme.tertiaryContainer,
+      onAccentContainerColor: colorScheme.onTertiaryContainer,
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const FlashcardsScreen()));
+      },
+    );
+
+    final tile3 = _StudyTypeTile(
+      icon: LucideIcons.bookmark,
+      title: 'Yanlış defteri',
+      description: 'Yanlış yaptığın soruları tekrar çöz.',
+      badgeText: 'Akıllı Havuz',
+      actionText: 'Başla',
+      accentColor: colorScheme.error,
+      accentContainerColor: colorScheme.errorContainer,
+      onAccentContainerColor: colorScheme.onErrorContainer,
+      onTap: () {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const MistakesScreen()));
+      },
+    );
+
+    final tile4 = _StudyTypeTile(
+      icon: LucideIcons.timer,
+      title: 'Deneme sınavı',
+      description: '60 soru, 65 dakika. Gerçek Genel Kültür sınav düzeni.',
+      badgeText: '65 Dakika',
+      actionText: 'Başla',
+      accentColor: colorScheme.secondary,
+      accentContainerColor: colorScheme.secondaryContainer,
+      onAccentContainerColor: colorScheme.onSecondaryContainer,
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => const QuizScreen(
+              examDuration: Duration(minutes: 65),
+              customTitle: 'Genel Kültür Denemesi',
+            ),
+          ),
+        );
+      },
+    );
+
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 720),
+        child: ListView(
+          padding: EdgeInsets.symmetric(
+            horizontal: ResponsiveBreakpoints.horizontalPadding(context),
+            vertical: 16,
+          ),
+          children: [
+            // Kadro Koçu maskot konuşma balonu
+            MascotCoachBanner(
+              mood: MascotMood.coach,
+              title: 'Hoş geldin',
+              message: stats.dailySolvedCount == 0
+                  ? 'Ben Kadro Koçun! KPSS Genel Kültür maratonunda bugün ilk pençeyi hangi konuya atıyoruz?'
+                  : 'Harika uçuş! Bugün ${stats.dailySolvedCount} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',
+            ),
+            const SizedBox(height: 16),
+            // Riverpod ile anlık güncellenen 3D Tactile günlük hedef kartı
+            _DailyGoalCard(
+              solved: stats.dailySolvedCount,
+              goal: stats.dailyGoal,
+            ),
+            const SizedBox(height: 16),
+            // Akıllı KPSS Günlük Çalışma Planı Kompakt Kartı
+            const HomeDailyPlanCard(),
+            if (stats.weakestLesson != 'Henüz veri yok') ...[
+              const SizedBox(height: 16),
+              _WeakLessonHomeBanner(weakestLesson: stats.weakestLesson),
+            ],
+            const SizedBox(height: 16),
+            const SectionTitle('Çalışma türleri'),
+            // Adaptif Bento Grid (Tablette 4 sütun tek satır, mobilde 2x2 eşit yükseklikli grid)
+            if (isTablet) ...[
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(child: tile1),
+                    SizedBox(width: gridSpacing),
+                    Expanded(child: tile2),
+                    SizedBox(width: gridSpacing),
+                    Expanded(child: tile3),
+                    SizedBox(width: gridSpacing),
+                    Expanded(child: tile4),
+                  ],
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StudyTypeTile(
-                  icon: LucideIcons.layers,
-                  title: 'Bilgi kartları',
-                  description:
-                      'Önünde soru, arkasında cevap. Hızlı tekrar için.',
-                  badgeText: 'Hızlı Tekrar',
-                  actionText: 'Başla',
-                  accentColor: colorScheme.tertiary,
-                  accentContainerColor: colorScheme.tertiaryContainer,
-                  onAccentContainerColor: colorScheme.onTertiaryContainer,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const FlashcardsScreen(),
-                      ),
-                    );
-                  },
+            ] else ...[
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(child: tile1),
+                    SizedBox(width: gridSpacing),
+                    Expanded(child: tile2),
+                  ],
+                ),
+              ),
+              SizedBox(height: gridSpacing),
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(child: tile3),
+                    SizedBox(width: gridSpacing),
+                    Expanded(child: tile4),
+                  ],
                 ),
               ),
             ],
-          ),
+            const SizedBox(height: 16),
+            const SectionTitle('Etkileşimli Mini Oyunlar'),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: _StudyTypeTile(
+                      icon: LucideIcons.zap,
+                      title: '60 Saniyede Pençe',
+                      description: 'Doğru / Yanlış hızlı düello ile kombo yap.',
+                      badgeText: 'Kombo XP',
+                      actionText: 'Düelloya Gir',
+                      accentColor: colorScheme.tertiary,
+                      accentContainerColor: colorScheme.tertiaryContainer,
+                      onAccentContainerColor: colorScheme.onTertiaryContainer,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const TrueFalseBlitzScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(width: gridSpacing),
+                  Expanded(
+                    child: _StudyTypeTile(
+                      icon: LucideIcons.puzzle,
+                      title: 'Kavram Eşleştir',
+                      description: 'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.',
+                      badgeText: 'Hafıza Oyunu',
+                      actionText: 'Eşleştir',
+                      accentColor: colorScheme.primary,
+                      accentContainerColor: colorScheme.primaryContainer,
+                      onAccentContainerColor: colorScheme.onPrimaryContainer,
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ConceptMatchScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: _StudyTypeTile(
-                  icon: LucideIcons.bookmark,
-                  title: 'Yanlış defteri',
-                  description: 'Yanlış yaptığın soruları tekrar çöz.',
-                  badgeText: 'Akıllı Havuz',
-                  actionText: 'Başla',
-                  accentColor: colorScheme.error,
-                  accentContainerColor: colorScheme.errorContainer,
-                  onAccentContainerColor: colorScheme.onErrorContainer,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const MistakesScreen()),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StudyTypeTile(
-                  icon: LucideIcons.timer,
-                  title: 'Deneme sınavı',
-                  description:
-                      '60 soru, 65 dakika. Gerçek Genel Kültür sınav düzeni.',
-                  badgeText: '65 Dakika',
-                  actionText: 'Başla',
-                  accentColor: colorScheme.secondary,
-                  accentContainerColor: colorScheme.secondaryContainer,
-                  onAccentContainerColor: colorScheme.onSecondaryContainer,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const QuizScreen(
-                          examDuration: Duration(minutes: 65),
-                          customTitle: 'Genel Kültür Denemesi',
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-        const SectionTitle('Etkileşimli Mini Oyunlar'),
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: _StudyTypeTile(
-                  icon: LucideIcons.zap,
-                  title: '60 Saniyede Pençe',
-                  description: 'Doğru / Yanlış hızlı düello ile kombo yap.',
-                  badgeText: 'Kombo XP',
-                  actionText: 'Düelloya Gir',
-                  accentColor: colorScheme.tertiary,
-                  accentContainerColor: colorScheme.tertiaryContainer,
-                  onAccentContainerColor: colorScheme.onTertiaryContainer,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const TrueFalseBlitzScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StudyTypeTile(
-                  icon: LucideIcons.puzzle,
-                  title: 'Kavram Eşleştir',
-                  description:
-                      'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.',
-                  badgeText: 'Hafıza Oyunu',
-                  actionText: 'Eşleştir',
-                  accentColor: colorScheme.primary,
-                  accentContainerColor: colorScheme.primaryContainer,
-                  onAccentContainerColor: colorScheme.onPrimaryContainer,
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const ConceptMatchScreen(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -205,6 +229,10 @@ class _DailyGoalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final isCompact = ResponsiveBreakpoints.isCompact(context);
+    final gaugeSize = isCompact ? 68.0 : 80.0;
+    final ringSize = isCompact ? 64.0 : 76.0;
+    final strokeWidth = isCompact ? 6.5 : 8.0;
 
     final progress = goal == 0 ? 0.0 : (solved / goal).clamp(0.0, 1.0);
     final percent = (progress * 100).round();
@@ -260,9 +288,11 @@ class _DailyGoalCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       '$solved / $goal soru',
-                      style: textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style:
+                          (isCompact
+                                  ? textTheme.titleMedium
+                                  : textTheme.headlineSmall)
+                              ?.copyWith(fontWeight: FontWeight.w800),
                     ),
                     const SizedBox(height: 10),
                     ClipRRect(
@@ -275,20 +305,20 @@ class _DailyGoalCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 16),
-              // Sağ: Dairesel Halka / Gauge (80x80)
+              SizedBox(width: isCompact ? 10 : 16),
+              // Sağ: Dairesel Halka / Gauge
               SizedBox(
-                width: 80,
-                height: 80,
+                width: gaugeSize,
+                height: gaugeSize,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
                     SizedBox(
-                      width: 76,
-                      height: 76,
+                      width: ringSize,
+                      height: ringSize,
                       child: CircularProgressIndicator(
                         value: progress,
-                        strokeWidth: 8,
+                        strokeWidth: strokeWidth,
                         backgroundColor: colorScheme.primaryContainer.withAlpha(
                           90,
                         ),
@@ -301,15 +331,19 @@ class _DailyGoalCard extends StatelessWidget {
                       children: [
                         Icon(
                           LucideIcons.flame,
-                          size: 18,
+                          size: isCompact ? 16 : 18,
                           color: colorScheme.tertiary,
                         ),
                         Text(
                           '%$percent',
-                          style: textTheme.labelLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: colorScheme.primary,
-                          ),
+                          style:
+                              (isCompact
+                                      ? textTheme.labelMedium
+                                      : textTheme.labelLarge)
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.w800,
+                                    color: colorScheme.primary,
+                                  ),
                         ),
                       ],
                     ),
@@ -353,6 +387,7 @@ class _StudyTypeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final isCompact = ResponsiveBreakpoints.isCompact(context);
 
     final effectiveAccent = accentColor ?? colorScheme.primary;
     final effectiveAccentContainer =
@@ -362,7 +397,7 @@ class _StudyTypeTile extends StatelessWidget {
 
     return TactileCard(
       onTap: onTap,
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(isCompact ? 10 : 14),
       backgroundColor: colorScheme.surface,
       borderColor: effectiveAccent.withAlpha(110),
       child: Column(
@@ -378,7 +413,7 @@ class _StudyTypeTile extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(10),
+                    padding: EdgeInsets.all(isCompact ? 8 : 10),
                     decoration: BoxDecoration(
                       color: effectiveAccentContainer,
                       borderRadius: BorderRadius.circular(12),
@@ -386,15 +421,15 @@ class _StudyTypeTile extends StatelessWidget {
                     child: Icon(
                       icon,
                       color: effectiveOnAccentContainer,
-                      size: 24,
+                      size: isCompact ? 20 : 24,
                     ),
                   ),
                   const SizedBox(width: 6),
                   Flexible(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isCompact ? 6 : 8,
+                        vertical: isCompact ? 2 : 3,
                       ),
                       decoration: BoxDecoration(
                         color: effectiveAccentContainer,
@@ -405,6 +440,7 @@ class _StudyTypeTile extends StatelessWidget {
                         style: textTheme.labelSmall?.copyWith(
                           color: effectiveOnAccentContainer,
                           fontWeight: FontWeight.w800,
+                          fontSize: isCompact ? 10 : null,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -412,13 +448,15 @@ class _StudyTypeTile extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: isCompact ? 8 : 12),
               Text(
                 title,
-                style: textTheme.titleMedium?.copyWith(
-                  color: colorScheme.onSurface,
-                  fontWeight: FontWeight.w800,
-                ),
+                style:
+                    (isCompact ? textTheme.titleSmall : textTheme.titleMedium)
+                        ?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w800,
+                        ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -426,6 +464,7 @@ class _StudyTypeTile extends StatelessWidget {
                 style: textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
+                  fontSize: isCompact ? 11 : null,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -441,10 +480,15 @@ class _StudyTypeTile extends StatelessWidget {
                 style: textTheme.labelMedium?.copyWith(
                   color: effectiveAccent,
                   fontWeight: FontWeight.w800,
+                  fontSize: isCompact ? 11 : null,
                 ),
               ),
               const SizedBox(width: 4),
-              Icon(LucideIcons.chevronRight, size: 16, color: effectiveAccent),
+              Icon(
+                LucideIcons.chevronRight,
+                size: isCompact ? 14 : 16,
+                color: effectiveAccent,
+              ),
             ],
           ),
         ],

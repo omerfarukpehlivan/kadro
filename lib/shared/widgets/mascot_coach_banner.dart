@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 /// Kadro Koçu'nun ruh hali (mood) ve derse özel görsel varyasyonları.
@@ -89,9 +90,12 @@ class MascotCoachBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final isCompact = ResponsiveBreakpoints.isCompact(context);
+    final avatarSize = isCompact ? 72.0 : 92.0;
+    final minHeight = isCompact ? 96.0 : 122.0;
 
     return Container(
-      constraints: const BoxConstraints(minHeight: 122),
+      constraints: BoxConstraints(minHeight: minHeight),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
@@ -113,35 +117,38 @@ class MascotCoachBanner extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(22),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: EdgeInsets.symmetric(
+            horizontal: isCompact ? 10 : 14,
+            vertical: isCompact ? 8 : 12,
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Sol: 92x92 Çift Katmanlı Borderlı Maskot Çerçevesi + Yıldız Rozeti
+              // Sol: Çift Katmanlı Borderlı Maskot Çerçevesi + Rozet
               Stack(
                 clipBehavior: Clip.none,
                 children: [
                   Container(
-                    width: 92,
-                    height: 92,
+                    width: avatarSize,
+                    height: avatarSize,
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       color: colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(isCompact ? 16 : 20),
                       border: Border.all(
                         color: colorScheme.primary.withAlpha(90),
                         width: 2,
                       ),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(isCompact ? 14 : 18),
                       child: Image.asset(
                         mood.assetPath,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) => Icon(
                           LucideIcons.award,
                           color: colorScheme.primary,
-                          size: 40,
+                          size: isCompact ? 32 : 40,
                         ),
                       ),
                     ),
@@ -161,14 +168,14 @@ class MascotCoachBanner extends StatelessWidget {
                       ),
                       child: Icon(
                         LucideIcons.award,
-                        size: 12,
+                        size: isCompact ? 10 : 12,
                         color: colorScheme.onTertiaryContainer,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(width: 14),
+              SizedBox(width: isCompact ? 10 : 14),
 
               // Sağ: Rozet, Başlık ve Tam Genişlik Konuşma Balonu
               Expanded(
@@ -178,9 +185,9 @@ class MascotCoachBanner extends StatelessWidget {
                   children: [
                     // Üst Rozet Hapı (badgeLabel)
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 3,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isCompact ? 8 : 10,
+                        vertical: isCompact ? 2 : 3,
                       ),
                       decoration: BoxDecoration(
                         color: colorScheme.primaryContainer,
@@ -192,29 +199,34 @@ class MascotCoachBanner extends StatelessWidget {
                           color: colorScheme.onPrimaryContainer,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.5,
+                          fontSize: isCompact ? 10 : null,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 4),
 
                     // Başlık (Tek satır, sayfalar arası dikey zıplamayı önler)
                     Text(
                       title,
-                      style: textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style:
+                          (isCompact
+                                  ? textTheme.titleSmall
+                                  : textTheme.titleMedium)
+                              ?.copyWith(
+                                color: colorScheme.onSurface,
+                                fontWeight: FontWeight.w800,
+                              ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 4),
 
                     // Konuşma Balonu (Tam genişlik ve 2 satır sabit ritim)
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isCompact ? 10 : 12,
+                        vertical: isCompact ? 6 : 8,
                       ),
                       decoration: BoxDecoration(
                         color: colorScheme.surfaceContainerHighest,
@@ -226,7 +238,8 @@ class MascotCoachBanner extends StatelessWidget {
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
-                          height: 1.35,
+                          height: 1.3,
+                          fontSize: isCompact ? 11 : null,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
