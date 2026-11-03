@@ -84,8 +84,9 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-57** | **Gelişmiş Kimlik Doğrulama: Google ile Giriş (OAuth), E-posta / Kullanıcı Adı ile Esnek Giriş-Kayıt & Şifre Sıfırlama** | Tek tıkla Google ile Giriş (`signInWithOAuth`), tek alanda hem e-posta hem kullanıcı adı desteği, şık 'Şifremi Unuttum' modalı, misafir çalışma verilerini hesaba aktaran bulut birleştirme köprüsü | ✅ **Tamamlandı** |
 | **TASK-58** | **Dikkat Çekici & Motive Edici Test Zorluk Rozetleri (Basit Alıştırma, Sınav Ayarı, Net Sıçratan, Kurtlar Sofrası / ÖSYM Tuzağı)** | Sıkıcı akademik zorluk etiketlerinin yerine adayın ilgisini çeken 4 seviyeli vurucu rozet sistemi ('Basit Alıştırma (Isınma)', 'Tam Sınav Ayarı', 'Net Sıçratan', 'Kurtlar Sofrası'); kart altı motive edici mini açıklamalar ve ColorScheme standardizasyonu | ✅ **Tamamlandı** |
 | **TASK-59** | **Tüm Sistemde Duyarlı & Uyarlanabilir Ekran (Responsive & Adaptive) Mimarisi (Kompakt Telefon, Standart Telefon, Tablet & Katlanabilir)** | `ui-ux-pro-max` disipliniyle küçük ekranlar (<380px) için sıfır taşma (overflow), esnek padding/font ölçeklemesi ve kat altı koruması; tabletler (>=600px) için maxWidth kısıtı (720px) ve adaptif 3-4 sütunlu grid yapısı | ✅ **Tamamlandı** |
-| **TASK-60** | **Ders Kartlarında Dairesel İlerleme Halkası (Animated Lesson Progress Ring) & Çözülen Test Oranı Göstergesi** | `LessonsScreen` ders kartlarındaki ikonların etrafına çözülen test / toplam test oranını gösteren animasyonlu dairesel ilerleme halkası (`LessonProgressRing`); kart içinde 'X / Y Test Tamamlandı' ve yüzde ilerleme rozeti | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-60** | **Ders Kartlarında Dairesel İlerleme Halkası (Animated Lesson Progress Ring) & Çözülen Test Oranı Göstergesi** | `LessonsScreen` ders kartlarındaki ikonların etrafına çözülen test / toplam test oranını gösteren animasyonlu dairesel ilerleme halkası (`LessonProgressRing`); kart içinde 'X / Y Test Tamamlandı' ve yüzde ilerleme rozeti | ✅ **Tamamlandı** |
 | **TASK-61** | **UI Taşma (RenderFlex Overflow) ve Görsel Hata Düzeltme Paketi (Test Sonucu, Dersler, İstatistik, Paywall, Navbar & BottomSheet)** | Test Sonucu ekranındaki 83px dikey taşmanın `ListView` ile çözülmesi; Güncel Bilgiler ders kartındaki 6.1px taşmanın `Flexible`/`Wrap` ile çözülmesi; İstatistik çözülen testler başlığının `Expanded` ile sarılması; Paywall plan kartlarında `Wrap` düzeltmesi; AppNavigationBar 'Ana Sayfa' taşmasının kompakt padding ile giderilmesi; Hatalı soru bildirme BottomSheet'inde `clipBehavior: Clip.antiAlias` ile köşe sızıntısının önlenmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-62** | **UI & İçerik Sadeleştirme Paketi: Bilgi Kirliliğini Önleme, Gereksiz Rozet ve Tekrarların Temizlenmesi (Dersler, Konular, Konu Testleri)** | Tarih kartındaki '27 Soru · Kritik' rozetinin ve '7 Adımlı Yol Haritası' alt metninin kaldırılması; Konular ekranında mükerrer 'ADIM 1' rozeti ve 'Tarih · Konu Testi' metninin temizlenmesi; Konu testlerinde zorluk rozetlerindeki parantez içi açıklamaların, mükerrer 'Test 1' başlığının ve '10 Soru / 10 Soruluk Konu Testi' tekrarlarının temizlenmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3510,6 +3511,87 @@ ADIM 6: `QuizResultScreen` Test Sonucu Ekranı 83px Dikey Taşma Düzeltmesi (`l
 ADIM 7: Test ve Doğrulama
 1. `test/overflow_fix_test.dart` (veya ilgili ekran testleri) içine dar ekran (`width: 360`, `height: 640`) testleri ekle:
    - `QuizResultScreen`, `LessonsScreen`, `StatsScreen`, `PaywallScreen`, `AppNavigationBar` dar ekranda render edildiğinde sıfır taşma doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-62: UI & İçerik Sadeleştirme Paketi: Bilgi Kirliliğini Önleme, Gereksiz Rozet ve Tekrarların Temizlenmesi (Dersler, Konular, Konu Testleri)
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - `ui-ux-pro-max` disiplini (Cognitive Load Reduction / Bilişsel Yük Azaltma & Progressive Disclosure) doğrultusunda adayın ekranındaki görsel gürültü ve mükerrer bilgilerin temizlenmesi:
+    1. **Dersler Ekranı (`LessonsScreen` & `kpss_lessons.dart`):**
+       - Tarih dersi kartındaki `badgeText: '27 Soru · Kritik'` rozetinin kaldırılması (`badgeText: null`).
+       - Ders kartlarının en altındaki `${lesson.topics.length} Adımlı Yol Haritası` ve `Yol Haritasını Aç →` satırının kaldırılması (Kart zaten `TactileCard` ile tıklanabilir ve tıklandığında konular zaten açılıyor; mükerrer ve yer kaplayan satır temizlenir).
+    2. **Ders Konuları Ekranı (`LessonTopicsScreen`):**
+       - Sol sütundaki dikey ilerleme çizgisinde zaten daire içinde adım numarası (`1`, `2`, `3`) yer aldığı için kartın üstündeki mükerrer `'ADIM ${index + 1}'` rozetinin kaldırılması.
+       - Üst satırda yalnızca sağa yaslı çevrimdışı indirme butonunun (`isDownloaded ? 'İndirildi' : 'İndir'`) tutulması.
+       - Kartın alt satırında sayfa başlığı zaten "X Konuları" iken tekrarlanan `'$lessonName · Konu Testi'` ("Tarih · Konu Testi") metninin kaldırılması; alt satırda sadece sağa yaslı `Test Çöz` butonu bırakılması.
+    3. **Konu Testleri Ekranı (`TopicTestsScreen`):**
+       - Test kartının üst rozetinde zaten `TEST ${index + 1}` yazdığı için, orta başlıktaki mükerrer `'Test ${index + 1} · '` ifadesinin kaldırılması, sadece seviye başlığının (`tier.cleanTitle`) gösterilmesi.
+       - Her test standart 10 soru olduğu için ve kullanıcı buna aşina olacağından, kartın orta alanındaki `10 Soru` ifadesinin (`${chunk.length} Soru · Öngörülen Süre...` yerine sadece `Öngörülen Süre: ~11 dk`) ve alt çubuktaki mükerrer `'10 Soruluk Konu Testi'` yazısının kaldırılması.
+       - Alt satırda sadece sağa yaslı `Test Çöz` butonunun yer alması.
+    4. **Test Zorluk Seviyeleri Modeli (`TestDifficultyTier`):**
+       - `title` içindeki gereksiz parantez içi açıklamaların temizlenmesi:
+         - `🌱 Basit Alıştırma (Isınma Turu)` ➔ `🌱 Basit Alıştırma`
+         - `🏛️ Tam Sınav Ayarı (ÖSYM Formatı)` ➔ `🏛️ Tam Sınav Ayarı`
+         - `⚡ Net Sıçratan (Derece Soruları)` ➔ `⚡ Net Sıçratan`
+         - `🔥 Kurtlar Sofrası (ÖSYM Mayın Tarlası)` ➔ `🔥 Kurtlar Sofrası`
+
+```text
+GÖREV: TASK-62 — UI & İçerik Sadeleştirme Paketi: Bilgi Kirliliğini Önleme ve Tekrarların Temizlenmesi
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: `kpss_lessons.dart` ve `LessonsScreen` Temizliği
+1. `lib/features/lessons/data/kpss_lessons.dart` içinde Tarih dersinin rozetini kaldır:
+   - `badgeText: '27 Soru · Kritik'` yerine `badgeText: null` yap.
+2. `lib/features/lessons/presentation/lessons_screen.dart` içinde `_LessonCard` altındaki Wrap/Row satırını (`${lesson.topics.length} Adımlı Yol Haritası` ve `Yol Haritasını Aç →`) kaldır. Böylece kart daha ferah ve kompakt bir görünüme kavuşsun.
+
+ADIM 2: `LessonTopicsScreen` Mükerrer Adım ve Ders Etiketlerinin Temizliği (`lib/features/lessons/presentation/lesson_topics_screen.dart`)
+1. Sol sütundaki CircleAvatar(`${index + 1}`) zaten adım numarasını gösterdiğinden, kartın içindeki `Container(child: Text('ADIM ${index + 1}'))` rozetini kaldır.
+2. Üst satırda indirme butonunu sağa yasla (`Row(mainAxisAlignment: MainAxisAlignment.end, children: [Tooltip(...)])` veya `Align(alignment: Alignment.centerRight, ...)`).
+3. Kartın alt satırındaki `'$lessonName · Konu Testi'` metnini kaldır.
+4. Alt satırı sadece sağa yaslı `FilledButton.tonal(child: Text('Test Çöz'))` butonu olacak şekilde düzenle (`Align(alignment: Alignment.centerRight, child: FilledButton.tonal(...))`).
+
+ADIM 3: `TestDifficultyTier` Parantez İçi Metinlerin Temizliği (`lib/features/quiz/data/models/test_difficulty_tier.dart`)
+1. `TestDifficultyTierExtension.title` getter'ındaki parantez içi gereksiz metinleri temizle:
+   ```dart
+   String get title {
+     switch (this) {
+       case TestDifficultyTier.warmup:
+         return '🌱 Basit Alıştırma';
+       case TestDifficultyTier.standard:
+         return '🏛️ Tam Sınav Ayarı';
+       case TestDifficultyTier.distinction:
+         return '⚡ Net Sıçratan';
+       case TestDifficultyTier.trapMaster:
+         return '🔥 Kurtlar Sofrası';
+     }
+   }
+   ```
+
+ADIM 4: `TopicTestsScreen` Mükerrer Test No ve 10 Soru Bilgisinin Temizliği (`lib/features/lessons/presentation/topic_tests_screen.dart`)
+1. Kartın orta başlığında `Text('Test ${index + 1} · ${tier.cleanTitle}')` yerine sadece `Text(tier.cleanTitle)` göster (üstte zaten `TEST ${index + 1}` rozeti var).
+2. Orta süre satırında `${chunk.length} Soru · Öngörülen Süre: ~${...} dk` yerine sadece `Öngörülen Süre: ~${(chunk.length * 1.1).round()} dk` yazdır ("10 Soru" bilgisi kaldırılır).
+3. Alt satırdaki `Row` içinden `'10 Soruluk Konu Testi'` ve `LucideIcons.listOrdered` ikonunu kaldır.
+4. Alt satırı sadece sağa yaslı `Test Çöz` butonu yap:
+   ```dart
+   Align(
+     alignment: Alignment.centerRight,
+     child: FilledButton.tonal(
+       onPressed: () => _startTest(index, chunk, tier),
+       style: FilledButton.styleFrom(
+         visualDensity: VisualDensity.compact,
+         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+       ),
+       child: const Text('Test Çöz'),
+     ),
+   )
+   ```
+
+ADIM 5: Test ve Doğrulama
+1. `test/lessons_screen_test.dart`, `test/topic_tests_screen_test.dart` ve `test/lesson_topics_screen_test.dart` içindeki widget testlerini yeni temiz UI metinleriyle güncelle.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 
