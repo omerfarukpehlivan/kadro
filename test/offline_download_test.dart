@@ -157,7 +157,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // İndir butonuna dokun
-        final downloadBtn = find.text('İndir ⬇️').first;
+        final downloadBtn = find.text('İndir').first;
         expect(downloadBtn, findsOneWidget);
         await tester.tap(downloadBtn);
         await tester.pumpAndSettle();
@@ -195,14 +195,14 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        final downloadBtn = find.text('İndir ⬇️').first;
+        final downloadBtn = find.text('İndir').first;
         await tester.tap(downloadBtn);
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 500));
         await tester.pumpAndSettle();
 
-        // Cihazda Hazır ✅ rozetinin belirdiğini doğrula
-        expect(find.text('Cihazda Hazır ✅'), findsWidgets);
+        // İndirildi rozetinin belirdiğini doğrula
+        expect(find.text('İndirildi'), findsWidgets);
       },
     );
 

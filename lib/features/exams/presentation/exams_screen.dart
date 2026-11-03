@@ -355,19 +355,75 @@ class _ExamPackCard extends ConsumerWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: accentContainerColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  badgeText,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: onAccentContainerColor,
-                    fontWeight: FontWeight.w800,
+              const SizedBox(width: 8),
+              // Sağ Üst: Kategori Rozeti ve Çevrimdışı İndirme Butonu
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: accentContainerColor,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      badgeText,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: onAccentContainerColor,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 6),
+                  Tooltip(
+                    message: isDownloaded
+                        ? 'Cihazda Hazır'
+                        : 'Çevrimdışı İndir',
+                    child: Material(
+                      color: isDownloaded
+                          ? colorScheme.secondaryContainer
+                          : colorScheme.surfaceContainerHighest.withAlpha(140),
+                      borderRadius: BorderRadius.circular(16),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () => _handleDownload(context, ref),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isDownloaded
+                                    ? LucideIcons.circleCheck
+                                    : LucideIcons.arrowDownToLine,
+                                size: 14,
+                                color: isDownloaded
+                                    ? colorScheme.onSecondaryContainer
+                                    : colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                isDownloaded ? 'İndirildi' : 'İndir',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: isDownloaded
+                                      ? colorScheme.onSecondaryContainer
+                                      : colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -382,47 +438,34 @@ class _ExamPackCard extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Sol: Çevrimdışı İndirme Butonu / Rozeti
-              InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: () => _handleDownload(context, ref),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDownloaded
-                        ? colorScheme.primaryContainer
-                        : colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        isDownloaded
-                            ? LucideIcons.checkCircle
-                            : LucideIcons.download,
-                        size: 14,
-                        color: isDownloaded
-                            ? colorScheme.onPrimaryContainer
-                            : colorScheme.onSurfaceVariant,
+              // Sol: Çevrimdışı durum veya rehber bilgi
+              if (isDownloaded)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      LucideIcons.hardDrive,
+                      size: 13,
+                      color: colorScheme.secondary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Çevrimdışı Kullanıma Hazır',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.secondary,
+                        fontWeight: FontWeight.w700,
                       ),
-                      const SizedBox(width: 5),
-                      Text(
-                        isDownloaded ? 'Cihazda Hazır ✅' : 'İndir ⬇️',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: isDownloaded
-                              ? colorScheme.onPrimaryContainer
-                              : colorScheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
+                    ),
+                  ],
+                )
+              else
+                Text(
+                  'Kadro PRO Çevrimdışı Desteği',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: colorScheme.outline,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
               // Sağ: Denemeyi Başlat
               Row(
                 children: [

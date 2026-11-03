@@ -237,67 +237,115 @@ class _TopicPathNode extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: 16),
               child: TactileCard(
                 onTap: () => _startTopicTest(context, ref),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.secondaryContainer,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              'ADIM ${index + 1}',
-                              style: textTheme.labelSmall?.copyWith(
-                                color: colorScheme.onSecondaryContainer,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                    // Üst Satır: ADIM Rozeti (Sol) + Çevrimdışı İndirme Butonu (Sağ)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            topic,
-                            style: textTheme.titleSmall?.copyWith(
+                          decoration: BoxDecoration(
+                            color: colorScheme.secondaryContainer,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'ADIM ${index + 1}',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSecondaryContainer,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
+                        ),
+                        Tooltip(
+                          message: isDownloaded
+                              ? 'Cihazda Hazır'
+                              : 'Çevrimdışı İndir',
+                          child: Material(
+                            color: isDownloaded
+                                ? colorScheme.secondaryContainer
+                                : colorScheme.surfaceContainerHighest.withAlpha(
+                                    140,
+                                  ),
+                            borderRadius: BorderRadius.circular(14),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(14),
+                              onTap: () => _handleDownload(context, ref),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 3,
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      isDownloaded
+                                          ? LucideIcons.circleCheck
+                                          : LucideIcons.arrowDownToLine,
+                                      size: 13,
+                                      color: isDownloaded
+                                          ? colorScheme.onSecondaryContainer
+                                          : colorScheme.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      isDownloaded ? 'İndirildi' : 'İndir',
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: isDownloaded
+                                            ? colorScheme.onSecondaryContainer
+                                            : colorScheme.onSurfaceVariant,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // Orta: Konu Başlığı (Tam Genişlik)
+                    Text(
+                      topic,
+                      style: textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // Alt Satır: Alt Bilgi ve Test Çöz Butonu
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
                             '$lessonName · Konu Testi',
                             style: textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    // Çevrimdışı İndirme İkon Butonu
-                    IconButton(
-                      icon: Icon(
-                        isDownloaded
-                            ? LucideIcons.checkCircle
-                            : LucideIcons.download,
-                        size: 20,
-                        color: isDownloaded
-                            ? colorScheme.primary
-                            : colorScheme.onSurfaceVariant,
-                      ),
-                      tooltip: isDownloaded
-                          ? 'Cihazda Hazır ✅'
-                          : 'Çevrimdışı İndir',
-                      onPressed: () => _handleDownload(context, ref),
-                    ),
-                    const SizedBox(width: 4),
-                    FilledButton.tonal(
-                      onPressed: () => _startTopicTest(context, ref),
-                      child: const Text('Test Çöz'),
+                        ),
+                        const SizedBox(width: 8),
+                        FilledButton.tonal(
+                          onPressed: () => _startTopicTest(context, ref),
+                          style: FilledButton.styleFrom(
+                            visualDensity: VisualDensity.compact,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                          ),
+                          child: const Text('Test Çöz'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
