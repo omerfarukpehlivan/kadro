@@ -25,11 +25,11 @@ void main() {
       expect(light.colorScheme.onSurface, equals(const Color(0xFF0F172A)));
       expect(
         light.colorScheme.primaryContainer,
-        equals(const Color(0xFFE0E7FF)),
+        equals(const Color(0xFFF0F4F8)),
       );
       expect(
         light.colorScheme.onPrimaryContainer,
-        equals(const Color(0xFF1E1B4B)),
+        equals(const Color(0xFF0C2138)),
       );
 
       final dark = AppTheme.dark;

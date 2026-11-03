@@ -83,7 +83,7 @@ void main() {
         expect(find.text('TARİH REHBERİ'), findsOneWidget);
         expect(find.text('Tarih Yol Haritası'), findsOneWidget);
         expect(find.text('Tarih konularını adım adım fethet!'), findsOneWidget);
-        expect(find.byIcon(LucideIcons.sparkles), findsOneWidget);
+        expect(find.byIcon(LucideIcons.award), findsOneWidget);
         expect(find.byType(Image), findsOneWidget);
 
         // 92x92 boyutundaki borderlı görsel kutusunu doğrula

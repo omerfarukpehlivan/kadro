@@ -160,7 +160,7 @@ class MascotCoachBanner extends StatelessWidget {
                         ),
                       ),
                       child: Icon(
-                        LucideIcons.sparkles,
+                        LucideIcons.award,
                         size: 12,
                         color: colorScheme.onTertiaryContainer,
                       ),

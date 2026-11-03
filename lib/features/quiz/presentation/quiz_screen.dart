@@ -936,7 +936,7 @@ class _QuizModeBadge extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  isExam ? LucideIcons.fileText : LucideIcons.sparkles,
+                  isExam ? LucideIcons.fileText : LucideIcons.lightbulb,
                   size: 14,
                   color: isExam
                       ? colorScheme.onSecondaryContainer

@@ -7,23 +7,23 @@ import 'package:google_fonts/google_fonts.dart';
 
 /// Kadro uygulamasının kurumsal tasarım sistemi ve tema yapılandırması.
 ///
-/// Renkler: Academic Royal Indigo (#4F46E5), Vibrant Academic Teal (#0D9488) ve Achievement Amber Gold (#D97706).
+/// Renkler: Academic & State Navy (#1E3A5F), Academic Emerald Teal (#0D9488) ve Achievement Amber Gold (#D97706).
 /// Tipografi: Başlıklarda Plus Jakarta Sans, gövde metinlerinde Inter.
 ///
 /// Web karşılığı: CSS custom properties (:root design tokens) ve global font-family importları.
 class AppTheme {
   AppTheme._();
 
-  // Marka Renk Sabitleri (Academic Indigo + Emerald Teal + Achievement Gold)
-  static const Color seedColor = Color(0xFF4F46E5); // Academic Royal Indigo
+  // Marka Renk Sabitleri (Academic Navy + Emerald Teal + Achievement Gold - "De-AI" Prestij Paleti)
+  static const Color seedColor = Color(0xFF1E3A5F); // Academic & State Navy
   static const Color secondaryColor = Color(
     0xFF0D9488,
-  ); // Vibrant Academic Teal
+  ); // Academic Emerald Teal
   static const Color tertiaryColor = Color(
     0xFFD97706,
   ); // Achievement Amber Gold
 
-  static const Color darkPrimaryColor = Color(0xFF818CF8);
+  static const Color darkPrimaryColor = Color(0xFF38BDF8); // Sky/Steel Blue
   static const Color darkSecondaryColor = Color(0xFF2DD4BF);
   static const Color darkTertiaryColor = Color(0xFFFBBF24);
 
@@ -105,7 +105,7 @@ class AppTheme {
     final baseLight = FlexThemeData.light(
       colors: const FlexSchemeColor(
         primary: seedColor,
-        primaryContainer: Color(0xFFEEF2FF),
+        primaryContainer: Color(0xFFF0F4F8),
         secondary: secondaryColor,
         secondaryContainer: Color(0xFFCCFBF1),
         tertiary: tertiaryColor,
@@ -122,8 +122,8 @@ class AppTheme {
     final highContrastScheme = baseLight.colorScheme.copyWith(
       primary: seedColor,
       onPrimary: const Color(0xFFFFFFFF),
-      primaryContainer: const Color(0xFFE0E7FF),
-      onPrimaryContainer: const Color(0xFF1E1B4B),
+      primaryContainer: const Color(0xFFF0F4F8),
+      onPrimaryContainer: const Color(0xFF0C2138),
       secondary: secondaryColor,
       onSecondary: const Color(0xFFFFFFFF),
       secondaryContainer: const Color(0xFFCCFBF1),
@@ -142,12 +142,12 @@ class AppTheme {
       surfaceContainerHighest: const Color(0xFFF1F5F9),
       onSurfaceVariant: const Color(0xFF475569),
       outline: const Color(0xFF64748B),
-      outlineVariant: const Color(0xFFCBD5E1),
+      outlineVariant: const Color(0xFFE2E8F0),
     );
 
     return baseLight.copyWith(
       colorScheme: highContrastScheme,
-      scaffoldBackgroundColor: const Color(0xFFF1F5F9),
+      scaffoldBackgroundColor: const Color(0xFFF8FAFC),
       cardColor: const Color(0xFFFFFFFF),
       textTheme: _buildTextTheme(baseLight.textTheme),
     );
@@ -158,12 +158,12 @@ class AppTheme {
     final baseDark = FlexThemeData.dark(
       colors: const FlexSchemeColor(
         primary: darkPrimaryColor,
-        primaryContainer: Color(0xFF312E81),
+        primaryContainer: Color(0xFF172A45),
         secondary: darkSecondaryColor,
         secondaryContainer: Color(0xFF134E4A),
         tertiary: darkTertiaryColor,
         tertiaryContainer: Color(0xFF78350F),
-        appBarColor: Color(0xFF0F172A),
+        appBarColor: Color(0xFF0B1120),
         error: Color(0xFFF87171),
       ),
       surfaceMode: FlexSurfaceMode.levelSurfacesLowScaffold,
@@ -174,19 +174,19 @@ class AppTheme {
 
     final highContrastDarkScheme = baseDark.colorScheme.copyWith(
       primary: darkPrimaryColor,
-      onPrimary: const Color(0xFF0F172A),
-      primaryContainer: const Color(0xFF312E81),
-      onPrimaryContainer: const Color(0xFFE0E7FF),
+      onPrimary: const Color(0xFF0B1120),
+      primaryContainer: const Color(0xFF172A45),
+      onPrimaryContainer: const Color(0xFFE0F2FE),
       secondary: darkSecondaryColor,
-      onSecondary: const Color(0xFF0F172A),
+      onSecondary: const Color(0xFF0B1120),
       secondaryContainer: const Color(0xFF134E4A),
       onSecondaryContainer: const Color(0xFFCCFBF1),
       tertiary: darkTertiaryColor,
-      onTertiary: const Color(0xFF0F172A),
+      onTertiary: const Color(0xFF0B1120),
       tertiaryContainer: const Color(0xFF78350F),
       onTertiaryContainer: const Color(0xFFFEF3C7),
       error: const Color(0xFFF87171),
-      onError: const Color(0xFF0F172A),
+      onError: const Color(0xFF0B1120),
       errorContainer: const Color(0xFF7F1D1D),
       onErrorContainer: const Color(0xFFFEE2E2),
       surface: const Color(0xFF1E293B),
@@ -200,7 +200,7 @@ class AppTheme {
 
     return baseDark.copyWith(
       colorScheme: highContrastDarkScheme,
-      scaffoldBackgroundColor: const Color(0xFF0B0F19),
+      scaffoldBackgroundColor: const Color(0xFF0B1120),
       cardColor: const Color(0xFF1E293B),
       textTheme: _buildTextTheme(baseDark.textTheme),
     );

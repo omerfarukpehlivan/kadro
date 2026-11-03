@@ -30,20 +30,21 @@ Kadro's brand identity centers on **Kadro Koçu**, a charismatic, sharp-eyed **A
 
 ---
 
-## 2. Color Palette (Academic Royal Indigo + Anatolian Gold + Emerald)
+## 2. Color Palette (Devlet & Akademi Gece Laciverti + Tok Başarı Altını + Zümrüt Yeşili)
 
+> **De-AI Tasarım Restorasyonu:** Jenerik yapay zeka moru (`#4F46E5`) yerine Türkiye Cumhuriyeti kamu personeli hazırlık ciddiyetine ve saygın akademi kimliğine yakışan asil Gece Laciverti (`#1E3A5F`) ve steril fildişi/buz beyazı (`#F0F4F8`) kullanılmıştır.
 > **CRITICAL FLUTTER RULE:** Raw `Color(0xFF...)` definitions are **ONLY** allowed inside `lib/app/theme.dart` (`AppTheme`). All screens and widgets **MUST** read colors dynamically from `Theme.of(context).colorScheme`.
 
 | Role | Light Hex | Dark Hex | Flutter `ColorScheme` Token | Usage |
 |------|-----------|----------|-----------------------------|-------|
-| **Primary (Royal Indigo)** | `#4F46E5` | `#818CF8` | `colorScheme.primary` | Primary CTAs, tactile active borders, progress bars |
-| **Primary Container** | `#E0E7FF` | `#312E81` | `colorScheme.primaryContainer` | Mascot speech bubble accents, selected tiles, hero card surface |
-| **Secondary (Deep Slate)** | `#0F172A` | `#94A3B8` | `colorScheme.secondary` | Secondary actions, topic pills |
-| **Secondary Container** | `#F1F5F9` | `#1E293B` | `colorScheme.secondaryContainer` | Tactile card icon wells, neutral badges |
-| **Tertiary (Anatolian Gold / Streak Amber)** | `#D97706` | `#FBBF24` | `colorScheme.tertiary` | Daily goal flame/streak, Kadro Koçu PRO crown, exam timer warning |
+| **Primary (Devlet & Akademi Laciverti)** | `#1E3A5F` | `#38BDF8` | `colorScheme.primary` | Primary CTAs, tactile active borders, progress bars |
+| **Primary Container** | `#F0F4F8` | `#172A45` | `colorScheme.primaryContainer` | Mascot speech bubble accents, selected tiles, hero card surface |
+| **Secondary (Academic Emerald Teal)** | `#0D9488` | `#2DD4BF` | `colorScheme.secondary` | Secondary actions, topic pills, doğru cevap vurgusu |
+| **Secondary Container** | `#CCFBF1` | `#134E4A` | `colorScheme.secondaryContainer` | Tactile card icon wells, konu adımları rozetleri |
+| **Tertiary (Tok Başarı Altını / Streak Amber)** | `#D97706` | `#FBBF24` | `colorScheme.tertiary` | Daily goal flame/streak, Kadro Koçu PRO crown, ÖSYM Çeldirici Tuzağı rozeti |
 | **Tertiary Container** | `#FEF3C7` | `#78350F` | `colorScheme.tertiaryContainer` | Streak pill background, `%45 · En Yüksek Ağırlık` badge |
 | **Error / Destructive** | `#DC2626` | `#F87171` | `colorScheme.error` | Wrong option feedback, mistake counter, critical timer (`< 5 min`) |
-| **Surface / Background** | `#F8FAFC` | `#0B0F19` | `colorScheme.surface` | Clean slate page background |
+| **Surface / Background** | `#F8FAFC` | `#0B1120` | `colorScheme.surface` | Clean slate page background |
 
 ---
 

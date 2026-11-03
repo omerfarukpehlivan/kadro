@@ -362,7 +362,7 @@ class _TopMetricBar extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                LucideIcons.sparkles,
+                LucideIcons.zap,
                 size: 16,
                 color: colorScheme.onPrimaryContainer,
               ),
@@ -636,11 +636,7 @@ class _BlitzSummaryView extends StatelessWidget {
               child: TactileCard(
                 child: Column(
                   children: [
-                    Icon(
-                      LucideIcons.sparkles,
-                      color: colorScheme.primary,
-                      size: 28,
-                    ),
+                    Icon(LucideIcons.zap, color: colorScheme.primary, size: 28),
                     const SizedBox(height: 6),
                     Text(
                       '+$earnedXp XP',

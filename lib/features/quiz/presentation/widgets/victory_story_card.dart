@@ -54,7 +54,7 @@ class VictoryStoryCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    LucideIcons.sparkles,
+                    LucideIcons.trophy,
                     color: colorScheme.tertiary,
                     size: 16,
                   ),

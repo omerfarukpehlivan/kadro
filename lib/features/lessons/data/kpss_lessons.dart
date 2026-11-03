@@ -81,7 +81,7 @@ const List<Lesson> kpssLessons = [
     name: 'Güncel Bilgiler',
     section: 'Genel Kültür',
     questionCount: 6,
-    icon: LucideIcons.sparkles,
+    icon: LucideIcons.newspaper,
     badgeText: 'Her Hafta Yeni',
     topics: [
       'Türkiye ve Dünya Gündemi',

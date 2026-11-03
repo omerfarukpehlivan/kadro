@@ -143,7 +143,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           )
                         : FilledButton.icon(
                             onPressed: _completeOnboarding,
-                            icon: const Icon(LucideIcons.sparkles, size: 18),
+                            icon: const Icon(LucideIcons.compass, size: 18),
                             label: const Text('Rotamı Oluştur'),
                           ),
                   ),
