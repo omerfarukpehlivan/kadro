@@ -499,9 +499,10 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               showModalBottomSheet<void>(
                 context: context,
                 isScrollControlled: true,
+                clipBehavior: Clip.antiAlias,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                 ),
                 builder: (ctx) => Padding(
                   padding: EdgeInsets.only(

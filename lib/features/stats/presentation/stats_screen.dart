@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/stats/presentation/quiz_history_screen.dart';
 import 'package:kadro/features/stats/presentation/quiz_session_detail_screen.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
@@ -20,75 +21,81 @@ class StatsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(studyStatsProvider);
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const PageHeader(
-          icon: LucideIcons.chartColumn,
-          title: 'İstatistiklerin',
-          subtitle: 'Soru çözdükçe ders bazında netlerin burada görünecek.',
+    return ResponsiveContentWrapper(
+      maxWidth: 720,
+      child: ListView(
+        padding: EdgeInsets.symmetric(
+          horizontal: ResponsiveBreakpoints.horizontalPadding(context),
+          vertical: 16,
         ),
-        const SizedBox(height: 16),
+        children: [
+          const PageHeader(
+            icon: LucideIcons.chartColumn,
+            title: 'İstatistiklerin',
+            subtitle: 'Soru çözdükçe ders bazında netlerin burada görünecek.',
+          ),
+          const SizedBox(height: 16),
 
-        // 1. En Üst: Lig Kademesi ve Seri Kartı
-        _LeagueAndStreakCard(stats: stats),
-        const SizedBox(height: 16),
+          // 1. En Üst: Lig Kademesi ve Seri Kartı
+          _LeagueAndStreakCard(stats: stats),
+          const SizedBox(height: 16),
 
-        // 2. KPI Kartları (Çözülen Soru, Doğru Oranı)
-        Row(
-          children: [
-            Expanded(
-              child: _StatCard(
-                label: 'Çözülen soru',
-                value: '${stats.totalSolved}',
-                icon: LucideIcons.check,
+          // 2. KPI Kartları (Çözülen Soru, Doğru Oranı)
+          Row(
+            children: [
+              Expanded(
+                child: _StatCard(
+                  label: 'Çözülen soru',
+                  value: '${stats.totalSolved}',
+                  icon: LucideIcons.check,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _StatCard(
-                label: 'Doğru oranı',
-                value: stats.totalSolved == 0
-                    ? '–'
-                    : '%${stats.accuracyPercent}',
-                icon: LucideIcons.target,
+              const SizedBox(width: 12),
+              Expanded(
+                child: _StatCard(
+                  label: 'Doğru oranı',
+                  value: stats.totalSolved == 0
+                      ? '–'
+                      : '%${stats.accuracyPercent}',
+                  icon: LucideIcons.target,
+                ),
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-
-        // En zayıf ders kartı
-        _StatCard(
-          label: 'En zayıf ders',
-          value: stats.weakestLesson,
-          icon: LucideIcons.flame,
-        ),
-        if (stats.weakestLesson != 'Henüz veri yok') ...[
+            ],
+          ),
           const SizedBox(height: 12),
-          _WeakLessonActionCard(stats: stats),
+
+          // En zayıf ders kartı
+          _StatCard(
+            label: 'En zayıf ders',
+            value: stats.weakestLesson,
+            icon: LucideIcons.flame,
+          ),
+          if (stats.weakestLesson != 'Henüz veri yok') ...[
+            const SizedBox(height: 12),
+            _WeakLessonActionCard(stats: stats),
+          ],
+          const SizedBox(height: 16),
+
+          // 3. KPSS Başarım Rozetleri (Achievements)
+          _AchievementsCard(stats: stats),
+          const SizedBox(height: 16),
+
+          // 4. Haftalık Kadro Lig Sıralaması (Leaderboard)
+          _LeaderboardCard(stats: stats),
+          const SizedBox(height: 16),
+
+          // 5. Ders Bazlı Başarı Oranı Grafiği (fl_chart BarChart)
+          _LessonAccuracyChartCard(stats: stats),
+          const SizedBox(height: 16),
+
+          // 6. Ders Ustalık Isı Haritası
+          _MasteryHeatmapCard(stats: stats),
+          const SizedBox(height: 16),
+
+          // 7. Çözülen Testler Arşivi
+          _RecentSessionsCard(stats: stats),
         ],
-        const SizedBox(height: 16),
-
-        // 3. KPSS Başarım Rozetleri (Achievements)
-        _AchievementsCard(stats: stats),
-        const SizedBox(height: 16),
-
-        // 4. Haftalık Kadro Lig Sıralaması (Leaderboard)
-        _LeaderboardCard(stats: stats),
-        const SizedBox(height: 16),
-
-        // 5. Ders Bazlı Başarı Oranı Grafiği (fl_chart BarChart)
-        _LessonAccuracyChartCard(stats: stats),
-        const SizedBox(height: 16),
-
-        // 6. Ders Ustalık Isı Haritası
-        _MasteryHeatmapCard(stats: stats),
-        const SizedBox(height: 16),
-
-        // 7. Çözülen Testler Arşivi
-        _RecentSessionsCard(stats: stats),
-      ],
+      ),
     );
   }
 }
@@ -110,41 +117,48 @@ class _LeagueAndStreakCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(
-                  LucideIcons.trophy,
-                  color: colorScheme.onTertiaryContainer,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    stats.leagueTier,
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: colorScheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  Text(
-                    '${stats.totalXp} XP',
-                    style: textTheme.labelMedium?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  child: Icon(
+                    LucideIcons.trophy,
+                    color: colorScheme.onTertiaryContainer,
+                    size: 24,
                   ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        stats.leagueTier,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        '${stats.totalXp} XP',
+                        style: textTheme.labelMedium?.copyWith(
+                          color: colorScheme.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: 8),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -238,22 +252,29 @@ class _AchievementsCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    LucideIcons.medal,
-                    color: colorScheme.tertiary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'KPSS Başarım Rozetleri',
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      LucideIcons.medal,
+                      color: colorScheme.tertiary,
+                      size: 20,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'KPSS Başarım Rozetleri',
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
@@ -413,22 +434,29 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    LucideIcons.crown,
-                    color: colorScheme.tertiary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Haftalık Kadro Ligi',
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      LucideIcons.crown,
+                      color: colorScheme.tertiary,
+                      size: 20,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        'Haftalık Kadro Ligi',
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
@@ -591,10 +619,14 @@ class _MasteryHeatmapCard extends StatelessWidget {
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Ders Ustalık Isı Haritası',
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+              Expanded(
+                child: Text(
+                  'Ders Ustalık Isı Haritası',
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -626,12 +658,17 @@ class _MasteryHeatmapCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    displayName,
-                    style: textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: Text(
+                      displayName,
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
+                  const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
@@ -679,12 +716,17 @@ class _RecentSessionsCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Çözülen Testler Arşivi (${stats.sessionHistory.length})',
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+              Expanded(
+                child: Text(
+                  'Çözülen Testler Arşivi (${stats.sessionHistory.length})',
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               TextButton(
                 onPressed: () {
                   Navigator.of(context).push(
@@ -777,14 +819,20 @@ class _StatCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                label,
-                style: textTheme.labelLarge?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+              Expanded(
+                child: Text(
+                  label,
+                  style: textTheme.labelLarge?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (icon != null)
+              if (icon != null) ...[
+                const SizedBox(width: 4),
                 Icon(icon, size: 18, color: colorScheme.primary),
+              ],
             ],
           ),
           const SizedBox(height: 8),

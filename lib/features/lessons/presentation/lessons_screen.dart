@@ -105,7 +105,7 @@ class _LessonCard extends ConsumerWidget {
                     children: [
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
-                        spacing: 8,
+                        spacing: 6,
                         runSpacing: 4,
                         children: [
                           Text(
@@ -114,11 +114,13 @@ class _LessonCard extends ConsumerWidget {
                               color: colorScheme.onSurface,
                               fontWeight: FontWeight.w800,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           if (lesson.badgeText != null)
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
+                                horizontal: 7,
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
@@ -190,8 +192,11 @@ class _LessonCard extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             // Alt bilgi ve aksiyon satırı
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 6,
+              runSpacing: 4,
               children: [
                 Row(
                   mainAxisSize: MainAxisSize.min,
