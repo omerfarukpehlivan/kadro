@@ -84,6 +84,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-57** | **Gelişmiş Kimlik Doğrulama: Google ile Giriş (OAuth), E-posta / Kullanıcı Adı ile Esnek Giriş-Kayıt & Şifre Sıfırlama** | Tek tıkla Google ile Giriş (`signInWithOAuth`), tek alanda hem e-posta hem kullanıcı adı desteği, şık 'Şifremi Unuttum' modalı, misafir çalışma verilerini hesaba aktaran bulut birleştirme köprüsü | ✅ **Tamamlandı** |
 | **TASK-58** | **Dikkat Çekici & Motive Edici Test Zorluk Rozetleri (Basit Alıştırma, Sınav Ayarı, Net Sıçratan, Kurtlar Sofrası / ÖSYM Tuzağı)** | Sıkıcı akademik zorluk etiketlerinin yerine adayın ilgisini çeken 4 seviyeli vurucu rozet sistemi ('Basit Alıştırma (Isınma)', 'Tam Sınav Ayarı', 'Net Sıçratan', 'Kurtlar Sofrası'); kart altı motive edici mini açıklamalar ve ColorScheme standardizasyonu | ✅ **Tamamlandı** |
 | **TASK-59** | **Tüm Sistemde Duyarlı & Uyarlanabilir Ekran (Responsive & Adaptive) Mimarisi (Kompakt Telefon, Standart Telefon, Tablet & Katlanabilir)** | `ui-ux-pro-max` disipliniyle küçük ekranlar (<380px) için sıfır taşma (overflow), esnek padding/font ölçeklemesi ve kat altı koruması; tabletler (>=600px) için maxWidth kısıtı (720px) ve adaptif 3-4 sütunlu grid yapısı | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-60** | **Ders Kartlarında Dairesel İlerleme Halkası (Animated Lesson Progress Ring) & Çözülen Test Oranı Göstergesi** | `LessonsScreen` ders kartlarındaki ikonların etrafına çözülen test / toplam test oranını gösteren animasyonlu dairesel ilerleme halkası (`LessonProgressRing`); kart içinde 'X / Y Test Tamamlandı' ve yüzde ilerleme rozeti | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3313,6 +3314,66 @@ ADIM 5: Test ve Doğrulama
 1. `test/responsive_layout_test.dart` dosyasını oluştur:
    - Kompakt telefon boyutunda (`360x640`) `HomeScreen` ve `QuizScreen` render edildiğinde sıfır taşma (`RenderFlex`) doğrulaması yap.
    - Tablet boyutunda (`800x1280`) `ResponsiveContentWrapper`'ın içeriği 720px ile sınırlandırdığını test et.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-60: Ders Kartlarında Dairesel İlerleme Halkası (Animated Lesson Progress Ring) & Çözülen Test Oranı Göstergesi
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - `LessonsScreen` içindeki statik `44x44` ders ikonu kutusunun, `ui-ux-pro-max` disipliniyle **Duolingo/Apple Watch Aktivite Halkası** tarzında animasyonlu bir **Dairesel İlerleme Halkası (`LessonProgressRing`)** bileşeni ile sarmalanması.
+  - **Dairesel İlerleme Mimarisi:**
+    - Dış çap: `54x54` dp.
+    - İçerik: Merkezde dersin kendi ikonu (`lesson.icon`).
+    - Arka plan izi (Track): `colorScheme.surfaceContainerHighest` veya `colorScheme.outlineVariant.withAlpha(70)`, kalınlık `3.5px`.
+    - İlerleme yayı (Indicator):
+      - Oran: `çözülenTestSayısı / toplamTestSayısı` (Örn: `10 / 65` = `%15.3`).
+      - Renk: `colorScheme.secondary` (Akademik Zümrüt Yeşili) veya `colorScheme.primary` (Devlet & Akademi Laciverti).
+      - Uç bitişi: `StrokeCap.round` (Yumuşak dairesel bitiş).
+    - Tamamlanma Durumu (%100): Halka tam çember olur, sağ altta zümrüt minyatür tik rozeti (`LucideIcons.checkCheck`) belirir.
+  - **Animasyon:** Sayfa açıldığında `TweenAnimationBuilder<double>` ile `800ms` sürede sıfırdan hedefe akıcı dolum (`Curves.easeOutCubic`).
+  - **Kart İçi Metin & Veri Gösterimi:**
+    - Kartın başlık satırının altında veya sağ üst köşesinde: `10 / 65 Test Tamamlandı (%15)` tactile ilerleme rozeti.
+    - Henüz başlanmamış derslerde: `0 / X Test (%0)` ve adayı harekete geçiren `Hemen Başla ▶` çağrısı.
+  - **Veri Kaynağı:**
+    - `LessonsScreen`'in `ConsumerWidget` yapılması.
+    - `StudyStatsNotifier` (`studyStatsProvider`) üzerindeki çözülen soru/oturum istatistikleri ve soru havuzundaki toplam test sayısıyla dinamik hesaplanması.
+
+```text
+GÖREV: TASK-60 — LessonsScreen Ders Kartlarında Animasyonlu Dairesel İlerleme Halkası (LessonProgressRing) ve Çözülen Test Sayacı
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Sabit Color(0xFF...) KULLANMA. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: `LessonProgressRing` Bileşeninin Oluşturulması (`lib/features/lessons/presentation/widgets/lesson_progress_ring.dart`)
+1. `lib/features/lessons/presentation/widgets/lesson_progress_ring.dart` dosyasını oluştur:
+   - Sınıf: `class LessonProgressRing extends StatelessWidget`
+   - Parametreler: `final IconData icon`, `final double progress` (0.0 - 1.0), `final int solvedCount`, `final int totalCount`, `final double size = 52.0`
+   - Yapı:
+     - `TweenAnimationBuilder<double>(tween: Tween(begin: 0.0, end: progress.clamp(0.0, 1.0)), duration: const Duration(milliseconds: 800), curve: Curves.easeOutCubic)`
+     - İçinde `Stack` (`alignment: Alignment.center`):
+       1. Dairesel Ray ve İlerleme:
+          - `SizedBox(width: size, height: size, child: CircularProgressIndicator(value: animatedValue, strokeWidth: 3.5, strokeCap: StrokeCap.round, backgroundColor: colorScheme.surfaceContainerHighest, color: colorScheme.secondary))`
+       2. Merkez İkon:
+          - `Container(width: size - 10, height: size - 10, decoration: BoxDecoration(color: colorScheme.primaryContainer, shape: BoxShape.circle), child: Icon(icon, size: 22, color: colorScheme.onPrimaryContainer))`
+       3. %100 Tamamlanma Rozeti (Eğer `progress >= 1.0`):
+          - `Positioned(bottom: 0, right: 0, child: Container(padding: const EdgeInsets.all(2), decoration: BoxDecoration(color: colorScheme.secondary, shape: BoxShape.circle, border: Border.all(color: colorScheme.surface, width: 1.5)), child: Icon(LucideIcons.checkCheck, size: 10, color: colorScheme.onSecondary)))`
+
+ADIM 2: `LessonsScreen` Kartlarının Canlandırılması (`lib/features/lessons/presentation/lessons_screen.dart`)
+1. `LessonsScreen` ve `_LessonCard` bileşenlerini `ConsumerWidget` yap.
+2. `ref.watch(studyStatsProvider)` üzerinden verileri al:
+   - Örnek: `final solvedCount = stats.sessionHistory.where((s) => s.lesson == lesson.name).length;` (veya `solvedByLesson[lesson.name] / 10`).
+   - Toplam test tahmini: `final totalTests = lesson.topics.length * 5;` (veya dersteki soru havuzunun 10'arlı bölünmüş karşılığı).
+   - `final progress = totalTests > 0 ? (solvedCount / totalTests).clamp(0.0, 1.0) : 0.0;`
+3. Kartın solundaki eski statik 44x44 container yerine `LessonProgressRing` yerleştir.
+4. Kartın orta sütunundaki metin satırına ekle:
+   - `Text('${solvedCount} / ${totalTests} Test Çözüldü (%${(progress * 100).toInt()})', style: theme.textTheme.labelSmall?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.w700))`
+5. Kartın altındaki `LinearProgressIndicator` çubuğunu iki renkli veya gerçek çözülen test ilerlemesi (`value: progress`) ile eşleştir.
+
+ADIM 3: Test ve Doğrulama
+1. `test/lessons_screen_test.dart` içine:
+   - `LessonProgressRing` bileşeninin render edildiğini,
+   - Yüzde ve çözülen test sayacının ekranda göründüğünü doğrulayan widget testi ekle.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 
