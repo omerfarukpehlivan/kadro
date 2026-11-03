@@ -83,6 +83,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-56** | **"De-AI" Tasarım ve Renk Restorasyonu: Yapay Zeka Morundan Kurtulma, Prestijli Devlet & Akademi Laciverti (`#1E3A5F`) ve Pedagojik UI Standartları** | Jenerik Tailwind/ChatGPT AI morunun (`#4F46E5`, `#818CF8`) tamamen sökülmesi; yerine ciddi, saygın ve göz yormayan Devlet & Akademi Gece Laciverti (`#1E3A5F`) + Zümrüt Teal (`#0D9488`) + Tok Altın (`#D97706`) paletine geçiş; `LucideIcons.sparkles` parıltı ikon enflasyonunun ve neon/violet parıltıların temizlenmesi | ✅ **Tamamlandı** |
 | **TASK-57** | **Gelişmiş Kimlik Doğrulama: Google ile Giriş (OAuth), E-posta / Kullanıcı Adı ile Esnek Giriş-Kayıt & Şifre Sıfırlama** | Tek tıkla Google ile Giriş (`signInWithOAuth`), tek alanda hem e-posta hem kullanıcı adı desteği, şık 'Şifremi Unuttum' modalı, misafir çalışma verilerini hesaba aktaran bulut birleştirme köprüsü | ✅ **Tamamlandı** |
 | **TASK-58** | **Dikkat Çekici & Motive Edici Test Zorluk Rozetleri (Basit Alıştırma, Sınav Ayarı, Net Sıçratan, Kurtlar Sofrası / ÖSYM Tuzağı)** | Sıkıcı akademik zorluk etiketlerinin yerine adayın ilgisini çeken 4 seviyeli vurucu rozet sistemi ('Basit Alıştırma (Isınma)', 'Tam Sınav Ayarı', 'Net Sıçratan', 'Kurtlar Sofrası'); kart altı motive edici mini açıklamalar ve ColorScheme standardizasyonu | ✅ **Tamamlandı** |
+| **TASK-59** | **Tüm Sistemde Duyarlı & Uyarlanabilir Ekran (Responsive & Adaptive) Mimarisi (Kompakt Telefon, Standart Telefon, Tablet & Katlanabilir)** | `ui-ux-pro-max` disipliniyle küçük ekranlar (<380px) için sıfır taşma (overflow), esnek padding/font ölçeklemesi ve kat altı koruması; tabletler (>=600px) için maxWidth kısıtı (720px) ve adaptif 3-4 sütunlu grid yapısı | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3252,6 +3253,66 @@ ADIM 2: `TopicTestsScreen` Kartlarında Rozetlerin ve Renklerin Revizyonu (`lib/
 ADIM 3: Test ve Doğrulama
 1. `test/topic_tests_screen_test.dart` dosyasını güncelle:
    - Yeni başlıkların (`Basit Alıştırma`, `Tam Sınav Ayarı` vb.) doğru tier mantığıyla render edildiğini doğrula.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-59: Tüm Sistemde Duyarlı & Uyarlanabilir Ekran (Responsive & Adaptive) Mimarisi (Kompakt Telefon, Standart Telefon, Tablet & Katlanabilir)
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - `ui-ux-pro-max` disipliniyle projenin tüm ekranlarında küçük telefonlar (`< 380px` genişlik veya `< 720px` yükseklik) ve büyük tabletler (`>= 600px`) için kusursuz bir adaptif yerleşim kurgulanması.
+  - **Kompakt Telefon İyileştirmeleri (<380px — iPhone SE / mini / 360px Android):**
+    - Sayfa yatay padding değerinin `12px`'e çekilmesi (16-20px yerine), böylece kart içi alanın genişletilmesi.
+    - `MascotCoachBanner` bileşeninde maskot boyutunun `72-80px`'e esnetilmesi ve dikey yüksekliğin optimize edilmesi; adayın çalışma kartlarını ekranı kaydırmadan ilk bakışta (above the fold) görebilmesi.
+    - `HomeScreen` 2x2 Bento Grid ve `_DailyGoalCard` bileşenlerinde `Flexible` / `Expanded` koruması; dairesel göstergenin 72px'e indirilmesi; sıfır taşma (`RenderFlex overflow`).
+    - `QuizScreen` üzerinde soru metni ve şıkların küçük dikey ekranlarda butonları aşağı taşırmaması için esnek kaydırma ve kompakt buton çubuğu düzeni.
+  - **Tablet & Büyük Ekran İyileştirmeleri (>=600px — iPad / Tablet / Katlanabilir):**
+    - **Maksimum İçerik Kısıtı (`ConstrainedBox(maxWidth: 720)`):** Metinlerin ve test kartlarının 1000px boyunca sündürülmesini önlemek için içeriğin merkezlenmesi (ui-ux-pro-max `container-width: 65-75ch` kuralı).
+    - Bento Grid ve Test listelerinin tablet ekranında 2 sütundan 3 veya 4 sütuna adaptif olarak açılması (`LayoutBuilder` veya `ResponsiveGrid`).
+    - Dialog ve Modal BottomSheet'lerin tabletlerde devasa yayılmasını önleyen `maxWidth: 480-520px` modal pencere kısıtı.
+  - **Responsive Yardımcı Katmanı (`lib/core/utils/responsive_layout.dart`):**
+    - `ResponsiveBreakpoints` (isCompact, isMobile, isTablet) ve `ResponsiveContentWrapper` bileşeninin oluşturulması.
+
+```text
+GÖREV: TASK-59 — Tüm Sistemde Duyarlı & Uyarlanabilir Ekran (Responsive & Adaptive) Mimarisi (Kompakt Telefon, Standart Telefon, Tablet)
+ÖNEMLİ: GEMINI.md, design-system/kadro/MASTER.md ve ui-ux-pro-max kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Sabit Color(0xFF...) KULLANMA. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: Responsive Kırılım ve Konteyner Yardımcısı (`lib/core/utils/responsive_layout.dart`)
+1. `lib/core/utils/responsive_layout.dart` dosyasını oluştur:
+   - `ResponsiveBreakpoints` utility sınıfı:
+     - `static bool isCompact(BuildContext context) => MediaQuery.sizeOf(context).width < 380 || MediaQuery.sizeOf(context).height < 720;`
+     - `static bool isTablet(BuildContext context) => MediaQuery.sizeOf(context).width >= 600;`
+     - `static double horizontalPadding(BuildContext context) => isCompact(context) ? 12.0 : (isTablet(context) ? 24.0 : 16.0);`
+   - `ResponsiveContentWrapper` StatelessWidget:
+     - İçeriği `Center` ve `ConstrainedBox(constraints: BoxConstraints(maxWidth: 720))` ile sarar; tablette merkezler, telefonda tam genişlik verir.
+
+ADIM 2: `HomeScreen` ve Bento Grid'in Kompakt Telefon & Tablet Uyarlaması (`lib/features/home/presentation/home_screen.dart`)
+1. `HomeScreen` gövdesini `ResponsiveContentWrapper` ile sar.
+2. `_DailyGoalCard`:
+   - `isCompact`: Dairesel gauge boyutunu 84'ten 72'ye çek. Metrik haplarını (`Doğru`, `Yanlış`, `Net`) `Wrap` veya `Flexible` ile sıkışmasız kıl.
+3. 2x2 Bento Grid:
+   - Tablet modunda (`isTablet`): Grid'i 2 sütun yerine 3 veya 4 sütuna genişlet (`crossAxisCount: isTablet ? 4 : 2`).
+   - Kompakt modda (`isCompact`): `crossAxisSpacing: 8`, `mainAxisSpacing: 8` ve iç dolguyu `12px` yap.
+
+ADIM 3: `MascotCoachBanner` Kompakt Ekran Uyarlaması (`lib/shared/widgets/mascot_coach_banner.dart`)
+1. `isCompact(context)` kontrolü ekle:
+   - Normal ekranda: `92x92` çerçeve, `16px` padding.
+   - Kompakt ekranda: `72x72` çerçeve, `12px` padding, başlık ve mesaj yazı boyutu bir tık küçültülerek dikey yer kaplaması azaltılır.
+
+ADIM 4: `QuizScreen` ve `TopicTestsScreen` Kompakt Ekran & Tablet Koruması
+1. `QuizScreen`:
+   - Soru kökü ve şıkları `ResponsiveContentWrapper` ile sar (tablette devasa yayılmayı önle).
+   - Kompakt ekranda şıkların (`OptionTile`) dikey padding'ini 10-12px yaparak küçük ekranlarda butonların taşmasını engelle.
+2. `TopicTestsScreen`:
+   - Kartları tablette `maxWidth: 720` ile merkezle veya iki sütunlu listele.
+   - Test başlığı ve zorluk rozetinin kompakt telefonda (`<380px`) yan yana sığmadığı durumlarda `Wrap` veya iki satırlı esnek `Column` akışına izin ver.
+
+ADIM 5: Test ve Doğrulama
+1. `test/responsive_layout_test.dart` dosyasını oluştur:
+   - Kompakt telefon boyutunda (`360x640`) `HomeScreen` ve `QuizScreen` render edildiğinde sıfır taşma (`RenderFlex`) doğrulaması yap.
+   - Tablet boyutunda (`800x1280`) `ResponsiveContentWrapper`'ın içeriği 720px ile sınırlandırdığını test et.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 
