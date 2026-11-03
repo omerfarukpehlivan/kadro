@@ -82,6 +82,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-55** | **Kadro PRO Çevrimdışı Soru & Deneme İndirme Motoru (Offline-First Sync & Pro Paywall Kilidi)** | Sadece Kadro PRO üyelerine özel soru paketlerini ve denemeleri çevrimdışı kullanım için cihaza indirme (`OfflineDownloadService`), internet yokken indirilmemiş içerikte PRO Paywall yönlendirmesi | ✅ **Tamamlandı** |
 | **TASK-56** | **"De-AI" Tasarım ve Renk Restorasyonu: Yapay Zeka Morundan Kurtulma, Prestijli Devlet & Akademi Laciverti (`#1E3A5F`) ve Pedagojik UI Standartları** | Jenerik Tailwind/ChatGPT AI morunun (`#4F46E5`, `#818CF8`) tamamen sökülmesi; yerine ciddi, saygın ve göz yormayan Devlet & Akademi Gece Laciverti (`#1E3A5F`) + Zümrüt Teal (`#0D9488`) + Tok Altın (`#D97706`) paletine geçiş; `LucideIcons.sparkles` parıltı ikon enflasyonunun ve neon/violet parıltıların temizlenmesi | ✅ **Tamamlandı** |
 | **TASK-57** | **Gelişmiş Kimlik Doğrulama: Google ile Giriş (OAuth), E-posta / Kullanıcı Adı ile Esnek Giriş-Kayıt & Şifre Sıfırlama** | Tek tıkla Google ile Giriş (`signInWithOAuth`), tek alanda hem e-posta hem kullanıcı adı desteği, şık 'Şifremi Unuttum' modalı, misafir çalışma verilerini hesaba aktaran bulut birleştirme köprüsü | ✅ **Tamamlandı** |
+| **TASK-58** | **Dikkat Çekici & Motive Edici Test Zorluk Rozetleri (Basit Alıştırma, Sınav Ayarı, Net Sıçratan, Kurtlar Sofrası / ÖSYM Tuzağı)** | Sıkıcı akademik zorluk etiketlerinin yerine adayın ilgisini çeken 4 seviyeli vurucu rozet sistemi ('Basit Alıştırma (Isınma)', 'Tam Sınav Ayarı', 'Net Sıçratan', 'Kurtlar Sofrası'); kart altı motive edici mini açıklamalar ve ColorScheme standardizasyonu | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3141,6 +3142,116 @@ ADIM 3: Test ve Doğrulama
    - Kullanıcı adı ile giriş yapılabilmesi testi,
    - Google ile giriş butonunun ekranda render edilmesi ve tıklanabilmesi testi,
    - Şifremi unuttum modalının açıldığını doğrulayan widget testi ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-58: Dikkat Çekici & Motive Edici Test Zorluk Rozetleri (Basit Alıştırma, Sınav Ayarı, Net Sıçratan, Kurtlar Sofrası / ÖSYM Tuzağı)
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - `TopicTestsScreen` ve `QuizScreen` üzerinde yer alan sıkıcı akademik etiketlerin ("Temel Seviye", "Kavrama Seviyesi", "Pekiştirme", "Usta") kaldırılarak adayın dikkatini çeken, tıklama arzusunu artıran 4 seviyeli dinamik rozet sistemine geçilmesi:
+    1. **Seviye 1 (<= 1.4):**
+       - Rozet Adı: `🌱 Basit Alıştırma (Isınma Turu)`
+       - İkon: `LucideIcons.sprout` (Filiz / Başlangıç)
+       - Açıklama: *"Konuyu yeni bitirdiysen özgüven tazeleyen ısınma soruları."*
+       - Tema Rozeti: `colorScheme.secondary` (Zümrüt Yeşili) zemin ve yazı
+    2. **Seviye 2 (1.4 - 2.2):**
+       - Rozet Adı: `🏛️ Tam Sınav Ayarı (ÖSYM Formatı)`
+       - İkon: `LucideIcons.target` (Hedef)
+       - Açıklama: *"Gerçek KPSS kitapçığında karşına çıkacak standart soru kalıpları."*
+       - Tema Rozeti: `colorScheme.primary` (Devlet & Akademi Laciverti) zemin ve yazı
+    3. **Seviye 3 (2.2 - 2.6):**
+       - Rozet Adı: `⚡ Net Sıçratan (Derece Soruları)`
+       - İkon: `LucideIcons.zap` (Şimşek)
+       - Açıklama: *"Adayların %70'ini eleyen, puanı doğrudan yukarı taşıyan ayırt edici sorular."*
+       - Tema Rozeti: `colorScheme.tertiary` (Tok Başarı Altını) zemin ve yazı
+    4. **Seviye 4 (> 2.6):**
+       - Rozet Adı: `🔥 Kurtlar Sofrası (ÖSYM Mayın Tarlası)`
+       - İkon: `LucideIcons.flame` (Alev)
+       - Açıklama: *"En çok düşülen çeldirici tuzaklar ve ters köşe yapan ÖSYM soruları."*
+       - Tema Rozeti: `colorScheme.error` (Tok Kırmızı) zemin ve yazı
+  - `lib/features/lessons/presentation/topic_tests_screen.dart` içindeki hardcoded `Colors.green`, `Colors.amber`, `Colors.orange`, `Colors.red` renklerinin tamamen temizlenip `Theme.of(context).colorScheme` ile uyumlu container renklerine dönüştürülmesi (GEMINI.md kuralı).
+  - `QuizScreen` başlatılırken özel başlıkta bu dikkat çekici zorluk rozetinin taşınması (Örn: `Tarih · İlk Türk Devletleri · Test 1 (Basit Alıştırma)`).
+
+```text
+GÖREV: TASK-58 — TopicTestsScreen ve QuizScreen Dikkat Çekici Zorluk Rozetleri ve ColorScheme Entegrasyonu
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Sabit Color(0xFF...) veya Colors.red gibi hardcoded renkler KULLANMA. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: TestZorlukSeviyesi Modeli & Yardımcısı (`lib/features/quiz/data/models/test_difficulty_tier.dart`)
+1. Temiz mimari için `TestDifficultyTier` adında bir model veya enum yardımcısı oluştur:
+   ```dart
+   enum TestDifficultyTier {
+     warmup,      // Basit Alıştırma (Isınma Turu)
+     standard,    // Tam Sınav Ayarı (ÖSYM Formatı)
+     distinction, // Net Sıçratan (Derece Soruları)
+     trapMaster,  // Kurtlar Sofrası (ÖSYM Mayın Tarlası)
+   }
+
+   extension TestDifficultyTierExtension on TestDifficultyTier {
+     String get title {
+       switch (this) {
+         case TestDifficultyTier.warmup:
+           return '🌱 Basit Alıştırma (Isınma Turu)';
+         case TestDifficultyTier.standard:
+           return '🏛️ Tam Sınav Ayarı (ÖSYM Formatı)';
+         case TestDifficultyTier.distinction:
+           return '⚡ Net Sıçratan (Derece Soruları)';
+         case TestDifficultyTier.trapMaster:
+           return '🔥 Kurtlar Sofrası (ÖSYM Mayın Tarlası)';
+       }
+     }
+
+     String get description {
+       switch (this) {
+         case TestDifficultyTier.warmup:
+           return 'Konuyu yeni bitirdiysen özgüven tazeleyen ısınma soruları.';
+         case TestDifficultyTier.standard:
+           return 'Gerçek KPSS kitapçığında karşına çıkacak standart soru kalıpları.';
+         case TestDifficultyTier.distinction:
+           return 'Adayların %70\'ini eleyen, puanı doğrudan yukarı taşıyan ayırt edici sorular.';
+         case TestDifficultyTier.trapMaster:
+           return 'En çok düşülen çeldirici tuzaklar ve ters köşe yapan ÖSYM soruları.';
+       }
+     }
+
+     IconData get icon {
+       switch (this) {
+         case TestDifficultyTier.warmup:
+           return LucideIcons.sprout;
+         case TestDifficultyTier.standard:
+           return LucideIcons.target;
+         case TestDifficultyTier.distinction:
+           return LucideIcons.zap;
+         case TestDifficultyTier.trapMaster:
+           return LucideIcons.flame;
+       }
+     }
+
+     static TestDifficultyTier fromAvgDifficulty(double avg) {
+       if (avg <= 1.4) return TestDifficultyTier.warmup;
+       if (avg <= 2.2) return TestDifficultyTier.standard;
+       if (avg <= 2.6) return TestDifficultyTier.distinction;
+       return TestDifficultyTier.trapMaster;
+     }
+   }
+   ```
+
+ADIM 2: `TopicTestsScreen` Kartlarında Rozetlerin ve Renklerin Revizyonu (`lib/features/lessons/presentation/topic_tests_screen.dart`)
+1. `_buildTestCard` içindeki hesaplamayı `TestDifficultyTierExtension.fromAvgDifficulty(avgDifficulty)` ile bağla.
+2. Hardcoded `Colors.green`, `Colors.amber` vb. kaldır:
+   - `warmup`: Arka plan `colorScheme.secondaryContainer`, yazı/ikon `colorScheme.onSecondaryContainer`
+   - `standard`: Arka plan `colorScheme.primaryContainer`, yazı/ikon `colorScheme.onPrimaryContainer`
+   - `distinction`: Arka plan `colorScheme.tertiaryContainer`, yazı/ikon `colorScheme.onTertiaryContainer`
+   - `trapMaster`: Arka plan `colorScheme.errorContainer`, yazı/ikon `colorScheme.onErrorContainer`
+3. Kartın altındaki soru sayısı satırının yanına veya altına `tier.description` açıklama metnini ekle (`textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)`).
+4. `_startTest` çağrısında `customTitle` formatını güncelle:
+   `${widget.lessonName} · ${widget.topic} · Test ${testIndex + 1} (${tier.title.split(' ').sublist(1).join(' ')})`
+
+ADIM 3: Test ve Doğrulama
+1. `test/topic_tests_screen_test.dart` dosyasını güncelle:
+   - Yeni başlıkların (`Basit Alıştırma`, `Tam Sınav Ayarı` vb.) doğru tier mantığıyla render edildiğini doğrula.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 
