@@ -112,8 +112,8 @@ void main() {
         expect(find.text('TEST 2'), findsOneWidget);
         expect(find.text('TEST 3'), findsOneWidget);
 
-        // İlk test (ortalama 1.1) Basit Alıştırma (Isınma Turu) rozeti taşımalı
-        expect(find.text('🌱 Basit Alıştırma (Isınma Turu)'), findsOneWidget);
+        // İlk test (ortalama 1.1) Basit Alıştırma rozeti taşımalı
+        expect(find.text('🌱 Basit Alıştırma'), findsOneWidget);
         expect(
           find.text(
             'Konuyu yeni bitirdiysen özgüven tazeleyen ısınma soruları.',

@@ -33,7 +33,7 @@ const List<Lesson> kpssLessons = [
     section: 'Genel Kültür',
     questionCount: 27,
     icon: LucideIcons.bookOpen,
-    badgeText: '27 Soru · Kritik',
+    badgeText: null,
     topics: [
       'İslamiyet Öncesi Türk Tarihi',
       'İlk Türk-İslam Devletleri',

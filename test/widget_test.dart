@@ -38,7 +38,7 @@ void main() {
       // Tarih Konuları sayfasının açıldığını ve yol haritası düğümlerini doğrula
       expect(find.text('Tarih Konuları'), findsOneWidget);
       expect(find.text('İslamiyet Öncesi Türk Tarihi'), findsOneWidget);
-      expect(find.text('ADIM 1'), findsOneWidget);
+      expect(find.text('1'), findsWidgets);
       expect(find.text('Test Çöz'), findsWidgets);
     },
   );

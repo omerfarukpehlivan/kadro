@@ -27,13 +27,13 @@ extension TestDifficultyTierExtension on TestDifficultyTier {
   String get title {
     switch (this) {
       case TestDifficultyTier.warmup:
-        return '🌱 Basit Alıştırma (Isınma Turu)';
+        return '🌱 Basit Alıştırma';
       case TestDifficultyTier.standard:
-        return '🏛️ Tam Sınav Ayarı (ÖSYM Formatı)';
+        return '🏛️ Tam Sınav Ayarı';
       case TestDifficultyTier.distinction:
-        return '⚡ Net Sıçratan (Derece Soruları)';
+        return '⚡ Net Sıçratan';
       case TestDifficultyTier.trapMaster:
-        return '🔥 Kurtlar Sofrası (ÖSYM Mayın Tarlası)';
+        return '🔥 Kurtlar Sofrası';
     }
   }
 

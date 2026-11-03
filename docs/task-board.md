@@ -86,7 +86,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-59** | **Tüm Sistemde Duyarlı & Uyarlanabilir Ekran (Responsive & Adaptive) Mimarisi (Kompakt Telefon, Standart Telefon, Tablet & Katlanabilir)** | `ui-ux-pro-max` disipliniyle küçük ekranlar (<380px) için sıfır taşma (overflow), esnek padding/font ölçeklemesi ve kat altı koruması; tabletler (>=600px) için maxWidth kısıtı (720px) ve adaptif 3-4 sütunlu grid yapısı | ✅ **Tamamlandı** |
 | **TASK-60** | **Ders Kartlarında Dairesel İlerleme Halkası (Animated Lesson Progress Ring) & Çözülen Test Oranı Göstergesi** | `LessonsScreen` ders kartlarındaki ikonların etrafına çözülen test / toplam test oranını gösteren animasyonlu dairesel ilerleme halkası (`LessonProgressRing`); kart içinde 'X / Y Test Tamamlandı' ve yüzde ilerleme rozeti | ✅ **Tamamlandı** |
 | **TASK-61** | **UI Taşma (RenderFlex Overflow) ve Görsel Hata Düzeltme Paketi (Test Sonucu, Dersler, İstatistik, Paywall, Navbar & BottomSheet)** | Test Sonucu ekranındaki 83px dikey taşmanın `ListView` ile çözülmesi; Güncel Bilgiler ders kartındaki 6.1px taşmanın `Flexible`/`Wrap` ile çözülmesi; İstatistik çözülen testler başlığının `Expanded` ile sarılması; Paywall plan kartlarında `Wrap` düzeltmesi; AppNavigationBar 'Ana Sayfa' taşmasının kompakt padding ile giderilmesi; Hatalı soru bildirme BottomSheet'inde `clipBehavior: Clip.antiAlias` ile köşe sızıntısının önlenmesi | ✅ **Tamamlandı** |
-| **TASK-62** | **UI & İçerik Sadeleştirme Paketi: Bilgi Kirliliğini Önleme, Gereksiz Rozet ve Tekrarların Temizlenmesi (Dersler, Konular, Konu Testleri)** | Tarih kartındaki '27 Soru · Kritik' rozetinin ve '7 Adımlı Yol Haritası' alt metninin kaldırılması; Konular ekranında mükerrer 'ADIM 1' rozeti ve 'Tarih · Konu Testi' metninin temizlenmesi; Konu testlerinde zorluk rozetlerindeki parantez içi açıklamaların, mükerrer 'Test 1' başlığının ve '10 Soru / 10 Soruluk Konu Testi' tekrarlarının temizlenmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-62** | **UI & İçerik Sadeleştirme Paketi: Bilgi Kirliliğini Önleme, Gereksiz Rozet ve Tekrarların Temizlenmesi (Dersler, Konular, Konu Testleri)** | Tarih kartındaki '27 Soru · Kritik' rozetinin ve '7 Adımlı Yol Haritası' alt metninin kaldırılması; Konular ekranında mükerrer 'ADIM 1' rozeti ve 'Tarih · Konu Testi' metninin temizlenmesi; Konu testlerinde zorluk rozetlerindeki parantez içi açıklamaların, mükerrer 'Test 1' başlığının ve '10 Soru / 10 Soruluk Konu Testi' tekrarlarının temizlenmesi | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3518,7 +3518,7 @@ ADIM 7: Test ve Doğrulama
 
 ### 📦 TASK-62: UI & İçerik Sadeleştirme Paketi: Bilgi Kirliliğini Önleme, Gereksiz Rozet ve Tekrarların Temizlenmesi (Dersler, Konular, Konu Testleri)
 
-- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Durum:** ✅ **Tamamlandı**
 - **Kapsam:**
   - `ui-ux-pro-max` disiplini (Cognitive Load Reduction / Bilişsel Yük Azaltma & Progressive Disclosure) doğrultusunda adayın ekranındaki görsel gürültü ve mükerrer bilgilerin temizlenmesi:
     1. **Dersler Ekranı (`LessonsScreen` & `kpss_lessons.dart`):**

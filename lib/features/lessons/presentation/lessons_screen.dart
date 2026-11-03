@@ -190,40 +190,6 @@ class _LessonCard extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
-            // Alt bilgi ve aksiyon satırı
-            Wrap(
-              alignment: WrapAlignment.spaceBetween,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 6,
-              runSpacing: 4,
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      LucideIcons.layers,
-                      size: 14,
-                      color: colorScheme.primary,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${lesson.topics.length} Adımlı Yol Haritası',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-                Text(
-                  'Yol Haritasını Aç →',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),

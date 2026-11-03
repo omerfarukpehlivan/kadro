@@ -278,16 +278,16 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
             ),
             const SizedBox(height: 10),
 
-            // Orta Alan: Test Adı ve Soru Sayısı
+            // Orta Alan: Seviye Başlığı
             Text(
-              'Test ${index + 1} · ${tier.cleanTitle}',
+              tier.cleanTitle,
               style: textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              '${chunk.length} Soru · Öngörülen Süre: ~${(chunk.length * 1.1).round()} dk',
+              'Öngörülen Süre: ~${(chunk.length * 1.1).round()} dk',
               style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -302,40 +302,22 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
                 fontStyle: FontStyle.italic,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
-            // Alt Satır: Soru Tipleri ve Test Çöz Butonu
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      LucideIcons.listOrdered,
-                      size: 14,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '10 Soruluk Konu Testi',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-                FilledButton.tonal(
-                  onPressed: () => _startTest(index, chunk, tier),
-                  style: FilledButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 6,
-                    ),
+            // Alt Satır: Sağa Yaslı Test Çöz Butonu
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.tonal(
+                onPressed: () => _startTest(index, chunk, tier),
+                style: FilledButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
                   ),
-                  child: const Text('Test Çöz'),
                 ),
-              ],
+                child: const Text('Test Çöz'),
+              ),
             ),
           ],
         ),
