@@ -81,6 +81,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-54** | **Mağaza Yayın Hazırlığı (App Icon, Splash Screen & Production Release Setup)** | Tuğrul maskotundan Android/iOS adaptive app icon (`flutter_launcher_icons`), derin indigo açılış ekranı (`flutter_native_splash`), Android v2 embedding / app label ve release build altyapısı | ✅ **Tamamlandı** |
 | **TASK-55** | **Kadro PRO Çevrimdışı Soru & Deneme İndirme Motoru (Offline-First Sync & Pro Paywall Kilidi)** | Sadece Kadro PRO üyelerine özel soru paketlerini ve denemeleri çevrimdışı kullanım için cihaza indirme (`OfflineDownloadService`), internet yokken indirilmemiş içerikte PRO Paywall yönlendirmesi | ✅ **Tamamlandı** |
 | **TASK-56** | **"De-AI" Tasarım ve Renk Restorasyonu: Yapay Zeka Morundan Kurtulma, Prestijli Devlet & Akademi Laciverti (`#1E3A5F`) ve Pedagojik UI Standartları** | Jenerik Tailwind/ChatGPT AI morunun (`#4F46E5`, `#818CF8`) tamamen sökülmesi; yerine ciddi, saygın ve göz yormayan Devlet & Akademi Gece Laciverti (`#1E3A5F`) + Zümrüt Teal (`#0D9488`) + Tok Altın (`#D97706`) paletine geçiş; `LucideIcons.sparkles` parıltı ikon enflasyonunun ve neon/violet parıltıların temizlenmesi | ✅ **Tamamlandı** |
+| **TASK-57** | **Gelişmiş Kimlik Doğrulama: Google ile Giriş (OAuth), E-posta / Kullanıcı Adı ile Esnek Giriş-Kayıt & Şifre Sıfırlama** | Tek tıkla Google ile Giriş (`signInWithOAuth`), tek alanda hem e-posta hem kullanıcı adı desteği, şık 'Şifremi Unuttum' modalı, misafir çalışma verilerini hesaba aktaran bulut birleştirme köprüsü | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3039,6 +3040,107 @@ ADIM 3: AI Sparkles (✨) İkon Enflasyonunu Temizleme
 
 ADIM 4: Test ve Doğrulama
 1. `test/mascot_coach_banner_test.dart` içindeki `LucideIcons.sparkles` beklentisini `LucideIcons.award` olarak güncelle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-57: Gelişmiş Kimlik Doğrulama: Google ile Giriş (OAuth), E-posta / Kullanıcı Adı ile Esnek Giriş-Kayıt & Şifre Sıfırlama
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - **Google ile Giriş (OAuth):** `AuthScreen` içine resmi Google logolu "Google ile Devam Et" butonu eklenmesi; `AuthNotifier` içinde Supabase OAuth (`client.auth.signInWithOAuth(OAuthProvider.google)`) entegrasyonu ve demo/test fallback koruması.
+  - **Esnek Giriş (E-posta VEYA Kullanıcı Adı):** Giriş alanında adayın ister e-postasını (`ornek@gmail.com`), ister sadece kullanıcı adını/rumuzunu (`ornek_kpss`) yazabilmesi. `@` içermeyen girdilerin arka planda sanal domainle (`username@kadro.internal` / metadata eşlemesi) sorunsuz giriş yapabilmesi.
+  - **Esnek Kayıt (Signup):** Kullanıcı adı / rumuz, e-posta (opsiyonel veya otomatik kullanıcı adı eşlemesi) ve en az 6 karakterli şifre ile anında hesap oluşturma.
+  - **Şifremi Unuttum (Forgot Password) Modalı:** Giriş formuna "Şifremi Unuttum" butonu; tıklandığında açılan alt sayfada (`showModalBottomSheet`) e-posta girilerek `resetPasswordForEmail` ile sıfırlama bağlantısı gönderilmesi.
+  - **Misafir Verisi Bulut Birleştirme (Cloud Sync on Login):** Giriş yapıldığı anda yereldeki misafir çalışma verilerinin (çözülen testler, XP, seri, çalışma planı) kullanıcının Supabase hesabıyla otomatik senkronize edilmesi.
+
+```text
+GÖREV: TASK-57 — AuthScreen ve AuthNotifier Gelişmiş Kimlik Doğrulama (Google OAuth, E-posta / Kullanıcı Adı Hibrit Giriş, Şifremi Unuttum)
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme ve textTheme üzerinden al. Sabit Color(0xFF...) KULLANMA. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: AuthNotifier İçinde Google OAuth ve Hibrit E-posta/Kullanıcı Adı Mantığı (`lib/features/auth/data/auth_notifier.dart`)
+1. `_normalizeIdentifier(String identifier)` yardımcı fonksiyonunu ekle:
+   - Eğer `identifier.contains('@')` ise `identifier.trim().toLowerCase()` döner.
+   - Eğer `@` İÇERMİYORSA (kullanıcı adı girilmişse), `identifier.trim().toLowerCase() + '@kadro.internal'` sanal e-posta adresini döner.
+2. `signIn({required String emailOrUsername, required String password})`:
+   - `final effectiveEmail = _normalizeIdentifier(emailOrUsername);` ile sorgula.
+   - Kullanıcı adı veya e-posta girildiğinde Supabase `signInWithPassword` ile sorunsuz oturum açsın.
+   - Demo/test ortamında `client == null` iken geçerli parola (>=6) durumunda `displayName` olarak kullanıcı adını atasın ve giriş yapsın.
+3. `signInWithGoogle()` metodunu ekle:
+   ```dart
+   Future<bool> signInWithGoogle() async {
+     state = state.copyWith(isLoading: true, errorMessage: null);
+     final client = SupabaseConfig.clientOrNull;
+     if (client == null) {
+       // Demo / Test ortamı fallback
+       state = state.copyWith(
+         isAuthenticated: true,
+         userId: 'google_demo_user',
+         email: 'demo_kpss@gmail.com',
+         displayName: 'Google ile Giriş Yapan Aday',
+         isLoading: false,
+       );
+       ref.read(studyStatsProvider.notifier).loadFromCloud();
+       unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
+       return true;
+     }
+     try {
+       final res = await client.auth.signInWithOAuth(
+         OAuthProvider.google,
+         redirectTo: kIsWeb ? null : 'com.omer.kadro://login-callback',
+       );
+       state = state.copyWith(isLoading: false);
+       return res;
+     } catch (e) {
+       state = state.copyWith(isLoading: false, errorMessage: 'Google ile giriş hatası: ${e.toString()}');
+       return false;
+     }
+   }
+   ```
+4. `sendPasswordResetEmail(String email)` metodunu ekle:
+   ```dart
+   Future<bool> sendPasswordResetEmail(String email) async {
+     final client = SupabaseConfig.clientOrNull;
+     if (client == null) return true; // Demo fallback
+     try {
+       await client.auth.resetPasswordForEmail(email.trim());
+       return true;
+     } catch (e) {
+       state = state.copyWith(errorMessage: 'Şifre sıfırlama bağlantısı gönderilemedi: ${e.toString()}');
+       return false;
+     }
+   }
+   ```
+
+ADIM 2: `AuthScreen` Arayüzünün Zenginleştirilmesi (`lib/features/auth/presentation/auth_screen.dart`)
+1. Tek Girdi Alanı:
+   - Giriş modunda (`_isLogin`) alanın etiketini `"E-posta veya Kullanıcı Adı"` yap (`prefixIcon: Icon(LucideIcons.user, size: 20)`).
+   - Validatörde sadece boş olmama ve en az 3 karakter kontrolü yap (`!value.contains('@')` kısıtlamasını kaldır!).
+2. Şifremi Unuttum Bağlantısı ve Modalı:
+   - Şifre alanının hemen altına sağa dayalı `Align(alignment: Alignment.centerRight, child: TextButton(onPressed: _showForgotPasswordModal, child: Text('Şifremi Unuttum?')))` ekle.
+   - `_showForgotPasswordModal(BuildContext context)` fonksiyonu bir `showModalBottomSheet` açsın. İçinde e-posta input'u ve "Sıfırlama Bağlantısı Gönder" butonu olsun. Başarılı olunca yeşil SnackBar ile bildirim versin.
+3. Google ile Devam Et Butonu:
+   - Giriş ve Kayıt formunun altına veya üstüne ayırıcı çizgi ile ("VEYA"):
+     ```dart
+     Row(children: [
+       Expanded(child: Divider()),
+       Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Text('VEYA', style: theme.textTheme.labelSmall)),
+       Expanded(child: Divider()),
+     ])
+     ```
+   - Altına `OutlinedButton.icon` ile Google butonu ekle:
+     - İkon: Google resmi renklerini temsil eden `Container` veya `LucideIcons.chrome` / renkli Google SVG/ikoni.
+     - Etiket: `Text('Google ile Devam Et')`
+     - Tıklandığında: `ref.read(authProvider.notifier).signInWithGoogle();` çağırsın, başarılı olursa `Navigator.pop(context)` yapsın.
+4. "Misafir Olarak Devam Et" Bağlantısı:
+   - Formun en altına ekle: `TextButton(onPressed: () => Navigator.pop(context), child: Text('Şimdilik Giriş Yapmadan Devam Et'))`.
+
+ADIM 3: Test ve Doğrulama
+1. `test/auth_screen_test.dart` içine:
+   - Kullanıcı adı ile giriş yapılabilmesi testi,
+   - Google ile giriş butonunun ekranda render edilmesi ve tıklanabilmesi testi,
+   - Şifremi unuttum modalının açıldığını doğrulayan widget testi ekle.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 
