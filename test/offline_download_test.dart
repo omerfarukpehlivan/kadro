@@ -399,6 +399,12 @@ void main() {
         await tester.tap(find.text('Test Çöz').first);
         await tester.pumpAndSettle();
 
+        // TopicTestsScreen üzerinden ilk testi başlat
+        if (find.text('Test Çöz').evaluate().isNotEmpty) {
+          await tester.tap(find.text('Test Çöz').first);
+          await tester.pumpAndSettle();
+        }
+
         expect(find.byType(QuizScreen), findsOneWidget);
         expect(
           find.text(

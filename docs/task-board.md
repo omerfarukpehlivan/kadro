@@ -81,7 +81,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-54** | **Mağaza Yayın Hazırlığı (App Icon, Splash Screen & Production Release Setup)** | Tuğrul maskotundan Android/iOS adaptive app icon (`flutter_launcher_icons`), derin indigo açılış ekranı (`flutter_native_splash`), Android v2 embedding / app label ve release build altyapısı | ✅ **Tamamlandı** |
 | **TASK-55** | **Kadro PRO Çevrimdışı Soru & Deneme İndirme Motoru (Offline-First Sync & Pro Paywall Kilidi)** | Sadece Kadro PRO üyelerine özel soru paketlerini ve denemeleri çevrimdışı kullanım için cihaza indirme (`OfflineDownloadService`), internet yokken indirilmemiş içerikte PRO Paywall yönlendirmesi | ✅ **Tamamlandı** |
 | **TASK-56** | **"De-AI" Tasarım ve Renk Restorasyonu: Yapay Zeka Morundan Kurtulma, Prestijli Devlet & Akademi Laciverti (`#1E3A5F`) ve Pedagojik UI Standartları** | Jenerik Tailwind/ChatGPT AI morunun (`#4F46E5`, `#818CF8`) tamamen sökülmesi; yerine ciddi, saygın ve göz yormayan Devlet & Akademi Gece Laciverti (`#1E3A5F`) + Zümrüt Teal (`#0D9488`) + Tok Altın (`#D97706`) paletine geçiş; `LucideIcons.sparkles` parıltı ikon enflasyonunun ve neon/violet parıltıların temizlenmesi | ✅ **Tamamlandı** |
-| **TASK-57** | **Gelişmiş Kimlik Doğrulama: Google ile Giriş (OAuth), E-posta / Kullanıcı Adı ile Esnek Giriş-Kayıt & Şifre Sıfırlama** | Tek tıkla Google ile Giriş (`signInWithOAuth`), tek alanda hem e-posta hem kullanıcı adı desteği, şık 'Şifremi Unuttum' modalı, misafir çalışma verilerini hesaba aktaran bulut birleştirme köprüsü | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-57** | **Gelişmiş Kimlik Doğrulama: Google ile Giriş (OAuth), E-posta / Kullanıcı Adı ile Esnek Giriş-Kayıt & Şifre Sıfırlama** | Tek tıkla Google ile Giriş (`signInWithOAuth`), tek alanda hem e-posta hem kullanıcı adı desteği, şık 'Şifremi Unuttum' modalı, misafir çalışma verilerini hesaba aktaran bulut birleştirme köprüsü | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3047,7 +3047,7 @@ ADIM 4: Test ve Doğrulama
 
 ### 📦 TASK-57: Gelişmiş Kimlik Doğrulama: Google ile Giriş (OAuth), E-posta / Kullanıcı Adı ile Esnek Giriş-Kayıt & Şifre Sıfırlama
 
-- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Durum:** ✅ **Tamamlandı**
 - **Kapsam:**
   - **Google ile Giriş (OAuth):** `AuthScreen` içine resmi Google logolu "Google ile Devam Et" butonu eklenmesi; `AuthNotifier` içinde Supabase OAuth (`client.auth.signInWithOAuth(OAuthProvider.google)`) entegrasyonu ve demo/test fallback koruması.
   - **Esnek Giriş (E-posta VEYA Kullanıcı Adı):** Giriş alanında adayın ister e-postasını (`ornek@gmail.com`), ister sadece kullanıcı adını/rumuzunu (`ornek_kpss`) yazabilmesi. `@` içermeyen girdilerin arka planda sanal domainle (`username@kadro.internal` / metadata eşlemesi) sorunsuz giriş yapabilmesi.

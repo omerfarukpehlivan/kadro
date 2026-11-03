@@ -5,7 +5,7 @@ import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
-import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/features/lessons/presentation/topic_tests_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -116,16 +116,11 @@ class _TopicPathNode extends ConsumerWidget {
 
     if (!isOnline) {
       if (isDownloaded) {
-        final downloadedQuestions = await ref
-            .read(offlineDownloadServiceProvider)
-            .getDownloadedQuestions(packageId);
         if (!context.mounted) return;
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => QuizScreen(
-              questions: downloadedQuestions ?? [],
-              customTitle: '$lessonName · $topic (Çevrimdışı)',
-            ),
+            builder: (_) =>
+                TopicTestsScreen(lessonName: lessonName, topic: topic),
           ),
         );
       } else {
@@ -163,11 +158,8 @@ class _TopicPathNode extends ConsumerWidget {
     } else {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => QuizScreen(
-            lessonFilter: lessonName,
-            topicFilter: topic,
-            customTitle: '$lessonName · $topic',
-          ),
+          builder: (_) =>
+              TopicTestsScreen(lessonName: lessonName, topic: topic),
         ),
       );
     }

@@ -31,6 +31,13 @@ class Question {
   /// Kullanıcının seçtiği şıkkın doğru olup olmadığını kontrol eden yardımcı metot.
   bool isCorrect(int? selectedIndex) => selectedIndex == correctIndex;
 
+  /// Sayısal zorluk seviyesi (1: Kolay, 2: Orta, 3: Zor).
+  int get difficultyLevel {
+    if (difficulty == '1' || difficulty == 'easy') return 1;
+    if (difficulty == '3' || difficulty == 'hard') return 3;
+    return 2;
+  }
+
   /// Nesnenin belirli alanlarını güncelleyerek kopyasını üreten yardımcı metot.
   Question copyWith({
     String? id,
