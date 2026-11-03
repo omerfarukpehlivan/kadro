@@ -6,6 +6,8 @@ import 'package:kadro/core/services/purchase_service.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
+import 'package:kadro/features/quiz/data/models/quiz_result.dart';
+import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
@@ -177,6 +179,34 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.textContaining('Hatalı Soru Bildir'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'QuizResultScreen kompakt ekranda (360x640) dikey taşma vermez (83px overflow çözümü)',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(360, 640);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        const result = QuizResult(
+          totalQuestions: 10,
+          correctCount: 8,
+          wrongCount: 2,
+          emptyCount: 0,
+        );
+
+        await tester.pumpWidget(
+          const MaterialApp(home: QuizResultScreen(result: result)),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(find.text('Test Tamamlandı!'), findsOneWidget);
+        expect(find.text('Net Puanın'), findsOneWidget);
+        expect(find.text('7.50'), findsOneWidget);
+        expect(find.text('Zafer Karneni Paylaş 📸'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );

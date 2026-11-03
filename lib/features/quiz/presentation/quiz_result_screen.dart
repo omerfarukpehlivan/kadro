@@ -1,3 +1,4 @@
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:flutter/material.dart';
@@ -89,10 +90,13 @@ class QuizResultScreen extends StatelessWidget {
         automaticallyImplyLeading: false, // Geri butonunu gizler
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: ResponsiveContentWrapper(
+          maxWidth: 720,
+          child: ListView(
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveBreakpoints.horizontalPadding(context),
+              vertical: 16,
+            ),
             children: [
               // Zafer modunda Kadro Koçu maskot konuşma balonu
               MascotCoachBanner(
@@ -103,11 +107,11 @@ class QuizResultScreen extends StatelessWidget {
                     ? 'Muhteşem bir uçuş! Kadro Koçu seninle gurur duyuyor, kadro kapıları açılıyor!'
                     : 'Güzel mücadele! Yanlış Defteri\'ne düşen soruları birlikte inceleyip nete çevirelim.',
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
 
               // Ana Net & Başarı Oranı 3D Kartı
               _NetScoreCard(result: result),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
               // Doğru, Yanlış ve Boş istatistikleri (3D Tactile)
               Row(
@@ -140,7 +144,7 @@ class QuizResultScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
               // Zafer Karnesi Paylaşım Butonu (TASK-52)
               FilledButton.tonalIcon(
@@ -148,8 +152,7 @@ class QuizResultScreen extends StatelessWidget {
                 icon: const Icon(LucideIcons.share2, size: 18),
                 label: const Text('Zafer Karneni Paylaş 📸'),
               ),
-
-              const Spacer(),
+              const SizedBox(height: 20),
 
               // Akıllı İkili Aksiyon Köprüsü (TASK-50: Zero Dead-Ends UX)
               if (result.wrongCount > 0) ...[
@@ -189,6 +192,7 @@ class QuizResultScreen extends StatelessWidget {
                   label: const Text('Bilgi Kartlarıyla Hızlı Tekrar'),
                 ),
               ],
+              const SizedBox(height: 16),
             ],
           ),
         ),
