@@ -1,4 +1,4 @@
-import 'dart:async' show unawaited;
+import 'dart:async' show StreamSubscription, unawaited;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,9 +63,40 @@ class AuthUserState {
 ///
 /// Web/Angular karşılığı: AuthService / AuthStore (Supabase Auth Wrapper).
 class AuthNotifier extends Notifier<AuthUserState> {
+  StreamSubscription<AuthState>? _authSubscription;
+
   @override
   AuthUserState build() {
     final client = SupabaseConfig.clientOrNull;
+
+    if (client != null && _authSubscription == null) {
+      _authSubscription = client.auth.onAuthStateChange.listen((data) {
+        final user = data.session?.user;
+        if (user != null) {
+          state = state.copyWith(
+            isAuthenticated: true,
+            userId: user.id,
+            email: user.email,
+            displayName:
+                user.userMetadata?['display_name'] as String? ??
+                user.userMetadata?['full_name'] as String? ??
+                (user.email?.split('@').first ?? 'Memur Adayı'),
+            isLoading: false,
+            errorMessage: null,
+          );
+          ref.read(studyStatsProvider.notifier).loadFromCloud();
+          unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
+        } else if (data.event == AuthChangeEvent.signedOut) {
+          state = const AuthUserState();
+        }
+      });
+
+      ref.onDispose(() {
+        _authSubscription?.cancel();
+        _authSubscription = null;
+      });
+    }
+
     final user = client?.auth.currentUser;
     if (user != null) {
       Future.microtask(() {
@@ -77,7 +108,9 @@ class AuthNotifier extends Notifier<AuthUserState> {
         userId: user.id,
         email: user.email,
         displayName:
-            user.userMetadata?['display_name'] as String? ?? 'Memur Adayı',
+            user.userMetadata?['display_name'] as String? ??
+            user.userMetadata?['full_name'] as String? ??
+            'Memur Adayı',
       );
     }
     return const AuthUserState();
@@ -246,9 +279,16 @@ class AuthNotifier extends Notifier<AuthUserState> {
       return true;
     }
     try {
+      final String? effectiveRedirectTo;
+      if (kIsWeb) {
+        effectiveRedirectTo = Uri.base.origin;
+      } else {
+        effectiveRedirectTo = 'com.omer.kadro://login-callback';
+      }
+
       final res = await client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: kIsWeb ? null : 'com.omer.kadro://login-callback',
+        redirectTo: effectiveRedirectTo,
       );
       state = state.copyWith(isLoading: false);
       return res;
