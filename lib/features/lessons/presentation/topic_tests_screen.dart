@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
+import 'package:kadro/features/quiz/data/models/test_difficulty_tier.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
@@ -14,8 +15,9 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 /// 10'ar soruluk numaralandırılmış testlere (Test 1, Test 2, ...) bölen ekran.
 ///
 /// Web/Angular Karşılığı: `TopicTestsComponent`.
-/// Kullanıcı konuyu seçtiğinde devasa 40 soruluk tek bir test yerine,
-/// pedagojik olarak yönetilebilir 10'ar soruluk seviye testleri sunulur.
+/// Kullanıcı konuyu seçtiğinde devasa tek bir test yerine,
+/// pedagojik olarak yönetilebilir ve dikkat çekici seviye testleri (Basit Alıştırma,
+/// Tam Sınav Ayarı, Net Sıçratan, Kurtlar Sofrası) sunulur.
 class TopicTestsScreen extends ConsumerStatefulWidget {
   final String lessonName;
   final String topic;
@@ -93,13 +95,17 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
     });
   }
 
-  void _startTest(int testIndex, List<Question> chunkQuestions) {
+  void _startTest(
+    int testIndex,
+    List<Question> chunkQuestions,
+    TestDifficultyTier tier,
+  ) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => QuizScreen(
           questions: chunkQuestions,
           customTitle:
-              '${widget.lessonName} · ${widget.topic} · Test ${testIndex + 1}',
+              '${widget.lessonName} · ${widget.topic} · Test ${testIndex + 1} (${tier.cleanTitle})',
         ),
       ),
     );
@@ -192,47 +198,24 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    // Ortalama zorluk hesabı
+    // Ortalama zorluk hesabı ve Seviye (Tier) belirleme
     final avgDifficulty = chunk.isNotEmpty
         ? chunk.map((q) => q.difficultyLevel).reduce((a, b) => a + b) /
               chunk.length
         : 2.0;
 
-    final String difficultyTitle;
-    final Color badgeBg;
-    final Color badgeFg;
-    final IconData badgeIcon;
-
-    if (avgDifficulty <= 1.4) {
-      difficultyTitle = 'Temel Seviye (Kolay)';
-      badgeBg = Colors.green.withAlpha(35);
-      badgeFg = Colors.green.shade800;
-      badgeIcon = LucideIcons.shieldCheck;
-    } else if (avgDifficulty <= 2.2) {
-      difficultyTitle = 'Kavrama Seviyesi (Orta)';
-      badgeBg = Colors.amber.withAlpha(45);
-      badgeFg = Colors.amber.shade900;
-      badgeIcon = LucideIcons.gauge;
-    } else if (avgDifficulty <= 2.6) {
-      difficultyTitle = 'Pekiştirme (Orta - Zor)';
-      badgeBg = Colors.orange.withAlpha(45);
-      badgeFg = Colors.deepOrange.shade800;
-      badgeIcon = LucideIcons.sparkles;
-    } else {
-      difficultyTitle = 'ÖSYM Usta (Zor & Tuzak)';
-      badgeBg = Colors.red.withAlpha(40);
-      badgeFg = Colors.red.shade900;
-      badgeIcon = LucideIcons.flame;
-    }
+    final tier = TestDifficultyTierExtension.fromAvgDifficulty(avgDifficulty);
+    final badgeBg = tier.backgroundColor(colorScheme);
+    final badgeFg = tier.foregroundColor(colorScheme);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TactileCard(
-        onTap: () => _startTest(index, chunk),
+        onTap: () => _startTest(index, chunk, tier),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Üst Satır: Test Numarası Rozeti ve Seviye Rozeti
+            // Üst Satır: Test Numarası Rozeti ve Dikkat Çekici Seviye Rozeti
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -265,10 +248,10 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(badgeIcon, size: 12, color: badgeFg),
+                      Icon(tier.icon, size: 12, color: badgeFg),
                       const SizedBox(width: 4),
                       Text(
-                        difficultyTitle,
+                        tier.title,
                         style: textTheme.labelSmall?.copyWith(
                           color: badgeFg,
                           fontWeight: FontWeight.w700,
@@ -283,7 +266,7 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
 
             // Orta Alan: Test Adı ve Soru Sayısı
             Text(
-              'Test ${index + 1} · $difficultyTitle',
+              'Test ${index + 1} · ${tier.cleanTitle}',
               style: textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -293,6 +276,16 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
               '${chunk.length} Soru · Öngörülen Süre: ~${(chunk.length * 1.1).round()} dk',
               style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            // Motive edici mini açıklama
+            Text(
+              tier.description,
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant.withAlpha(200),
+                fontStyle: FontStyle.italic,
               ),
             ),
             const SizedBox(height: 12),
@@ -318,7 +311,7 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
                   ],
                 ),
                 FilledButton.tonal(
-                  onPressed: () => _startTest(index, chunk),
+                  onPressed: () => _startTest(index, chunk, tier),
                   style: FilledButton.styleFrom(
                     visualDensity: VisualDensity.compact,
                     padding: const EdgeInsets.symmetric(
