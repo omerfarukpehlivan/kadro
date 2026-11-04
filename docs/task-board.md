@@ -87,6 +87,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-60** | **Ders Kartlarında Dairesel İlerleme Halkası (Animated Lesson Progress Ring) & Çözülen Test Oranı Göstergesi** | `LessonsScreen` ders kartlarındaki ikonların etrafına çözülen test / toplam test oranını gösteren animasyonlu dairesel ilerleme halkası (`LessonProgressRing`); kart içinde 'X / Y Test Tamamlandı' ve yüzde ilerleme rozeti | ✅ **Tamamlandı** |
 | **TASK-61** | **UI Taşma (RenderFlex Overflow) ve Görsel Hata Düzeltme Paketi (Test Sonucu, Dersler, İstatistik, Paywall, Navbar & BottomSheet)** | Test Sonucu ekranındaki 83px dikey taşmanın `ListView` ile çözülmesi; Güncel Bilgiler ders kartındaki 6.1px taşmanın `Flexible`/`Wrap` ile çözülmesi; İstatistik çözülen testler başlığının `Expanded` ile sarılması; Paywall plan kartlarında `Wrap` düzeltmesi; AppNavigationBar 'Ana Sayfa' taşmasının kompakt padding ile giderilmesi; Hatalı soru bildirme BottomSheet'inde `clipBehavior: Clip.antiAlias` ile köşe sızıntısının önlenmesi | ✅ **Tamamlandı** |
 | **TASK-62** | **UI & İçerik Sadeleştirme Paketi: Bilgi Kirliliğini Önleme, Gereksiz Rozet ve Tekrarların Temizlenmesi (Dersler, Konular, Konu Testleri)** | Tarih kartındaki '27 Soru · Kritik' rozetinin ve '7 Adımlı Yol Haritası' alt metninin kaldırılması; Konular ekranında mükerrer 'ADIM 1' rozeti ve 'Tarih · Konu Testi' metninin temizlenmesi; Konu testlerinde zorluk rozetlerindeki parantez içi açıklamaların, mükerrer 'Test 1' başlığının ve '10 Soru / 10 Soruluk Konu Testi' tekrarlarının temizlenmesi | ✅ **Tamamlandı** |
+| **TASK-63** | **Proje Genelinde Standart Spacing & Padding/Margin Sistemi (AppSpacing Tokens & Zero-Shift Sayfa Geçişleri)** | Uygulamadaki dağınık padding ve marginlerin (10, 14, 16, 20, 24px) 8pt/4pt sisteminde `AppSpacing` design token sınıfına bağlanması; 5 ana tab ekranında (Home, Lessons, Exams, Stats, Profile) kenar dolgularının ve üst/alt aralıkların eşitlenerek sayfa geçişlerindeki zıplamaların (Zero Layout Shift) önlenmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3592,6 +3593,120 @@ ADIM 4: `TopicTestsScreen` Mükerrer Test No ve 10 Soru Bilgisinin Temizliği (`
 
 ADIM 5: Test ve Doğrulama
 1. `test/lessons_screen_test.dart`, `test/topic_tests_screen_test.dart` ve `test/lesson_topics_screen_test.dart` içindeki widget testlerini yeni temiz UI metinleriyle güncelle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-63: Proje Genelinde Standart Spacing & Padding/Margin Sistemi (AppSpacing Tokens & Zero-Shift Sayfa Geçiş Ritimleri)
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - Uygulama genelindeki dağınık, rastgele veya ekranlar arası uyumsuz (10, 12, 14, 16, 20, 24px) padding ve margin değerlerinin endüstri standardı **8pt / 4pt Spacing Token** mimarisine (`AppSpacing`) bağlanması.
+  - **Zero Layout Shift (Sıfır Zıplama) Kuralı:** Kullanıcı alt menü çubuğundan sekmeler arasında geçtiğinde (`HomeScreen` ➔ `LessonsScreen` ➔ `ExamsScreen` ➔ `StatsScreen` ➔ `ProfileScreen`), sayfa kenar dolguları (horizontal padding) ve ilk elemanın üst boşluğu (top margin) milimetrik olarak birebir aynı hizada kilitlenir; sayfa içeriğinde sağa-sola veya yukarı-aşağı atlama/zıplama tamamen ortadan kaldırılır.
+  - **Design Token Katmanı (`lib/core/theme/app_spacing.dart`):**
+    - `xxs = 4.0` (Mikro rozet içi, ikon-metin aralığı)
+    - `xs = 8.0` (Küçük boşluk, rozet dolgusu, dar eleman aralığı)
+    - `sm = 12.0` (Kompakt sayfa yatay dolgusu, kart altı aralığı, bento grid aralığı)
+    - `md = 16.0` (Standart sayfa yatay dolgusu, standart kart içi padding, bölüm arası boşluk)
+    - `lg = 20.0` (Geniş bölüm ayıracı, modal padding)
+    - `xl = 24.0` (Tablet yatay sayfa dolgusu, büyük başlık altı boşluğu)
+    - `xxl = 32.0` (Sayfa altı safe-area boşluğu)
+    - `AppSpacing.pagePadding(context)` helper metodu.
+    - `AppSpacing.cardPadding`, `AppSpacing.cardMarginBottom`.
+    - `AppSpacing.gapXs` ... `AppSpacing.gapXl` const SizedBox'lar.
+  - **Tüm Ekranların Standardizasyonu:**
+    - 5 Ana Sekme: `HomeScreen`, `LessonsScreen`, `ExamsScreen`, `StatsScreen`, `ProfileScreen` ➔ Hepsi `ResponsiveContentWrapper` + `AppSpacing.pagePadding(context)` kullanır.
+    - Alt Ekranlar: `LessonTopicsScreen`, `TopicTestsScreen`, `QuizScreen`, `QuizResultScreen`, `StudyPlannerScreen`, `MistakesScreen`, `FlashcardsScreen`, `PaywallScreen`, `AuthScreen`.
+
+```text
+GÖREV: TASK-63 — Proje Genelinde Standart Spacing & Padding/Margin Sistemi (AppSpacing Tokens)
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: `AppSpacing` Token Sınıfının Oluşturulması (`lib/core/theme/app_spacing.dart`)
+1. `lib/core/theme/app_spacing.dart` dosyasını oluştur:
+   ```dart
+   import 'package:flutter/material.dart';
+   import 'package:kadro/core/utils/responsive_layout.dart';
+
+   /// Tüm Kadro uygulamasında kullanılan 8pt/4pt tabanlı standart boşluk (spacing/padding/margin) token'ları.
+   ///
+   /// Web/Angular Karşılığı: Tailwind Spacing Scale (`p-1` (4px), `p-2` (8px), `p-3` (12px), `p-4` (16px), `p-5` (20px), `p-6` (24px))
+   /// veya CSS `:root { --spacing-xs: 8px; --spacing-md: 16px; }` değişkenleri.
+   class AppSpacing {
+     AppSpacing._();
+
+     // 1. Temel Ölçüler (Scalar Tokens)
+     static const double xxs = 4.0;
+     static const double xs = 8.0;
+     static const double sm = 12.0;
+     static const double md = 16.0;
+     static const double lg = 20.0;
+     static const double xl = 24.0;
+     static const double xxl = 32.0;
+
+     // 2. Sayfa Düzeyi Eşlenik Dolgular (Zero Layout Shift)
+     /// Tüm ana sayfalarda ve listelerde kullanılan ekran boyutuna duyarlı standart kenar dolgusu.
+     /// Kompakt ekranda 12px, standart ekranda 16px, tablette 24px yatay dolgu verir.
+     /// Dikey dolgu tüm cihazlarda sabit 16px'tir (böylece sekmeler arası geçişte başlıklar zıplamaz).
+     static EdgeInsets pagePadding(BuildContext context) {
+       return EdgeInsets.symmetric(
+         horizontal: ResponsiveBreakpoints.horizontalPadding(context),
+         vertical: md,
+       );
+     }
+
+     // 3. Kart ve Konteyner Dolguları
+     static const EdgeInsets cardPadding = EdgeInsets.all(md);
+     static const EdgeInsets cardPaddingCompact = EdgeInsets.all(sm);
+     static const EdgeInsets cardMarginBottom = EdgeInsets.only(bottom: sm);
+
+     // 4. Standart Dikey Boşluk Bileşenleri (Vertical Gaps)
+     static const SizedBox gapXs = SizedBox(height: xs);
+     static const SizedBox gapSm = SizedBox(height: sm);
+     static const SizedBox gapMd = SizedBox(height: md);
+     static const SizedBox gapLg = SizedBox(height: lg);
+     static const SizedBox gapXl = SizedBox(height: xl);
+     static const SizedBox gapXxl = SizedBox(height: xxl);
+
+     // 5. Standart Yatay Boşluk Bileşenleri (Horizontal Gaps)
+     static const SizedBox gapHorizontalXs = SizedBox(width: xs);
+     static const SizedBox gapHorizontalSm = SizedBox(width: sm);
+     static const SizedBox gapHorizontalMd = SizedBox(width: md);
+     static const SizedBox gapHorizontalLg = SizedBox(width: lg);
+   }
+   ```
+
+ADIM 2: 5 Ana Tab Ekranının Spacing Eşlenmesi (Zero Layout Shift)
+1. `HomeScreen` (`lib/features/home/presentation/home_screen.dart`):
+   - `ListView` dolgusunu `AppSpacing.pagePadding(context)` yap.
+   - Kartlar arasındaki `SizedBox(height: ...)` boşluklarını `AppSpacing.gapMd` (16px) veya `AppSpacing.gapSm` (12px) ile sabitle.
+2. `LessonsScreen` (`lib/features/lessons/presentation/lessons_screen.dart`):
+   - `ListView` dolgusunu `AppSpacing.pagePadding(context)` yap.
+   - Kart alt marginlerini `AppSpacing.cardMarginBottom` ile sabitle.
+3. `ExamsScreen` (`lib/features/exams/presentation/exams_screen.dart`):
+   - `ResponsiveContentWrapper` içine al.
+   - `ListView` dolgusunu `AppSpacing.pagePadding(context)` yap.
+   - Bölümler arasındaki boşlukları `AppSpacing.gapMd` (16px) yap.
+4. `StatsScreen` (`lib/features/stats/presentation/stats_screen.dart`):
+   - `ListView` dolgusunu `AppSpacing.pagePadding(context)` yap.
+   - Kartlar arası boşlukları `AppSpacing.gapMd` yap.
+5. `ProfileScreen` (`lib/features/profile/presentation/profile_screen.dart`):
+   - `ResponsiveContentWrapper` içine al.
+   - `ListView` dolgusunu `AppSpacing.pagePadding(context)` yap (önceden unconstrained `EdgeInsets.all(16)` idi).
+   - Bölüm aralıklarını `AppSpacing.gapMd` yap.
+
+ADIM 3: Alt Akış ve Detay Ekranlarının Standartlaştırılması
+1. `LessonTopicsScreen`, `TopicTestsScreen`, `QuizScreen`, `QuizResultScreen`, `StudyPlannerScreen`, `MistakesScreen`, `FlashcardsScreen`, `PaywallScreen`:
+   - Sayfa gövdelerinde rastgele `padding: const EdgeInsets.all(20)` veya `all(24)` olan yerleri `AppSpacing.pagePadding(context)` ile hizala.
+   - Kart içi dolguları `AppSpacing.cardPadding` (16px) yap.
+   - `SizedBox(height: 10)`, `SizedBox(height: 14)`, `SizedBox(height: 18)` gibi tekil/keyfi değerleri `AppSpacing.gapXs` (8px), `AppSpacing.gapSm` (12px) veya `AppSpacing.gapMd` (16px) ile değiştir.
+
+ADIM 4: Test ve Doğrulama
+1. `test/app_spacing_test.dart` birim test dosyasını oluştur:
+   - `AppSpacing` scalar token değerlerini (4, 8, 12, 16, 20, 24, 32px) doğrula.
+   - Kompakt, standart ve tablet ekranlarda `AppSpacing.pagePadding(context)` dönüşlerini doğrula.
+   - 5 ana ekranın da sıfır taşma (overflow) ile render olduğunu doğrula.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 
