@@ -218,9 +218,11 @@ class _EmptyMistakesView extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            AppSpacing.gapXl,
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 12,
+              runSpacing: 10,
               children: [
                 FilledButton.tonalIcon(
                   onPressed: () {
@@ -231,7 +233,6 @@ class _EmptyMistakesView extends StatelessWidget {
                   icon: const Icon(LucideIcons.play, size: 18),
                   label: const Text('Yeni Test Çöz'),
                 ),
-                const SizedBox(width: 12),
                 OutlinedButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(

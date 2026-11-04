@@ -384,51 +384,55 @@ class _ExamPackCard extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 6),
-                  Tooltip(
-                    message: isDownloaded
-                        ? 'Cihazda Hazır'
-                        : 'Çevrimdışı İndir',
-                    child: Material(
-                      color: isDownloaded
-                          ? colorScheme.secondaryContainer
-                          : colorScheme.surfaceContainerHighest.withAlpha(140),
-                      borderRadius: BorderRadius.circular(16),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(16),
-                        onTap: () => _handleDownload(context, ref),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+                  isDownloaded
+                      ? Tooltip(
+                          message: 'Cihazda Hazır',
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.secondaryContainer,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  LucideIcons.circleCheck,
+                                  size: 13,
+                                  color: colorScheme.onSecondaryContainer,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Cihazda',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: colorScheme.onSecondaryContainer,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                isDownloaded
-                                    ? LucideIcons.circleCheck
-                                    : LucideIcons.arrowDownToLine,
-                                size: 14,
-                                color: isDownloaded
-                                    ? colorScheme.onSecondaryContainer
-                                    : colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                isDownloaded ? 'İndirildi' : 'İndir',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: isDownloaded
-                                      ? colorScheme.onSecondaryContainer
-                                      : colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w700,
+                        )
+                      : Tooltip(
+                          message: 'Çevrimdışı İndir',
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () => _handleDownload(context, ref),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                LucideIcons.arrowDownToLine,
+                                size: 16,
+                                color: colorScheme.onSurfaceVariant.withAlpha(
+                                  150,
                                 ),
                               ),
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ],

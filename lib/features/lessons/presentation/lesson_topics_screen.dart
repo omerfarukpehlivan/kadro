@@ -21,10 +21,73 @@ class LessonTopicsScreen extends ConsumerWidget {
 
   const LessonTopicsScreen({super.key, required this.lesson});
 
+  Future<void> _downloadAllTopics(BuildContext context, WidgetRef ref) async {
+    final isPro = ref.read(userPreferencesProvider).isPro;
+    if (!isPro) {
+      Navigator.of(context)
+          .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            '🔒 Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    try {
+      final questionRepo = ref.read(questionRepositoryProvider);
+      final downloadedNotifier = ref.read(downloadedPackagesProvider.notifier);
+
+      int count = 0;
+      for (final topic in lesson.topics) {
+        final packageId = 'topic_${lesson.name}_$topic';
+        final questions = await questionRepo.fetchQuestions(
+          lesson: lesson.name,
+          topic: topic,
+        );
+        final finalQuestions = questions.isNotEmpty
+            ? questions
+            : await questionRepo.getQuestionsByLesson(lesson.name);
+
+        await downloadedNotifier.downloadPackage(
+          packageId: packageId,
+          questions: finalQuestions,
+          isPro: isPro,
+        );
+        count++;
+      }
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✅ ${lesson.name} dersine ait $count konu indirildi!'),
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('İndirme hatası: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: Text('${lesson.name} Konuları')),
+      appBar: AppBar(
+        title: Text('${lesson.name} Konuları'),
+        actions: [
+          Tooltip(
+            message: '${lesson.name} Tüm Konuları İndir (PRO)',
+            child: TextButton.icon(
+              onPressed: () => _downloadAllTopics(context, ref),
+              icon: const Icon(LucideIcons.arrowDownToLine, size: 16),
+              label: const Text('Tümünü İndir'),
+            ),
+          ),
+        ],
+      ),
       body: ResponsiveContentWrapper(
         maxWidth: 720,
         padding: EdgeInsets.zero,
@@ -238,56 +301,57 @@ class _TopicPathNode extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Üst Satır: Çevrimdışı İndirme Butonu (Sağa Yaslı)
+                    // Üst Satır: Çevrimdışı İndirme Butonu / Rozeti (Sağa Yaslı)
                     Align(
                       alignment: Alignment.centerRight,
-                      child: Tooltip(
-                        message: isDownloaded
-                            ? 'Cihazda Hazır'
-                            : 'Çevrimdışı İndir',
-                        child: Material(
-                          color: isDownloaded
-                              ? colorScheme.secondaryContainer
-                              : colorScheme.surfaceContainerHighest.withAlpha(
-                                  140,
+                      child: isDownloaded
+                          ? Tooltip(
+                              message: 'Cihazda Hazır',
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 3,
                                 ),
-                          borderRadius: BorderRadius.circular(14),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(14),
-                            onTap: () => _handleDownload(context, ref),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    isDownloaded
-                                        ? LucideIcons.circleCheck
-                                        : LucideIcons.arrowDownToLine,
-                                    size: 13,
-                                    color: isDownloaded
-                                        ? colorScheme.onSecondaryContainer
-                                        : colorScheme.onSurfaceVariant,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    isDownloaded ? 'İndirildi' : 'İndir',
-                                    style: textTheme.labelSmall?.copyWith(
-                                      color: isDownloaded
-                                          ? colorScheme.onSecondaryContainer
-                                          : colorScheme.onSurfaceVariant,
-                                      fontWeight: FontWeight.w700,
+                                decoration: BoxDecoration(
+                                  color: colorScheme.secondaryContainer,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      LucideIcons.circleCheck,
+                                      size: 13,
+                                      color: colorScheme.onSecondaryContainer,
                                     ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Cihazda',
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: colorScheme.onSecondaryContainer,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : Tooltip(
+                              message: 'Çevrimdışı İndir',
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: () => _handleDownload(context, ref),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: Icon(
+                                    LucideIcons.arrowDownToLine,
+                                    size: 16,
+                                    color: colorScheme.onSurfaceVariant
+                                        .withAlpha(150),
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      ),
                     ),
                     const SizedBox(height: 6),
                     // Orta: Konu Başlığı (Tam Genişlik)

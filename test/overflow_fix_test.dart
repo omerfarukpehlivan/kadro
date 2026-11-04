@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/app/widgets/app_navigation_bar.dart';
 import 'package:kadro/core/services/purchase_service.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
+import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
@@ -207,6 +208,26 @@ void main() {
         expect(find.text('Net Puanın'), findsOneWidget);
         expect(find.text('7.50'), findsOneWidget);
         expect(find.text('Zafer Karneni Paylaş 📸'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'TASK-64: MistakesScreen boş durumda 360x640 dar ekranda butonlar Wrap ile taşmasız render edilmeli',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(360, 640);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        await tester.pumpWidget(
+          const ProviderScope(child: MaterialApp(home: MistakesScreen())),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(find.text('Yanlış defterin tertemiz!'), findsOneWidget);
+        expect(find.text('Yeni Test Çöz'), findsOneWidget);
+        expect(find.text('Bilgi Kartlarına Git'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );
