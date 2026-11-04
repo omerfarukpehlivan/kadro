@@ -88,6 +88,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-61** | **UI Taşma (RenderFlex Overflow) ve Görsel Hata Düzeltme Paketi (Test Sonucu, Dersler, İstatistik, Paywall, Navbar & BottomSheet)** | Test Sonucu ekranındaki 83px dikey taşmanın `ListView` ile çözülmesi; Güncel Bilgiler ders kartındaki 6.1px taşmanın `Flexible`/`Wrap` ile çözülmesi; İstatistik çözülen testler başlığının `Expanded` ile sarılması; Paywall plan kartlarında `Wrap` düzeltmesi; AppNavigationBar 'Ana Sayfa' taşmasının kompakt padding ile giderilmesi; Hatalı soru bildirme BottomSheet'inde `clipBehavior: Clip.antiAlias` ile köşe sızıntısının önlenmesi | ✅ **Tamamlandı** |
 | **TASK-62** | **UI & İçerik Sadeleştirme Paketi: Bilgi Kirliliğini Önleme, Gereksiz Rozet ve Tekrarların Temizlenmesi (Dersler, Konular, Konu Testleri)** | Tarih kartındaki '27 Soru · Kritik' rozetinin ve '7 Adımlı Yol Haritası' alt metninin kaldırılması; Konular ekranında mükerrer 'ADIM 1' rozeti ve 'Tarih · Konu Testi' metninin temizlenmesi; Konu testlerinde zorluk rozetlerindeki parantez içi açıklamaların, mükerrer 'Test 1' başlığının ve '10 Soru / 10 Soruluk Konu Testi' tekrarlarının temizlenmesi | ✅ **Tamamlandı** |
 | **TASK-63** | **Proje Genelinde Standart Spacing & Padding/Margin Sistemi (AppSpacing Tokens & Zero-Shift Sayfa Geçişleri)** | Uygulamadaki dağınık padding ve marginlerin (10, 14, 16, 20, 24px) 8pt/4pt sisteminde `AppSpacing` design token sınıfına bağlanması; 5 ana tab ekranında (Home, Lessons, Exams, Stats, Profile) kenar dolgularının ve üst/alt aralıkların eşitlenerek sayfa geçişlerindeki zıplamaların (Zero Layout Shift) önlenmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-64** | **Yanlış Defteri 59px Taşma Düzeltmesi & Çevrimdışı İndirme UI/UX Dönüşümü (Zarif & Sade İndirme Modeli)** | Yanlış Defteri boş durumundaki butonların dar ekranda taşmasını önleyen `Wrap` düzeltmesi; her test/konu kartındaki göz yoran büyük 'İndir' butonlarının kaldırılarak Spotify/Duolingo stili zarif minimal rozet/mikro-ikon modeline geçilmesi ve üst başlığa 'Tümünü İndir' opsiyonunun eklenmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3708,6 +3709,80 @@ ADIM 4: Test ve Doğrulama
    - Kompakt, standart ve tablet ekranlarda `AppSpacing.pagePadding(context)` dönüşlerini doğrula.
    - 5 ana ekranın da sıfır taşma (overflow) ile render olduğunu doğrula.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-64: Yanlış Defteri 59px Taşma Düzeltmesi & Çevrimdışı İndirme UI/UX Dönüşümü (Zarif & Sade İndirme Modeli)
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - **1. Yanlış Defteri Boş Durum Taşma Düzeltmesi (`lib/features/mistakes/presentation/mistakes_screen.dart`):**
+    - Yanlış Defteri ekranında soru yokken gösterilen `_buildEmptyState` içindeki `Row`'da yer alan `FilledButton.tonalIcon(Yeni Test Çöz)` ve `OutlinedButton.icon(Bilgi Kartlarına Git)` butonlarının dar ekranda yan yana sığmayıp sebep olduğu **`right overflowed by 59 pixels`** hatasının `Wrap(spacing: 12, runSpacing: 10, alignment: WrapAlignment.center)` ile çözülmesi.
+  - **2. Çevrimdışı İndirme Görsel Kirliliğinin Giderilmesi (Spotify & Duolingo Stili Zarif Mimari):**
+    - Konular (`LessonTopicsScreen`) ve Denemeler (`ExamsScreen`) ekranlarında her kartın üstünde bağıran, uygulama tasarımını dosya yöneticisi gibi gösteren büyük **`[ ⬇️ İndir ]`** metinli butonların kaldırılması.
+    - **Yeni Zarif Mimari:**
+      - Kart üzerinde kaba metinli buton yerine:
+        - İndirilmemiş kartlar: Tamamen temiz ve yalın kalır (veya sağ üst köşede sadece 20px soluk/hafif bir mikro-ikon `LucideIcons.arrowDownToLine`).
+        - İndirilmiş kartlar: Cihazda hazır olduğunu gösteren zarif, minimal bir yeşil onay rozeti (`LucideIcons.circleCheck` - 'Cihazda').
+      - Sayfa Düzeyinde Toplu İndirme (Bulk Action): Konular ve Denemeler ekranının üst başlık veya AppBar alanına "Tüm Konuları İndir (PRO)" / "Tümünü Çevrimdışı Yap" tek tıkla indirme seçeneği sunulması.
+    - Böylece kartlar ferah, modern ve elit bir eğitim uygulaması zarafetine kavuşur.
+
+```text
+GÖREV: TASK-64 — Yanlış Defteri 59px Taşma Düzeltmesi ve Çevrimdışı İndirme UI/UX Yeniden Tasarımı
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: `MistakesScreen` 59px Taşma Düzeltmesi (`lib/features/mistakes/presentation/mistakes_screen.dart`)
+1. `_buildEmptyState` metodundaki `Row(children: [FilledButton.tonalIcon(...), SizedBox(12), OutlinedButton.icon(...)])` bloğunu güncelle:
+   - `Row` yerine `Wrap` kullan:
+     ```dart
+     Wrap(
+       alignment: WrapAlignment.center,
+       spacing: 12,
+       runSpacing: 10,
+       children: [
+         FilledButton.tonalIcon(
+           onPressed: () {
+             Navigator.of(context).push(
+               MaterialPageRoute(builder: (_) => const QuizScreen()),
+             );
+           },
+           icon: const Icon(LucideIcons.play, size: 18),
+           label: const Text('Yeni Test Çöz'),
+         ),
+         OutlinedButton.icon(
+           onPressed: () {
+             Navigator.of(context).push(
+               MaterialPageRoute(
+                 builder: (_) => const FlashcardsScreen(),
+               ),
+             );
+           },
+           icon: const Icon(LucideIcons.layers, size: 18),
+           label: const Text('Bilgi Kartlarına Git'),
+         ),
+       ],
+     )
+     ```
+2. Böylece küçük telefonlarda butonlar otomatik alt satıra kırılarak 59px taşma hatasını tamamen ortadan kaldırır.
+
+ADIM 2: `LessonTopicsScreen` İndir Butonlarının Zarifleştirilmesi (`lib/features/lessons/presentation/lesson_topics_screen.dart`)
+1. Kartın içindeki büyük `[ ⬇️ İndir ]` metinli hap butonu kaldır.
+2. Yerine sadece:
+   - İndirilmişse: Küçük ve zarif `LucideIcons.circleCheck` ikonu ve `Cihazda` mikro etiketi.
+   - İndirilmemişse: Sade 24x24px tıklanabilir hafif mikro-ikon (`LucideIcons.arrowDownToLine`, rengi `colorScheme.onSurfaceVariant.withAlpha(150)`).
+3. Sayfa üstündeki `MascotCoachBanner` altına veya AppBar'a "Dersin Tüm Konularını İndir" butonu ekle.
+
+ADIM 3: `ExamsScreen` Deneme Kartları İndir Butonlarının Zarifleştirilmesi (`lib/features/exams/presentation/exams_screen.dart`)
+1. Deneme kartlarındaki büyük `Row(children: [Icon, Text('İndir')])` butonunu kaldır.
+2. Kartın sağ üst köşesine sadece indirme durumu mikro-ikonu yerleştir:
+   - İndirilmişse: Zümrüt yeşili minik `LucideIcons.circleCheck` rozeti.
+   - İndirilmemişse: Hafif çizgisel `LucideIcons.arrowDownToLine` mikro-butonu (metinsiz).
+
+ADIM 4: Test ve Doğrulama
+1. `test/overflow_fix_test.dart` içine `MistakesScreen` 360x640 dar ekran taşmasızlık testini ekle.
+2. `test/offline_download_test.dart` testlerini yeni zarif mikro-ikon ve indirme akışıyla uyumlu hale getir.
+3. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 
 ---
