@@ -89,6 +89,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-62** | **UI & İçerik Sadeleştirme Paketi: Bilgi Kirliliğini Önleme, Gereksiz Rozet ve Tekrarların Temizlenmesi (Dersler, Konular, Konu Testleri)** | Tarih kartındaki '27 Soru · Kritik' rozetinin ve '7 Adımlı Yol Haritası' alt metninin kaldırılması; Konular ekranında mükerrer 'ADIM 1' rozeti ve 'Tarih · Konu Testi' metninin temizlenmesi; Konu testlerinde zorluk rozetlerindeki parantez içi açıklamaların, mükerrer 'Test 1' başlığının ve '10 Soru / 10 Soruluk Konu Testi' tekrarlarının temizlenmesi | ✅ **Tamamlandı** |
 | **TASK-63** | **Proje Genelinde Standart Spacing & Padding/Margin Sistemi (AppSpacing Tokens & Zero-Shift Sayfa Geçişleri)** | Uygulamadaki dağınık padding ve marginlerin (10, 14, 16, 20, 24px) 8pt/4pt sisteminde `AppSpacing` design token sınıfına bağlanması; 5 ana tab ekranında (Home, Lessons, Exams, Stats, Profile) kenar dolgularının ve üst/alt aralıkların eşitlenerek sayfa geçişlerindeki zıplamaların (Zero Layout Shift) önlenmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | **TASK-64** | **Yanlış Defteri 59px Taşma Düzeltmesi & Çevrimdışı İndirme UI/UX Dönüşümü (Zarif & Sade İndirme Modeli)** | Yanlış Defteri boş durumundaki butonların dar ekranda taşmasını önleyen `Wrap` düzeltmesi; her test/konu kartındaki göz yoran büyük 'İndir' butonlarının kaldırılarak Spotify/Duolingo stili zarif minimal rozet/mikro-ikon modeline geçilmesi ve üst başlığa 'Tümünü İndir' opsiyonunun eklenmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-65** | **Profil Ekranı Evrimi: Aday Kimlik Kartı, KPSS 2026 Geri Sayımı, Lig & Başarı Rozetleri Vitrini ve Bulut Eşitleme Merkezi** | Profil ekranının sıradan bir 'Ayarlar' listesi olmaktan çıkarılıp Duolingo/UWorld seviyesinde zenginleştirilmesi: Aday kimliği & avatarı, hedef puan & atama rotası, canlı 2026 KPSS geri sayımı, 4'lü metrik snapshot'ı (Seri, Soru, Net %, XP), Lig & Unvan vitrini, 6 adet motivasyon madalyası ve modern hesap ayarları | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3783,6 +3784,107 @@ ADIM 4: Test ve Doğrulama
 1. `test/overflow_fix_test.dart` içine `MistakesScreen` 360x640 dar ekran taşmasızlık testini ekle.
 2. `test/offline_download_test.dart` testlerini yeni zarif mikro-ikon ve indirme akışıyla uyumlu hale getir.
 3. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-65: Profil Ekranı Evrimi: Aday Kimlik Kartı, KPSS 2026 Geri Sayımı, Lig & Başarı Rozetleri Vitrini ve Bulut Eşitleme Merkezi
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - Mevcut `ProfileScreen` ekranının sadece teknik bir "Ayarlar Listesi" olmaktan çıkarılıp, global EdTech ve prestij sınav uygulamaları (Duolingo, UWorld, Amboss, Brilliant) standartlarında adayın gurur duyacağı bir **"Memur Adayı Kimlik & Başarı Vitrini"**ne dönüştürülmesi.
+  - **1. Aday Kimlik & Rütbe Kartı (`_CandidateHeroCard`):**
+    - Avatar (Kadro Koçu Tuğrul rozeti veya baş harfli şık daire).
+    - Kullanıcı Adı / Görünen İsim & E-posta bilgisi.
+    - Katılma Tarihi ("Kasım 2026'dan beri Kadro'da").
+    - Hedef Sınav & Hedef Puan Rozeti (Örn: `🎯 Hedef: 88.5 Puan · Gelir Uzmanlığı`).
+    - PRO VIP Durumu: Altın çerçeveli `👑 KADRO PRO VIP` rozeti veya `PRO'ya Geç` butonu.
+  - **2. Canlı 2026 KPSS Geri Sayım Şeridi (`_KpssCountdownStrip`):**
+    - Gerçek 2026 KPSS Lisans Genel Kültür sınav tarihine kalan gün/hafta sayacı:
+      `⏳ 2026 KPSS Lisans: X Gün Kaldı · Her gün 1 net, zirveye adım!`
+  - **3. 4'lü Aday Performans Paneli (Performance Snapshot):**
+    - `🔥 Seri`: X Gün (Streak)
+    - `📝 Çözülen`: X Soru
+    - `🎯 İsabet`: %X Genel Başarı
+    - `⚡ Toplam`: X XP
+  - **4. Lig & Unvan Rozeti (League & Title Card):**
+    - Aktif lig: `🏛️ Altın Kadro Ligi (Sıralama: #14)`
+    - Lig ilerleme çubuğu ve sonraki lige geçiş için gereken XP miktarı.
+  - **5. Başarı Madalyaları Vitrini (`_AchievementBadgesGrid`):**
+    - Adayı soru çözmeye teşvik eden 6 adet motivasyon madalyası (Kazanılmış/Kilitli):
+      1. `🌱 İlk Pençe` (İlk test tamamlandı)
+      2. `⚡ Net Sıçratıcı` (%80+ başarıyla biten deneme)
+      3. `🔥 Seri Canavarı` (Aralıksız 7 gün soru çözümü)
+      4. `🏛️ Tarih Fatihi` (50 Tarih sorusu çözümü)
+      5. `🌙 Gece Kuşu` (Saat 22:00'den sonra çalışma)
+      6. `🛡️ Mayın Temizleyici` (5 çeldirici tuzak sorusunu doğru bilme)
+  - **6. Bulut Senkronizasyon & Güvenlik Göstergesi (`_CloudSyncIndicatorCard`):**
+    - `🟢 Verileriniz Supabase Bulutunda Güvende` (Son eşitleme zamanı, tek tıkla `Şimdi Eşitle`).
+  - **7. Modüler Uygulama ve Soru Çözüm Tercihleri:**
+    - Günlük Soru Hedefi (30 / 50 / 100).
+    - Soru Çözüm Modu (Öğrenme / Sınav).
+    - Tema Seçimi (Sistem / Açık / Koyu).
+    - Bildirim ve Hatırlatıcılar.
+
+```text
+GÖREV: TASK-65 — Profil Ekranı Evrimi (Aday Kimliği, KPSS Geri Sayımı, Rozet Vitrini)
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: Başarı Madalyaları Modeli (`lib/features/profile/data/models/achievement_badge.dart`)
+1. Profilde gösterilecek 6 temel madalya için model oluştur:
+   ```dart
+   class AchievementBadge {
+     final String id;
+     final String title;
+     final String description;
+     final IconData icon;
+     final bool isUnlocked;
+     final String progressText;
+
+     const AchievementBadge({
+       required this.id,
+       required this.title,
+       required this.description,
+       required this.icon,
+       required this.isUnlocked,
+       required this.progressText,
+     });
+   }
+   ```
+2. Kullanıcının mevcut `studyStatsProvider` verilerine göre kilit durumunu hesaplayan bir repository/yardımcı metot ekle.
+
+ADIM 2: `_CandidateHeroCard` ve KPSS 2026 Geri Sayım Şeridi (`lib/features/profile/presentation/widgets/candidate_hero_card.dart`)
+1. Aday kimlik kartını ve geri sayım şeridini oluştur:
+   - Avatar: Kadro Koçu Tuğrul görseli veya baş harf.
+   - Görünen ad (`auth.displayName`), e-posta ve katılım tarihi.
+   - Hedef puan hapı (`🎯 Hedef: ${prefs.targetKpssScore} Puan`).
+   - 2026 KPSS Lisans geri sayım widget'ı (Örn. `DateTime(2026, 9, 6)` hedefiyle kalan gün hesabı).
+
+ADIM 3: 4'lü Metrik Kartı & Lig Rozeti (`lib/features/profile/presentation/widgets/profile_metrics_card.dart`)
+1. Seri, Çözülen Soru, Başarı Oranı ve XP metriklerini TactileCard içinde 4 sütunlu / bento düzeninde render et.
+2. Altına lig unvanı (`Bronz Kadro`, `Gümüş Kadro`, `Altın Kadro`) ve lig seviye çubuğunu yerleştir.
+
+ADIM 4: Başarı Madalyaları Vitrini (`lib/features/profile/presentation/widgets/achievement_showcase.dart`)
+1. 3x2 grid düzeninde madalyaları sergile:
+   - Kazanılmış rozetler: Altın/Zümrüt parıltılı ve renkli.
+   - Kilitli rozetler: Hafif silik (`opacity: 0.5`) ve kilit ikonuyla birlikte hedef göstergesi ("3/7 Gün").
+
+ADIM 5: `ProfileScreen` Entegrasyonu ve Ayarlar Bölümü Düzenlemesi (`lib/features/profile/presentation/profile_screen.dart`)
+1. Ekranı yukarıdan aşağıya hiyerarşik olarak diz:
+   - `ResponsiveContentWrapper` içinde `AppSpacing.pagePadding(context)`.
+   - 1. Aday Kimlik Kartı & Geri Sayım
+   - 2. 4'lü Performans Özeti
+   - 3. Lig & Rütbe Kartı
+   - 4. Başarı Madalyaları Vitrini
+   - 5. Kadro PRO VIP Durum Kartı
+   - 6. Bulut Senkronizasyon Durumu
+   - 7. "Çalışma ve Uygulama Ayarları" (Hedef Soru, Çözüm Modu, Tema, Çıkış Yap)
+2. Ayarlar bölümünü temiz, katlanabilir veya minimal TactileCard ListTile grupları halinde düzenle.
+
+ADIM 6: Test ve Doğrulama
+1. `test/profile_screen_test.dart` içine:
+   - Aday kimlik kartının, geri sayımın, metriklerin ve madalyaların render edildiğini doğrulayan widget testleri ekle.
+2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 
 ---
