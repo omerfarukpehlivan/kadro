@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/auth/data/auth_notifier.dart';
 import 'package:kadro/features/auth/presentation/auth_screen.dart';
-import 'package:kadro/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
+import 'package:kadro/features/profile/presentation/widgets/achievement_showcase.dart';
+import 'package:kadro/features/profile/presentation/widgets/candidate_hero_card.dart';
+import 'package:kadro/features/profile/presentation/widgets/profile_metrics_card.dart';
 import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
@@ -226,15 +228,23 @@ class ProfileScreen extends ConsumerWidget {
           ),
           AppSpacing.gapMd,
 
-          // Bulut Hesap Durumu Kartı (Giriş yapılmışsa kullanıcı bilgisi, yapılmamışsa giriş butonu)
+          // 1. Memur Adayı Kimlik Kartı & Canlı 2026 KPSS Geri Sayım Şeridi
+          CandidateHeroCard(auth: auth, prefs: prefs),
+          AppSpacing.gapMd,
+
+          // 2. Performans Metrikleri & Kadro Ligi
+          ProfileMetricsCard(stats: stats),
+          AppSpacing.gapMd,
+
+          // 3. KPSS Başarı & Motivasyon Rozetleri Vitrini
+          AchievementShowcase(stats: stats),
+          AppSpacing.gapMd,
+
+          // 4. Bulut Hesap Durumu Kartı (Giriş yapılmışsa kullanıcı bilgisi, yapılmamışsa giriş butonu)
           _AccountCard(auth: auth),
           AppSpacing.gapMd,
 
-          // KPSS Hedef Sihirbazı Kartı
-          _StudyGoalWizardCard(prefs: prefs),
-          AppSpacing.gapMd,
-
-          // PRO Durum Kartı (PRO değilse tanıtım banner'ı, PRO ise üyelik kartı)
+          // 5. PRO Durum Kartı (PRO değilse tanıtım banner'ı, PRO ise üyelik kartı)
           if (!prefs.isPro)
             _ProBannerCard(
               onTap: () {
@@ -582,76 +592,6 @@ class _ProBadgeCard extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _StudyGoalWizardCard extends StatelessWidget {
-  final UserPreferencesState prefs;
-
-  const _StudyGoalWizardCard({required this.prefs});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: colorScheme.tertiaryContainer,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  LucideIcons.compass,
-                  color: colorScheme.onTertiaryContainer,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'KPSS Hedefim: ${prefs.targetKpssScore}+ Puan',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Odak Ders: ${prefs.focusLesson} · Günlük Hedef: ${prefs.targetDailyStudyGoal} Soru',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          FilledButton.tonalIcon(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-              );
-            },
-            icon: const Icon(LucideIcons.compass, size: 18),
-            label: const Text('Hedef Sihirbazını Aç'),
           ),
         ],
       ),

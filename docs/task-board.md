@@ -89,7 +89,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-62** | **UI & İçerik Sadeleştirme Paketi: Bilgi Kirliliğini Önleme, Gereksiz Rozet ve Tekrarların Temizlenmesi (Dersler, Konular, Konu Testleri)** | Tarih kartındaki '27 Soru · Kritik' rozetinin ve '7 Adımlı Yol Haritası' alt metninin kaldırılması; Konular ekranında mükerrer 'ADIM 1' rozeti ve 'Tarih · Konu Testi' metninin temizlenmesi; Konu testlerinde zorluk rozetlerindeki parantez içi açıklamaların, mükerrer 'Test 1' başlığının ve '10 Soru / 10 Soruluk Konu Testi' tekrarlarının temizlenmesi | ✅ **Tamamlandı** |
 | **TASK-63** | **Proje Genelinde Standart Spacing & Padding/Margin Sistemi (AppSpacing Tokens & Zero-Shift Sayfa Geçişleri)** | Uygulamadaki dağınık padding ve marginlerin (10, 14, 16, 20, 24px) 8pt/4pt sisteminde `AppSpacing` design token sınıfına bağlanması; 5 ana tab ekranında (Home, Lessons, Exams, Stats, Profile) kenar dolgularının ve üst/alt aralıkların eşitlenerek sayfa geçişlerindeki zıplamaların (Zero Layout Shift) önlenmesi | ✅ **Tamamlandı** |
 | **TASK-64** | **Yanlış Defteri 59px Taşma Düzeltmesi & Çevrimdışı İndirme UI/UX Dönüşümü (Zarif & Sade İndirme Modeli)** | Yanlış Defteri boş durumundaki butonların dar ekranda taşmasını önleyen `Wrap` düzeltmesi; her test/konu kartındaki göz yoran büyük 'İndir' butonlarının kaldırılarak Spotify/Duolingo stili zarif minimal rozet/mikro-ikon modeline geçilmesi ve üst başlığa 'Tümünü İndir' opsiyonunun eklenmesi | ✅ **Tamamlandı** |
-| **TASK-65** | **Profil Ekranı Evrimi: Aday Kimlik Kartı, KPSS 2026 Geri Sayımı, Lig & Başarı Rozetleri Vitrini ve Bulut Eşitleme Merkezi** | Profil ekranının sıradan bir 'Ayarlar' listesi olmaktan çıkarılıp Duolingo/UWorld seviyesinde zenginleştirilmesi: Aday kimliği & avatarı, hedef puan & atama rotası, canlı 2026 KPSS geri sayımı, 4'lü metrik snapshot'ı (Seri, Soru, Net %, XP), Lig & Unvan vitrini, 6 adet motivasyon madalyası ve modern hesap ayarları | ⏳ **Hazır (Alt Ajana Devredilecek)** |
+| **TASK-65** | **Profil Ekranı Evrimi: Aday Kimlik Kartı, KPSS 2026 Geri Sayımı, Lig & Başarı Rozetleri Vitrini ve Bulut Eşitleme Merkezi** | Profil ekranının sıradan bir 'Ayarlar' listesi olmaktan çıkarılıp Duolingo/UWorld seviyesinde zenginleştirilmesi: Aday kimliği & avatarı, hedef puan & atama rotası, canlı 2026 KPSS geri sayımı, 4'lü metrik snapshot'ı (Seri, Soru, Net %, XP), Lig & Unvan vitrini, 6 adet motivasyon madalyası ve modern hesap ayarları | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3790,7 +3790,7 @@ ADIM 4: Test ve Doğrulama
 
 ### 📦 TASK-65: Profil Ekranı Evrimi: Aday Kimlik Kartı, KPSS 2026 Geri Sayımı, Lig & Başarı Rozetleri Vitrini ve Bulut Eşitleme Merkezi
 
-- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Durum:** ✅ **Tamamlandı**
 - **Kapsam:**
   - Mevcut `ProfileScreen` ekranının sadece teknik bir "Ayarlar Listesi" olmaktan çıkarılıp, global EdTech ve prestij sınav uygulamaları (Duolingo, UWorld, Amboss, Brilliant) standartlarında adayın gurur duyacağı bir **"Memur Adayı Kimlik & Başarı Vitrini"**ne dönüştürülmesi.
   - **1. Aday Kimlik & Rütbe Kartı (`_CandidateHeroCard`):**
