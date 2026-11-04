@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
@@ -23,22 +24,20 @@ class StatsScreen extends ConsumerWidget {
 
     return ResponsiveContentWrapper(
       maxWidth: 720,
+      padding: EdgeInsets.zero,
       child: ListView(
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveBreakpoints.horizontalPadding(context),
-          vertical: 16,
-        ),
+        padding: AppSpacing.pagePadding(context),
         children: [
           const PageHeader(
             icon: LucideIcons.chartColumn,
             title: 'İstatistiklerin',
             subtitle: 'Soru çözdükçe ders bazında netlerin burada görünecek.',
           ),
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
 
           // 1. En Üst: Lig Kademesi ve Seri Kartı
           _LeagueAndStreakCard(stats: stats),
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
 
           // 2. KPI Kartları (Çözülen Soru, Doğru Oranı)
           Row(
@@ -50,7 +49,7 @@ class StatsScreen extends ConsumerWidget {
                   icon: LucideIcons.check,
                 ),
               ),
-              const SizedBox(width: 12),
+              AppSpacing.gapHorizontalSm,
               Expanded(
                 child: _StatCard(
                   label: 'Doğru oranı',
@@ -62,7 +61,7 @@ class StatsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          AppSpacing.gapSm,
 
           // En zayıf ders kartı
           _StatCard(
@@ -71,26 +70,26 @@ class StatsScreen extends ConsumerWidget {
             icon: LucideIcons.flame,
           ),
           if (stats.weakestLesson != 'Henüz veri yok') ...[
-            const SizedBox(height: 12),
+            AppSpacing.gapSm,
             _WeakLessonActionCard(stats: stats),
           ],
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
 
           // 3. KPSS Başarım Rozetleri (Achievements)
           _AchievementsCard(stats: stats),
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
 
           // 4. Haftalık Kadro Lig Sıralaması (Leaderboard)
           _LeaderboardCard(stats: stats),
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
 
           // 5. Ders Bazlı Başarı Oranı Grafiği (fl_chart BarChart)
           _LessonAccuracyChartCard(stats: stats),
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
 
           // 6. Ders Ustalık Isı Haritası
           _MasteryHeatmapCard(stats: stats),
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
 
           // 7. Çözülen Testler Arşivi
           _RecentSessionsCard(stats: stats),

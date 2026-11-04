@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
@@ -45,70 +47,74 @@ class StudyPlannerScreen extends ConsumerWidget {
             ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // 1. Üst Koç Sahnesi
-          const MascotCoachBanner(
-            mood: MascotMood.coach,
-            badgeLabel: 'GÜNLÜK KAMP PLANI',
-            title: 'Bugünkü Görevlerin',
-            message: 'Planlı çalışan kadroyu kapar! Görevlerini tamamla, netlerini her gün istikrarla artır.',
-          ),
-          const SizedBox(height: 16),
+      body: ResponsiveContentWrapper(
+        maxWidth: 720,
+        padding: EdgeInsets.zero,
+        child: ListView(
+          padding: AppSpacing.pagePadding(context),
+          children: [
+            // 1. Üst Koç Sahnesi
+            const MascotCoachBanner(
+              mood: MascotMood.coach,
+              badgeLabel: 'GÜNLÜK KAMP PLANI',
+              title: 'Bugünkü Görevlerin',
+              message: 'Planlı çalışan kadroyu kapar! Görevlerini tamamla, netlerini her gün istikrarla artır.',
+            ),
+            AppSpacing.gapMd,
 
-          // 2. Plan İlerleme & Süre Özeti Kartı
-          _PlannerSummaryCard(planner: planner),
-          const SizedBox(height: 16),
+            // 2. Plan İlerleme & Süre Özeti Kartı
+            _PlannerSummaryCard(planner: planner),
+            AppSpacing.gapMd,
 
-          // 3. Tek Tıkla Hazır KPSS Görev Şablonları
-          const SectionTitle('Hızlı Görev Şablonları (Tek Tıkla Ekle)'),
-          const SizedBox(height: 8),
-          _QuickTemplatesStrip(onAdd: notifier.addTask),
-          const SizedBox(height: 16),
+            // 3. Tek Tıkla Hazır KPSS Görev Şablonları
+            const SectionTitle('Hızlı Görev Şablonları (Tek Tıkla Ekle)'),
+            AppSpacing.gapXs,
+            _QuickTemplatesStrip(onAdd: notifier.addTask),
+            AppSpacing.gapMd,
 
-          // 4. Görev Listesi
-          SectionTitle('Görev Listesi (${planner.tasks.length})'),
-          const SizedBox(height: 8),
-          if (planner.tasks.isEmpty)
-            TactileCard(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 24,
-                    horizontal: 16,
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        LucideIcons.calendarCheck2,
-                        size: 48,
-                        color: colorScheme.primary,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Bugün için planlanmış görev kalmadı! Şablonlardan veya + Görev Ekle butonundan yeni hedef ekleyebilirsin.',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyMedium
-                            ?.copyWith(color: colorScheme.onSurfaceVariant),
-                      ),
-                    ],
+            // 4. Görev Listesi
+            SectionTitle('Görev Listesi (${planner.tasks.length})'),
+            AppSpacing.gapXs,
+            if (planner.tasks.isEmpty)
+              TactileCard(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 24,
+                      horizontal: 16,
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          LucideIcons.calendarCheck2,
+                          size: 48,
+                          color: colorScheme.primary,
+                        ),
+                        AppSpacing.gapSm,
+                        Text(
+                          'Bugün için planlanmış görev kalmadı! Şablonlardan veya + Görev Ekle butonundan yeni hedef ekleyebilirsin.',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: colorScheme.onSurfaceVariant),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            )
-          else
-            for (final task in planner.tasks)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _PlannerTaskTile(
-                  task: task,
-                  onToggle: () => notifier.toggleTask(task.id),
-                  onRemove: () => notifier.removeTask(task.id),
+              )
+            else
+              for (final task in planner.tasks)
+                Padding(
+                  padding: AppSpacing.cardMarginBottom,
+                  child: _PlannerTaskTile(
+                    task: task,
+                    onToggle: () => notifier.toggleTask(task.id),
+                    onRemove: () => notifier.removeTask(task.id),
+                  ),
                 ),
-              ),
-          const SizedBox(height: 64), // FAB için alt boşluk
-        ],
+            const SizedBox(height: 64), // FAB için alt boşluk
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddTaskSheet(context),

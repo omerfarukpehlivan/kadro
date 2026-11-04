@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
@@ -22,157 +24,161 @@ class ExamsScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const MascotCoachBanner(
-          mood: MascotMood.coach,
-          title: 'Deneme sınavları',
-          message: 'Gerçek sınav provası! 60 soru, 65 dakika ve 4 yanlış 1 doğru kuralıyla netini test et.',
-        ),
-        const SizedBox(height: 16),
-        const SectionTitle('Sınav düzeni'),
-        const TactileCard(
-          child: Column(
-            children: [
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(LucideIcons.listOrdered),
-                title: Text('Soru sayısı'),
-                trailing: Text('60'),
-              ),
-              Divider(height: 1),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(LucideIcons.clock),
-                title: Text('Süre'),
-                trailing: Text('65 dakika'),
-              ),
-              Divider(height: 1),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(LucideIcons.calculator),
-                title: Text('Net hesabı'),
-                subtitle: Text('4 yanlış 1 doğruyu götürür'),
-              ),
-            ],
+    return ResponsiveContentWrapper(
+      maxWidth: 720,
+      padding: EdgeInsets.zero,
+      child: ListView(
+        padding: AppSpacing.pagePadding(context),
+        children: [
+          const MascotCoachBanner(
+            mood: MascotMood.coach,
+            title: 'Deneme sınavları',
+            message: 'Gerçek sınav provası! 60 soru, 65 dakika ve 4 yanlış 1 doğru kuralıyla netini test et.',
           ),
-        ).animate().fadeIn(duration: 200.ms),
-        const SizedBox(height: 16),
-        // 65 dakikalık süreli Genel Kültür denemesini başlatır
-        FilledButton.icon(
-          onPressed: () async {
-            final isOnline = ref.read(isOnlineProvider);
-            final isDownloaded = ref
-                .read(downloadedPackagesProvider)
-                .contains('exam_gk_prova_1');
+          AppSpacing.gapMd,
+          const SectionTitle('Sınav düzeni'),
+          const TactileCard(
+            child: Column(
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(LucideIcons.listOrdered),
+                  title: Text('Soru sayısı'),
+                  trailing: Text('60'),
+                ),
+                Divider(height: 1),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(LucideIcons.clock),
+                  title: Text('Süre'),
+                  trailing: Text('65 dakika'),
+                ),
+                Divider(height: 1),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(LucideIcons.calculator),
+                  title: Text('Net hesabı'),
+                  subtitle: Text('4 yanlış 1 doğruyu götürür'),
+                ),
+              ],
+            ),
+          ).animate().fadeIn(duration: 200.ms),
+          AppSpacing.gapMd,
+          // 65 dakikalık süreli Genel Kültür denemesini başlatır
+          FilledButton.icon(
+            onPressed: () async {
+              final isOnline = ref.read(isOnlineProvider);
+              final isDownloaded = ref
+                  .read(downloadedPackagesProvider)
+                  .contains('exam_gk_prova_1');
 
-            if (!isOnline) {
-              if (isDownloaded) {
-                final questions = await ref
-                    .read(offlineDownloadServiceProvider)
-                    .getDownloadedQuestions('exam_gk_prova_1');
-                if (!context.mounted) return;
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => QuizScreen(
-                      questions: questions ?? [],
-                      examDuration: const Duration(minutes: 65),
-                      customTitle: 'Genel Kültür Denemesi (Çevrimdışı)',
+              if (!isOnline) {
+                if (isDownloaded) {
+                  final questions = await ref
+                      .read(offlineDownloadServiceProvider)
+                      .getDownloadedQuestions('exam_gk_prova_1');
+                  if (!context.mounted) return;
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => QuizScreen(
+                        questions: questions ?? [],
+                        examDuration: const Duration(minutes: 65),
+                        customTitle: 'Genel Kültür Denemesi (Çevrimdışı)',
+                      ),
                     ),
-                  ),
-                );
-              } else {
-                showDialog(
-                  context: context,
-                  builder: (dialogCtx) => AlertDialog(
-                    title: const Row(
-                      children: [
-                        Icon(LucideIcons.wifiOff),
-                        SizedBox(width: 8),
-                        Text('İnternet Bağlantısı Yok'),
+                  );
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (dialogCtx) => AlertDialog(
+                      title: const Row(
+                        children: [
+                          Icon(LucideIcons.wifiOff),
+                          SizedBox(width: 8),
+                          Text('İnternet Bağlantısı Yok'),
+                        ],
+                      ),
+                      content: const Text(
+                        'Bu denemeyi internetsiz çözebilmek için internet varken Kadro PRO ile indirmiş olmanız gerekir.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(dialogCtx).pop(),
+                          child: const Text('Tamam'),
+                        ),
+                        FilledButton(
+                          onPressed: () {
+                            Navigator.of(dialogCtx).pop();
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const PaywallScreen(),
+                              ),
+                            );
+                          },
+                          child: const Text("Kadro PRO'ya Geç"),
+                        ),
                       ],
                     ),
-                    content: const Text(
-                      'Bu denemeyi internetsiz çözebilmek için internet varken Kadro PRO ile indirmiş olmanız gerekir.',
+                  );
+                }
+              } else {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const QuizScreen(
+                      examDuration: Duration(minutes: 65),
+                      customTitle: 'Genel Kültür Denemesi',
+                      fetchAllFromPool: true,
                     ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.of(dialogCtx).pop(),
-                        child: const Text('Tamam'),
-                      ),
-                      FilledButton(
-                        onPressed: () {
-                          Navigator.of(dialogCtx).pop();
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const PaywallScreen(),
-                            ),
-                          );
-                        },
-                        child: const Text("Kadro PRO'ya Geç"),
-                      ),
-                    ],
                   ),
                 );
               }
-            } else {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const QuizScreen(
-                    examDuration: Duration(minutes: 65),
-                    customTitle: 'Genel Kültür Denemesi',
-                    fetchAllFromPool: true,
-                  ),
-                ),
-              );
-            }
-          },
-          icon: const Icon(LucideIcons.play),
-          label: const Text('Genel Kültür Denemesi Başlat'),
-        ).animate().fadeIn(duration: 200.ms),
-        const SizedBox(height: 24),
-        const SectionTitle('Hazır Deneme Paketleri'),
-        _ExamPackCard(
-          packageId: 'exam_gk_prova_1',
-          title: 'Türkiye Geneli GK Provası #1',
-          subtitle: '65 Dakika · 60 Soru',
-          description: 'Gerçek sınav simülasyonu. Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler.',
-          badgeText: 'ÖSYM Standardı',
-          icon: LucideIcons.award,
-          accentColor: colorScheme.primary,
-          accentContainerColor: colorScheme.primaryContainer,
-          onAccentContainerColor: colorScheme.onPrimaryContainer,
-          duration: const Duration(minutes: 65),
-        ),
-        const SizedBox(height: 12),
-        _ExamPackCard(
-          packageId: 'exam_tarih_cografya_kamp',
-          title: 'Tarih & Coğrafya Kamp Denemesi',
-          subtitle: '40 Dakika · 45 Soru',
-          description: 'Ağırlıklı derslere özel maraton kamp denemesi ile netlerini artır.',
-          badgeText: 'Lokomotif Kamp',
-          icon: LucideIcons.flame,
-          accentColor: colorScheme.tertiary,
-          accentContainerColor: colorScheme.tertiaryContainer,
-          onAccentContainerColor: colorScheme.onTertiaryContainer,
-          duration: const Duration(minutes: 40),
-        ),
-        const SizedBox(height: 12),
-        _ExamPackCard(
-          packageId: 'exam_hizli_mola',
-          title: '15 Dakika Hızlı Mola Denemesi',
-          subtitle: '15 Dakika · 15 Soru',
-          description:
-              'Çay veya kahve molasında hızlı pratik yap, tempoyu koru.',
-          badgeText: 'Hızlı Mola',
-          icon: LucideIcons.zap,
-          accentColor: colorScheme.secondary,
-          accentContainerColor: colorScheme.secondaryContainer,
-          onAccentContainerColor: colorScheme.onSecondaryContainer,
-          duration: const Duration(minutes: 15),
-        ),
-      ],
+            },
+            icon: const Icon(LucideIcons.play),
+            label: const Text('Genel Kültür Denemesi Başlat'),
+          ).animate().fadeIn(duration: 200.ms),
+          AppSpacing.gapXl,
+          const SectionTitle('Hazır Deneme Paketleri'),
+          _ExamPackCard(
+            packageId: 'exam_gk_prova_1',
+            title: 'Türkiye Geneli GK Provası #1',
+            subtitle: '65 Dakika · 60 Soru',
+            description: 'Gerçek sınav simülasyonu. Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler.',
+            badgeText: 'ÖSYM Standardı',
+            icon: LucideIcons.award,
+            accentColor: colorScheme.primary,
+            accentContainerColor: colorScheme.primaryContainer,
+            onAccentContainerColor: colorScheme.onPrimaryContainer,
+            duration: const Duration(minutes: 65),
+          ),
+          AppSpacing.gapSm,
+          _ExamPackCard(
+            packageId: 'exam_tarih_cografya_kamp',
+            title: 'Tarih & Coğrafya Kamp Denemesi',
+            subtitle: '40 Dakika · 45 Soru',
+            description: 'Ağırlıklı derslere özel maraton kamp denemesi ile netlerini artır.',
+            badgeText: 'Lokomotif Kamp',
+            icon: LucideIcons.flame,
+            accentColor: colorScheme.tertiary,
+            accentContainerColor: colorScheme.tertiaryContainer,
+            onAccentContainerColor: colorScheme.onTertiaryContainer,
+            duration: const Duration(minutes: 40),
+          ),
+          AppSpacing.gapSm,
+          _ExamPackCard(
+            packageId: 'exam_hizli_mola',
+            title: '15 Dakika Hızlı Mola Denemesi',
+            subtitle: '15 Dakika · 15 Soru',
+            description:
+                'Çay veya kahve molasında hızlı pratik yap, tempoyu koru.',
+            badgeText: 'Hızlı Mola',
+            icon: LucideIcons.zap,
+            accentColor: colorScheme.secondary,
+            accentContainerColor: colorScheme.secondaryContainer,
+            onAccentContainerColor: colorScheme.onSecondaryContainer,
+            duration: const Duration(minutes: 15),
+          ),
+        ],
+      ),
     );
   }
 }

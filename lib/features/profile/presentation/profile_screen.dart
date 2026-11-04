@@ -1,3 +1,5 @@
+import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/reports/presentation/admin_reports_screen.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:flutter/material.dart';
@@ -211,125 +213,129 @@ class ProfileScreen extends ConsumerWidget {
     final stats = ref.watch(studyStatsProvider);
     final auth = ref.watch(authProvider);
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        const PageHeader(
-          icon: Icons.person,
-          title: 'Profilin',
-          subtitle: 'Hedef sınavın, abonelik durumun ve uygulama ayarların.',
-        ),
-        const SizedBox(height: 16),
-
-        // Bulut Hesap Durumu Kartı (Giriş yapılmışsa kullanıcı bilgisi, yapılmamışsa giriş butonu)
-        _AccountCard(auth: auth),
-        const SizedBox(height: 16),
-
-        // KPSS Hedef Sihirbazı Kartı
-        _StudyGoalWizardCard(prefs: prefs),
-        const SizedBox(height: 16),
-
-        // PRO Durum Kartı (PRO değilse tanıtım banner'ı, PRO ise üyelik kartı)
-        if (!prefs.isPro)
-          _ProBannerCard(
-            onTap: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
-            },
-          )
-        else
-          const _ProBadgeCard(),
-        const SizedBox(height: 16),
-
-        const SectionTitle('Hedef'),
-        TactileCard(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          backgroundColor: colorScheme.surface,
-          borderColor: colorScheme.outlineVariant,
-          child: Column(
-            children: [
-              const ListTile(
-                leading: Icon(Icons.flag_outlined),
-                title: Text('Hedef sınav'),
-                trailing: Text('KPSS Lisans'),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.today_outlined),
-                title: const Text('Günlük hedef'),
-                trailing: Text('${stats.dailyGoal} soru'),
-                onTap: () =>
-                    _showDailyGoalDialog(context, ref, stats.dailyGoal),
-              ),
-            ],
+    return ResponsiveContentWrapper(
+      maxWidth: 720,
+      padding: EdgeInsets.zero,
+      child: ListView(
+        padding: AppSpacing.pagePadding(context),
+        children: [
+          const PageHeader(
+            icon: Icons.person,
+            title: 'Profilin',
+            subtitle: 'Hedef sınavın, abonelik durumun ve uygulama ayarların.',
           ),
-        ),
-        const SizedBox(height: 8),
+          AppSpacing.gapMd,
 
-        const SectionTitle('Uygulama'),
-        TactileCard(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          backgroundColor: colorScheme.surface,
-          borderColor: colorScheme.outlineVariant,
-          child: Column(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.palette_outlined),
-                title: const Text('Tema'),
-                trailing: Text(_themeModeLabel(prefs.themeMode)),
-                onTap: () => _showThemeDialog(context, ref, prefs.themeMode),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.tune_outlined),
-                title: const Text('Soru Çözüm Modu'),
-                subtitle: Text(
-                  prefs.defaultQuizMode == QuizMode.learning
-                      ? 'Anında doğru/yanlış ve açıklama'
-                      : 'Sınav mantığıyla optik gizli çözüm',
-                  style: Theme.of(context).textTheme.bodySmall
-                      ?.copyWith(color: colorScheme.onSurfaceVariant),
+          // Bulut Hesap Durumu Kartı (Giriş yapılmışsa kullanıcı bilgisi, yapılmamışsa giriş butonu)
+          _AccountCard(auth: auth),
+          AppSpacing.gapMd,
+
+          // KPSS Hedef Sihirbazı Kartı
+          _StudyGoalWizardCard(prefs: prefs),
+          AppSpacing.gapMd,
+
+          // PRO Durum Kartı (PRO değilse tanıtım banner'ı, PRO ise üyelik kartı)
+          if (!prefs.isPro)
+            _ProBannerCard(
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const PaywallScreen()),
+                );
+              },
+            )
+          else
+            const _ProBadgeCard(),
+          AppSpacing.gapMd,
+
+          const SectionTitle('Hedef'),
+          TactileCard(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            backgroundColor: colorScheme.surface,
+            borderColor: colorScheme.outlineVariant,
+            child: Column(
+              children: [
+                const ListTile(
+                  leading: Icon(Icons.flag_outlined),
+                  title: Text('Hedef sınav'),
+                  trailing: Text('KPSS Lisans'),
                 ),
-                trailing: Text(_quizModeLabel(prefs.defaultQuizMode)),
-                onTap: () =>
-                    _showQuizModeDialog(context, ref, prefs.defaultQuizMode),
-              ),
-              const Divider(height: 1),
-              const ListTile(
-                leading: Icon(Icons.notifications_outlined),
-                title: Text('Günlük hatırlatma'),
-                trailing: Text('Kapalı'),
-              ),
-              const Divider(height: 1),
-              const ListTile(
-                leading: Icon(Icons.info_outline),
-                title: Text('Hakkında'),
-                subtitle: Text('Kadro 1.0.0'),
-              ),
-            ],
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.today_outlined),
+                  title: const Text('Günlük hedef'),
+                  trailing: Text('${stats.dailyGoal} soru'),
+                  onTap: () =>
+                      _showDailyGoalDialog(context, ref, stats.dailyGoal),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
+          AppSpacing.gapSm,
 
-        const SectionTitle('İçerik Yönetimi'),
-        TactileCard(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          backgroundColor: colorScheme.surface,
-          borderColor: colorScheme.outlineVariant,
-          child: ListTile(
-            leading: const Icon(LucideIcons.shieldAlert),
-            title: const Text('Hatalı Soru Raporları'),
-            subtitle: const Text('İçerik editörü inceleme paneli'),
-            trailing: const Icon(LucideIcons.chevronRight),
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const AdminReportsScreen()),
-              );
-            },
+          const SectionTitle('Uygulama'),
+          TactileCard(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            backgroundColor: colorScheme.surface,
+            borderColor: colorScheme.outlineVariant,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.palette_outlined),
+                  title: const Text('Tema'),
+                  trailing: Text(_themeModeLabel(prefs.themeMode)),
+                  onTap: () => _showThemeDialog(context, ref, prefs.themeMode),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.tune_outlined),
+                  title: const Text('Soru Çözüm Modu'),
+                  subtitle: Text(
+                    prefs.defaultQuizMode == QuizMode.learning
+                        ? 'Anında doğru/yanlış ve açıklama'
+                        : 'Sınav mantığıyla optik gizli çözüm',
+                    style: Theme.of(context).textTheme.bodySmall
+                        ?.copyWith(color: colorScheme.onSurfaceVariant),
+                  ),
+                  trailing: Text(_quizModeLabel(prefs.defaultQuizMode)),
+                  onTap: () =>
+                      _showQuizModeDialog(context, ref, prefs.defaultQuizMode),
+                ),
+                const Divider(height: 1),
+                const ListTile(
+                  leading: Icon(Icons.notifications_outlined),
+                  title: Text('Günlük hatırlatma'),
+                  trailing: Text('Kapalı'),
+                ),
+                const Divider(height: 1),
+                const ListTile(
+                  leading: Icon(Icons.info_outline),
+                  title: Text('Hakkında'),
+                  subtitle: Text('Kadro 1.0.0'),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+          AppSpacing.gapSm,
+
+          const SectionTitle('İçerik Yönetimi'),
+          TactileCard(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            backgroundColor: colorScheme.surface,
+            borderColor: colorScheme.outlineVariant,
+            child: ListTile(
+              leading: const Icon(LucideIcons.shieldAlert),
+              title: const Text('Hatalı Soru Raporları'),
+              subtitle: const Text('İçerik editörü inceleme paneli'),
+              trailing: const Icon(LucideIcons.chevronRight),
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const AdminReportsScreen()),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/games/presentation/concept_match_screen.dart';
@@ -24,7 +25,7 @@ class HomeScreen extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final isCompact = ResponsiveBreakpoints.isCompact(context);
     final isTablet = ResponsiveBreakpoints.isTablet(context);
-    final gridSpacing = isCompact ? 8.0 : 12.0;
+    final gridSpacing = isCompact ? AppSpacing.xs : AppSpacing.sm;
 
     final tile1 = _StudyTypeTile(
       icon: LucideIcons.target,
@@ -92,127 +93,121 @@ class HomeScreen extends ConsumerWidget {
       },
     );
 
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 720),
-        child: ListView(
-          padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveBreakpoints.horizontalPadding(context),
-            vertical: 16,
+    return ResponsiveContentWrapper(
+      maxWidth: 720,
+      padding: EdgeInsets.zero,
+      child: ListView(
+        padding: AppSpacing.pagePadding(context),
+        children: [
+          // Kadro Koçu maskot konuşma balonu
+          MascotCoachBanner(
+            mood: MascotMood.coach,
+            title: 'Hoş geldin',
+            message: stats.dailySolvedCount == 0
+                ? 'Ben Kadro Koçun! KPSS Genel Kültür maratonunda bugün ilk pençeyi hangi konuya atıyoruz?'
+                : 'Harika uçuş! Bugün ${stats.dailySolvedCount} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',
           ),
-          children: [
-            // Kadro Koçu maskot konuşma balonu
-            MascotCoachBanner(
-              mood: MascotMood.coach,
-              title: 'Hoş geldin',
-              message: stats.dailySolvedCount == 0
-                  ? 'Ben Kadro Koçun! KPSS Genel Kültür maratonunda bugün ilk pençeyi hangi konuya atıyoruz?'
-                  : 'Harika uçuş! Bugün ${stats.dailySolvedCount} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',
-            ),
-            const SizedBox(height: 16),
-            // Riverpod ile anlık güncellenen 3D Tactile günlük hedef kartı
-            _DailyGoalCard(
-              solved: stats.dailySolvedCount,
-              goal: stats.dailyGoal,
-            ),
-            const SizedBox(height: 16),
-            // Akıllı KPSS Günlük Çalışma Planı Kompakt Kartı
-            const HomeDailyPlanCard(),
-            if (stats.weakestLesson != 'Henüz veri yok') ...[
-              const SizedBox(height: 16),
-              _WeakLessonHomeBanner(weakestLesson: stats.weakestLesson),
-            ],
-            const SizedBox(height: 16),
-            const SectionTitle('Çalışma türleri'),
-            // Adaptif Bento Grid (Tablette 4 sütun tek satır, mobilde 2x2 eşit yükseklikli grid)
-            if (isTablet) ...[
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(child: tile1),
-                    SizedBox(width: gridSpacing),
-                    Expanded(child: tile2),
-                    SizedBox(width: gridSpacing),
-                    Expanded(child: tile3),
-                    SizedBox(width: gridSpacing),
-                    Expanded(child: tile4),
-                  ],
-                ),
-              ),
-            ] else ...[
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(child: tile1),
-                    SizedBox(width: gridSpacing),
-                    Expanded(child: tile2),
-                  ],
-                ),
-              ),
-              SizedBox(height: gridSpacing),
-              IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(child: tile3),
-                    SizedBox(width: gridSpacing),
-                    Expanded(child: tile4),
-                  ],
-                ),
-              ),
-            ],
-            const SizedBox(height: 16),
-            const SectionTitle('Etkileşimli Mini Oyunlar'),
+          AppSpacing.gapMd,
+          // Riverpod ile anlık güncellenen 3D Tactile günlük hedef kartı
+          _DailyGoalCard(solved: stats.dailySolvedCount, goal: stats.dailyGoal),
+          AppSpacing.gapMd,
+          // Akıllı KPSS Günlük Çalışma Planı Kompakt Kartı
+          const HomeDailyPlanCard(),
+          if (stats.weakestLesson != 'Henüz veri yok') ...[
+            AppSpacing.gapMd,
+            _WeakLessonHomeBanner(weakestLesson: stats.weakestLesson),
+          ],
+          AppSpacing.gapMd,
+          const SectionTitle('Çalışma türleri'),
+          // Adaptif Bento Grid (Tablette 4 sütun tek satır, mobilde 2x2 eşit yükseklikli grid)
+          if (isTablet) ...[
             IntrinsicHeight(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: _StudyTypeTile(
-                      icon: LucideIcons.zap,
-                      title: '60 Saniyede Pençe',
-                      description: 'Doğru / Yanlış hızlı düello ile kombo yap.',
-                      badgeText: 'Kombo XP',
-                      actionText: 'Düelloya Gir',
-                      accentColor: colorScheme.tertiary,
-                      accentContainerColor: colorScheme.tertiaryContainer,
-                      onAccentContainerColor: colorScheme.onTertiaryContainer,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const TrueFalseBlitzScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  Expanded(child: tile1),
                   SizedBox(width: gridSpacing),
-                  Expanded(
-                    child: _StudyTypeTile(
-                      icon: LucideIcons.puzzle,
-                      title: 'Kavram Eşleştir',
-                      description: 'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.',
-                      badgeText: 'Hafıza Oyunu',
-                      actionText: 'Eşleştir',
-                      accentColor: colorScheme.primary,
-                      accentContainerColor: colorScheme.primaryContainer,
-                      onAccentContainerColor: colorScheme.onPrimaryContainer,
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const ConceptMatchScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+                  Expanded(child: tile2),
+                  SizedBox(width: gridSpacing),
+                  Expanded(child: tile3),
+                  SizedBox(width: gridSpacing),
+                  Expanded(child: tile4),
+                ],
+              ),
+            ),
+          ] else ...[
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: tile1),
+                  SizedBox(width: gridSpacing),
+                  Expanded(child: tile2),
+                ],
+              ),
+            ),
+            SizedBox(height: gridSpacing),
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(child: tile3),
+                  SizedBox(width: gridSpacing),
+                  Expanded(child: tile4),
                 ],
               ),
             ),
           ],
-        ),
+          AppSpacing.gapMd,
+          const SectionTitle('Etkileşimli Mini Oyunlar'),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: _StudyTypeTile(
+                    icon: LucideIcons.zap,
+                    title: '60 Saniyede Pençe',
+                    description: 'Doğru / Yanlış hızlı düello ile kombo yap.',
+                    badgeText: 'Kombo XP',
+                    actionText: 'Düelloya Gir',
+                    accentColor: colorScheme.tertiary,
+                    accentContainerColor: colorScheme.tertiaryContainer,
+                    onAccentContainerColor: colorScheme.onTertiaryContainer,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const TrueFalseBlitzScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(width: gridSpacing),
+                Expanded(
+                  child: _StudyTypeTile(
+                    icon: LucideIcons.puzzle,
+                    title: 'Kavram Eşleştir',
+                    description:
+                        'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.',
+                    badgeText: 'Hafıza Oyunu',
+                    actionText: 'Eşleştir',
+                    accentColor: colorScheme.primary,
+                    accentContainerColor: colorScheme.primaryContainer,
+                    onAccentContainerColor: colorScheme.onPrimaryContainer,
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const ConceptMatchScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

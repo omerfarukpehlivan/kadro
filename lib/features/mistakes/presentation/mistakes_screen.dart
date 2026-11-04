@@ -1,3 +1,5 @@
+import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:flutter/material.dart';
@@ -87,68 +89,75 @@ class _MistakesScreenState extends State<MistakesScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Yanlış Defteri')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Ders Filtre Şeridi
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: lessonChips.map((chip) {
-                  final isSelected = _selectedLesson == chip['id'];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(chip['label']!),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        if (selected) {
-                          setState(() {
-                            _selectedLesson = chip['id']!;
-                          });
-                        }
-                      },
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            // Üst Bilgi Kartı ve Tekrar Çöz Butonu (Dedektif Koç ile)
-            _MistakeHeaderCard(
-              mistakeCount: filteredMistakes.length,
-              lessonName: _selectedLesson,
-              totalMistakes: mistakes.length,
-              onSolveAll: () => _solveMistakes(filteredMistakes),
-            ),
-            const SizedBox(height: 16),
-
-            // Yanlış Soruların Listesi
-            Expanded(
-              child: filteredMistakes.isEmpty
-                  ? Center(
-                      child: Text(
-                        '$_selectedLesson dersinden yanlışın bulunmuyor.',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+      body: ResponsiveContentWrapper(
+        maxWidth: 720,
+        padding: EdgeInsets.zero,
+        child: Padding(
+          padding: AppSpacing.pagePadding(context),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Ders Filtre Şeridi
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: lessonChips.map((chip) {
+                    final isSelected = _selectedLesson == chip['id'];
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        label: Text(chip['label']!),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          if (selected) {
+                            setState(() {
+                              _selectedLesson = chip['id']!;
+                            });
+                          }
+                        },
                       ),
-                    )
-                  : ListView.builder(
-                      itemCount: filteredMistakes.length,
-                      itemBuilder: (context, index) {
-                        final question = filteredMistakes[index];
-                        return _MistakeQuestionCard(
-                          question: question,
-                          onDelete: () => _removeMistake(question.id),
-                        );
-                      },
-                    ),
-            ),
-          ],
+                    );
+                  }).toList(),
+                ),
+              ),
+              AppSpacing.gapSm,
+
+              // Üst Bilgi Kartı ve Tekrar Çöz Butonu (Dedektif Koç ile)
+              _MistakeHeaderCard(
+                mistakeCount: filteredMistakes.length,
+                lessonName: _selectedLesson,
+                totalMistakes: mistakes.length,
+                onSolveAll: () => _solveMistakes(filteredMistakes),
+              ),
+              AppSpacing.gapMd,
+
+              // Yanlış Soruların Listesi
+              Expanded(
+                child: filteredMistakes.isEmpty
+                    ? Center(
+                        child: Text(
+                          '$_selectedLesson dersinden yanlışın bulunmuyor.',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: filteredMistakes.length,
+                        itemBuilder: (context, index) {
+                          final question = filteredMistakes[index];
+                          return _MistakeQuestionCard(
+                            question: question,
+                            onDelete: () => _removeMistake(question.id),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
     );

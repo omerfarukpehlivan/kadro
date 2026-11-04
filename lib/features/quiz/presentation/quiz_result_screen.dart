@@ -1,11 +1,12 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:kadro/features/quiz/presentation/widgets/victory_story_card.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
+import 'package:kadro/features/quiz/presentation/widgets/victory_story_card.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -92,11 +93,9 @@ class QuizResultScreen extends StatelessWidget {
       body: SafeArea(
         child: ResponsiveContentWrapper(
           maxWidth: 720,
+          padding: EdgeInsets.zero,
           child: ListView(
-            padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveBreakpoints.horizontalPadding(context),
-              vertical: 16,
-            ),
+            padding: AppSpacing.pagePadding(context),
             children: [
               // Zafer modunda Kadro Koçu maskot konuşma balonu
               MascotCoachBanner(
@@ -107,11 +106,11 @@ class QuizResultScreen extends StatelessWidget {
                     ? 'Muhteşem bir uçuş! Kadro Koçu seninle gurur duyuyor, kadro kapıları açılıyor!'
                     : 'Güzel mücadele! Yanlış Defteri\'ne düşen soruları birlikte inceleyip nete çevirelim.',
               ),
-              const SizedBox(height: 18),
+              AppSpacing.gapMd,
 
               // Ana Net & Başarı Oranı 3D Kartı
               _NetScoreCard(result: result),
-              const SizedBox(height: 14),
+              AppSpacing.gapSm,
 
               // Doğru, Yanlış ve Boş istatistikleri (3D Tactile)
               Row(
@@ -124,7 +123,7 @@ class QuizResultScreen extends StatelessWidget {
                       color: Theme.of(context).colorScheme.tertiary,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  AppSpacing.gapHorizontalXs,
                   Expanded(
                     child: _ResultStatItem(
                       label: 'Yanlış',
@@ -133,7 +132,7 @@ class QuizResultScreen extends StatelessWidget {
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  AppSpacing.gapHorizontalXs,
                   Expanded(
                     child: _ResultStatItem(
                       label: 'Boş',
@@ -144,7 +143,7 @@ class QuizResultScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
+              AppSpacing.gapSm,
 
               // Zafer Karnesi Paylaşım Butonu (TASK-52)
               FilledButton.tonalIcon(
@@ -152,7 +151,7 @@ class QuizResultScreen extends StatelessWidget {
                 icon: const Icon(LucideIcons.share2, size: 18),
                 label: const Text('Zafer Karneni Paylaş 📸'),
               ),
-              const SizedBox(height: 20),
+              AppSpacing.gapLg,
 
               // Akıllı İkili Aksiyon Köprüsü (TASK-50: Zero Dead-Ends UX)
               if (result.wrongCount > 0) ...[
@@ -167,7 +166,7 @@ class QuizResultScreen extends StatelessWidget {
                     'Yanlış Defterine Git (${result.wrongCount} Yanlış)',
                   ),
                 ),
-                const SizedBox(height: 10),
+                AppSpacing.gapXs,
                 OutlinedButton.icon(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(LucideIcons.house),
@@ -179,7 +178,7 @@ class QuizResultScreen extends StatelessWidget {
                   icon: const Icon(LucideIcons.house),
                   label: const Text('Ana Sayfaya Dön'),
                 ),
-                const SizedBox(height: 10),
+                AppSpacing.gapXs,
                 OutlinedButton.icon(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(

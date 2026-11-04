@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/test_difficulty_tier.dart';
@@ -136,33 +137,27 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
           ? const Center(child: CircularProgressIndicator())
           : _testChunks.isEmpty
           ? _buildEmptyState(context)
-          : Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 720),
-                child: ListView(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: ResponsiveBreakpoints.horizontalPadding(
-                      context,
-                    ),
-                    vertical: 16,
+          : ResponsiveContentWrapper(
+              maxWidth: 720,
+              padding: EdgeInsets.zero,
+              child: ListView(
+                padding: AppSpacing.pagePadding(context),
+                children: [
+                  MascotCoachBanner(
+                    mood: MascotMoodExtension.fromLesson(widget.lessonName),
+                    badgeLabel:
+                        '${widget.lessonName.toUpperCase()} · ${_testChunks.length} TEST',
+                    title: '${widget.topic} Testleri',
+                    message: 'Bu konudaki sorular kolaydan zora doğru 10\'ar soruluk testlere ayrılmıştır. Sırayla tamamla, netlerini zirveye taşı!',
                   ),
-                  children: [
-                    MascotCoachBanner(
-                      mood: MascotMoodExtension.fromLesson(widget.lessonName),
-                      badgeLabel:
-                          '${widget.lessonName.toUpperCase()} · ${_testChunks.length} TEST',
-                      title: '${widget.topic} Testleri',
-                      message: 'Bu konudaki sorular kolaydan zora doğru 10\'ar soruluk testlere ayrılmıştır. Sırayla tamamla, netlerini zirveye taşı!',
+                  AppSpacing.gapMd,
+                  for (var i = 0; i < _testChunks.length; i++)
+                    _buildTestCard(
+                      context: context,
+                      index: i,
+                      chunk: _testChunks[i],
                     ),
-                    const SizedBox(height: 16),
-                    for (var i = 0; i < _testChunks.length; i++)
-                      _buildTestCard(
-                        context: context,
-                        index: i,
-                        chunk: _testChunks[i],
-                      ),
-                  ],
-                ),
+                ],
               ),
             ),
     );
@@ -220,7 +215,7 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
     final badgeFg = tier.foregroundColor(colorScheme);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: AppSpacing.cardMarginBottom,
       child: TactileCard(
         onTap: () => _startTest(index, chunk, tier),
         child: Column(

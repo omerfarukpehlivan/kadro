@@ -1,7 +1,8 @@
-import 'package:kadro/core/services/ad_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/services/ad_service.dart';
 import 'package:kadro/core/services/purchase_service.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
@@ -87,11 +88,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       body: SafeArea(
         child: ResponsiveContentWrapper(
           maxWidth: 720,
+          padding: EdgeInsets.zero,
           child: ListView(
-            padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveBreakpoints.horizontalPadding(context),
-              vertical: 20,
-            ),
+            padding: AppSpacing.pagePadding(context),
             children: [
               // 1. Üst Vurgu 3D Kartı (Kraliyet Taçlı Kadro Koçu)
               TactileCard(
@@ -149,7 +148,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 18),
+              AppSpacing.gapMd,
 
               // 2. Paket Seçenekleri Başlığı
               Text(
@@ -158,7 +157,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 10),
+              AppSpacing.gapXs,
 
               // 3. 3 Seçenekli Paket Kartları
               ...SubscriptionPlan.values.map((plan) {
@@ -299,7 +298,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              AppSpacing.gapMd,
 
               // 5. Kadro PRO Satın Alma Butonu (CTA)
               FilledButton.icon(

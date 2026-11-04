@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
@@ -23,28 +25,32 @@ class LessonTopicsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: Text('${lesson.name} Konuları')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // Derse özel Tuğrul karakteri ile Koç Karşılama Kartı (TASK-53)
-          MascotCoachBanner(
-            mood: MascotMoodExtension.fromLesson(lesson.name),
-            badgeLabel: '${lesson.name.toUpperCase()} REHBERİ',
-            title: '${lesson.name} Yol Haritası',
-            message:
-                '${lesson.topics.length} kritik konudan oluşan KPSS yol haritası. Konuları sırayla tamamla, netlerini zirveye taşı!',
-          ),
-          const SizedBox(height: 16),
-
-          // Dikey Yol Haritası Düğümleri
-          for (var i = 0; i < lesson.topics.length; i++)
-            _TopicPathNode(
-              index: i,
-              totalCount: lesson.topics.length,
-              lessonName: lesson.name,
-              topic: lesson.topics[i],
+      body: ResponsiveContentWrapper(
+        maxWidth: 720,
+        padding: EdgeInsets.zero,
+        child: ListView(
+          padding: AppSpacing.pagePadding(context),
+          children: [
+            // Derse özel Tuğrul karakteri ile Koç Karşılama Kartı (TASK-53)
+            MascotCoachBanner(
+              mood: MascotMoodExtension.fromLesson(lesson.name),
+              badgeLabel: '${lesson.name.toUpperCase()} REHBERİ',
+              title: '${lesson.name} Yol Haritası',
+              message:
+                  '${lesson.topics.length} kritik konudan oluşan KPSS yol haritası. Konuları sırayla tamamla, netlerini zirveye taşı!',
             ),
-        ],
+            AppSpacing.gapMd,
+
+            // Dikey Yol Haritası Düğümleri
+            for (var i = 0; i < lesson.topics.length; i++)
+              _TopicPathNode(
+                index: i,
+                totalCount: lesson.topics.length,
+                lessonName: lesson.name,
+                topic: lesson.topics[i],
+              ),
+          ],
+        ),
       ),
     );
   }

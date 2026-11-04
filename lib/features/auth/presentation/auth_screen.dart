@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/auth/data/auth_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
@@ -201,230 +203,234 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Giriş Yap / Kayıt Ol')),
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              MascotCoachBanner(
-                mood: MascotMood.coach,
-                badgeLabel: 'BULUT HESABI',
-                title: _isLogin
-                    ? 'Tekrar Hoş Geldin!'
-                    : 'Kadro Ailesine Katıl!',
-                message: 'Çözdüğün tüm testler, doğru/yanlış analizlerin ve çalışma planın hesabında güvenle saklanır.',
-              ),
-              const SizedBox(height: 20),
-              TactileCard(
-                borderRadius: 20,
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      _isLogin ? 'Hesabına Giriş Yap' : 'Yeni Hesap Oluştur',
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+        child: ResponsiveContentWrapper(
+          maxWidth: 720,
+          padding: EdgeInsets.zero,
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: AppSpacing.pagePadding(context),
+              children: [
+                MascotCoachBanner(
+                  mood: MascotMood.coach,
+                  badgeLabel: 'BULUT HESABI',
+                  title: _isLogin
+                      ? 'Tekrar Hoş Geldin!'
+                      : 'Kadro Ailesine Katıl!',
+                  message: 'Çözdüğün tüm testler, doğru/yanlış analizlerin ve çalışma planın hesabında güvenle saklanır.',
+                ),
+                AppSpacing.gapLg,
+                TactileCard(
+                  borderRadius: 20,
+                  padding: AppSpacing.cardPadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        _isLogin ? 'Hesabına Giriş Yap' : 'Yeni Hesap Oluştur',
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    if (!_isLogin) ...[
+                      const SizedBox(height: 16),
+                      if (!_isLogin) ...[
+                        TextFormField(
+                          controller: _nameController,
+                          textInputAction: TextInputAction.next,
+                          decoration: const InputDecoration(
+                            labelText: 'Ad Soyad / Rumuz',
+                            prefixIcon: Icon(LucideIcons.user, size: 20),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'Lütfen bir ad veya rumuz girin.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                      ],
                       TextFormField(
-                        controller: _nameController,
+                        controller: _emailController,
+                        keyboardType: _isLogin
+                            ? TextInputType.text
+                            : TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
-                        decoration: const InputDecoration(
-                          labelText: 'Ad Soyad / Rumuz',
-                          prefixIcon: Icon(LucideIcons.user, size: 20),
+                        decoration: InputDecoration(
+                          labelText: _isLogin
+                              ? 'E-posta veya Kullanıcı Adı'
+                              : 'E-posta veya Kullanıcı Adı',
+                          prefixIcon: Icon(
+                            _isLogin ? LucideIcons.user : LucideIcons.mail,
+                            size: 20,
+                          ),
                         ),
                         validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Lütfen bir ad veya rumuz girin.';
+                          if (value == null || value.trim().length < 3) {
+                            return 'Lütfen en az 3 karakterli bir e-posta veya kullanıcı adı girin.';
                           }
                           return null;
                         },
                       ),
                       const SizedBox(height: 14),
-                    ],
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: _isLogin
-                          ? TextInputType.text
-                          : TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      decoration: InputDecoration(
-                        labelText: _isLogin
-                            ? 'E-posta veya Kullanıcı Adı'
-                            : 'E-posta veya Kullanıcı Adı',
-                        prefixIcon: Icon(
-                          _isLogin ? LucideIcons.user : LucideIcons.mail,
-                          size: 20,
+                      TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        textInputAction: TextInputAction.done,
+                        onFieldSubmitted: (_) => _submit(),
+                        decoration: const InputDecoration(
+                          labelText: 'Şifre (En az 6 karakter)',
+                          prefixIcon: Icon(LucideIcons.lock, size: 20),
                         ),
+                        validator: (value) {
+                          if (value == null || value.length < 6) {
+                            return 'Şifre en az 6 karakter olmalıdır.';
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().length < 3) {
-                          return 'Lütfen en az 3 karakterli bir e-posta veya kullanıcı adı girin.';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 14),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) => _submit(),
-                      decoration: const InputDecoration(
-                        labelText: 'Şifre (En az 6 karakter)',
-                        prefixIcon: Icon(LucideIcons.lock, size: 20),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.length < 6) {
-                          return 'Şifre en az 6 karakter olmalıdır.';
-                        }
-                        return null;
-                      },
-                    ),
-                    if (_isLogin)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: () => _showForgotPasswordModal(context),
-                          child: const Text('Şifremi Unuttum?'),
+                      if (_isLogin)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () => _showForgotPasswordModal(context),
+                            child: const Text('Şifremi Unuttum?'),
+                          ),
                         ),
-                      ),
-                    if (authState.errorMessage != null) ...[
-                      const SizedBox(height: 14),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: colorScheme.errorContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              LucideIcons.alertCircle,
-                              color: colorScheme.onErrorContainer,
-                              size: 18,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                authState.errorMessage!,
-                                style: textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onErrorContainer,
+                      if (authState.errorMessage != null) ...[
+                        const SizedBox(height: 14),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: colorScheme.errorContainer,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                LucideIcons.alertCircle,
+                                color: colorScheme.onErrorContainer,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  authState.errorMessage!,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onErrorContainer,
+                                  ),
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      FilledButton.icon(
+                        onPressed: authState.isLoading ? null : _submit,
+                        icon: authState.isLoading
+                            ? SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: colorScheme.onPrimary,
+                                ),
+                              )
+                            : Icon(
+                                _isLogin
+                                    ? LucideIcons.logIn
+                                    : LucideIcons.userPlus,
+                                size: 18,
+                              ),
+                        label: Text(
+                          authState.isLoading
+                              ? 'Lütfen bekleyin...'
+                              : (_isLogin ? 'Giriş Yap' : 'Hesap Oluştur'),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          const Expanded(child: Divider()),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(
+                              'VEYA',
+                              style: textTheme.labelSmall?.copyWith(
+                                color: colorScheme.outline,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.0,
+                              ),
                             ),
-                          ],
+                          ),
+                          const Expanded(child: Divider()),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      OutlinedButton.icon(
+                        onPressed: authState.isLoading
+                            ? null
+                            : _handleGoogleSignIn,
+                        icon: Container(
+                          width: 22,
+                          height: 22,
+                          decoration: BoxDecoration(
+                            color: colorScheme.surface,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colorScheme.outlineVariant,
+                              width: 1,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'G',
+                            style: textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                        label: const Text('Google ile Devam Et'),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _isLogin = !_isLogin;
+                          });
+                          ref.read(authProvider.notifier).clearError();
+                        },
+                        child: Text(
+                          _isLogin
+                              ? 'Hesabın yok mu? Kayıt Ol'
+                              : 'Zaten hesabın var mı? Giriş Yap',
                         ),
                       ),
                     ],
-                    const SizedBox(height: 16),
-                    FilledButton.icon(
-                      onPressed: authState.isLoading ? null : _submit,
-                      icon: authState.isLoading
-                          ? SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: colorScheme.onPrimary,
-                              ),
-                            )
-                          : Icon(
-                              _isLogin
-                                  ? LucideIcons.logIn
-                                  : LucideIcons.userPlus,
-                              size: 18,
-                            ),
-                      label: Text(
-                        authState.isLoading
-                            ? 'Lütfen bekleyin...'
-                            : (_isLogin ? 'Giriş Yap' : 'Hesap Oluştur'),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const Expanded(child: Divider()),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          child: Text(
-                            'VEYA',
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.outline,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.0,
-                            ),
-                          ),
-                        ),
-                        const Expanded(child: Divider()),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    OutlinedButton.icon(
-                      onPressed: authState.isLoading
-                          ? null
-                          : _handleGoogleSignIn,
-                      icon: Container(
-                        width: 22,
-                        height: 22,
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: colorScheme.outlineVariant,
-                            width: 1,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'G',
-                          style: textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                      label: const Text('Google ile Devam Et'),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _isLogin = !_isLogin;
-                        });
-                        ref.read(authProvider.notifier).clearError();
-                      },
-                      child: Text(
-                        _isLogin
-                            ? 'Hesabın yok mu? Kayıt Ol'
-                            : 'Zaten hesabın var mı? Giriş Yap',
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Center(
-                child: TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(
-                    'Şimdilik Giriş Yapmadan Devam Et',
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                const SizedBox(height: 10),
+                Center(
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(
+                      'Şimdilik Giriş Yapmadan Devam Et',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

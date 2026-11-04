@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 import 'package:kadro/features/lessons/presentation/lesson_topics_screen.dart';
@@ -22,18 +23,16 @@ class LessonsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ResponsiveContentWrapper(
       maxWidth: 720,
+      padding: EdgeInsets.zero,
       child: ListView(
-        padding: EdgeInsets.symmetric(
-          horizontal: ResponsiveBreakpoints.horizontalPadding(context),
-          vertical: 16,
-        ),
+        padding: AppSpacing.pagePadding(context),
         children: [
           const MascotCoachBanner(
             mood: MascotMood.coach,
             title: 'KPSS Genel Kültür',
             message: '60 soruluk sınavda Tarih (%45) ve Coğrafya (%30) lokomotifimiz. Hangi dersten başlıyoruz?',
           ),
-          const SizedBox(height: 16),
+          AppSpacing.gapMd,
           const SectionTitle('Genel Kültür Dersleri · 60 soru'),
           // Liste içinde for: her ders için animasyonlu ilerleme halkalı 3D Tactile kart üretir
           for (final lesson in kpssLessons) _LessonCard(lesson: lesson),
@@ -71,7 +70,7 @@ class _LessonCard extends ConsumerWidget {
     final percent = (progress * 100).toInt();
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: AppSpacing.cardMarginBottom,
       child: TactileCard(
         onTap: () {
           Navigator.of(context).push(
