@@ -242,118 +242,104 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
         borderColor: solvedSession != null
             ? colorScheme.secondary.withAlpha(160)
             : colorScheme.outlineVariant,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Üst Satır: Test Numarası Rozeti, Seviye Rozeti ve Çözüldü Rozeti
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: 8,
-              runSpacing: 6,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'TEST ${index + 1}',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
+            // Sol: Test Numarası Rozeti, Seviye Rozeti ve Çözüldü Rozeti
+            Expanded(
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 8,
+                runSpacing: 6,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'TEST ${index + 1}',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: badgeBg,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(tier.icon, size: 12, color: badgeFg),
-                      const SizedBox(width: 4),
-                      Text(
-                        tier.title,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: badgeFg,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (solvedSession != null)
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: colorScheme.secondaryContainer,
+                      color: badgeBg,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        PhosphorIcon(
-                          PhosphorIconsFill.checkCircle,
-                          size: 13,
-                          color: colorScheme.onSecondaryContainer,
-                        ),
+                        Icon(tier.icon, size: 12, color: badgeFg),
                         const SizedBox(width: 4),
                         Text(
-                          'Çözüldü · ${solvedSession.correctCount}D ${solvedSession.wrongCount}Y (${solvedSession.netScore.toStringAsFixed(1)} Net)',
+                          tier.title,
                           style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSecondaryContainer,
+                            color: badgeFg,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
                     ),
                   ),
-              ],
+                  if (solvedSession != null)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          PhosphorIcon(
+                            PhosphorIconsFill.checkCircle,
+                            size: 13,
+                            color: colorScheme.onSecondaryContainer,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Çözüldü · ${solvedSession.correctCount}D ${solvedSession.wrongCount}Y (${solvedSession.netScore.toStringAsFixed(1)} Net)',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSecondaryContainer,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
             ),
-            const SizedBox(height: 12),
-
-            // Alt Satır: Soru Sayısı / Süre ve Aksiyon Butonu
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    '${chunk.length} Soru · ~${(chunk.length * 1.1).round()} dk',
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+            const SizedBox(width: 8),
+            // Sağ: Aksiyon Butonu
+            FilledButton.tonal(
+              onPressed: () => _startTest(index, chunk, tier),
+              style: FilledButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
                 ),
-                const SizedBox(width: 8),
-                FilledButton.tonal(
-                  onPressed: () => _startTest(index, chunk, tier),
-                  style: FilledButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 6,
-                    ),
-                  ),
-                  child: Text(
-                    solvedSession != null ? 'Tekrar Çöz' : 'Test Çöz',
-                  ),
-                ),
-              ],
+              ),
+              child: Text(
+                solvedSession != null ? 'Tekrar Çöz' : 'Test Çöz',
+              ),
             ),
           ],
         ),
