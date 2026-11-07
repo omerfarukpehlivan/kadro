@@ -336,6 +336,15 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
           duration: const Duration(milliseconds: 220),
           switchInCurve: Curves.easeOutCubic,
           switchOutCurve: Curves.easeInCubic,
+          layoutBuilder: (currentChild, previousChildren) {
+            return Stack(
+              alignment: Alignment.topCenter,
+              children: <Widget>[
+                ...previousChildren,
+                if (currentChild != null) currentChild,
+              ],
+            );
+          },
           transitionBuilder: (child, animation) {
             return FadeTransition(opacity: animation, child: child);
           },
@@ -345,8 +354,8 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
     );
   }
 
-  /// Ön yüz ve en uzun tüyolu arka yüz yüksekliğini TextPainter ile ölçüp
-  /// ikisinden büyük olanı döndürür (Sıfır zıplama / Zero Layout Shift).
+  /// Ön yüz ve tüm tüyoların yüksekliğini TextPainter ile ayrı ayrı ölçüp
+  /// en büyük olanını + güvenli payı döndürür (Sıfır zıplama / Zero Layout Shift).
   double _computeUnifiedHeight({
     required BuildContext context,
     required double maxWidth,
@@ -359,13 +368,12 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
     final textScaler = MediaQuery.textScalerOf(context);
     final hPad = (isCompact ? 12.0 : 14.0) * 2;
     final vPad = (isCompact ? 10.0 : 12.0) * 2;
+    const borderAllowance = 4.0;
 
-    // 1. Ön yüz sağ sütun yüksekliği
+    // 1. Ön yüz sağ sütun yüksekliği (border genişliği düşülerek)
     final frontRightWidth =
-        (maxWidth - hPad - avatarSize - (isCompact ? 10.0 : 14.0)).clamp(
-          100.0,
-          1200.0,
-        );
+        (maxWidth - hPad - borderAllowance - avatarSize - (isCompact ? 10.0 : 14.0))
+            .clamp(100.0, 1200.0);
     final titleStyle =
         (textTheme.titleMedium ?? const TextStyle(fontSize: 16)).copyWith(
           fontWeight: FontWeight.w800,
@@ -382,10 +390,11 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
       textScaler: textScaler,
     )..layout(maxWidth: frontRightWidth);
 
-    final msgInnerWidth = (frontRightWidth - (isCompact ? 20.0 : 24.0)).clamp(
-      80.0,
-      1200.0,
-    );
+    final msgInnerWidth =
+        (frontRightWidth - (isCompact ? 20.0 : 24.0) - 2.0).clamp(
+          80.0,
+          1200.0,
+        );
     final msgPainter = TextPainter(
       text: TextSpan(text: widget.message, style: msgStyle),
       textDirection: textDirection,
@@ -393,47 +402,57 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
     )..layout(maxWidth: msgInnerWidth);
 
     final frontContentHeight =
-        22.0 + // üst rozet satırı
+        24.0 + // üst rozet satırı
         4.0 +
         titlePainter.height +
         4.0 +
         msgPainter.height +
-        (isCompact ? 12.0 : 16.0) + // konuşma balonu dikey iç dolgusu
-        4.0;
+        (isCompact ? 14.0 : 18.0) + // konuşma balonu dikey iç dolgusu + border
+        6.0;
     final frontTotalHeight =
         (frontContentHeight > avatarSize ? frontContentHeight : avatarSize) +
-        vPad;
+        vPad +
+        borderAllowance;
 
-    // 2. Arka yüz (en uzun tüyo) yüksekliği
+    // 2. Arka yüz (tüm tüyoların en yükseği) yüksekliği
     final tipStyle =
         (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(
           fontWeight: FontWeight.w600,
           height: 1.45,
         );
     final backInnerWidth =
-        (maxWidth - hPad - (isCompact ? 24.0 : 28.0)).clamp(100.0, 1200.0);
-    final tipPainter = TextPainter(
-      text: TextSpan(text: longestTip, style: tipStyle),
-      textDirection: textDirection,
-      textScaler: textScaler,
-    )..layout(maxWidth: backInnerWidth);
+        (maxWidth - hPad - borderAllowance - (isCompact ? 24.0 : 28.0) - 2.0)
+            .clamp(100.0, 1200.0);
+
+    double maxTipHeight = 0;
+    for (final tip in widget.mood.coachTips) {
+      final tp = TextPainter(
+        text: TextSpan(text: tip, style: tipStyle),
+        textDirection: textDirection,
+        textScaler: textScaler,
+      )..layout(maxWidth: backInnerWidth);
+      if (tp.height > maxTipHeight) {
+        maxTipHeight = tp.height;
+      }
+    }
 
     final backTotalHeight =
         vPad +
-        26.0 + // üst başlık/aksiyon satırı
+        borderAllowance +
+        28.0 + // üst başlık/aksiyon satırı
         8.0 +
-        tipPainter.height +
-        (isCompact ? 20.0 : 24.0) + // tüyo kutusu iç dikey dolgusu
-        4.0;
+        maxTipHeight +
+        (isCompact ? 22.0 : 26.0) + // tüyo kutusu iç dikey dolgusu + border
+        6.0;
 
-    final minFloor = isCompact ? 126.0 : 140.0;
+    final minFloor = isCompact ? 132.0 : 148.0;
     final maxCalculated = frontTotalHeight > backTotalHeight
         ? frontTotalHeight
         : backTotalHeight;
-    return maxCalculated > minFloor ? maxCalculated : minFloor;
+    return (maxCalculated > minFloor ? maxCalculated : minFloor).ceilToDouble();
   }
 
-  /// Ön Yüz (Varsayılan): Tüyolar gizlidir, sayfa başlığı ve açıklama metni kesilmeden gösterilir.
+  /// Ön Yüz (Varsayılan): Tüyolar gizlidir, sayfa başlığı ve açıklama metni kesilmeden üstten hizalı gösterilir.
   Widget _buildFrontFace({
     required BuildContext context,
     required ColorScheme colorScheme,
@@ -472,7 +491,7 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
               vertical: isCompact ? 10 : 12,
             ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Sol: Çift Katmanlı Borderlı Maskot Çerçevesi + Dinamik Rozet
                 Stack(
@@ -532,11 +551,11 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
                 ),
                 SizedBox(width: isCompact ? 10 : 14),
 
-                // Sağ: Rozet, Başlık ve Tam Konuşma Balonu (Kesilmeden!)
+                // Sağ: Rozet, Başlık ve Tam Konuşma Balonu (Üste hizalı & kesilmeden!)
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Üst Rozet Satırı + Sağda zarif çevirme ikonu
@@ -618,7 +637,7 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
     );
   }
 
-  /// Arka Yüz (Kart Döndüğünde): O sayfa/ders ile ilgili KPSS tüyolarını tam metin olarak gösterir.
+  /// Arka Yüz (Kart Döndüğünde): O sayfa/ders ile ilgili KPSS tüyolarını üstten hizalı tam metin olarak gösterir.
   Widget _buildBackFace({
     required BuildContext context,
     required ColorScheme colorScheme,
@@ -660,7 +679,7 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Üst Satır: Sayfa/Ders Tüyo Başlığı + Sayaç + Ön Yüze Dön Butonu
