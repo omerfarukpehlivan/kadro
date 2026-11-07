@@ -90,6 +90,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-63** | **Proje Genelinde Standart Spacing & Padding/Margin Sistemi (AppSpacing Tokens & Zero-Shift Sayfa Geçişleri)** | Uygulamadaki dağınık padding ve marginlerin (10, 14, 16, 20, 24px) 8pt/4pt sisteminde `AppSpacing` design token sınıfına bağlanması; 5 ana tab ekranında (Home, Lessons, Exams, Stats, Profile) kenar dolgularının ve üst/alt aralıkların eşitlenerek sayfa geçişlerindeki zıplamaların (Zero Layout Shift) önlenmesi | ✅ **Tamamlandı** |
 | **TASK-64** | **Yanlış Defteri 59px Taşma Düzeltmesi & Çevrimdışı İndirme UI/UX Dönüşümü (Zarif & Sade İndirme Modeli)** | Yanlış Defteri boş durumundaki butonların dar ekranda taşmasını önleyen `Wrap` düzeltmesi; her test/konu kartındaki göz yoran büyük 'İndir' butonlarının kaldırılarak Spotify/Duolingo stili zarif minimal rozet/mikro-ikon modeline geçilmesi ve üst başlığa 'Tümünü İndir' opsiyonunun eklenmesi | ✅ **Tamamlandı** |
 | **TASK-65** | **Profil Ekranı Evrimi: Aday Kimlik Kartı, KPSS 2026 Geri Sayımı, Lig & Başarı Rozetleri Vitrini ve Bulut Eşitleme Merkezi** | Profil ekranının sıradan bir 'Ayarlar' listesi olmaktan çıkarılıp Duolingo/UWorld seviyesinde zenginleştirilmesi: Aday kimliği & avatarı, hedef puan & atama rotası, canlı 2026 KPSS geri sayımı, 4'lü metrik snapshot'ı (Seri, Soru, Net %, XP), Lig & Unvan vitrini, 6 adet motivasyon madalyası ve modern hesap ayarları | ✅ **Tamamlandı** |
+| **TASK-66** | **Bağımsız Çalışma Türleri & Antrenman Ekranı (`PracticeHubScreen`), Zenginleştirilmiş Alt Menü (`AppNavigationBar`) ve Görev Hatırlatıcılı Yeni Ana Sayfa** | Çalışma türlerinin (Konu Testi, Bilgi Kartları, Yanlış Defteri, Deneme, Mini Oyunlar, Çeldirici Avı) ana sayfadan ayrılıp bağımsız 'Pratik' sekmesine (`PracticeHubScreen`) taşınması; `AppNavigationBar`'ın 6 sekmeli zengin ve taşmasız dock yapısına yükseltilmesi; `HomeScreen`'in görev hatırlatıcıları, seri uyarıları, son kalınan yer ve günlük çalışma planı odaklı kişisel komuta merkezine dönüştürülmesi | ⏳ **Hazır (Alt Ajana Devredilecek)** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3885,6 +3886,108 @@ ADIM 6: Test ve Doğrulama
 1. `test/profile_screen_test.dart` içine:
    - Aday kimlik kartının, geri sayımın, metriklerin ve madalyaların render edildiğini doğrulayan widget testleri ekle.
 2. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-66: Bağımsız Çalışma Türleri & Antrenman Ekranı (`PracticeHubScreen`), Zenginleştirilmiş Alt Menü (`AppNavigationBar`) ve Görev Hatırlatıcılı Yeni Ana Sayfa
+
+- **Durum:** ⏳ **Hazır (Alt Ajana Devredilecek)**
+- **Kapsam:**
+  - **1. Bağımsız Çalışma Türleri & Antrenman Ekranı (`lib/features/practice/presentation/practice_hub_screen.dart`):**
+    - Daha önce `HomeScreen` altında sıkışık duran "Çalışma Türleri" ve "Etkileşimli Mini Oyunlar" bölümlerinin ana sayfadan çıkarılarak kendi bağımsız sekmesine (**`Pratik`** — `/practice`) taşınması ve zenginleştirilmesi:
+      - **Üst Karşılama:** Kadro Koçu (`MascotMood.coach`) "Antrenman Sahası" brifing kartı.
+      - **Temel Çalışma Modları (2x2 Bento Grid):**
+        1. `🎯 Konu Testi` (10-20 Soruluk Odaklı Test)
+        2. `🗂️ Bilgi Kartları` (Flashcards ile Hızlı Tekrar)
+        3. `🔖 Yanlış Defteri` (Akıllı Hata Havuzu)
+        4. `⏱️ Deneme Sınavı` (60 Soru · 65 Dakika Gerçek Prova)
+      - **Özel Antrenman & Tuzak Avı Modu (Geniş Vurgu Kartı):**
+        - `⚠️ ÖSYM Çeldirici Avı`: Adayların en çok düştüğü çeldirici tuzaklı sorulardan oluşan 10 soruluk özel antrenman modu.
+      - **Etkileşimli Mini Oyunlar Arenası (2'li Bento Grid):**
+        1. `⚡ 60 Saniyede Pençe` (Doğru/Yanlış Hızlı Düello)
+        2. `🧩 Kavram Eşleştir` (Tarih, Coğrafya, Vatandaşlık Hafıza Eşleştirmesi)
+  - **2. Zenginleştirilmiş Alt Menü (`AppNavigationBar` & `AppShell` & `router.dart`):**
+    - Alt navigasyon çubuğunun (`AppNavigationBar`) 6 sekmeli zengin bir dock yapısına yükseltilmesi:
+      - `0: Ana Sayfa` (`LucideIcons.house` — `/`)
+      - `1: Dersler` (`LucideIcons.bookOpen` — `/lessons`)
+      - `2: Pratik` (`LucideIcons.Layers` veya `LucideIcons.gamepad2` — `/practice`)
+      - `3: Denemeler` (`LucideIcons.timer` — `/exams`)
+      - `4: İstatistik` (`LucideIcons.chartColumn` — `/stats`)
+      - `5: Profil` (`LucideIcons.user` — `/profile`)
+    - Dar/kompakt ekranlarda (`< 380px`) 6 sekmenin sıfır taşma (`Zero Overflow`) ile kusursuz sığması için etiket fontlarının, yatay padding'lerin ve aktif sekme hapının (pill indicator) adaptif olarak ölçeklenmesi.
+  - **3. Görev Hatırlatıcılı & Genel Bakış Odaklı Yeni Ana Sayfa (`HomeScreen`):**
+    - Çalışma türleri ayrıldıktan sonra `HomeScreen`, adayın günlük çalışma ritmini yöneten ferah bir **Kişisel Komuta Merkezi (Executive Dashboard)** haline getirilir:
+      1. **Kadro Koçu Karşılama Balonu (`MascotCoachBanner`)**
+      2. **Akıllı Görev & Seri Hatırlatıcıları Kartı (`_SmartRemindersCard`):**
+         - Bekleyen günlük çalışma planı görev sayısı (`🔔 Bugün tamamlanmayı bekleyen X görevin var`).
+         - Günlük seri (streak) koruma hatırlatıcısı (`🔥 X günlük serini korumak için hedefini tamamla`).
+         - Yanlış defteri tekrar hatırlatıcısı (`🔖 Yanlış defterinde çözülmeyi bekleyen X soru var` — tıklanınca Yanlış Defteri'ne gider).
+      3. **Günlük Soru Hedefi & Halka Göstergesi (`_DailyGoalCard`)**
+      4. **Bugünün Çalışma Planı (`HomeDailyPlanCard`)**
+      5. **Hızlı Devam Et & Zayıf Konuyu Güçlendir (`_WeakLessonHomeBanner` & Pratik'e Hızlı Geçiş Kartı)**
+
+```text
+GÖREV: TASK-66 — Bağımsız Çalışma Türleri Ekranı (PracticeHubScreen), 6 Sekmeli Zengin AppNavigationBar ve Görev Hatırlatıcılı Ana Sayfa
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Sabit Color(0xFF...) KULLANMA. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: Bağımsız Çalışma Türleri Ekranı (`lib/features/practice/presentation/practice_hub_screen.dart`)
+1. `PracticeHubScreen` adında bir `ConsumerWidget` oluştur.
+2. `ResponsiveContentWrapper` ve `AppSpacing.pagePadding(context)` kullanarak içeriği oluştur:
+   - `MascotCoachBanner`:
+     - `mood: MascotMood.coach`
+     - `badgeLabel: 'ANTRENMAN SAHASI'`
+     - `title: 'Çalışma Türleri'`
+     - `message: 'Bugün hangi modda pratik yapmak istersin? Test çöz, kartlarla tekrar yap veya oyunlarla hafızanı tazele!'`
+   - `SectionTitle('Temel Çalışma Modları')` + 2x2 Bento Grid (Tablette 4 sütun):
+     - `Konu testi` (`QuizScreen`)
+     - `Bilgi kartları` (`FlashcardsScreen`)
+     - `Yanlış defteri` (`MistakesScreen`)
+     - `Deneme sınavı` (`QuizScreen(examDuration: Duration(minutes: 65), customTitle: 'Genel Kültür Denemesi')`)
+   - `SectionTitle('Özel Antrenman')`:
+     - `ÖSYM Çeldirici Avı` (`QuizScreen(customTitle: 'ÖSYM Çeldirici Avı (Tuzak Sorular)', limit: 10)`) — kehribar/tertiary vurgulu özel kart.
+   - `SectionTitle('Etkileşimli Mini Oyunlar')` + 2'li Bento Grid:
+     - `60 Saniyede Pençe` (`TrueFalseBlitzScreen`)
+     - `Kavram Eşleştir` (`ConceptMatchScreen`)
+
+ADIM 2: Görev Hatırlatıcılı Yeni `HomeScreen` (`lib/features/home/presentation/home_screen.dart`)
+1. `HomeScreen` içindeki çalışma türleri ve mini oyun gridlerini kaldır (bunlar `PracticeHubScreen`'e taşındı).
+2. Yerine adayın genel durumunu ve hatırlatıcılarını gösteren `_SmartRemindersCard` bileşenini ekle:
+   - `studyPlannerProvider` üzerinden bekleyen (tamamlanmamış) görev sayısını oku.
+   - `mistakeRepositoryProvider` (veya ilgili provider) ve `studyStatsProvider` üzerinden seri ve yanlış sayılarını oku.
+   - Kart içinde 2-3 maddelik şık, tıklanabilir hatırlatıcı satırları (`_ReminderTile`) göster:
+     - Görev hatırlatıcısı: Bekleyen görev varsa `"X çalışma görevin tamamlanmayı bekliyor"` (Tıklanınca `StudyPlannerScreen` açılır).
+     - Seri & Hedef hatırlatıcısı: Günlük hedef tamamlanmadıysa `"Serini korumak için kalan: X soru"` (Tıklanınca `QuizScreen` açılır).
+     - Antrenman kısayolu: `"Çalışma türleri ve mini oyunlarla hız kazan"` (Tıklanınca `PracticeHubScreen` veya ilgili mod açılır).
+3. `HomeScreen` akış sırası:
+   - `MascotCoachBanner`
+   - `_DailyGoalCard`
+   - `_SmartRemindersCard` (Yeni Görev & Durum Hatırlatıcıları)
+   - `HomeDailyPlanCard` (Bugünün Çalışma Planı)
+   - `_WeakLessonHomeBanner` (Varsa zayıf ders güçlendirme kartı)
+
+ADIM 3: `AppNavigationBar`, `AppShell` ve `router.dart` 6 Sekmeli Zengin Yapı
+1. `lib/app/widgets/app_navigation_bar.dart`:
+   - 6 sekme tanımla:
+     0: `Ana Sayfa` (`LucideIcons.house`)
+     1: `Dersler` (`LucideIcons.bookOpen`)
+     2: `Pratik` (`LucideIcons.gamepad2`)
+     3: `Denemeler` (`LucideIcons.timer`)
+     4: `İstatistik` (`LucideIcons.chartColumn`)
+     5: `Profil` (`LucideIcons.user`)
+   - Kompakt ekranlarda (`width < 400`) 6 sekmenin taşmaması için `labelStyle` içinde `fontSize: isCompact ? 9.5 : 11.0`, `letterSpacing: -0.4` ve `NavigationBar` içinde uygun sıkılık kullan.
+2. `lib/app/app_shell.dart`:
+   - `_pages` listesine 2. index olarak `PracticeHubScreen()` ekle:
+     `[HomeScreen(), LessonsScreen(), PracticeHubScreen(), ExamsScreen(), StatsScreen(), ProfileScreen()]`
+   - `_titles` listesini güncelle:
+     `['Kadro', 'Dersler', 'Çalışma Türleri', 'Denemeler', 'İstatistik', 'Profil']`
+3. `lib/app/router.dart`:
+   - `StatefulShellRoute.indexedStack` içindeki `branches` listesine 2. sırada `/practice` (`PracticeHubScreen`) branch'ini ekle.
+
+ADIM 4: Testlerin Güncellenmesi ve Doğrulama
+1. `test/router_test.dart`, `test/widget_test.dart`, `test/responsive_layout_test.dart` ve `test/app_spacing_test.dart` dosyalarını yeni 6 sekmeli navigasyon ve `PracticeHubScreen` yapısıyla uyumlu hale getir.
+2. `PracticeHubScreen` ve `HomeScreen` üzerindeki yeni görev hatırlatıcılarının render edildiğini doğrulayan test senaryosu ekle.
+3. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
 ```
 
 ---
