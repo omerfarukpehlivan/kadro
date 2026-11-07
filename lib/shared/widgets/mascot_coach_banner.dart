@@ -293,9 +293,7 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
 
     final auraColor = _getMoodColor(colorScheme);
     final tips = widget.mood.coachTips;
-    final longestTip = tips.reduce(
-      (a, b) => a.length >= b.length ? a : b,
-    );
+    final longestTip = tips.reduce((a, b) => a.length >= b.length ? a : b);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -339,10 +337,7 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
           layoutBuilder: (currentChild, previousChildren) {
             return Stack(
               alignment: Alignment.topCenter,
-              children: <Widget>[
-                ...previousChildren,
-                if (currentChild != null) currentChild,
-              ],
+              children: <Widget>[...previousChildren, ?currentChild],
             );
           },
           transitionBuilder: (child, animation) {
@@ -372,17 +367,16 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
 
     // 1. Ön yüz sağ sütun yüksekliği (border genişliği düşülerek)
     final frontRightWidth =
-        (maxWidth - hPad - borderAllowance - avatarSize - (isCompact ? 10.0 : 14.0))
+        (maxWidth -
+                hPad -
+                borderAllowance -
+                avatarSize -
+                (isCompact ? 10.0 : 14.0))
             .clamp(100.0, 1200.0);
-    final titleStyle =
-        (textTheme.titleMedium ?? const TextStyle(fontSize: 16)).copyWith(
-          fontWeight: FontWeight.w800,
-        );
-    final msgStyle =
-        (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(
-          fontWeight: FontWeight.w500,
-          height: 1.4,
-        );
+    final titleStyle = (textTheme.titleMedium ?? const TextStyle(fontSize: 16))
+        .copyWith(fontWeight: FontWeight.w800);
+    final msgStyle = (textTheme.bodyMedium ?? const TextStyle(fontSize: 14))
+        .copyWith(fontWeight: FontWeight.w500, height: 1.4);
 
     final titlePainter = TextPainter(
       text: TextSpan(text: widget.title, style: titleStyle),
@@ -390,11 +384,8 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
       textScaler: textScaler,
     )..layout(maxWidth: frontRightWidth);
 
-    final msgInnerWidth =
-        (frontRightWidth - (isCompact ? 20.0 : 24.0) - 2.0).clamp(
-          80.0,
-          1200.0,
-        );
+    final msgInnerWidth = (frontRightWidth - (isCompact ? 20.0 : 24.0) - 2.0)
+        .clamp(80.0, 1200.0);
     final msgPainter = TextPainter(
       text: TextSpan(text: widget.message, style: msgStyle),
       textDirection: textDirection,
@@ -415,11 +406,8 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
         borderAllowance;
 
     // 2. Arka yüz (tüm tüyoların en yükseği) yüksekliği
-    final tipStyle =
-        (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(
-          fontWeight: FontWeight.w600,
-          height: 1.45,
-        );
+    final tipStyle = (textTheme.bodyMedium ?? const TextStyle(fontSize: 14))
+        .copyWith(fontWeight: FontWeight.w600, height: 1.45);
     final backInnerWidth =
         (maxWidth - hPad - borderAllowance - (isCompact ? 24.0 : 28.0) - 2.0)
             .clamp(100.0, 1200.0);
@@ -464,7 +452,7 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
   }) {
     return Container(
       key: const ValueKey('mascot_front_face'),
-      constraints: BoxConstraints(minHeight: fixedHeight),
+      height: fixedHeight,
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
@@ -491,72 +479,74 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
               vertical: isCompact ? 10 : 12,
             ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Sol: Çift Katmanlı Borderlı Maskot Çerçevesi + Dinamik Rozet
-                Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      width: avatarSize,
-                      height: avatarSize,
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(
-                          isCompact ? 16 : 20,
-                        ),
-                        border: Border.all(
-                          color: auraColor.withAlpha(100),
-                          width: 2,
-                        ),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                          isCompact ? 14 : 18,
-                        ),
-                        child: Image.asset(
-                          widget.mood.assetPath,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              PhosphorIcon(
-                                PhosphorIconsDuotone.trophy,
-                                color: auraColor,
-                                size: isCompact ? 32 : 40,
-                              ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: -2,
-                      bottom: -2,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
+                // Sol: Çift Katmanlı Borderlı Maskot Çerçevesi + Dinamik Rozet (Üste hizalı)
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: avatarSize,
+                        height: avatarSize,
+                        padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
-                          color: colorScheme.tertiaryContainer,
-                          shape: BoxShape.circle,
+                          color: colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(
+                            isCompact ? 16 : 20,
+                          ),
                           border: Border.all(
-                            color: colorScheme.surface,
+                            color: auraColor.withAlpha(100),
                             width: 2,
                           ),
                         ),
-                        child: PhosphorIcon(
-                          widget.mood.badgeIcon,
-                          size: isCompact ? 10 : 12,
-                          color: colorScheme.onTertiaryContainer,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            isCompact ? 14 : 18,
+                          ),
+                          child: Image.asset(
+                            widget.mood.assetPath,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                PhosphorIcon(
+                                  PhosphorIconsDuotone.trophy,
+                                  color: auraColor,
+                                  size: isCompact ? 32 : 40,
+                                ),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      Positioned(
+                        right: -2,
+                        bottom: -2,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: colorScheme.tertiaryContainer,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: colorScheme.surface,
+                              width: 2,
+                            ),
+                          ),
+                          child: PhosphorIcon(
+                            widget.mood.badgeIcon,
+                            size: isCompact ? 10 : 12,
+                            color: colorScheme.onTertiaryContainer,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 SizedBox(width: isCompact ? 10 : 14),
 
-                // Sağ: Rozet, Başlık ve Tam Konuşma Balonu (Üste hizalı & kesilmeden!)
+                // Sağ: Rozet, Başlık ve Kalan Yüksekliği %100 Dolduran Konuşma Balonu
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       // Üst Rozet Satırı + Sağda zarif çevirme ikonu
                       Row(
@@ -603,26 +593,28 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
                       ),
                       const SizedBox(height: 4),
 
-                      // Konuşma Balonu (Tam metin - nokta nokta ile kesilmez!)
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isCompact ? 10 : 12,
-                          vertical: isCompact ? 6 : 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: colorScheme.outlineVariant,
+                      // Konuşma Balonu (Expanded ile kalan gri alanı %100 kaplar!)
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isCompact ? 10 : 12,
+                            vertical: isCompact ? 6 : 8,
                           ),
-                        ),
-                        child: Text(
-                          widget.message,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeight.w500,
-                            height: 1.4,
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: colorScheme.outlineVariant,
+                            ),
+                          ),
+                          child: Text(
+                            widget.message,
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeight.w500,
+                              height: 1.4,
+                            ),
                           ),
                         ),
                       ),
@@ -651,7 +643,7 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
 
     return Container(
       key: const ValueKey('mascot_back_face'),
-      constraints: BoxConstraints(minHeight: fixedHeight),
+      height: fixedHeight,
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
@@ -680,7 +672,6 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
                 // Üst Satır: Sayfa/Ders Tüyo Başlığı + Sayaç + Ön Yüze Dön Butonu
                 Row(
@@ -760,26 +751,28 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
                 ),
                 const SizedBox(height: 8),
 
-                // Tam Genişlik Tüyo İçeriği (Kesilmeden tam metin!)
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isCompact ? 12 : 14,
-                    vertical: isCompact ? 10 : 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.tertiaryContainer.withAlpha(55),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: colorScheme.tertiary.withAlpha(110),
+                // Tam Genişlik ve %100 Kalan Yükseklikte Tüyo İçeriği
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isCompact ? 12 : 14,
+                      vertical: isCompact ? 10 : 12,
                     ),
-                  ),
-                  child: Text(
-                    currentTip,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
-                      height: 1.45,
+                    decoration: BoxDecoration(
+                      color: colorScheme.tertiaryContainer.withAlpha(55),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: colorScheme.tertiary.withAlpha(110),
+                      ),
+                    ),
+                    child: Text(
+                      currentTip,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                        height: 1.45,
+                      ),
                     ),
                   ),
                 ),
