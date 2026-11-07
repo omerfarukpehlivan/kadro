@@ -163,5 +163,51 @@ void main() {
         );
       },
     );
+
+    testWidgets(
+      'Varsayılan durumda tüyo gizlidir; karta tıklanınca kart döner ve tam metin KPSS tüyolarını gösterir',
+      (tester) async {
+        const mood = MascotMood.geography;
+        final tips = mood.coachTips;
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MascotCoachBanner(
+                mood: mood,
+                badgeLabel: 'COĞRAFYA REHBERİ',
+                title: 'Coğrafya Konuları',
+                message: 'Coğrafya için harita odaklı çalış.',
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Başlangıçta (Ön Yüz) sadece orijinal mesaj görünür, tüyo görünmez
+        expect(find.text('Coğrafya için harita odaklı çalış.'), findsOneWidget);
+        expect(find.text(tips[0]), findsNothing);
+
+        // 1. Tıklama -> Kart döner (Arka Yüz) ve 1. tüyo tam metin olarak görünür
+        await tester.tap(find.byType(MascotCoachBanner));
+        await tester.pumpAndSettle();
+
+        expect(find.text(tips[0]), findsOneWidget);
+        expect(
+          find.text('COĞRAFYA REHBERİ · KPSS TÜYOSU (1/${tips.length})'),
+          findsOneWidget,
+        );
+
+        // 2. Tıklama -> 2. tüyoya geçer
+        await tester.tap(find.byType(MascotCoachBanner));
+        await tester.pumpAndSettle();
+
+        expect(find.text(tips[1]), findsOneWidget);
+        expect(
+          find.text('COĞRAFYA REHBERİ · KPSS TÜYOSU (2/${tips.length})'),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }

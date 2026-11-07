@@ -197,13 +197,13 @@ extension MascotMoodExtension on MascotMood {
   }
 }
 
-/// "Kadro Koçu" maskot konuşma balonu ve rehberlik bileşeni.
+/// "Kadro Koçu" maskot konuşma balonu ve 3D Dönen (Flip Card) Tüyo bileşeni.
 ///
 /// Web/Angular karşılığı:
-/// Gamification bildirim ve koçluk bileşeni (Duolingo banner/speech bubble).
-/// 92x92 boyutundaki çift katmanlı çerçeveli avatar yapısı ve
-/// dinamik mood aurası ile donatılmıştır.
-class MascotCoachBanner extends StatelessWidget {
+/// Gamification bildirim ve 3D Flip Card bileşeni (`transform: rotateY(180deg)`).
+/// Varsayılan (Ön Yüz) durumda tüyolar gizlidir ve sadece ekranın karşılama metni tam (kesilmeden) gösterilir.
+/// Kullanıcı karta tıkladığında kart döner (Arka Yüz) ve o sayfa/ders ile ilgili KPSS tüyolarını tam metin olarak sunar.
+class MascotCoachBanner extends StatefulWidget {
   final MascotMood mood;
   final String title;
   final String message;
@@ -217,8 +217,53 @@ class MascotCoachBanner extends StatelessWidget {
     this.badgeLabel = 'KADRO KOÇU',
   });
 
+  @override
+  State<MascotCoachBanner> createState() => _MascotCoachBannerState();
+}
+
+class _MascotCoachBannerState extends State<MascotCoachBanner> {
+  bool _isFlipped = false;
+  int _tipIndex = 0;
+
+  void _handleCardTap() {
+    setState(() {
+      if (!_isFlipped) {
+        _isFlipped = true;
+      } else {
+        final tipsLength = widget.mood.coachTips.length;
+        if (_tipIndex < tipsLength - 1) {
+          _tipIndex++;
+        } else {
+          _tipIndex = 0;
+          _isFlipped = false;
+        }
+      }
+    });
+  }
+
+  void _flipBackToFront() {
+    setState(() {
+      _isFlipped = false;
+    });
+  }
+
+  void _nextTipOnly() {
+    setState(() {
+      _tipIndex = (_tipIndex + 1) % widget.mood.coachTips.length;
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant MascotCoachBanner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.mood != widget.mood || oldWidget.message != widget.message) {
+      _isFlipped = false;
+      _tipIndex = 0;
+    }
+  }
+
   Color _getMoodColor(ColorScheme colorScheme) {
-    switch (mood) {
+    switch (widget.mood) {
       case MascotMood.coach:
       case MascotMood.history:
       case MascotMood.citizenship:
@@ -248,8 +293,55 @@ class MascotCoachBanner extends StatelessWidget {
     final minHeight = isCompact ? 96.0 : 122.0;
 
     final auraColor = _getMoodColor(colorScheme);
+    final tips = widget.mood.coachTips;
 
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 260),
+      switchInCurve: Curves.easeOutBack,
+      switchOutCurve: Curves.easeIn,
+      transitionBuilder: (child, animation) {
+        final rotateAnim = Tween<double>(begin: 0.88, end: 1.0).animate(
+          animation,
+        );
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(scale: rotateAnim, child: child),
+        );
+      },
+      child: _isFlipped
+          ? _buildBackFace(
+              context: context,
+              colorScheme: colorScheme,
+              textTheme: textTheme,
+              auraColor: auraColor,
+              minHeight: minHeight,
+              isCompact: isCompact,
+              tips: tips,
+            )
+          : _buildFrontFace(
+              context: context,
+              colorScheme: colorScheme,
+              textTheme: textTheme,
+              auraColor: auraColor,
+              avatarSize: avatarSize,
+              minHeight: minHeight,
+              isCompact: isCompact,
+            ),
+    );
+  }
+
+  /// Ön Yüz (Varsayılan): Tüyolar gizlidir, sayfa başlığı ve açıklama metni kesilmeden gösterilir.
+  Widget _buildFrontFace({
+    required BuildContext context,
+    required ColorScheme colorScheme,
+    required TextTheme textTheme,
+    required Color auraColor,
+    required double avatarSize,
+    required double minHeight,
+    required bool isCompact,
+  }) {
     return Container(
+      key: const ValueKey('mascot_front_face'),
       constraints: BoxConstraints(minHeight: minHeight),
       decoration: BoxDecoration(
         color: colorScheme.surface,
@@ -266,142 +358,310 @@ class MascotCoachBanner extends StatelessWidget {
           ),
         ],
       ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: isCompact ? 12 : 14,
-          vertical: isCompact ? 10 : 12,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Sol: Çift Katmanlı Borderlı Maskot Çerçevesi + Dinamik Rozet
-            Stack(
-              clipBehavior: Clip.none,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: _handleCardTap,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isCompact ? 12 : 14,
+              vertical: isCompact ? 10 : 12,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  width: avatarSize,
-                  height: avatarSize,
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(
-                      isCompact ? 16 : 20,
-                    ),
-                    border: Border.all(
-                      color: auraColor.withAlpha(100),
-                      width: 2,
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(
-                      isCompact ? 14 : 18,
-                    ),
-                    child: Image.asset(
-                      mood.assetPath,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          PhosphorIcon(
-                            PhosphorIconsDuotone.trophy,
-                            color: auraColor,
-                            size: isCompact ? 32 : 40,
-                          ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: -2,
-                  bottom: -2,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: colorScheme.tertiaryContainer,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: colorScheme.surface,
-                        width: 2,
+                // Sol: Çift Katmanlı Borderlı Maskot Çerçevesi + Dinamik Rozet
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      width: avatarSize,
+                      height: avatarSize,
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(
+                          isCompact ? 16 : 20,
+                        ),
+                        border: Border.all(
+                          color: auraColor.withAlpha(100),
+                          width: 2,
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                          isCompact ? 14 : 18,
+                        ),
+                        child: Image.asset(
+                          widget.mood.assetPath,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              PhosphorIcon(
+                                PhosphorIconsDuotone.trophy,
+                                color: auraColor,
+                                size: isCompact ? 32 : 40,
+                              ),
+                        ),
                       ),
                     ),
-                    child: PhosphorIcon(
-                      mood.badgeIcon,
-                      size: isCompact ? 10 : 12,
-                      color: colorScheme.onTertiaryContainer,
+                    Positioned(
+                      right: -2,
+                      bottom: -2,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: colorScheme.tertiaryContainer,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: colorScheme.surface,
+                            width: 2,
+                          ),
+                        ),
+                        child: PhosphorIcon(
+                          widget.mood.badgeIcon,
+                          size: isCompact ? 10 : 12,
+                          color: colorScheme.onTertiaryContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(width: isCompact ? 10 : 14),
+
+                // Sağ: Rozet, Başlık ve Tam Konuşma Balonu (Kesilmeden!)
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Üst Rozet Satırı + Sağda zarif çevirme ikonu
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: isCompact ? 8 : 10,
+                                vertical: isCompact ? 2 : 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                widget.badgeLabel,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ),
+                          ),
+                          PhosphorIcon(
+                            PhosphorIconsBold.arrowsClockwise,
+                            size: 15,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+
+                      // Başlık
+                      Text(
+                        widget.title,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+
+                      // Konuşma Balonu (Tam metin - nokta nokta ile kesilmez!)
+                      Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: isCompact ? 10 : 12,
+                          vertical: isCompact ? 6 : 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: colorScheme.outlineVariant,
+                          ),
+                        ),
+                        child: Text(
+                          widget.message,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w500,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Arka Yüz (Kart Döndüğünde): O sayfa/ders ile ilgili KPSS tüyolarını tam metin olarak gösterir.
+  Widget _buildBackFace({
+    required BuildContext context,
+    required ColorScheme colorScheme,
+    required TextTheme textTheme,
+    required Color auraColor,
+    required double minHeight,
+    required bool isCompact,
+    required List<String> tips,
+  }) {
+    final currentTip = tips[_tipIndex % tips.length];
+
+    return Container(
+      key: ValueKey('mascot_back_face_$_tipIndex'),
+      constraints: BoxConstraints(minHeight: minHeight),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: colorScheme.tertiary, width: 1.8),
+        boxShadow: [
+          BoxShadow(
+            color: Color.alphaBlend(
+              colorScheme.tertiary.withAlpha(70),
+              colorScheme.surface,
+            ),
+            offset: const Offset(0, 3.5),
+            blurRadius: 0,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(22),
+          onTap: _handleCardTap,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: isCompact ? 12 : 14,
+              vertical: isCompact ? 10 : 12,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Üst Satır: Sayfa/Ders Tüyo Başlığı + Sayaç + Ön Yüze Dön Butonu
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            PhosphorIcon(
+                              PhosphorIconsFill.lightbulb,
+                              size: 14,
+                              color: colorScheme.onTertiaryContainer,
+                            ),
+                            const SizedBox(width: 5),
+                            Flexible(
+                              child: Text(
+                                '${widget.badgeLabel} · KPSS TÜYOSU (${_tipIndex + 1}/${tips.length})',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onTertiaryContainer,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        InkWell(
+                          onTap: _nextTipOnly,
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            child: Text(
+                              'Sonraki Tüyo →',
+                              style: textTheme.labelSmall?.copyWith(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        InkWell(
+                          onTap: _flipBackToFront,
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: PhosphorIcon(
+                              PhosphorIconsBold.arrowUUpLeft,
+                              size: 16,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Tam Genişlik Tüyo İçeriği (Kesilmeden tam metin!)
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isCompact ? 12 : 14,
+                    vertical: isCompact ? 10 : 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.tertiaryContainer.withAlpha(55),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: colorScheme.tertiary.withAlpha(110),
+                    ),
+                  ),
+                  child: Text(
+                    currentTip,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                      height: 1.45,
                     ),
                   ),
                 ),
               ],
             ),
-            SizedBox(width: isCompact ? 10 : 14),
-
-            // Sağ: Rozet, Başlık ve Tam Genişlik Konuşma Balonu
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Üst Rozet (badgeLabel)
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isCompact ? 8 : 10,
-                      vertical: isCompact ? 2 : 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      badgeLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Başlık (Kompakt ve 2 satıra kadar zarif geçiş - TASK-71)
-                  Text(
-                    title,
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w800,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Konuşma Balonu (Tam genişlik ve 2-3 satır ritim)
-                  Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isCompact ? 10 : 12,
-                      vertical: isCompact ? 6 : 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: colorScheme.outlineVariant,
-                      ),
-                    ),
-                    child: Text(
-                      message,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w500,
-                        height: 1.4,
-                      ),
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
