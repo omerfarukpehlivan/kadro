@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kadro/features/lessons/data/kpss_lessons.dart';
+import 'package:kadro/features/lessons/presentation/lesson_topics_screen.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/lessons/presentation/widgets/lesson_progress_ring.dart';
+import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -139,5 +142,133 @@ void main() {
         );
       },
     );
+  });
+
+  group('TASK-77: LessonTopicsScreen Çözülen/Mevcut Test Sayısı ve Tamamlanma Rozeti', () {
+    testWidgets(
+      'Kısmen çözülmüş konuda (1/9) 1/9 Test yazar, sol düğümde tik bulunmaz (numara görünür)',
+      (WidgetTester tester) async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        // Tarih dersinin ilk konusu için sadece 1 test oturumu kaydet
+        final now = DateTime.now();
+        container
+            .read(studyStatsProvider.notifier)
+            .recordQuizSession(
+              QuizSessionRecord(
+                id: 'sess_tarih_1',
+                title: 'Tarih · İslamiyet Öncesi Türk Tarihi · Test 1',
+                lesson: 'Tarih',
+                totalQuestions: 10,
+                correctCount: 9,
+                wrongCount: 1,
+                emptyCount: 0,
+                netScore: 8.75,
+                earnedXp: 90,
+                durationSeconds: 240,
+                completedAt: now,
+              ),
+            );
+
+        final tarihLesson = kpssLessons.firstWhere((l) => l.name == 'Tarih');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(home: LessonTopicsScreen(lesson: tarihLesson)),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // 1/9 Test rozeti görünmeli (ve henüz hepsi bitmediği için PhosphorIconsBold.chartPieSlice bulunmalı)
+        expect(find.text('1/9 Test'), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsBold.chartPieSlice), findsOneWidget);
+
+        // Sol yuvarlak düğümde tik OLMAMALI (findsNothing)
+        expect(find.byIcon(PhosphorIconsBold.check), findsNothing);
+
+        // Sol yuvarlak düğümde sıra numarası '1' görünmeli
+        expect(find.text('1'), findsWidgets);
+      },
+    );
+
+    testWidgets(
+      'Tüm testleri çözülmüş konuda (2/2) 2/2 Test yazar ve sol düğümde tik (✓) görünür',
+      (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            lessonTopicTestCountsProvider(
+              'Tarih',
+            ).overrideWith((ref) async => {'İslamiyet Öncesi Türk Tarihi': 2}),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final now = DateTime.now();
+        // 2 testin 2'sini de çöz
+        for (int i = 1; i <= 2; i++) {
+          container
+              .read(studyStatsProvider.notifier)
+              .recordQuizSession(
+                QuizSessionRecord(
+                  id: 'sess_tarih_$i',
+                  title: 'Tarih · İslamiyet Öncesi Türk Tarihi · Test $i',
+                  lesson: 'Tarih',
+                  totalQuestions: 10,
+                  correctCount: 10,
+                  wrongCount: 0,
+                  emptyCount: 0,
+                  netScore: 10.0,
+                  earnedXp: 100,
+                  durationSeconds: 200,
+                  completedAt: now,
+                ),
+              );
+        }
+
+        final tarihLesson = kpssLessons.firstWhere((l) => l.name == 'Tarih');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(home: LessonTopicsScreen(lesson: tarihLesson)),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // 2/2 Test rozeti görünmeli
+        expect(find.text('2/2 Test'), findsOneWidget);
+
+        // Rozette checkCircle ikonu olmalı
+        expect(find.byIcon(PhosphorIconsFill.checkCircle), findsOneWidget);
+
+        // Sol yuvarlak düğümde tik (PhosphorIconsBold.check) görünmeli
+        expect(find.byIcon(PhosphorIconsBold.check), findsOneWidget);
+      },
+    );
+
+    testWidgets('Hiç çözülmemiş konularda 0/X Test nötr rozeti görünür', (
+      WidgetTester tester,
+    ) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final tarihLesson = kpssLessons.firstWhere((l) => l.name == 'Tarih');
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(home: LessonTopicsScreen(lesson: tarihLesson)),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // İlk konu hiç çözülmediğinde 0/9 Test görünmeli
+      expect(find.text('0/9 Test'), findsWidgets);
+    });
   });
 }

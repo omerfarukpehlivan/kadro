@@ -232,7 +232,19 @@ class _TopicPathNode extends ConsumerWidget {
       lesson: lessonName,
       topic: topic,
     );
-    final isTopicSolved = solvedTestCount > 0;
+    final topicCountsAsync = ref.watch(
+      lessonTopicTestCountsProvider(lessonName),
+    );
+    final fetchedCount = topicCountsAsync.value?[topic];
+    final rawTotalTests = (fetchedCount != null && fetchedCount > 0)
+        ? fetchedCount
+        : defaultTopicTestCount(lessonName, topic);
+    final totalTests = solvedTestCount > rawTotalTests
+        ? solvedTestCount
+        : rawTotalTests;
+    final isPartiallySolved =
+        solvedTestCount > 0 && solvedTestCount < totalTests;
+    final isAllTestsSolved = totalTests > 0 && solvedTestCount >= totalTests;
 
     return IntrinsicHeight(
       child: Row(
@@ -247,14 +259,14 @@ class _TopicPathNode extends ConsumerWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: isTopicSolved
+                    color: isAllTestsSolved
                         ? colorScheme.secondary
-                        : (index == 0
+                        : ((isPartiallySolved || index == 0)
                               ? colorScheme.primary
                               : colorScheme.primaryContainer),
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isTopicSolved
+                      color: isAllTestsSolved
                           ? colorScheme.secondary
                           : colorScheme.primary,
                       width: 2,
@@ -262,7 +274,7 @@ class _TopicPathNode extends ConsumerWidget {
                     boxShadow: [
                       BoxShadow(
                         color:
-                            (isTopicSolved
+                            (isAllTestsSolved
                                     ? colorScheme.secondary
                                     : colorScheme.primary)
                                 .withAlpha(45),
@@ -272,7 +284,7 @@ class _TopicPathNode extends ConsumerWidget {
                     ],
                   ),
                   alignment: Alignment.center,
-                  child: isTopicSolved
+                  child: isAllTestsSolved
                       ? PhosphorIcon(
                           PhosphorIconsBold.check,
                           size: 18,
@@ -281,7 +293,7 @@ class _TopicPathNode extends ConsumerWidget {
                       : Text(
                           '${index + 1}',
                           style: textTheme.labelLarge?.copyWith(
-                            color: index == 0
+                            color: (isPartiallySolved || index == 0)
                                 ? colorScheme.onPrimary
                                 : colorScheme.onPrimaryContainer,
                             fontWeight: FontWeight.bold,
@@ -294,7 +306,7 @@ class _TopicPathNode extends ConsumerWidget {
                       child: Container(
                         width: 3,
                         color:
-                            (isTopicSolved
+                            (isAllTestsSolved
                                     ? colorScheme.secondary
                                     : colorScheme.primary)
                                 .withAlpha(70),
@@ -312,85 +324,132 @@ class _TopicPathNode extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: 16),
               child: TactileCard(
                 onTap: () => _startTopicTest(context, ref),
-                borderColor: isTopicSolved
+                borderColor: isAllTestsSolved
                     ? colorScheme.secondary.withAlpha(150)
-                    : colorScheme.outlineVariant,
-                backgroundColor: isTopicSolved
+                    : (isPartiallySolved
+                          ? colorScheme.primary.withAlpha(140)
+                          : colorScheme.outlineVariant),
+                backgroundColor: isAllTestsSolved
                     ? colorScheme.secondaryContainer.withAlpha(30)
                     : colorScheme.surface,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (isTopicSolved || isDownloaded) ...[
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Wrap(
-                          spacing: 6,
-                          runSpacing: 4,
-                          children: [
-                            if (isTopicSolved)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 7,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.secondaryContainer,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    PhosphorIcon(
-                                      PhosphorIconsFill.checkCircle,
-                                      size: 13,
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          if (isAllTestsSolved)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.secondaryContainer,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  PhosphorIcon(
+                                    PhosphorIconsFill.checkCircle,
+                                    size: 13,
+                                    color: colorScheme.onSecondaryContainer,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '$solvedTestCount/$totalTests Test',
+                                    style: textTheme.labelSmall?.copyWith(
                                       color: colorScheme.onSecondaryContainer,
+                                      fontWeight: FontWeight.w700,
                                     ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      '$solvedTestCount Test Çözüldü',
-                                      style: textTheme.labelSmall?.copyWith(
-                                        color: colorScheme.onSecondaryContainer,
-                                        fontWeight: FontWeight.w700,
-                                      ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else if (isPartiallySolved)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  PhosphorIcon(
+                                    PhosphorIconsBold.chartPieSlice,
+                                    size: 13,
+                                    color: colorScheme.onPrimaryContainer,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '$solvedTestCount/$totalTests Test',
+                                    style: textTheme.labelSmall?.copyWith(
+                                      color: colorScheme.onPrimaryContainer,
+                                      fontWeight: FontWeight.w700,
                                     ),
-                                  ],
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                '0/$totalTests Test',
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            if (isDownloaded)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 7,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.secondaryContainer,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    PhosphorIcon(
-                                      PhosphorIconsFill.checkCircle,
-                                      size: 13,
-                                      color: colorScheme.onSecondaryContainer,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      'Cihazda',
-                                      style: textTheme.labelSmall?.copyWith(
-                                        color: colorScheme.onSecondaryContainer,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                            ),
+                          if (isDownloaded)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 3,
                               ),
-                          ],
-                        ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.secondaryContainer,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  PhosphorIcon(
+                                    PhosphorIconsFill.checkCircle,
+                                    size: 13,
+                                    color: colorScheme.onSecondaryContainer,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Cihazda',
+                                    style: textTheme.labelSmall?.copyWith(
+                                      color: colorScheme.onSecondaryContainer,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
                       ),
-                      const SizedBox(height: 6),
-                    ],
+                    ),
+                    const SizedBox(height: 6),
                     // Orta: Konu Başlığı (Tam Genişlik)
                     Text(
                       topic,

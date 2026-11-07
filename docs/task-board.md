@@ -100,7 +100,8 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-73** | **`ui-ux-pro-max` Mobil Tipografi (`Base 16px`: `28-24-20-18-16-15-14-12-11 px`) ve 3 Kademeli Padding Hiyerarşisi Revizyonu** | Küçük kalan başlık ve gövde yazılarının iOS HIG / Material 3 / `ui-ux-pro-max` gerçek mobil ölçeğine (`titleLarge: 18px`, `titleMedium: 16px`, `titleSmall: 15px`, `bodyLarge: 16px`, `bodyMedium: 14px`, `bodySmall: 12px`, `labelLarge: 14px`, `labelMedium: 12px`, `labelSmall: 11px`) yükseltilmesi; `SectionTitle` (`18px`), `LessonsScreen` (`18px`), `MascotCoachBanner` (`16px` başlık + `14px` konuşma balonu), `PracticeHubScreen` (`15px` başlık + `14px` padding) ve `LessonTopicsScreen` (`16px` kesilmeyen başlık) hiyerarşisinin uygulanması | ✅ **Tamamlandı** (`b77e3f8`) |
 | **TASK-74** | **Dikey Hizalama & Kenar Kılavuz Çizgisi Standardizasyonu (`AppTopBar`, `Body`, `SectionTitle`, `AppNavigationBar` ve `AppBarTheme` Sol/Sağ Flush Alignment)** | `AppBarTheme` içindeki `titleSpacing: 4` nedeniyle üst barın (`AppTopBar`) sol kenarının `4px`'ten başlayıp alt gövdenin (`16px`) dışına taşması hatasının düzeltilmesi; `AppTopBar` sol `titleSpacing` ve sağ `actions` boşluğunun, `SectionTitle` sol hizasının (`horizontal: 0`) ve `AppNavigationBar` yan boşluklarının `ResponsiveBreakpoints.horizontalPadding(context)` (`12px / 16px / 24px`) ile milimetrik olarak aynı dikey hizaya getirilmesi | ✅ **Tamamlandı** (`01178d3`) |
 | **TASK-75** | **Çözülen Test / Konu / Deneme Kartlarında Tamamlanma Durumu (`✅ Çözüldü` Rozeti, Son Net Özeti & `Tekrar Çöz` Aksiyonu) + Konu Kartı İndir İkonlarının ve Test Kartı Gereksiz Açıklamalarının Temizlenmesi** | Kullanıcı bir testi veya denemeyi bitirdiğinde (`studyStatsProvider.sessionHistory`), uygulamaya tekrar girdiğinde `TopicTestsScreen`, `LessonTopicsScreen` ve `ExamsScreen` kartlarında zümrüt yeşili kenarlık/arka plan tonu, `✅ Çözüldü · XD YY (Z.Z Net)` rozeti ve `Tekrar Çöz` butonunun gösterilmesi; `LessonTopicsScreen` konu kartlarındaki tekil indirme ikonlarının kaldırılıp sadece üstteki `Tümünü İndir` butonunun bırakılması; `TopicTestsScreen` test kartlarındaki mükerrer seviye başlığı ve `'Konuyu yeni bitirdiysen...'` açıklama metinlerinin kaldırılması | ✅ **Tamamlandı** (`cc400be`) |
-| **TASK-76** | **Soru Metinlerindeki LaTeX (`$\rightarrow$`, `arrow`), Markdown (`**...**`) ve Gereksiz Tırnak (`""`) Kalıntılarının 2 Katmanlı Temizliği (`Question.cleanText` + Supabase `UPDATE` SQL + Repo Soru Havuzu)** | `Question.fromSupabase` ve `Question.fromJson` içine anlık metin temizleyici (`Question.cleanText`) eklenmesi; tüm `docs/soru_havuzu/**/*.sql`, `.md` ve `assets/data/questions.json` dosyalarındaki LaTeX/Markdown/tırnak kalıntılarının temizlenmesi ve mevcut Supabase veritabanını tek tıkla güncelleyen `docs/soru_havuzu/fix_question_texts_supabase.sql` betiğinin oluşturulması | ✅ **Tamamlandı** |
+| **TASK-76** | **Soru Metinlerindeki LaTeX (`$\rightarrow$`, `arrow`), Markdown (`**...**`) ve Gereksiz Tırnak (`""`) Kalıntılarının 2 Katmanlı Temizliği (`Question.cleanText` + Supabase `UPDATE` SQL + Repo Soru Havuzu)** | `Question.fromSupabase` ve `Question.fromJson` içine anlık metin temizleyici (`Question.cleanText`) eklenmesi; tüm `docs/soru_havuzu/**/*.sql`, `.md` ve `assets/data/questions.json` dosyalarındaki LaTeX/Markdown/tırnak kalıntılarının temizlenmesi ve mevcut Supabase veritabanını tek tıkla güncelleyen `docs/soru_havuzu/fix_question_texts_supabase.sql` betiğinin oluşturulması | ✅ **Tamamlandı** (`fd51a3e`) |
+| **TASK-77** | **Konu Kartlarında (`LessonTopicsScreen`) Gerçek Test Sayısı (`solved/totalTests`) Rozeti ve Yalnızca Tüm Testler Çözülünce Tik (`✓`) Atılması** | `LessonTopicsScreen` konu kartlarında sadece 1 test çözülünce hemen tik (`✓`) atılması yerine, yalnızca konudaki tüm testler (`solvedTestCount >= totalTestCount`) tamamlandığında yol haritası düğümüne ve rozete tik atılması; rozet yazısının `'1 Test Çözüldü'` yerine `'1/9 Test'` (tamamlandığında `'9/9 Test Tamamlandı'`) olarak dinamik gösterilmesi | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4574,7 +4575,7 @@ ADIM 5: Testlerin Güncellenmesi ve Doğrulama
 
 ### 📦 TASK-76: Soru Metinlerindeki LaTeX (`$\rightarrow$`, `arrow`), Markdown (`**...**`) ve Gereksiz Tırnak (`""`) Kalıntılarının 2 Katmanlı Temizliği (`Question.cleanText` + Supabase `UPDATE` SQL + Repo Soru Havuzu)
 
-- **Durum:** 🔄 **Devam Ediyor**
+- **Durum:** ✅ **Tamamlandı** (`fd51a3e`)
 - **Problem Analizi:**
   - Soru üretim aşamasında Markdown/LaTeX formatından kalan `$\rightarrow$`, `\rightarrow`, `\to`, `->`, `**kalın metin**`, `*"italik tırnak"*` ve `""çift tırnak""` kalıntıları düz metin olarak `.sql` dosyalarına ve Supabase `public.questions` tablosuna aktarılmıştır.
 - **2 Katmanlı Çözüm:**
@@ -4617,6 +4618,94 @@ ADIM 2: Yerel `.sql` / `.json` Dosyalarının Temizlenmesi ve Supabase `UPDATE` 
 ADIM 3: Test ve Doğrulama
 1. `test/quiz_screen_test.dart` (veya `test/question_sanitizer_test.dart`) içine `Question.cleanText` ve `Question.fromSupabase` için `$\rightarrow$`, `\rightarrow`, `->`, `**Anav kültürü**`, `*"Güneşin battığı yer"*` ve `""Manas Destanı""` içeren kirli verilerin tertemiz (`→`, `Anav kültürü`, `"Güneşin battığı yer"`, `"Manas Destanı"`) çıktığını doğrulayan birim testleri ekle.
 2. `docs/task-board.md` içinde `TASK-76` durumunu `✅ **Tamamlandı**` yap.
+3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
+```
+
+---
+
+### 📦 TASK-77: Konu Kartlarında (`LessonTopicsScreen`) Gerçek Test Sayısı (`solved/totalTests`) Rozeti ve Yalnızca Tüm Testler Çözülünce Tik (`✓`) Atılması
+
+- **Durum:** ✅ **Tamamlandı**
+- **Problem Analizi:**
+  1. `LessonTopicsScreen` (`lib/features/lessons/presentation/lesson_topics_screen.dart`) ekranında bir konunun içindeki **sadece 1 test çözüldüğünde** (`solvedTestCount > 0`) konu kartı ve solundaki yol haritası yuvarlağı hemen yeşil tik (`✓`) alıyor ve tamamen bitmiş gibi görünüyor. Oysa bir konunun içinde 8-10 adet test bulunuyor.
+  2. Rozette `'1 Test Çözüldü'` yazması kullanıcının o konuda toplam kaç test olduğunu ve kaçta kaçını bitirdiğini anlamasını engelliyor. Kullanıcı bunun **`1/9 Test`** (`solved/mevcut test sayısı`) şeklinde görünmesini ve **yalnızca konudaki tüm testler çözüldüğünde (`solvedTestCount >= totalTestCount`) tik (`✓`) atılmasını** istiyor.
+- **Mimari & Görsel Çözüm:**
+  1. **Konu Bazlı Gerçek Test Sayısı Sağlayıcısı (`lessonTopicTestCountsProvider` — `lib/features/quiz/data/question_repository.dart` veya `lib/features/lessons/presentation/lesson_topics_screen.dart`):**
+     - `QuestionRepository` içine `Future<Map<String, int>> fetchTopicTestCounts(String lessonName)` metodu eklenir:
+       - `fetchQuestions(lesson: lessonName)` (veya Supabase'den ilgili dersin sorularını) çağırıp her `topic` için soru sayısını sayar ve `TopicTestsScreen` ile birebir aynı mantıkla (`(questionCount / 10).ceil()`) 10'ar soruluk kaç test oluştuğunu hesaplar.
+       - Ayrıca çevrimdışı veya test ortamında bilinen konular için varsayılan/minimum test sayılarını (`Tarih`: İslamiyet Öncesi 9, İlk Türk-İslam 9, Osmanlı Kültür 10, Osmanlı Dağılma 9, Kurtuluş Savaşı 10, Atatürk İlke 8, Çağdaş 7; diğer konularda en az `1` veya bulunan soru sayısına göre `(count / 10).ceil()`) güvenli şekilde döner.
+     - `final lessonTopicTestCountsProvider = FutureProvider.family<Map<String, int>, String>((ref, lessonName) async => ...)` tanımlanır.
+  2. **`LessonTopicsScreen` (`_TopicPathNode`) Tamamlanma & Rozet Mantığı:**
+     - `totalTests`: `topicTestCountsAsync.valueOrNull?[topic] ?? defaultTopicTestCount(lessonName, topic)` (en az `1`, eğer `solvedTestCount > totalTests` ise `solvedTestCount` olarak clamp edilir).
+     - **Durum 1 — Hiç Çözülmemiş (`solvedTestCount == 0`):**
+       - Sol yuvarlak düğüm: Numara (`${index + 1}`), `index == 0 ? colorScheme.primary : colorScheme.primaryContainer`.
+       - Kartta test sayısını gösteren hafif bilgi rozeti veya sade görünüm (`0/$totalTests Test` veya çözülmeye başlandığında rozet). Kullanıcının her zaman mevcut test sayısını görebilmesi için sağ üstte:
+         - Henüz hiç çözülmediyse (`solvedTestCount == 0`): Nötr rozet (`surfaceContainerHighest`) içinde **`0/$totalTests Test`**
+         - Kısmen çözüldüyse (`0 < solvedTestCount < totalTests`): Amber/Primary ilerleme rozeti (`primaryContainer` / `onPrimaryContainer`, `PhosphorIconsBold.TrendUp` veya `PhosphorIconsFill.pieChart` / `clockCountdown` ikonu — **kesinlikle tik DEĞİL!**) içinde **`$solvedTestCount/$totalTests Test`**
+         - **Tüm testler çözüldüyse (`isAllTestsSolved = totalTests > 0 && solvedTestCount >= totalTests`):** Zümrüt yeşili (`secondaryContainer` / `onSecondaryContainer`) rozet içinde **`PhosphorIconsFill.checkCircle`** (tik ikonu) + **`$solvedTestCount/$totalTests Test`**!
+     - **Sol Yol Haritası Düğümü (`40x40` Yuvarlak) ve Kart Kenarlığı:**
+       - **Tik (`PhosphorIconsBold.check`) ve Zümrüt Yeşili Düğüm (`colorScheme.secondary`) YALNIZCA `isAllTestsSolved` (`solvedTestCount >= totalTests`) olduğunda gösterilir!**
+       - Kısmen çözülmüş konularda (`0 < solvedTestCount < totalTests`), sol yuvarlakta tik **atılmaz**, sıra numarası (`${index + 1}`) görünmeye devam eder (arka planı `colorScheme.primary`, kenarlığı `colorScheme.primary` olur).
+
+```text
+GÖREV: TASK-77 — Konu Kartlarında (LessonTopicsScreen) "Çözülen/Mevcut Test Sayısı" Rozeti ve Yalnızca Tüm Testler Çözülünce Tik (✓) Atılması
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme, yazı stillerini Theme.of(context).textTheme üzerinden al.
+
+ADIM 1: Konu Bazlı Mevcut Test Sayısı Hesaplaması (`lib/features/lessons/data/kpss_lessons.dart` & `lib/features/quiz/data/question_repository.dart`)
+1. `lib/features/lessons/data/kpss_lessons.dart` içine her konunun varsayılan (seed/SQL havuzundaki gerçek) test sayısını dönen yardımcı bir fonksiyon/map ekle (`defaultTopicTestCount(String lessonName, String topic)`):
+   - Tarih konuları (gerçek SQL havuzu 620 soru / 10 = 62 test):
+     - `'İslamiyet Öncesi Türk Tarihi'`: `9`
+     - `'İlk Türk-İslam Devletleri'`: `9`
+     - `'Osmanlı Kültür ve Uygarlığı'`: `10`
+     - `'Osmanlı Dağılma Dönemi'`: `9`
+     - `'Kurtuluş Savaşı Hazırlık ve Cepheler'`: `10`
+     - `'Atatürk İlke ve İnkılapları'`: `8`
+     - `'Çağdaş Türk ve Dünya Tarihi'`: `7`
+   - Diğer derslerin konuları için varsayılan `5` dönsün.
+2. `lib/features/quiz/data/question_repository.dart` içine:
+   - `Future<Map<String, int>> fetchTopicTestCounts(String lessonName)` metodunu ekle:
+     - `final questions = await fetchQuestions(lesson: lessonName);` ile soruları çeker.
+     - Her `q.topic` için soru adedini sayar (`Map<String, int> questionCounts`).
+     - Her konu için `testCount = (count / 10).ceil()` hesaplar (sadece `count > 0` olan konular için).
+   - `final lessonTopicTestCountsProvider = FutureProvider.family<Map<String, int>, String>((ref, lessonName) async { final repo = ref.watch(questionRepositoryProvider); return repo.fetchTopicTestCounts(lessonName); });` provider'ını tanımla.
+
+ADIM 2: `LessonTopicsScreen` (`lib/features/lessons/presentation/lesson_topics_screen.dart`) Güncellemesi
+1. `_TopicPathNode.build` içinde:
+   - `final topicCountsAsync = ref.watch(lessonTopicTestCountsProvider(lessonName));`
+   - `final fetchedCount = topicCountsAsync.valueOrNull?[topic];`
+   - `final rawTotalTests = (fetchedCount != null && fetchedCount > 0) ? fetchedCount : defaultTopicTestCount(lessonName, topic);`
+   - `final solvedTestCount = stats.countSolvedTestsForTopic(lesson: lessonName, topic: topic);`
+   - `final totalTests = solvedTestCount > rawTotalTests ? solvedTestCount : rawTotalTests;`
+   - `final isPartiallySolved = solvedTestCount > 0 && solvedTestCount < totalTests;`
+   - `final isAllTestsSolved = totalTests > 0 && solvedTestCount >= totalTests;`
+2. Sol Yuvarlak Yol Haritası Düğümü (`40x40`):
+   - **Sadece `isAllTestsSolved == true` olduğunda** arka plan `colorScheme.secondary` olsun ve içinde `PhosphorIcon(PhosphorIconsBold.check, size: 18, color: colorScheme.onSecondary)` (tik) gösterilsin!
+   - `isAllTestsSolved == false` olduğunda (hiç çözülmemiş veya kısmen çözülmüş):
+     - Arka plan: `(isPartiallySolved || index == 0) ? colorScheme.primary : colorScheme.primaryContainer`
+     - İçerik: Numara `Text('${index + 1}', ...)` (tik YOK!).
+3. Sağ Konu Kartı (`TactileCard`):
+   - `borderColor`: `isAllTestsSolved ? colorScheme.secondary.withAlpha(150) : (isPartiallySolved ? colorScheme.primary.withAlpha(140) : colorScheme.outlineVariant)`
+   - `backgroundColor`: `isAllTestsSolved ? colorScheme.secondaryContainer.withAlpha(30) : colorScheme.surface`
+   - Üst sağdaki rozet (`Wrap`):
+     - Her zaman (veya `solvedTestCount > 0` / mevcut test sayısı bilgisi olarak) kullanıcıya **`$solvedTestCount/$totalTests Test`** formatında göster:
+       - Eğer **`isAllTestsSolved`** ise (tüm testler bitti):
+         - Zümrüt yeşili (`colorScheme.secondaryContainer` arka plan, `colorScheme.onSecondaryContainer` yazı/ikon)
+         - İkon: `PhosphorIconsFill.checkCircle` (Tik!)
+         - Metin: `'$solvedTestCount/$totalTests Test'`
+       - Eğer **`isPartiallySolved`** ise (örn. 1/9 çözüldü, henüz hepsi bitmedi):
+         - Akademik lacivert/indigo (`colorScheme.primaryContainer` arka plan, `colorScheme.onPrimaryContainer` yazı/ikon)
+         - İkon: `PhosphorIconsBold.chartPieSlice` (Tik DEĞİL!)
+         - Metin: `'$solvedTestCount/$totalTests Test'`
+       - Eğer **`solvedTestCount == 0`** ise (hiç çözülmedi):
+         - Hafif nötr (`colorScheme.surfaceContainerHighest` arka plan, `colorScheme.onSurfaceVariant` yazı)
+         - Metin: `'0/$totalTests Test'`
+     - Altındaki konu başlığı (`Text(topic, ...)`) ve `'Test Çöz'` (veya `isAllTestsSolved ? 'Tekrar Çöz' : 'Test Çöz'` — ancak mevcut widget testlerinin `find.text('Test Çöz')` beklentisini bozmamak için `'Test Çöz'` metnini koru!) birebir korunsun.
+
+ADIM 3: Birim & Widget Testlerinin Yazılması (`test/lessons_screen_test.dart`)
+1. `test/lessons_screen_test.dart` içine `TASK-77` test grubu ekle:
+   - Bir konuda 9 test varken sadece 1 test çözüldüğünde (`Tarih · İslamiyet Öncesi Türk Tarihi · Test 1`), `LessonTopicsScreen` üzerinde `'1/9 Test'` yazdığını ve düğümde tik (`PhosphorIconsBold.check`) **olmadığını** (`findsNothing`),
+   - Konudaki tüm testler çözüldüğünde (örn. mock repo ile 2 testlik konuda Test 1 ve Test 2 çözüldüğünde), `'2/2 Test'` yazdığını ve düğümde tik (`PhosphorIconsBold.check`) + `PhosphorIconsFill.checkCircle` **bulunduğunu** (`findsOneWidget`) doğrula.
+2. `docs/task-board.md` içinde `TASK-77` durumunu `✅ **Tamamlandı**` olarak güncelle.
 3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
 

@@ -93,3 +93,36 @@ const List<Lesson> kpssLessons = [
     ],
   ),
 ];
+
+/// Belirli bir ders ve konunun SQL soru havuzundaki veya varsayılan test sayısını döner.
+///
+/// Her test 10 sorudan oluşur. Tarih soru havuzundaki 620 soruya göre:
+/// - İslamiyet Öncesi Türk Tarihi: 9 test (90 soru)
+/// - İlk Türk-İslam Devletleri: 9 test (90 soru)
+/// - Osmanlı Kültür ve Uygarlığı: 10 test (100 soru)
+/// - Osmanlı Dağılma Dönemi: 9 test (90 soru)
+/// - Kurtuluş Savaşı Hazırlık ve Cepheler: 10 test (100 soru)
+/// - Atatürk İlke ve İnkılapları: 8 test (80 soru)
+/// - Çağdaş Türk ve Dünya Tarihi: 7 test (70 soru)
+/// Diğer derslerde henüz SQL soruları eklenmemişse varsayılan 5 test döner.
+int defaultTopicTestCount(String lessonName, String topic) {
+  if (lessonName == 'Tarih') {
+    switch (topic) {
+      case 'İslamiyet Öncesi Türk Tarihi':
+        return 9;
+      case 'İlk Türk-İslam Devletleri':
+        return 9;
+      case 'Osmanlı Kültür ve Uygarlığı':
+        return 10;
+      case 'Osmanlı Dağılma Dönemi':
+        return 9;
+      case 'Kurtuluş Savaşı Hazırlık ve Cepheler':
+        return 10;
+      case 'Atatürk İlke ve İnkılapları':
+        return 8;
+      case 'Çağdaş Türk ve Dünya Tarihi':
+        return 7;
+    }
+  }
+  return 5;
+}

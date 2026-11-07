@@ -235,9 +235,33 @@ class QuestionRepository {
 
     return sampleConceptMatchSets;
   }
+
+  /// Belirli bir derse ait soruları çekip her konudaki mevcut test sayısını
+  /// (her test 10 soru olacak şekilde `(count / 10).ceil()`) hesaplar.
+  Future<Map<String, int>> fetchTopicTestCounts(String lessonName) async {
+    try {
+      final questions = await fetchQuestions(lesson: lessonName);
+      final counts = <String, int>{};
+      for (final q in questions) {
+        if (q.topic.isNotEmpty) {
+          counts[q.topic] = (counts[q.topic] ?? 0) + 1;
+        }
+      }
+      return counts.map((topic, count) => MapEntry(topic, (count / 10).ceil()));
+    } catch (_) {
+      return {};
+    }
+  }
 }
 
 /// [QuestionRepository] Riverpod sağlayıcısı.
 final questionRepositoryProvider = Provider<QuestionRepository>((ref) {
   return const QuestionRepository();
 });
+
+/// Belirli bir dersin konularındaki test sayılarını (`Map<String, int>`) asenkron sağlayan provider.
+final lessonTopicTestCountsProvider =
+    FutureProvider.family<Map<String, int>, String>((ref, lessonName) async {
+      final repo = ref.watch(questionRepositoryProvider);
+      return repo.fetchTopicTestCounts(lessonName);
+    });
