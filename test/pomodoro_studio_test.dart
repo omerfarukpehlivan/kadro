@@ -20,11 +20,45 @@ void main() {
       final state = container.read(pomodoroProvider);
       expect(state.remainingSeconds, 25 * 60);
       expect(state.formattedTime, '25:00');
+      expect(state.customFocusMinutes, 25);
+      expect(state.customBreakMinutes, 5);
       expect(state.isRunning, false);
+      expect(state.isFocusMode, false);
       expect(state.isBreak, false);
       expect(state.examTarget, KpssExamTarget.lisans);
       expect(state.clockStyle, PomodoroClockStyle.ring);
       expect(state.selectedLesson, 'Tarih');
+    });
+
+    test('setCustomDurations ile ders ve mola süresi ayarlanabilmelidir', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final notifier = container.read(pomodoroProvider.notifier);
+      notifier.setCustomDurations(focusMinutes: 40, breakMinutes: 10);
+
+      final state = container.read(pomodoroProvider);
+      expect(state.customFocusMinutes, 40);
+      expect(state.customBreakMinutes, 10);
+      expect(state.remainingSeconds, 40 * 60);
+      expect(state.formattedTime, '40:00');
+    });
+
+    test('startPause() başlatıldığında isFocusMode true olmalıdır', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final notifier = container.read(pomodoroProvider.notifier);
+      notifier.startPause();
+
+      final state = container.read(pomodoroProvider);
+      expect(state.isRunning, true);
+      expect(state.isFocusMode, true);
+
+      notifier.exitFocusMode();
+      final exitedState = container.read(pomodoroProvider);
+      expect(exitedState.isRunning, false);
+      expect(exitedState.isFocusMode, false);
     });
 
     test('tick() çağrıldığında süre 1 saniye azalmalıdır', () {
@@ -89,7 +123,7 @@ void main() {
 
   group('PomodoroStudioScreen Widget Testleri', () {
     testWidgets(
-      'Ekran açıldığında başlık, sayaç ve 3 saat tasarımı seçeneği görünür',
+      'Ekran açıldığında ders/mola süresi seçicileri, sayaç ve 3 saat tasarımı görünür',
       (WidgetTester tester) async {
         tester.view.physicalSize = const Size(400, 800);
         tester.view.devicePixelRatio = 1.0;
@@ -102,11 +136,52 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Odak & Sınav Sayacı'), findsOneWidget);
+        expect(find.text('Ders Süresi'), findsOneWidget);
+        expect(find.text('Mola Süresi'), findsOneWidget);
+        expect(find.text('25 dk'), findsOneWidget);
+        expect(find.text('5 dk'), findsOneWidget);
         expect(find.text('25:00'), findsOneWidget);
         expect(find.text('Akademik Halka'), findsOneWidget);
         expect(find.text('Flip Masa Saati'), findsOneWidget);
         expect(find.text('Minimal Zen'), findsOneWidget);
         expect(find.text('Odaklanmayı Başlat'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'Odaklanmayı Başlat butonuna basılınca diğer bileşenler gizlenir ve sadece sayaç (Focus Modu) görünür',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        await tester.pumpWidget(
+          const ProviderScope(child: MaterialApp(home: PomodoroStudioScreen())),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Başlatmadan önce kurulum bileşenleri görünür
+        expect(find.text('Çalışma Şablonları'), findsOneWidget);
+        expect(find.text('Odak & Sınav Sayacı'), findsOneWidget);
+
+        // Odaklanmayı Başlat butonuna bas
+        await tester.tap(find.text('Odaklanmayı Başlat'));
+        await tester.pump();
+
+        // Artık kurulum bileşenleri gizlenmiş olmalı, sadece sayaç ve minimal odak kontrolleri kalmalı
+        expect(find.text('Çalışma Şablonları'), findsNothing);
+        expect(find.text('Odak & Sınav Sayacı'), findsNothing);
+        expect(find.textContaining('ODAK ZAMANI'), findsOneWidget);
+        expect(find.text('Duraklat'), findsOneWidget);
+        expect(find.text('Bitir'), findsOneWidget);
+
+        // Bitir butonuna basınca kurulum ekranına geri dönmeli
+        await tester.tap(find.text('Bitir'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Odak & Sınav Sayacı'), findsOneWidget);
+        expect(find.text('Ders Süresi'), findsOneWidget);
       },
     );
 

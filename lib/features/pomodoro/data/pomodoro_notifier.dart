@@ -121,8 +121,11 @@ class PomodoroState {
   final KpssExamTarget examTarget;
   final PomodoroClockStyle clockStyle;
   final PomodoroPreset preset;
+  final int customFocusMinutes;
+  final int customBreakMinutes;
   final String selectedLesson;
   final bool isRunning;
+  final bool isFocusMode;
   final bool isBreak;
   final bool isLandscapeMode;
   final int remainingSeconds;
@@ -135,8 +138,11 @@ class PomodoroState {
     required this.examTarget,
     required this.clockStyle,
     required this.preset,
+    this.customFocusMinutes = 25,
+    this.customBreakMinutes = 5,
     required this.selectedLesson,
     required this.isRunning,
+    this.isFocusMode = false,
     required this.isBreak,
     required this.isLandscapeMode,
     required this.remainingSeconds,
@@ -163,7 +169,7 @@ class PomodoroState {
 
   /// Mevcut aşamanın hedef süresi (saniye cinsinden)
   int get totalTargetSeconds =>
-      (isBreak ? preset.breakMinutes : preset.focusMinutes) * 60;
+      (isBreak ? customBreakMinutes : customFocusMinutes) * 60;
 
   /// Saat ilerleme yüzdesi (0.0 - 1.0)
   double get progress {
@@ -178,8 +184,11 @@ class PomodoroState {
     KpssExamTarget? examTarget,
     PomodoroClockStyle? clockStyle,
     PomodoroPreset? preset,
+    int? customFocusMinutes,
+    int? customBreakMinutes,
     String? selectedLesson,
     bool? isRunning,
+    bool? isFocusMode,
     bool? isBreak,
     bool? isLandscapeMode,
     int? remainingSeconds,
@@ -192,8 +201,11 @@ class PomodoroState {
       examTarget: examTarget ?? this.examTarget,
       clockStyle: clockStyle ?? this.clockStyle,
       preset: preset ?? this.preset,
+      customFocusMinutes: customFocusMinutes ?? this.customFocusMinutes,
+      customBreakMinutes: customBreakMinutes ?? this.customBreakMinutes,
       selectedLesson: selectedLesson ?? this.selectedLesson,
       isRunning: isRunning ?? this.isRunning,
+      isFocusMode: isFocusMode ?? this.isFocusMode,
       isBreak: isBreak ?? this.isBreak,
       isLandscapeMode: isLandscapeMode ?? this.isLandscapeMode,
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
@@ -223,8 +235,11 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
       examTarget: KpssExamTarget.lisans,
       clockStyle: PomodoroClockStyle.ring,
       preset: PomodoroPreset.classic25,
+      customFocusMinutes: 25,
+      customBreakMinutes: 5,
       selectedLesson: 'Tarih',
       isRunning: false,
+      isFocusMode: false,
       isBreak: false,
       isLandscapeMode: false,
       remainingSeconds: 25 * 60,
@@ -245,11 +260,33 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
 
   void selectPreset(PomodoroPreset preset) {
     _timer?.cancel();
+    final fMins = preset.isStopwatch
+        ? state.customFocusMinutes
+        : preset.focusMinutes;
+    final bMins = preset.breakMinutes;
     state = state.copyWith(
       preset: preset,
+      customFocusMinutes: fMins,
+      customBreakMinutes: bMins,
+      isRunning: false,
+      isFocusMode: false,
+      isBreak: false,
+      remainingSeconds: preset.isStopwatch ? 0 : fMins * 60,
+      elapsedSeconds: 0,
+    );
+  }
+
+  /// Kullanıcının ders süresini (dk) ve mola süresini (dk) doğrudan ayarlamasını sağlar.
+  void setCustomDurations({int? focusMinutes, int? breakMinutes}) {
+    _timer?.cancel();
+    final newFocus = (focusMinutes ?? state.customFocusMinutes).clamp(5, 180);
+    final newBreak = (breakMinutes ?? state.customBreakMinutes).clamp(1, 60);
+    state = state.copyWith(
+      customFocusMinutes: newFocus,
+      customBreakMinutes: newBreak,
       isRunning: false,
       isBreak: false,
-      remainingSeconds: preset.focusMinutes * 60,
+      remainingSeconds: state.preset.isStopwatch ? 0 : newFocus * 60,
       elapsedSeconds: 0,
     );
   }
@@ -267,10 +304,24 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
       _timer?.cancel();
       state = state.copyWith(isRunning: false);
     } else {
-      state = state.copyWith(isRunning: true);
+      state = state.copyWith(isRunning: true, isFocusMode: true);
       _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 1), (_) => tick());
     }
+  }
+
+  /// Odak ekranından (sadece sayaç görünümü) çıkıp süre ayar ekranına döner.
+  void exitFocusMode() {
+    _timer?.cancel();
+    state = state.copyWith(
+      isRunning: false,
+      isFocusMode: false,
+      isBreak: false,
+      remainingSeconds: state.preset.isStopwatch
+          ? 0
+          : state.customFocusMinutes * 60,
+      elapsedSeconds: 0,
+    );
   }
 
   /// 1 saniyelik zaman adımı (test edilebilir olması için public metottur).
@@ -329,7 +380,7 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
         isRunning: false,
         isBreak: true,
         completedSessionsToday: state.completedSessionsToday + 1,
-        remainingSeconds: state.preset.breakMinutes * 60,
+        remainingSeconds: state.customBreakMinutes * 60,
         elapsedSeconds: 0,
       );
     } else {
@@ -337,7 +388,7 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
       state = state.copyWith(
         isRunning: false,
         isBreak: false,
-        remainingSeconds: state.preset.focusMinutes * 60,
+        remainingSeconds: state.customFocusMinutes * 60,
         elapsedSeconds: 0,
       );
     }
@@ -348,7 +399,9 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
     state = state.copyWith(
       isRunning: false,
       isBreak: false,
-      remainingSeconds: state.preset.focusMinutes * 60,
+      remainingSeconds: state.preset.isStopwatch
+          ? 0
+          : state.customFocusMinutes * 60,
       elapsedSeconds: 0,
     );
   }
@@ -359,8 +412,7 @@ class PomodoroNotifier extends Notifier<PomodoroState> {
       isRunning: false,
       isBreak: toBreak,
       remainingSeconds:
-          (toBreak ? state.preset.breakMinutes : state.preset.focusMinutes) *
-          60,
+          (toBreak ? state.customBreakMinutes : state.customFocusMinutes) * 60,
       elapsedSeconds: 0,
     );
   }

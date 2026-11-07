@@ -13,8 +13,10 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 /// KPSS Sınav Geri Sayımı ve Çoklu Tasarımlı Pomodoro Odak Stüdyosu Ekranı.
 ///
 /// Flocus, Flip Focus, Yeolpumta (YPT) ve iOS StandBy modundan ilham alan;
-/// hem dikey hem de yatay masa saati olarak masaya konulabilen çalışma stüdyosu.
-/// Web/Angular Benzetmesi: `PomodoroStudioComponent` (Dashboard & Live Desk Clock).
+/// 1) Başlatmadan önce (`isFocusMode == false`): Kaç dk ders, kaç dk mola olacağını,
+///    dersi ve saat tasarımını belirleme ekranı (Setup Mode).
+/// 2) Başlattıktan sonra (`isFocusMode == true`): Tüm dikkat dağıtıcı bileşenlerin
+///    gizlendiği ve ekranda **sadece sayacın** yer aldığı saf odak modu (Focus Mode).
 class PomodoroStudioScreen extends ConsumerStatefulWidget {
   final int initialTabIndex;
 
@@ -84,6 +86,7 @@ class _PomodoroStudioScreenState extends ConsumerState<PomodoroStudioScreen>
         MediaQuery.of(context).orientation == Orientation.landscape ||
         pomodoro.isLandscapeMode;
 
+    // 1. Yatay Masa Saati (Landscape StandBy) Modu
     if (isLandscape) {
       return Scaffold(
         body: SafeArea(
@@ -95,6 +98,19 @@ class _PomodoroStudioScreenState extends ConsumerState<PomodoroStudioScreen>
       );
     }
 
+    // 2. Aktif Focus Modu (Başlatıldıktan sonra ekranda SADECE sayaç görünür!)
+    if (pomodoro.isFocusMode) {
+      return Scaffold(
+        body: SafeArea(
+          child: _PureFocusTimerView(
+            state: pomodoro,
+            onToggleOrientation: _toggleOrientation,
+          ),
+        ),
+      );
+    }
+
+    // 3. Kurulum & Hazırlık Modu (Başlatmadan önce ders/mola süresi belirleme)
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -178,7 +194,7 @@ class _PomodoroStudioScreenState extends ConsumerState<PomodoroStudioScreen>
                 controller: _tabController,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
-                  _PomodoroStudioTab(
+                  _PomodoroSetupTab(
                     state: pomodoro,
                     onToggleOrientation: _toggleOrientation,
                     onGoToCountdownTab: () {
@@ -200,6 +216,166 @@ class _PomodoroStudioScreenState extends ConsumerState<PomodoroStudioScreen>
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// 🎯 Sadece Sayaçtan Oluşan Saf Odak Modu Ekranı (`isFocusMode == true`)
+///
+/// Kullanıcı ders ve mola süresini belirleyip "Odaklanmayı Başlat" dediğinde
+/// tüm sekmeler, ayar kartları ve istatistikler gizlenir; ekranda yalnızca
+/// büyük sayaç ve minimal odak kontrolleri kalır.
+class _PureFocusTimerView extends ConsumerWidget {
+  final PomodoroState state;
+  final VoidCallback onToggleOrientation;
+
+  const _PureFocusTimerView({
+    required this.state,
+    required this.onToggleOrientation,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final notifier = ref.read(pomodoroProvider.notifier);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // 1. Üst Minimal Durum Şeridi (Ders/Mola rozeti + Masa Saati çevirme)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: state.isBreak
+                        ? colorScheme.secondaryContainer
+                        : colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      PhosphorIcon(
+                        state.isBreak
+                            ? PhosphorIconsFill.coffee
+                            : PhosphorIconsFill.flame,
+                        size: 16,
+                        color: state.isBreak
+                            ? colorScheme.onSecondaryContainer
+                            : colorScheme.onPrimaryContainer,
+                      ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          state.isBreak
+                              ? 'MOLA ZAMANI (${state.customBreakMinutes} dk)'
+                              : 'ODAK ZAMANI · ${state.selectedLesson} (${state.customFocusMinutes} dk)',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            color: state.isBreak
+                                ? colorScheme.onSecondaryContainer
+                                : colorScheme.onPrimaryContainer,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton.filledTonal(
+                onPressed: onToggleOrientation,
+                tooltip: 'Yatay Masa Saati Modu',
+                icon: const PhosphorIcon(
+                  PhosphorIconsBold.deviceRotate,
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+
+          // 2. Merkezde Sadece Büyük Sayaç Görünümü
+          Expanded(
+            child: Center(
+              child: _ClockFaceRenderer(state: state, isLandscape: false),
+            ),
+          ),
+
+          // 3. Alt Minimal Kontrol Çubuğu (Duraklat/Devam Et ve Bitir)
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Odak/Mola aşaması hızlı geçiş hapı (isteğe bağlı mola/ders geçişi)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _PhasePill(
+                    label: 'Ders (${state.customFocusMinutes} dk)',
+                    isActive: !state.isBreak,
+                    activeColor: colorScheme.primary,
+                    activeTextColor: colorScheme.onPrimary,
+                    onTap: () => notifier.switchPhase(false),
+                  ),
+                  const SizedBox(width: 8),
+                  _PhasePill(
+                    label: 'Mola (${state.customBreakMinutes} dk)',
+                    isActive: state.isBreak,
+                    activeColor: colorScheme.secondary,
+                    activeTextColor: colorScheme.onSecondary,
+                    onTap: () => notifier.switchPhase(true),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => notifier.exitFocusMode(),
+                      icon: const PhosphorIcon(
+                        PhosphorIconsBold.stop,
+                        size: 18,
+                      ),
+                      label: const Text('Bitir'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: FilledButton.icon(
+                      onPressed: () => notifier.startPause(),
+                      icon: PhosphorIcon(
+                        state.isRunning
+                            ? PhosphorIconsBold.pause
+                            : PhosphorIconsBold.play,
+                        size: 20,
+                      ),
+                      label: Text(
+                        state.isRunning ? 'Duraklat' : 'Devam Et',
+                        style: textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onPrimary,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -350,17 +526,17 @@ class _LandscapeStandByClockView extends ConsumerWidget {
                   ),
                   const SizedBox(height: 8),
 
-                  // Sıfırla ve Dikey Görünüme Dön
+                  // Bitir/Sıfırla ve Dikey Görünüme Dön
                   Row(
                     children: [
                       Expanded(
                         child: OutlinedButton.icon(
-                          onPressed: () => notifier.reset(),
+                          onPressed: () => notifier.exitFocusMode(),
                           icon: const PhosphorIcon(
-                            PhosphorIconsBold.arrowCounterClockwise,
+                            PhosphorIconsBold.stop,
                             size: 16,
                           ),
-                          label: const Text('Sıfırla'),
+                          label: const Text('Bitir'),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -386,13 +562,13 @@ class _LandscapeStandByClockView extends ConsumerWidget {
   }
 }
 
-/// 🕒 Sekme 0: Pomodoro Stüdyosu Dikey İçerik Listesi
-class _PomodoroStudioTab extends ConsumerWidget {
+/// 🕒 Sekme 0: Pomodoro Kurulum & Süre Belirleme Ekranı (`isFocusMode == false`)
+class _PomodoroSetupTab extends ConsumerWidget {
   final PomodoroState state;
   final VoidCallback onToggleOrientation;
   final VoidCallback onGoToCountdownTab;
 
-  const _PomodoroStudioTab({
+  const _PomodoroSetupTab({
     required this.state,
     required this.onToggleOrientation,
     required this.onGoToCountdownTab,
@@ -479,42 +655,20 @@ class _PomodoroStudioTab extends ConsumerWidget {
         ),
         AppSpacing.gapSm,
 
-        // 3. Ana Saat Sahnesi (TactileCard)
+        // 3. Ders & Mola Süresi Belirleme ve Saat Önizleme Kartı
         TactileCard(
           backgroundColor: colorScheme.surface,
-          borderColor: state.isBreak
-              ? colorScheme.secondary.withAlpha(120)
-              : colorScheme.primary.withAlpha(100),
+          borderColor: colorScheme.primary.withAlpha(100),
           child: Column(
             children: [
-              // Üst: Odaklanma / Mola Durum Butonları ve Ders Seçici
+              // Üst Satır: Başlık ve Ders Seçici
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    padding: const EdgeInsets.all(3),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _PhasePill(
-                          label: 'Odak',
-                          isActive: !state.isBreak,
-                          activeColor: colorScheme.primary,
-                          activeTextColor: colorScheme.onPrimary,
-                          onTap: () => notifier.switchPhase(false),
-                        ),
-                        _PhasePill(
-                          label: 'Mola',
-                          isActive: state.isBreak,
-                          activeColor: colorScheme.secondary,
-                          activeTextColor: colorScheme.onSecondary,
-                          onTap: () => notifier.switchPhase(true),
-                        ),
-                      ],
+                  Text(
+                    'Odak Kurulumu',
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                   PopupMenuButton<String>(
@@ -567,37 +721,62 @@ class _PomodoroStudioTab extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 14),
 
-              // Ortadaki Saat Tasarımı
+              // Ders Süresi (dk) ve Mola Süresi (dk) Ayarlayıcıları
+              if (!state.preset.isStopwatch) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: _DurationStepperBox(
+                        label: 'Ders Süresi',
+                        minutes: state.customFocusMinutes,
+                        color: colorScheme.primary,
+                        onDecrement: () => notifier.setCustomDurations(
+                          focusMinutes: state.customFocusMinutes - 5,
+                        ),
+                        onIncrement: () => notifier.setCustomDurations(
+                          focusMinutes: state.customFocusMinutes + 5,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _DurationStepperBox(
+                        label: 'Mola Süresi',
+                        minutes: state.customBreakMinutes,
+                        color: colorScheme.secondary,
+                        onDecrement: () => notifier.setCustomDurations(
+                          breakMinutes: state.customBreakMinutes - 1,
+                        ),
+                        onIncrement: () => notifier.setCustomDurations(
+                          breakMinutes: state.customBreakMinutes + 1,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Ortadaki Saat Tasarımı Önizlemesi
               _ClockFaceRenderer(state: state, isLandscape: false),
               const SizedBox(height: 18),
 
-              // Alttaki Kontrol Butonları
+              // Alttaki Odaklanmayı Başlat Butonu
               Row(
                 children: [
-                  IconButton.filledTonal(
-                    onPressed: () => notifier.reset(),
-                    tooltip: 'Sıfırla',
-                    icon: const PhosphorIcon(
-                      PhosphorIconsBold.arrowCounterClockwise,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
                   Expanded(
                     child: FilledButton.icon(
                       onPressed: () => notifier.startPause(),
-                      icon: PhosphorIcon(
-                        state.isRunning
-                            ? PhosphorIconsBold.pause
-                            : PhosphorIconsBold.play,
+                      icon: const PhosphorIcon(
+                        PhosphorIconsBold.play,
                         size: 20,
                       ),
                       label: FittedBox(
                         fit: BoxFit.scaleDown,
                         child: Text(
-                          state.isRunning ? 'Duraklat' : 'Odaklanmayı Başlat',
+                          'Odaklanmayı Başlat',
                           style: textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.onPrimary,
@@ -622,7 +801,7 @@ class _PomodoroStudioTab extends ConsumerWidget {
         ),
         AppSpacing.gapMd,
 
-        // 4. Süre Şablonları (Presets)
+        // 4. Hazır Süre Şablonları (Presets)
         const SectionTitle('Çalışma Şablonları'),
         Row(
           children: PomodoroPreset.values.map((preset) {
@@ -738,6 +917,86 @@ class _PomodoroStudioTab extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// ⏱️ Ders ve Mola Süresi Seçici Kutu (+/- Stepper)
+class _DurationStepperBox extends StatelessWidget {
+  final String label;
+  final int minutes;
+  final Color color;
+  final VoidCallback onDecrement;
+  final VoidCallback onIncrement;
+
+  const _DurationStepperBox({
+    required this.label,
+    required this.minutes,
+    required this.color,
+    required this.onDecrement,
+    required this.onIncrement,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withAlpha(110),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withAlpha(70)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              InkWell(
+                onTap: onDecrement,
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: PhosphorIcon(
+                    PhosphorIconsBold.minus,
+                    size: 16,
+                    color: color,
+                  ),
+                ),
+              ),
+              Text(
+                '$minutes dk',
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: color,
+                ),
+              ),
+              InkWell(
+                onTap: onIncrement,
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: PhosphorIcon(
+                    PhosphorIconsBold.plus,
+                    size: 16,
+                    color: color,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1003,7 +1262,7 @@ class _RingClockView extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final size = isLandscape ? 170.0 : 190.0;
+    final size = isLandscape ? 170.0 : (state.isFocusMode ? 240.0 : 180.0);
 
     final ringColor = state.isBreak
         ? colorScheme.secondary
@@ -1020,7 +1279,7 @@ class _RingClockView extends StatelessWidget {
             height: size,
             child: CircularProgressIndicator(
               value: state.progress,
-              strokeWidth: 10,
+              strokeWidth: state.isFocusMode ? 12 : 10,
               backgroundColor: colorScheme.surfaceContainerHighest,
               color: ringColor,
             ),
@@ -1230,7 +1489,7 @@ class _ZenClockView extends StatelessWidget {
         Text(
           state.isBreak
               ? 'Mola zihnini tazeler, biraz su iç ve nefes al.'
-              : 'Her 25 dakikalık odak, sınavda 1 net demektir.',
+              : 'Her ${state.customFocusMinutes} dakikalık odak, sınavda 1 net demektir.',
           style: textTheme.bodySmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
             fontStyle: FontStyle.italic,
