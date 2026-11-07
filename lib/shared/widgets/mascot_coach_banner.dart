@@ -73,7 +73,7 @@ extension MascotMoodExtension on MascotMood {
       case MascotMood.current:
         return PhosphorIconsFill.newspaperClipping;
       case MascotMood.practice:
-        return PhosphorIconsFill.gameController;
+        return PhosphorIconsFill.target;
       case MascotMood.exam:
         return PhosphorIconsFill.timer;
       case MascotMood.analyst:
@@ -145,7 +145,7 @@ extension MascotMoodExtension on MascotMood {
       case MascotMood.practice:
         return const [
           '💡 Pratik Tüyosu: Farklı modları harmanla: Önce hap kartlarla oku, sonra konu testi çöz, en son blitz ile hızlan!',
-          '💡 Pratik Tüyosu: 60 Saniyede Pençe oyunu, zihindeki tereddütleri siler ve sınavdaki refleks karar hızını ikiye katlar.',
+          '💡 Pratik Tüyosu: 60 Saniyede Pençe antrenmanı, zihindeki tereddütleri siler ve sınavdaki refleks karar hızını ikiye katlar.',
           '💡 Pratik Tüyosu: Kavram Eşleştirme tahtası, Tarih antlaşmaları ve Coğrafya madenlerini ezberlemenin en pratik yoludur.',
           '💡 Pratik Tüyosu: Yanlış defterini her pazar temizlemeyi rutin haline getir; netlerin hızla tırmansın!',
         ];

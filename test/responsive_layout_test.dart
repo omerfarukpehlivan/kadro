@@ -175,11 +175,11 @@ void main() {
         expect(find.text('ÖSYM Çeldirici Avı'), findsOneWidget);
 
         await tester.scrollUntilVisible(
-          find.text('Etkileşimli Mini Oyunlar'),
+          find.text('Hızlı Tekrar & Refleks Antrenmanı'),
           150,
           scrollable: find.byType(Scrollable).first,
         );
-        expect(find.text('Etkileşimli Mini Oyunlar'), findsOneWidget);
+        expect(find.text('Hızlı Tekrar & Refleks Antrenmanı'), findsOneWidget);
 
         // RenderFlex overflow hatası olmadığını doğrula
         expect(tester.takeException(), isNull);

@@ -107,7 +107,7 @@ class PracticeHubScreen extends ConsumerWidget {
             mood: MascotMood.practice,
             badgeLabel: 'ANTRENMAN SAHASI',
             title: 'Çalışma Türleri',
-            message: 'Bugün hangi modda pratik yapmak istersin? Test çöz, kartlarla tekrar yap veya oyunlarla hafızanı tazele!',
+            message: 'Bugün hangi yöntemle pratik yapmak istersin? Konu testi çöz, bilgi kartlarıyla tekrar yap veya hızlı antrenmanlarla bilgini pekiştir!',
           ),
           AppSpacing.gapMd,
 
@@ -158,8 +158,8 @@ class PracticeHubScreen extends ConsumerWidget {
           const _DistractorHuntSpecialCard(),
           AppSpacing.gapMd,
 
-          // 4. Etkileşimli Mini Oyunlar (2'li Bento Grid)
-          const SectionTitle('Etkileşimli Mini Oyunlar'),
+          // 4. Hızlı Tekrar & Refleks Antrenmanı (2'li Bento Grid)
+          const SectionTitle('Hızlı Tekrar & Refleks Antrenmanı'),
           IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -190,7 +190,7 @@ class PracticeHubScreen extends ConsumerWidget {
                     title: 'Kavram Eşleştir',
                     description:
                         'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.',
-                    badgeText: 'Hafıza Oyunu',
+                    badgeText: 'Kavram Pekiştirme',
                     actionText: 'Eşleştir',
                     accentColor: colorScheme.primary,
                     accentContainerColor: colorScheme.primaryContainer,

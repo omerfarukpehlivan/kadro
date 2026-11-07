@@ -438,7 +438,13 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.customTitle ?? 'Test')),
+        appBar: AppBar(
+          title: Text(
+            widget.customTitle ?? 'Test',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -488,7 +494,11 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.customTitle ?? '${question.lesson} Testi'),
+        title: Text(
+          widget.customTitle ?? '${question.lesson} Testi',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: [
           _QuizModeBadge(mode: _effectiveMode, onToggle: _toggleQuizMode),
           if (widget.examDuration != null)

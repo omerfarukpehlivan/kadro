@@ -126,6 +126,8 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
             Text(widget.topic, maxLines: 1, overflow: TextOverflow.ellipsis),
             Text(
               '${widget.lessonName} · ${_testChunks.length} Test (${_allQuestions.length} Soru)',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: textTheme.labelSmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),

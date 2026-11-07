@@ -76,7 +76,11 @@ class LessonTopicsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${lesson.name} Konuları'),
+        title: Text(
+          '${lesson.name} Konuları',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: [
           Tooltip(
             message: '${lesson.name} Tüm Konuları İndir (PRO)',

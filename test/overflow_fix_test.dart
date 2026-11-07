@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/app/widgets/app_navigation_bar.dart';
+import 'package:kadro/app/widgets/app_top_bar.dart';
 import 'package:kadro/core/services/purchase_service.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
@@ -228,6 +229,49 @@ void main() {
         expect(find.text('Yanlış defterin tertemiz!'), findsOneWidget);
         expect(find.text('Yeni Test Çöz'), findsOneWidget);
         expect(find.text('Bilgi Kartlarına Git'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'TASK-69: AppTopBar dar ekranda (320x568 ve 360x640) "Çalışma Türleri" ve çok uzun başlıkla taşma vermez',
+      (WidgetTester tester) async {
+        // 320x568 en dar ekran
+        tester.view.physicalSize = const Size(320, 568);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        await tester.pumpWidget(
+          const ProviderScope(
+            child: MaterialApp(
+              home: Scaffold(appBar: AppTopBar(title: 'Çalışma Türleri')),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Çalışma Türleri'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+
+        // 360x640 ekranda aşırı uzun bir başlık ile test
+        tester.view.physicalSize = const Size(360, 640);
+        await tester.pumpWidget(
+          const ProviderScope(
+            child: MaterialApp(
+              home: Scaffold(
+                appBar: AppTopBar(
+                  title: 'Çok Uzun Bir KPSS Çalışma Sayfası Başlığı Testi',
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('Çok Uzun Bir KPSS Çalışma Sayfası Başlığı Testi'),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
       },
     );

@@ -110,7 +110,7 @@ void main() {
           MascotMood.current.badgeIcon,
           PhosphorIconsFill.newspaperClipping,
         );
-        expect(MascotMood.practice.badgeIcon, PhosphorIconsFill.gameController);
+        expect(MascotMood.practice.badgeIcon, PhosphorIconsFill.target);
         expect(MascotMood.exam.badgeIcon, PhosphorIconsFill.timer);
         expect(MascotMood.analyst.badgeIcon, PhosphorIconsFill.chartLineUp);
         expect(MascotMood.streak.badgeIcon, PhosphorIconsFill.fire);

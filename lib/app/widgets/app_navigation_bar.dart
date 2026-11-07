@@ -84,12 +84,10 @@ class AppNavigationBar extends StatelessWidget {
                     selectedIcon: PhosphorIcon(PhosphorIconsFill.books),
                     label: 'Dersler',
                   ),
-                  // 2: Pratik
+                  // 2: Pratik (Akademik hedef ve antrenman ikonu)
                   NavigationDestination(
-                    icon: PhosphorIcon(PhosphorIconsBold.gameController),
-                    selectedIcon: PhosphorIcon(
-                      PhosphorIconsFill.gameController,
-                    ),
+                    icon: PhosphorIcon(PhosphorIconsBold.target),
+                    selectedIcon: PhosphorIcon(PhosphorIconsFill.target),
                     label: 'Pratik',
                   ),
                   // 3: Denemeler

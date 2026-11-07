@@ -115,7 +115,7 @@ void main() {
     );
 
     testWidgets(
-      'PracticeHubScreen üzerinde Etkileşimli Mini Oyunlar vitrini görüntülenir',
+      'PracticeHubScreen üzerinde Hızlı Tekrar & Refleks Antrenmanı vitrini görüntülenir',
       (WidgetTester tester) async {
         await tester.pumpWidget(const MyApp());
         await tester.pumpAndSettle();
@@ -124,14 +124,14 @@ void main() {
         await tester.tap(find.text('Pratik'));
         await tester.pumpAndSettle();
 
-        // Sayfayı aşağı kaydırıp mini oyunlar vitrinini bulalım
+        // Sayfayı aşağı kaydırıp refleks antrenmanı vitrinini bulalım
         await tester.scrollUntilVisible(
-          find.text('Etkileşimli Mini Oyunlar'),
+          find.text('Hızlı Tekrar & Refleks Antrenmanı'),
           200,
           scrollable: find.byType(Scrollable).first,
         );
 
-        expect(find.text('Etkileşimli Mini Oyunlar'), findsOneWidget);
+        expect(find.text('Hızlı Tekrar & Refleks Antrenmanı'), findsOneWidget);
         expect(find.text('60 Saniyede Pençe'), findsOneWidget);
         expect(find.text('Kavram Eşleştir'), findsOneWidget);
       },

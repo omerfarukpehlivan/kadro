@@ -9,6 +9,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 ///
 /// Sol tarafta Kadro Koçu avatarı ve ekran başlığını,
 /// sağ tarafta canlı soru hedefi/seri rozetini ve PRO abonelik durumunu gösterir.
+///
+/// TASK-69 kapsamında dar ekranlarda (<380px) ve uzun başlıklarda (örn: 'Çalışma Türleri')
+/// taşmaları önlemek için Flexible + ellipsis ve dinamik boyutlandırma eklenmiştir.
 class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
 
@@ -18,6 +21,7 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final isCompact = MediaQuery.sizeOf(context).width < 380;
 
     final stats = ref.watch(studyStatsProvider);
     final prefs = ref.watch(userPreferencesProvider);
@@ -32,8 +36,8 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
         children: [
           // Kavisli kare Kadro Koçu avatarı (altın çerçeveli, hata durumunda fallback ikon)
           Container(
-            width: 36,
-            height: 36,
+            width: isCompact ? 32 : 36,
+            height: isCompact ? 32 : 36,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: colorScheme.tertiary, width: 1.5),
@@ -47,24 +51,34 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
                   color: colorScheme.primaryContainer,
                   child: PhosphorIcon(
                     PhosphorIconsDuotone.graduationCap,
-                    size: 18,
+                    size: isCompact ? 16 : 18,
                     color: colorScheme.onPrimaryContainer,
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 10),
-          Text(
-            title,
-            style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+          SizedBox(width: isCompact ? 8 : 10),
+          Flexible(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w800,
+                fontSize: isCompact ? 17 : null,
+              ),
+            ),
           ),
         ],
       ),
       actions: [
         // Günlük Hedef / Seri rozeti
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding: EdgeInsets.symmetric(
+            horizontal: isCompact ? 8 : 10,
+            vertical: 5,
+          ),
           decoration: BoxDecoration(
             color: colorScheme.tertiaryContainer,
             borderRadius: BorderRadius.circular(20),
@@ -89,7 +103,7 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
             ],
           ),
         ),
-        const SizedBox(width: 8),
+        SizedBox(width: isCompact ? 6 : 8),
         // PRO rozet butonu (PaywallScreen açar)
         InkWell(
           onTap: () {
@@ -98,8 +112,11 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
           },
           borderRadius: BorderRadius.circular(20),
           child: Container(
-            margin: const EdgeInsets.only(right: 12),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            margin: EdgeInsets.only(right: isCompact ? 8 : 12),
+            padding: EdgeInsets.symmetric(
+              horizontal: isCompact ? 8 : 10,
+              vertical: 5,
+            ),
             decoration: BoxDecoration(
               color: prefs.isPro
                   ? colorScheme.tertiary

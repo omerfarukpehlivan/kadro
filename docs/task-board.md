@@ -92,7 +92,8 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-65** | **Profil Ekranı Evrimi: Aday Kimlik Kartı, KPSS 2026 Geri Sayımı, Lig & Başarı Rozetleri Vitrini ve Bulut Eşitleme Merkezi** | Profil ekranının sıradan bir 'Ayarlar' listesi olmaktan çıkarılıp Duolingo/UWorld seviyesinde zenginleştirilmesi: Aday kimliği & avatarı, hedef puan & atama rotası, canlı 2026 KPSS geri sayımı, 4'lü metrik snapshot'ı (Seri, Soru, Net %, XP), Lig & Unvan vitrini, 6 adet motivasyon madalyası ve modern hesap ayarları | ✅ **Tamamlandı** |
 | **TASK-66** | **Bağımsız Çalışma Türleri & Antrenman Ekranı (`PracticeHubScreen`), Zenginleştirilmiş Alt Menü (`AppNavigationBar`) ve Görev Hatırlatıcılı Yeni Ana Sayfa** | Çalışma türlerinin (Konu Testi, Bilgi Kartları, Yanlış Defteri, Deneme, Mini Oyunlar, Çeldirici Avı) ana sayfadan ayrılıp bağımsız 'Pratik' sekmesine (`PracticeHubScreen`) taşınması; `AppNavigationBar`'ın 6 sekmeli zengin ve taşmasız dock yapısına yükseltilmesi; `HomeScreen`'in görev hatırlatıcıları, seri uyarıları, son kalınan yer ve günlük çalışma planı odaklı kişisel komuta merkezine dönüştürülmesi | ✅ **Tamamlandı** |
 | **TASK-67** | **Özgün İkon Mimarisi Dönüşümü: Sıradan Lucide İkonlarından `phosphor_flutter` (Duotone, Fill & Bold) Karakteristik İkon Sistemine Geçiş** | Her projede kullanılan sıradan tek çizgili `LucideIcons` ve `Icons.*` kullanımlarının kaldırılarak `phosphor_flutter` paketine geçilmesi; kart ve rozetlerde çift katmanlı `PhosphorIconsDuotone`, alt menü aktif sekmelerinde tok dolgulu `PhosphorIconsFill`, pasif sekme ve aksiyonlarda `PhosphorIconsBold` kullanılması | ✅ **Tamamlandı** |
-| **TASK-68** | **"Tuğrul Evreni" Maskot Çeşitlendirme (12 Özgün Karakter Modu), Etkileşimli Dokun-Konuş (`Tap-to-Inspire`) ve Dinamik Mood Aurası** | Kopya maskot görsellerinin yerine `image-generator` ile Tarihçi, Kâşif, Hukukçu, Haberci, Antrenör, Baş Gözetmen, Analist ve Ateşli Seri Tuğrul illüstrasyonlarının üretilmesi; `MascotCoachBanner` bileşeninin üzerine dokunulduğunda zıplayıp derse/ekrana özel KPSS strateji tüyoları veren etkileşimli (`StatefulWidget`) yapıya ve mood bazlı dinamik aura renklerine yükseltilmesi | ✅ **Tamamlandı** |
+| **TASK-68** | **"Tuğrul Evreni" Maskot Çeşitlendirme (12 Özgün Karakter Modu), Etkileşimli Dokun-Konuş (`Tap-to-Inspire`) ve Dinamik Mood Aurası** | Kopya maskot görsellerinin yerine `image-generator` ile Tarihçi, Kâşif, Hukukçu, Haberci, Antrenör, Baş Gözetmen, Analist ve Ateşli Seri Tuğrul illüstrasyonlarının üretilmesi; `MascotCoachBanner` bileşeninin üzerine dokunulduğunda zıplayıp derse/ekrana özel KPSS strateji tüyoları veren etkileşimli (`StatefulWidget`) yapıya ve mood bazlı dinamik aura renklerine yükseltilmesi | ✅ **Tamamlandı** (`ede6127`) |
+| **TASK-69** | **`AppTopBar` / `AppBar` Uzun Başlık Taşması (Overflow) Düzeltmesi & Pratik Sekmesi Akademik İkon/Maskot/Söylem Revizyonu (Oyun Kolu İkonunun Kaldırılması)** | `AppTopBar` içindeki sayfa başlığı (`Row` -> `Text`) sığmadığında oluşan `RenderFlex overflow` hatasının `Flexible` + `TextOverflow.ellipsis` ve kompakt font ölçeklemesiyle giderilmesi; diğer tüm `AppBar` başlıklarının taşmaya karşı korunması; Pratik sekmesindeki ve `MascotMood.practice` modundaki `gameController` (oyun kolu) ikonunun ve oyun söylemlerinin kaldırılarak ciddi akademik hedef/antrenman (`PhosphorIconsBold.target` / `PhosphorIconsFill.target`) ikonuna ve soru çözüm odaklı Tuğrul görseline dönüştürülmesi | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4124,6 +4125,66 @@ ADIM 4: Test ve Doğrulama
    - `MascotCoachBanner` üzerine tıklandığında (`tester.tap`) konuşma balonundaki mesajın koç tüyosuyla değiştiğini doğrula.
 2. `docs/task-board.md` içinde `TASK-68` durumunu `✅ **Tamamlandı**` yap.
 3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
+```
+
+---
+
+### 📦 TASK-69: `AppTopBar` / `AppBar` Uzun Başlık Taşması (`RenderFlex Overflow`) Düzeltmesi & Pratik Sekmesi Akademik İkon/Maskot/Söylem Revizyonu (Oyun Kolu İkonunun Kaldırılması)
+
+- **Durum:** ✅ **Tamamlandı**
+- **Kapsam:**
+  - **1. `AppTopBar` (`lib/app/widgets/app_top_bar.dart`) ve Diğer `AppBar` Başlık Taşması Düzeltmesi:**
+    - `AppTopBar` içindeki `title: Row(...)` bileşeninde yer alan `Text(title)` widget'ının `Flexible` ile sarılmamış olması nedeniyle, `'Çalışma Türleri'` gibi uzun sayfa başlıklarında sağdaki aksiyon rozetleriyle (`0/20` ve `PRO`) çarpışarak `RenderFlex overflowed by X pixels on the right` hatası üretmesi.
+    - Çözüm:
+      - `AppTopBar` içinde `Text(title)` bileşenini `Flexible` ile sar, `maxLines: 1`, `overflow: TextOverflow.ellipsis` ekle.
+      - Dar ekranlarda (`MediaQuery.sizeOf(context).width < 380`) `AppTopBar` avatar boyutunu `32x32`, aradaki boşluğu `8px`, başlık fontunu biraz daha kompakt (`fontSize: 17`) ve sağdaki rozetlerin iç yatay dolgularını (`horizontal: 8`) esnek hale getir ki `'Çalışma Türleri'` başlığı dahi kesilmeden tam okunabilsin.
+      - Ayrıca `LessonTopicsScreen`, `TopicTestsScreen`, `QuizScreen` gibi dinamik başlık alan diğer ekranların `AppBar(title: Text(...))` bileşenlerine de `maxLines: 1, overflow: TextOverflow.ellipsis` koruması ekle.
+  - **2. Pratik Sekmesi & `MascotMood.practice` Logosu/İkonu Revizyonu ("Oyun Kolu" Yerine Ciddi Akademik Antrenman İkonu):**
+    - KPSS ciddi bir memurluk/kariyer sınavı olduğundan, `AppNavigationBar` (`lib/app/widgets/app_navigation_bar.dart`) içindeki 3. sekme (`Pratik`) ve `MascotMood.practice.badgeIcon` (`lib/shared/widgets/mascot_coach_banner.dart`) için kullanılan `gameController` (oyun konsolu kolu) ikonunun tamamen kaldırılması.
+    - Yerine hedef odaklı soru çözümünü ve akademik antrenmanı simgeleyen **`PhosphorIconsBold.target`** (seçili değilken) ve **`PhosphorIconsFill.target`** (seçili iken ve `MascotMood.practice.badgeIcon` üzerinde) ikonlarının kullanılması.
+    - `PracticeHubScreen` (`lib/features/practice/presentation/practice_hub_screen.dart`) içindeki `"Etkileşimli Mini Oyunlar"` başlığının **`"Hızlı Tekrar & Refleks Antrenmanı"`** olarak, `"Hafıza Oyunu"` rozetinin **`"Kavram Pekiştirme"`** olarak ve `MascotCoachBanner` karşılama mesajındaki `"oyunlarla hafızanı tazele"` ifadesinin **`"hızlı pratik modlarıyla bilgini pekiştir"`** olarak güncellenmesi.
+    - `assets/images/mascot/tugrul_practice.png` görselinin de oyun kolu içermeyen, soru kartları ve hedef tahtası/kronometre tutan ciddi akademik antrenör Tuğrul görseliyle güncellenmesi.
+
+```text
+GÖREV: TASK-69 — AppTopBar/AppBar Uzun Başlık Taşması (Overflow) Düzeltmesi & Pratik Sekmesi Akademik İkon/Söylem Revizyonu
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Sabit Color(0xFF...) KULLANMA. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: `AppTopBar` (`lib/app/widgets/app_top_bar.dart`) ve `AppBar` Taşma Koruması
+1. `lib/app/widgets/app_top_bar.dart` dosyasını güncelle:
+   - `final isCompact = MediaQuery.sizeOf(context).width < 380;` kontrolü ekle.
+   - `title: Row(mainAxisSize: MainAxisSize.min, children: [...])` içindeki `Text(title, ...)` widget'ını mutlaka `Flexible` ile sar:
+     ```dart
+     Flexible(
+       child: Text(
+         title,
+         maxLines: 1,
+         overflow: TextOverflow.ellipsis,
+         style: textTheme.titleLarge?.copyWith(
+           fontWeight: FontWeight.w800,
+           fontSize: isCompact ? 17 : null,
+         ),
+       ),
+     ),
+     ```
+   - `isCompact` durumunda sol avatar boyutunu `32x32` (`SizedBox(width: 8)`) ve sağdaki `actions` rozetlerinin yatay padding'ini `isCompact ? 8 : 10`, sağ marjini `isCompact ? 8 : 12` yaparak dar ekranlarda başlığa maksimum alan aç.
+2. `lib/features/lessons/presentation/lesson_topics_screen.dart` ve `lib/features/quiz/presentation/quiz_screen.dart` içindeki `AppBar(title: Text(...))` bileşenlerine `maxLines: 1, overflow: TextOverflow.ellipsis` ekle. `lib/features/lessons/presentation/topic_tests_screen.dart` içindeki `AppBar` alt başlığına da `maxLines: 1, overflow: TextOverflow.ellipsis` ekle.
+
+ADIM 2: Pratik Sekmesi ve `MascotMood.practice` İkonundan Oyun Kolunun (`gameController`) Kaldırılması
+1. `lib/app/widgets/app_navigation_bar.dart` içinde 2. indeksli `'Pratik'` sekmesinin ikonunu:
+   - `icon: PhosphorIcon(PhosphorIconsBold.target)`
+   - `selectedIcon: PhosphorIcon(PhosphorIconsFill.target)`
+   olarak değiştir (`gameController` tamamen kaldırılsın).
+2. `lib/shared/widgets/mascot_coach_banner.dart` içinde `MascotMood.practice` için `badgeIcon` değerini `PhosphorIconsFill.target` yap (`gameController` kaldırılsın) ve `coachTips` içindeki "oyunu" ifadesini "antrenmanı" olarak güncelle.
+3. `lib/features/practice/presentation/practice_hub_screen.dart` içinde:
+   - `MascotCoachBanner` mesajını: `'Bugün hangi yöntemle pratik yapmak istersin? Konu testi çöz, bilgi kartlarıyla tekrar yap veya hızlı antrenmanlarla bilgini pekiştir!'` olarak güncelle.
+   - `'Etkileşimli Mini Oyunlar'` bölüm başlığını `'Hızlı Tekrar & Refleks Antrenmanı'` olarak güncelle.
+   - `'Kavram Eşleştir'` kartındaki `'Hafıza Oyunu'` rozetini `'Kavram Pekiştirme'` olarak güncelle.
+
+ADIM 3: Testlerin Güncellenmesi ve Doğrulama
+1. `test/theme_and_shell_test.dart`, `test/mascot_coach_banner_test.dart` ve `test/practice_hub_and_reminders_test.dart` içindeki `gameController` veya eski metin referanslarını `PhosphorIconsBold.target` / `PhosphorIconsFill.target` ve yeni metinlerle güncelle.
+2. `test/overflow_fix_test.dart` (veya `test/practice_hub_and_reminders_test.dart`) içine 320x640 ve 360x640 dar ekranda `AppTopBar(title: 'Çalışma Türleri')` ve çok uzun bir başlıkla (`'Çok Uzun Bir KPSS Çalışma Sayfası Başlığı Testi'`) `RenderFlex overflow` oluşmadığını doğrulayan bir test ekle.
+3. `docs/task-board.md` içinde `TASK-69` durumunu `✅ **Tamamlandı**` yap.
+4. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
 
 ---

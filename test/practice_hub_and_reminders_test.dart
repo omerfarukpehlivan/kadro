@@ -43,10 +43,11 @@ void main() {
         expect(find.text('ÖSYM Çeldirici Avı'), findsOneWidget);
         expect(find.text('Tuzak Sorular'), findsOneWidget);
 
-        // 4. Etkileşimli Mini Oyunlar
-        expect(find.text('Etkileşimli Mini Oyunlar'), findsOneWidget);
+        // 4. Hızlı Tekrar & Refleks Antrenmanı
+        expect(find.text('Hızlı Tekrar & Refleks Antrenmanı'), findsOneWidget);
         expect(find.text('60 Saniyede Pençe'), findsOneWidget);
         expect(find.text('Kavram Eşleştir'), findsOneWidget);
+        expect(find.text('Kavram Pekiştirme'), findsOneWidget);
       },
     );
 

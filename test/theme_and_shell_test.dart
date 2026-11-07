@@ -55,7 +55,7 @@ void main() {
         expect(find.byIcon(PhosphorIconsFill.house), findsOneWidget);
         // Diğer seçili olmayan sekmeler Bold ikonu kullanır
         expect(find.byIcon(PhosphorIconsBold.books), findsOneWidget);
-        expect(find.byIcon(PhosphorIconsBold.gameController), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsBold.target), findsOneWidget);
         expect(find.byIcon(PhosphorIconsBold.timer), findsOneWidget);
         expect(find.byIcon(PhosphorIconsBold.chartBar), findsOneWidget);
         expect(find.byIcon(PhosphorIconsBold.userCircle), findsOneWidget);
