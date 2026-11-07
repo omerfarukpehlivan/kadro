@@ -99,7 +99,8 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-72** | **Proje Genelinde Standart Tipografi & Font-Size Ölçek Sistemi (`AppTheme` 12 Seviyeli Modüler Tipografi Standardı & Sıfır Hardcoded `fontSize`)** | `lib/app/theme.dart` içinde `displayLarge`'dan `labelSmall`'a kadar tüm 15 M3 metin stilinin birbiriyle uyumlu matematiksel mobil ölçeğe (`28 / 22 / 19 / 17 / 15.5 / 14 / 15 / 13.5 / 12 / 13 / 11.5 / 10.5 px`) bağlanması; `lib/app/theme.dart` dışındaki tüm ekranlarda dağınık `fontSize:` ezme (override) kullanımlarının temizlenmesi ve ekranlar arası başlık/kart/metrik tipografi rollerinin standartlaştırılması | ✅ **Tamamlandı** (`57c0804`) |
 | **TASK-73** | **`ui-ux-pro-max` Mobil Tipografi (`Base 16px`: `28-24-20-18-16-15-14-12-11 px`) ve 3 Kademeli Padding Hiyerarşisi Revizyonu** | Küçük kalan başlık ve gövde yazılarının iOS HIG / Material 3 / `ui-ux-pro-max` gerçek mobil ölçeğine (`titleLarge: 18px`, `titleMedium: 16px`, `titleSmall: 15px`, `bodyLarge: 16px`, `bodyMedium: 14px`, `bodySmall: 12px`, `labelLarge: 14px`, `labelMedium: 12px`, `labelSmall: 11px`) yükseltilmesi; `SectionTitle` (`18px`), `LessonsScreen` (`18px`), `MascotCoachBanner` (`16px` başlık + `14px` konuşma balonu), `PracticeHubScreen` (`15px` başlık + `14px` padding) ve `LessonTopicsScreen` (`16px` kesilmeyen başlık) hiyerarşisinin uygulanması | ✅ **Tamamlandı** (`b77e3f8`) |
 | **TASK-74** | **Dikey Hizalama & Kenar Kılavuz Çizgisi Standardizasyonu (`AppTopBar`, `Body`, `SectionTitle`, `AppNavigationBar` ve `AppBarTheme` Sol/Sağ Flush Alignment)** | `AppBarTheme` içindeki `titleSpacing: 4` nedeniyle üst barın (`AppTopBar`) sol kenarının `4px`'ten başlayıp alt gövdenin (`16px`) dışına taşması hatasının düzeltilmesi; `AppTopBar` sol `titleSpacing` ve sağ `actions` boşluğunun, `SectionTitle` sol hizasının (`horizontal: 0`) ve `AppNavigationBar` yan boşluklarının `ResponsiveBreakpoints.horizontalPadding(context)` (`12px / 16px / 24px`) ile milimetrik olarak aynı dikey hizaya getirilmesi | ✅ **Tamamlandı** (`01178d3`) |
-| **TASK-75** | **Çözülen Test / Konu / Deneme Kartlarında Tamamlanma Durumu (`✅ Çözüldü` Rozeti, Son Net Özeti & `Tekrar Çöz` Aksiyonu) + Konu Kartı İndir İkonlarının ve Test Kartı Gereksiz Açıklamalarının Temizlenmesi** | Kullanıcı bir testi veya denemeyi bitirdiğinde (`studyStatsProvider.sessionHistory`), uygulamaya tekrar girdiğinde `TopicTestsScreen`, `LessonTopicsScreen` ve `ExamsScreen` kartlarında zümrüt yeşili kenarlık/arka plan tonu, `✅ Çözüldü · XD YY (Z.Z Net)` rozeti ve `Tekrar Çöz` butonunun gösterilmesi; `LessonTopicsScreen` konu kartlarındaki tekil indirme ikonlarının kaldırılıp sadece üstteki `Tümünü İndir` butonunun bırakılması; `TopicTestsScreen` test kartlarındaki mükerrer seviye başlığı ve `'Konuyu yeni bitirdiysen...'` açıklama metinlerinin kaldırılması | ✅ **Tamamlandı** |
+| **TASK-75** | **Çözülen Test / Konu / Deneme Kartlarında Tamamlanma Durumu (`✅ Çözüldü` Rozeti, Son Net Özeti & `Tekrar Çöz` Aksiyonu) + Konu Kartı İndir İkonlarının ve Test Kartı Gereksiz Açıklamalarının Temizlenmesi** | Kullanıcı bir testi veya denemeyi bitirdiğinde (`studyStatsProvider.sessionHistory`), uygulamaya tekrar girdiğinde `TopicTestsScreen`, `LessonTopicsScreen` ve `ExamsScreen` kartlarında zümrüt yeşili kenarlık/arka plan tonu, `✅ Çözüldü · XD YY (Z.Z Net)` rozeti ve `Tekrar Çöz` butonunun gösterilmesi; `LessonTopicsScreen` konu kartlarındaki tekil indirme ikonlarının kaldırılıp sadece üstteki `Tümünü İndir` butonunun bırakılması; `TopicTestsScreen` test kartlarındaki mükerrer seviye başlığı ve `'Konuyu yeni bitirdiysen...'` açıklama metinlerinin kaldırılması | ✅ **Tamamlandı** (`cc400be`) |
+| **TASK-76** | **Soru Metinlerindeki LaTeX (`$\rightarrow$`, `arrow`), Markdown (`**...**`) ve Gereksiz Tırnak (`""`) Kalıntılarının 2 Katmanlı Temizliği (`Question.cleanText` + Supabase `UPDATE` SQL + Repo Soru Havuzu)** | `Question.fromSupabase` ve `Question.fromJson` içine anlık metin temizleyici (`Question.cleanText`) eklenmesi; tüm `docs/soru_havuzu/**/*.sql`, `.md` ve `assets/data/questions.json` dosyalarındaki LaTeX/Markdown/tırnak kalıntılarının temizlenmesi ve mevcut Supabase veritabanını tek tıkla güncelleyen `docs/soru_havuzu/fix_question_texts_supabase.sql` betiğinin oluşturulması | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4567,6 +4568,56 @@ ADIM 5: Testlerin Güncellenmesi ve Doğrulama
    - `LessonTopicsScreen` testinde kaldırılan kart içi `'Çevrimdışı İndir'` ikonu yerine `AppBar`'daki `'Tümünü İndir'` butonuna (`find.text('Tümünü İndir')`) tıklanarak `PaywallScreen` açıldığını doğrula.
 3. `docs/task-board.md` içinde `TASK-75` durumunu `✅ **Tamamlandı**` yap.
 4. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
+```
+
+---
+
+### 📦 TASK-76: Soru Metinlerindeki LaTeX (`$\rightarrow$`, `arrow`), Markdown (`**...**`) ve Gereksiz Tırnak (`""`) Kalıntılarının 2 Katmanlı Temizliği (`Question.cleanText` + Supabase `UPDATE` SQL + Repo Soru Havuzu)
+
+- **Durum:** 🔄 **Devam Ediyor**
+- **Problem Analizi:**
+  - Soru üretim aşamasında Markdown/LaTeX formatından kalan `$\rightarrow$`, `\rightarrow`, `\to`, `->`, `**kalın metin**`, `*"italik tırnak"*` ve `""çift tırnak""` kalıntıları düz metin olarak `.sql` dosyalarına ve Supabase `public.questions` tablosuna aktarılmıştır.
+- **2 Katmanlı Çözüm:**
+  1. **Uygulama İçi Otomatik Sanitizer (`Question.cleanText` — `lib/features/quiz/data/models/question.dart`):**
+     - `Question.fromSupabase` ve `Question.fromJson` içinde `text`, `options`, `explanation` ve `distractorTrap` alanlarının tamamı `Question.cleanText(String raw)` metodundan geçirilir:
+       - `$\rightarrow$`, `\rightarrow`, `\Rightarrow`, `\to`, `-->`, `->`, `&rarr;` ifadeleri temiz Unicode `→` okuna dönüştürülür (`\leftarrow`, `<-` ise `←` okuna dönüştürülür).
+       - Kalan tekil LaTeX `$` sarmalayıcıları temizlenir.
+       - Markdown `**...**` ve `__...__` kalınlık yıldızları ile `*"..."*` etrafındaki yıldızlar soyulur.
+       - Arka arkaya binmiş gereksiz çift tırnaklar (`""` → `"`, `\"` → `"`) ve bozuk boşluklar temizlenir.
+  2. **Veritabanı (`docs/soru_havuzu/fix_question_texts_supabase.sql`) ve Yerel Soru Dosyalarının Temizlenmesi:**
+     - Tüm `docs/soru_havuzu/**/*.sql`, `tools/*.py` ve `assets/data/questions.json` dosyalarındaki LaTeX/Markdown/tırnak kalıntıları temizlenir.
+     - Mevcut Supabase `public.questions` tablosundaki kayıtları tek seferde güncelleyen `docs/soru_havuzu/fix_question_texts_supabase.sql` betiği oluşturulur.
+
+```text
+GÖREV: TASK-76 — Soru Metinlerindeki LaTeX ($\rightarrow$, arrow), Markdown (**...**) ve Gereksiz Tırnak ("") Kalıntılarının 2 Katmanlı Temizliği
+ÖNEMLİ: GEMINI.md kurallarına birebir uy.
+
+ADIM 1: `Question.cleanText` Sanitizer Metodunun Eklenmesi (`lib/features/quiz/data/models/question.dart`)
+1. `Question` sınıfı içine `static String cleanText(String raw)` metodunu ekle:
+   - Boş ise doğrudan `raw` döndür.
+   - `$\rightarrow$`, `$\Rightarrow$`, `\rightarrow`, `\Rightarrow`, `\to`, `-->`, `->`, `&rarr;` ifadelerini `' → '` (etrafında fazladan boşluk varsa tek boşluk olacak şekilde `'→'`) ile değiştir.
+   - `$\leftarrow$`, `\leftarrow`, `<--`, `<-` ifadelerini `'←'` ile değiştir.
+   - LaTeX matematik sarmalayıcılarını (`$([^$]+)$` -> `$1`) temizle.
+   - Markdown kalınlık işaretlerini (`\*\*(.+?)\*\*` -> `$1` ve `__(.+?)__` -> `$1`) temizle.
+   - Markdown italik tırnaklarını (`\*"(.+?)"\*` -> `"$1"` ve `\*(.+?)\*` -> `$1`) temizle.
+   - Çiftlenmiş veya kaçışlı çift tırnakları (`\\"` -> `"`, `""+` -> `"`, `''+` -> `'`) tek tırnağa indirge.
+   - Satır içi çoklu boşlukları (`[ \t]{2,}`) tek boşluğa indirge ve `.trim()` uygula (ancak paragraf sonlarını `\n\n` koru!).
+2. `Question.fromJson` ve `Question.fromSupabase` içinde:
+   - `text`: `cleanText(...)`
+   - `options`: `optionsList.map(cleanText).toList()`
+   - `explanation`: `cleanText(...)`
+   - `distractorTrap`: `rawTrap != null ? cleanText(rawTrap) : null`
+   olarak uygula!
+
+ADIM 2: Yerel `.sql` / `.json` Dosyalarının Temizlenmesi ve Supabase `UPDATE` Betiğinin Oluşturulması
+1. `docs/soru_havuzu/fix_question_texts_supabase.sql` dosyasını oluştur:
+   - Supabase SQL Editor'de çalıştırıldığında `public.questions` tablosundaki `prompt_text`, `explanation`, `distractor_trap` ve `interaction_data` sütunlarında yer alan `$\rightarrow$`, `\rightarrow`, `\to`, `->`, `**` ve `""` kalıntılarını PostgreSQL `regexp_replace` ve `replace` fonksiyonlarıyla temizleyen güvenli `UPDATE public.questions SET ...` komutunu yaz.
+2. `docs/soru_havuzu/tarih/*.sql`, `tools/parse_markdown_to_sql.py` ve `assets/data/questions.json` dosyalarındaki `$\rightarrow$`, `\rightarrow`, `->`, `**` kalıntılarını da temizle ve `python tools/validate_sql.py` ile tüm SQL dosyalarının %100 geçerli olduğunu doğrula.
+
+ADIM 3: Test ve Doğrulama
+1. `test/quiz_screen_test.dart` (veya `test/question_sanitizer_test.dart`) içine `Question.cleanText` ve `Question.fromSupabase` için `$\rightarrow$`, `\rightarrow`, `->`, `**Anav kültürü**`, `*"Güneşin battığı yer"*` ve `""Manas Destanı""` içeren kirli verilerin tertemiz (`→`, `Anav kültürü`, `"Güneşin battığı yer"`, `"Manas Destanı"`) çıktığını doğrulayan birim testleri ekle.
+2. `docs/task-board.md` içinde `TASK-76` durumunu `✅ **Tamamlandı**` yap.
+3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
 
 ---

@@ -65,19 +65,77 @@ class Question {
 
   /// JSON (`Map<String, dynamic>`) verisinden Question nesnesi üreten factory constructor.
   /// Angular'daki `Object.assign(new Question(), json)` veya mapper fonksiyonu gibi düşünebilirsin.
+  /// Soru metinlerindeki LaTeX ($\rightarrow$, arrow), Markdown (**...**) ve
+  /// gereksiz tırnak/boşluk kalıntılarını temizleyen sağlam sanitizer metodu.
+  static String cleanText(String raw) {
+    if (raw.isEmpty) return raw;
+
+    var text = raw;
+
+    // 1. Ok işaretleri ve LaTeX yön göstergeleri
+    // $\rightarrow$, $\Rightarrow$, \rightarrow, \Rightarrow, \to, -->, ->, &rarr;
+    text = text.replaceAll(
+      RegExp(r'\$(\\rightarrow|\\Rightarrow|\\to)\$'),
+      ' → ',
+    );
+    text = text.replaceAll(RegExp(r'\\(rightarrow|Rightarrow|to)\b'), ' → ');
+    text = text.replaceAll('&rarr;', ' → ');
+    text = text.replaceAll('-->', ' → ');
+    text = text.replaceAll('->', ' → ');
+
+    // Sol ok işaretleri: $\leftarrow$, \leftarrow, <--, <-
+    text = text.replaceAll(RegExp(r'\$(\\leftarrow|\\Leftarrow)\$'), ' ← ');
+    text = text.replaceAll(RegExp(r'\\(leftarrow|Leftarrow)\b'), ' ← ');
+    text = text.replaceAll('&larr;', ' ← ');
+    text = text.replaceAll('<--', ' ← ');
+    text = text.replaceAll('<-', ' ← ');
+
+    // 2. LaTeX inline math dolar işaretleri: $x$ -> x
+    text = text.replaceAllMapped(RegExp(r'\$([^\$]+)\$'), (m) => m.group(1)!);
+
+    // 3. Markdown kalın ve altı çizili: **metin** -> metin, __metin__ -> metin
+    text = text.replaceAllMapped(RegExp(r'\*\*(.+?)\*\*'), (m) => m.group(1)!);
+    text = text.replaceAllMapped(RegExp(r'__(.+?)__'), (m) => m.group(1)!);
+    // Başıboş kalan ** veya __ temizliği
+    text = text.replaceAll('**', '');
+
+    // 4. Markdown italik ve tırnak temizliği: *"metin"* -> "metin", *metin* -> metin
+    text = text
+        .replaceAllMapped(RegExp(r'\*"(.+?)"\*'), (m) => '"${m.group(1)}"')
+        .replaceAllMapped(RegExp(r'\*([^\*\n]+)\*'), (m) => m.group(1)!);
+
+    // 5. Çiftlenmiş veya kaçışlı tırnaklar: \" -> ", "" -> ", '' -> '
+    text = text.replaceAll(r'\"', '"');
+    text = text.replaceAll(RegExp(r'"{2,}'), '"');
+    text = text.replaceAll(RegExp(r"'{2,}"), "'");
+
+    // 6. Satır içi çoklu boşlukları ([ \t]{2,}) tek boşluğa indirge, paragraf sonlarını (\n\n) koru
+    final lines = text.split('\n');
+    final cleanedLines = lines.map((line) {
+      return line.replaceAll(RegExp(r'[ \t]{2,}'), ' ').trim();
+    });
+    text = cleanedLines.join('\n');
+
+    return text.trim();
+  }
+
   factory Question.fromJson(Map<String, dynamic> json) {
+    final rawText = json['text'] as String? ?? '';
+    final rawExplanation = json['explanation'] as String? ?? '';
+    final rawTrap =
+        json['distractor_trap'] as String? ?? json['distractorTrap'] as String?;
+    final rawOptions = List<String>.from(json['options'] as List? ?? const []);
+
     return Question(
       id: json['id'] as String,
       lesson: json['lesson'] as String,
       topic: json['topic'] as String,
-      text: json['text'] as String,
-      options: List<String>.from(json['options'] as List),
+      text: cleanText(rawText),
+      options: rawOptions.map(cleanText).toList(),
       correctIndex: json['correctIndex'] as int,
-      explanation: json['explanation'] as String,
+      explanation: cleanText(rawExplanation),
       difficulty: json['difficulty'] as String? ?? 'medium',
-      distractorTrap:
-          json['distractor_trap'] as String? ??
-          json['distractorTrap'] as String?,
+      distractorTrap: rawTrap != null ? cleanText(rawTrap) : null,
     );
   }
 
@@ -87,19 +145,26 @@ class Question {
         ? row['interaction_data'] as Map<String, dynamic>
         : <String, dynamic>{};
     final optionsList =
-        (interaction['options'] as List?)?.map((e) => e.toString()).toList() ??
+        (interaction['options'] as List?)
+            ?.map((e) => cleanText(e.toString()))
+            .toList() ??
         <String>[];
+
+    final rawText = (row['prompt_text'] ?? row['text'])?.toString() ?? '';
+    final rawExplanation = row['explanation']?.toString() ?? '';
+    final rawTrap =
+        row['distractor_trap'] as String? ?? row['distractorTrap'] as String?;
+
     return Question(
       id: row['id']?.toString() ?? '',
       lesson: row['lesson']?.toString() ?? 'Genel Kültür',
       topic: row['topic']?.toString() ?? 'Genel',
-      text: (row['prompt_text'] ?? row['text'])?.toString() ?? '',
+      text: cleanText(rawText),
       options: optionsList,
       correctIndex: interaction['correctIndex'] as int? ?? 0,
-      explanation: row['explanation']?.toString() ?? '',
+      explanation: cleanText(rawExplanation),
       difficulty: row['difficulty']?.toString() ?? 'medium',
-      distractorTrap:
-          row['distractor_trap'] as String? ?? row['distractorTrap'] as String?,
+      distractorTrap: rawTrap != null ? cleanText(rawTrap) : null,
     );
   }
 

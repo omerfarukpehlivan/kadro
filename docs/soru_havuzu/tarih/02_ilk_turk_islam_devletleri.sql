@@ -541,7 +541,7 @@ insert into public.questions (
   2,
   'Hindistan''da kurulan ve Yeni Çağ''da kurulup Yakın Çağ''da (1858) İngilizler tarafından yıkılan tek Türk-İslam devleti olan Babür İmparatorluğu''nda; Şah Cihan''ın genç yaşta vefat eden eşi Mümtaz Mahal (Ercüment Nurbanu Begüm) anısına Agra kentinde inşa ettirdiği, beyaz mermerden anıt mezar şaheseri aşağıdakilerden hangisidir?',
   '{"options": ["Taç Mahal", "Elhamra Sarayı", "İshak Paşa Sarayı", "Kuvvetü''l-İslam Camii", "Ribat-ı Mahi"], "correctIndex": 0}'::jsonb,
-  'Hindistan''ın Agra kentindeki **Taç Mahal**, Babür Hükümdarı Şah Cihan tarafından eşi için yaptırılmış bir anıt mezardır. Mimarı Osmanlı mimarı Mimar İsa Efendi, hattatı ise Hattat Serdar Efendi''dir.',
+  'Hindistan''ın Agra kentindeki Taç Mahal, Babür Hükümdarı Şah Cihan tarafından eşi için yaptırılmış bir anıt mezardır. Mimarı Osmanlı mimarı Mimar İsa Efendi, hattatı ise Hattat Serdar Efendi''dir.',
   'Taç Mahal''in bir Türk-İslam devleti olan Babürler tarafından yaptırıldığı ve Osmanlı ustalarının (İsa Efendi) çalıştığı detayı adaylar tarafından Hindistan''a ait yerel bir tapınak zannedilerek gözden kaçırılabilir.'
 );
 
@@ -584,8 +584,8 @@ insert into public.questions (
   'multiple_choice',
   2,
   '1071 Malazgirt Zaferi''nden sonra Anadolu''da kurulan I. Dönem Türk Beylikleri ve mimari eserleri eşleştirmelerinden hangisi yanlıştır?',
-  '{"options": ["Danişmentliler $\\rightarrow$ Niksar Yağıbasan Medresesi (Anadolu''nun ilk Türk medresesi)", "Mengücekliler $\\rightarrow$ Divriği Ulu Camii ve Darüşşifası (UNESCO Mirası)", "Artuklular $\\rightarrow$ Diyarbakır Malabadi Köprüsü ve Cezeri''nin çalışmaları", "Saltuklular $\\rightarrow$ Erzurum Mama Hatun Kümbeti ve Kale Camii", "Çaka Beyliği $\\rightarrow$ Kayseri Gevher Nesibe Darüşşifası"], "correctIndex": 4}'::jsonb,
-  'Kayseri Gevher Nesibe Darüşşifası ve Külliyesi, I. Gıyaseddin Keyhüsrev döneminde inşa edilmiş bir **Anadolu Selçuklu Devleti** eseridir; Çaka Beyliği''ne ait değildir. Çaka Beyliği İzmir ve çevresinde ilk denizci beyliktir.',
+  '{"options": ["Danişmentliler $\ → $ Niksar Yağıbasan Medresesi (Anadolu''nun ilk Türk medresesi)", "Mengücekliler $\ → $ Divriği Ulu Camii ve Darüşşifası (UNESCO Mirası)", "Artuklular $\ → $ Diyarbakır Malabadi Köprüsü ve Cezeri''nin çalışmaları", "Saltuklular $\ → $ Erzurum Mama Hatun Kümbeti ve Kale Camii", "Çaka Beyliği $\ → $ Kayseri Gevher Nesibe Darüşşifası"], "correctIndex": 4}'::jsonb,
+  'Kayseri Gevher Nesibe Darüşşifası ve Külliyesi, I. Gıyaseddin Keyhüsrev döneminde inşa edilmiş bir Anadolu Selçuklu Devleti eseridir; Çaka Beyliği''ne ait değildir. Çaka Beyliği İzmir ve çevresinde ilk denizci beyliktir.',
   'ÖSYM I. Beylikler ile eserlerini her yıl mutlaka sorar: Yağıbasan = Danişmentliler; Divriği = Mengücekliler; Malabadi/Cezeri = Artuklular; Mama Hatun = Saltuklular. Gevher Nesibe ise Anadolu Selçukluları''na aittir.'
 );
 
@@ -726,8 +726,8 @@ insert into public.questions (
   'Büyük Selçuklu Devleti''nde devlet işlerinin karara bağlandığı en yüksek yürütme ve danışma organı Divan-ı Saltanat''tır. Bu divana bağlı alt divanlar bulunmaktadır.
 
 Aşağıdaki alt divan ve yürüttüğü temel görev eşleştirmelerinden hangisi yanlıştır?',
-  '{"options": ["Divan-ı İstifa $\\rightarrow$ Mali işlerden sorumlu olup başkanı Müstevfi''dir.", "Divan-ı Arz (Ceysü''l-Arz) $\\rightarrow$ Askeri işlerden ve ordunun ihtiyaçlarından sorumlu olup başkanı Emir-i Arz''dır.", "Divan-ı Tuğra (İnşa) $\\rightarrow$ Devletin iç ve dış yazışmalarını yürütüp fermanlara tuğra çeker; başkanı Tuğrai''dir.", "Divan-ı İşraf $\\rightarrow$ Askeri ve adli davaları temyiz eden mahkemedir; başkanı Kadıasker''dir.", "Niyabet-i Saltanat $\\rightarrow$ Sultan başkentte bulunmadığı zamanlarda devlet işlerini yürütür; başkanı Naib''dir."], "correctIndex": 3}'::jsonb,
-  'Divan-ı İşraf bir mahkeme değildir; devletin mali ve idari işlerinin işleyişini, teşkilatın nizamını hükümdar adına teftiş eden **genel denetim kuruludur** ve başındaki görevliye Müşrif-i Memalik denir. Adli ve siyasi davalara Divan-ı Mezalim bakar.',
+  '{"options": ["Divan-ı İstifa $\ → $ Mali işlerden sorumlu olup başkanı Müstevfi''dir.", "Divan-ı Arz (Ceysü''l-Arz) $\ → $ Askeri işlerden ve ordunun ihtiyaçlarından sorumlu olup başkanı Emir-i Arz''dır.", "Divan-ı Tuğra (İnşa) $\ → $ Devletin iç ve dış yazışmalarını yürütüp fermanlara tuğra çeker; başkanı Tuğrai''dir.", "Divan-ı İşraf $\ → $ Askeri ve adli davaları temyiz eden mahkemedir; başkanı Kadıasker''dir.", "Niyabet-i Saltanat $\ → $ Sultan başkentte bulunmadığı zamanlarda devlet işlerini yürütür; başkanı Naib''dir."], "correctIndex": 3}'::jsonb,
+  'Divan-ı İşraf bir mahkeme değildir; devletin mali ve idari işlerinin işleyişini, teşkilatın nizamını hükümdar adına teftiş eden genel denetim kuruludur ve başındaki görevliye Müşrif-i Memalik denir. Adli ve siyasi davalara Divan-ı Mezalim bakar.',
   'Adaylar Divan-ı İşraf (denetim) ile Divan-ı Mezalim (yargı) kavramlarını birbirine karıştırabilir. İşraf teftiş ve denetim organıdır.'
 );
 
@@ -748,8 +748,8 @@ insert into public.questions (
   2,
   'Büyük Selçuklu ve Anadolu Selçuklu devletlerinde bizzat Sultanın başkanlık ettiği; ağır siyasi suçların (vatana ihanet), devlet memurları hakkındaki suiistimal şikayetlerinin, vakıfların denetiminin ve kadı kararlarına yapılan itirazların görüşülüp kesin hükme bağlandığı en üst yüksek yargı divanı aşağıdakilerden hangisidir?',
   '{"options": ["Divan-ı Pervane", "Divan-ı Berid", "Divan-ı Mezalim", "Divan-ı Has", "Divan-ı Mezarlık"], "correctIndex": 2}'::jsonb,
-  '**Divan-ı Mezalim**, hükümdarın bizzat başkanlık ettiği, kadıların çözemediği veya itiraz edilen ağır davalara bakan, kamu görevlilerini denetleyen yüksek mahkemedir. Bu divan günümüzün Yargıtay ve Danıştay fonksiyonlarını icra eder.',
-  'ÖSYM Divan-ı Mezalim''in başkanının **Sultan** olduğu bilgisini çok sorar. Birçok aday davalara Kadıü''l-Kudat''ın başkanlık ettiğini sanarak yanılır.'
+  'Divan-ı Mezalim, hükümdarın bizzat başkanlık ettiği, kadıların çözemediği veya itiraz edilen ağır davalara bakan, kamu görevlilerini denetleyen yüksek mahkemedir. Bu divan günümüzün Yargıtay ve Danıştay fonksiyonlarını icra eder.',
+  'ÖSYM Divan-ı Mezalim''in başkanının Sultan olduğu bilgisini çok sorar. Birçok aday davalara Kadıü''l-Kudat''ın başkanlık ettiğini sanarak yanılır.'
 );
 
 -- Soru tar_ti_033
@@ -767,9 +767,9 @@ insert into public.questions (
   'İlk Türk-İslam Devletleri',
   'multiple_choice',
   3,
-  'Büyük Selçuklu Devleti''nde bulunmayıp **yalnızca Anadolu Selçuklu Devleti''nde** teşkilatlanan; ülke genelindeki ikta topraklarının dağıtımı, tahrir defterlerinin tutulması, mülk ve vakıf arazilerinin tahsisinden sorumlu olan ve Osmanlı Devleti''ndeki Nişancı makamının temeli kabul edilen divan ve başındaki görevli aşağıdakilerden hangisidir?',
+  'Büyük Selçuklu Devleti''nde bulunmayıp yalnızca Anadolu Selçuklu Devleti''nde teşkilatlanan; ülke genelindeki ikta topraklarının dağıtımı, tahrir defterlerinin tutulması, mülk ve vakıf arazilerinin tahsisinden sorumlu olan ve Osmanlı Devleti''ndeki Nişancı makamının temeli kabul edilen divan ve başındaki görevli aşağıdakilerden hangisidir?',
   '{"options": ["Divan-ı İstifa – Müstevfi", "Divan-ı Pervane – Pervaneci", "Divan-ı Arz – Emir-i Arz", "Divan-ı Berid – Sahib-i Berid", "Divan-ı Tuğra – Münşi"], "correctIndex": 1}'::jsonb,
-  '**Divan-ı Pervane** ve başındaki **Pervaneci**, yalnızca Anadolu Selçuklu Devleti''nde var olan özel bir divandır. İkta topraklarının kaydını tutar, dağıtır ve beratlarını hazırlar. Bu makam Osmanlı''daki Nişancı''nın Selçuklu karşılığıdır (Muineddin Pervane bu makamın en bilinen simasıdır).',
+  'Divan-ı Pervane ve başındaki Pervaneci, yalnızca Anadolu Selçuklu Devleti''nde var olan özel bir divandır. İkta topraklarının kaydını tutar, dağıtır ve beratlarını hazırlar. Bu makam Osmanlı''daki Nişancı''nın Selçuklu karşılığıdır (Muineddin Pervane bu makamın en bilinen simasıdır).',
   'Ramazan Yetgin notlarında ünlemle belirtilen "KPSS Kesin Soru" başlığıdır. Aday Divan-ı Pervane''nin Büyük Selçuklu''da da olduğunu zanneder; oysa sadece Türkiye Selçukluları''na özgüdür.'
 );
 
@@ -791,7 +791,7 @@ insert into public.questions (
   'İlk Türk-İslam devletlerinde hukuk sistemi şer''i ve örfi olmak üzere iki ana kola ayrılmıştır.
 
 Buna göre, Türk-İslam hukuk yapısıyla ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["Şer''i Mahkemelerin Başkanı $\\rightarrow$ Kadıü''l-Kudat", "Örfi Mahkemelerin Başkanı $\\rightarrow$ Emir-i Dad", "Askeri Davalara Bakan Hâkim $\\rightarrow$ Kadıasker (Kadıleşker)", "Şer''i Mahkemelerin Baktığı Davalar $\\rightarrow$ Miras, evlenme, boşanma, vakıf ve ticaret işleri", "Örfi Hukuk Kurallarının Kaynağı $\\rightarrow$ Yalnızca Kur''an-ı Kerim ve hadis hükümleri"], "correctIndex": 4}'::jsonb,
+  '{"options": ["Şer''i Mahkemelerin Başkanı $\ → $ Kadıü''l-Kudat", "Örfi Mahkemelerin Başkanı $\ → $ Emir-i Dad", "Askeri Davalara Bakan Hâkim $\ → $ Kadıasker (Kadıleşker)", "Şer''i Mahkemelerin Baktığı Davalar $\ → $ Miras, evlenme, boşanma, vakıf ve ticaret işleri", "Örfi Hukuk Kurallarının Kaynağı $\ → $ Yalnızca Kur''an-ı Kerim ve hadis hükümleri"], "correctIndex": 4}'::jsonb,
   'Örfi hukukun kaynağı Kur''an ve hadis değil; eski Türk töresi, kurultay kararları ve sultanların buyruklarıdır (Kur''an ve hadis şer''i hukukun kaynağıdır). Ancak örfi hukuk kuralları İslam dininin temel esaslarına aykırı olamaz.',
   'ÖSYM Emir-i Dad (örfi adalet başkanı) ile Kadıü''l-Kudat (şer''i adalet başkanı) ayrımını sıkça yoklar. Kadıasker ise ordudaki askerlerin davalarına bakar.'
 );
@@ -815,7 +815,7 @@ insert into public.questions (
 
 Aşağıdakilerden hangisi İkta Sistemi''nin devlete sağladığı faydalar arasında gösterilemez?',
   '{"options": ["Devlet hazinesinden doğrudan nakit para harcanmadan her an savaşa hazır devasa bir atlı ordu (cebelü) kurulması", "Tarımsal üretimin denetlenerek toprağın üst üste boş kalmasının engellenmesi ve üretimde sürekliliğin sağlanması", "Taşrada ikta sahipleri sayesinde merkezi otoritenin ve asayişin tesis edilmesi", "Toprakların mülkiyetinin şahıslara geçmesiyle özel mülkiyet ve toprak aristokrasisinin teşvik edilmesi", "Vergilerin düzenli ve yerinde toplanarak memur maaşlarının doğrudan karşılanması"], "correctIndex": 3}'::jsonb,
-  'İkta sisteminde toprağın mülkiyeti daima **devlete (Miri arazi)** aittir; ikta sahibi toprağı satamaz, devredemez, miras bırakamaz. Bu sayede Avrupa''daki gibi toprak sahibi soylu bir sınıfın (aristokrasi / feodalite) doğması engellenmiştir.',
+  'İkta sisteminde toprağın mülkiyeti daima devlete (Miri arazi) aittir; ikta sahibi toprağı satamaz, devredemez, miras bırakamaz. Bu sayede Avrupa''daki gibi toprak sahibi soylu bir sınıfın (aristokrasi / feodalite) doğması engellenmiştir.',
   'ÖSYM''nin en standart soru tipidir: "İkta sistemi feodaliteyi güçlendirir mi?" Hayır, aksine toprağın mülkiyeti devlette kaldığı için feodaliteyi engeller.'
 );
 
@@ -836,9 +836,9 @@ insert into public.questions (
   3,
   'İlk Türk-İslam ordularında savaş esirlerinin veya satın alınan çocukların özel kışlalarda (gulamhane) yetiştirilerek doğrudan hükümdarın muhafız birliğine alınması esasına dayanan "Gulam Sistemi" uygulanmıştır.
 
-Gulam Sistemi bünyesinde doğrudan sarayda hükümdarın şahsını koruyan ve üç ayda bir **"Biştegani"** adı verilen maaşı alan asker sınıfı aşağıdakilerden hangisidir?',
+Gulam Sistemi bünyesinde doğrudan sarayda hükümdarın şahsını koruyan ve üç ayda bir "Biştegani" adı verilen maaşı alan asker sınıfı aşağıdakilerden hangisidir?',
   '{"options": ["Gulaman-ı Saray", "Hassa Ordusu", "Sipahiler (Cebelüler)", "Yardımcı Kuvvetler", "Yiğitbaşılar"], "correctIndex": 0}'::jsonb,
-  'Sarayda bizzat padişahı koruyan devşirme/esir kökenli maaşlı askerlere **Gulaman-ı Saray** denir ve 3 ayda bir aldıkları maaşa **Biştegani** denir. Bu sistem Osmanlı''daki Kapıkulu Ocağı''nın (Yeniçeriler) ve aldıkları "Ulufe" maaşının doğrudan öncüsüdür.',
+  'Sarayda bizzat padişahı koruyan devşirme/esir kökenli maaşlı askerlere Gulaman-ı Saray denir ve 3 ayda bir aldıkları maaşa Biştegani denir. Bu sistem Osmanlı''daki Kapıkulu Ocağı''nın (Yeniçeriler) ve aldıkları "Ulufe" maaşının doğrudan öncüsüdür.',
   'Adaylar Hassa Ordusu ile Gulaman-ı Saray''ı karıştırabilir. Hassa ordusu vurucu asıl ordudur ve ikta gelirleriyle geçinir; Gulaman-ı Saray ise saray muhafızıdır ve Biştegani maaşı alır.'
 );
 
@@ -857,9 +857,9 @@ insert into public.questions (
   'İlk Türk-İslam Devletleri',
   'multiple_choice',
   2,
-  'Aristo''nun eserlerini şerh ederek Batı''da "Alpharabius", İslam felsefesinde ise Aristo''dan sonra gelen "İkinci Öğretmen" anlamında **"Muallim-i Sani"** unvanıyla tanınan; ilimleri ilk kez sınıflandıran (İhsaü''l-Ulum) ve "El-Medinetü''l-Fazıla" (Erdemli Şehir) adlı eserinde ideal devlet düzenini anlatan Türk-İslam filozofu kimdir?',
+  'Aristo''nun eserlerini şerh ederek Batı''da "Alpharabius", İslam felsefesinde ise Aristo''dan sonra gelen "İkinci Öğretmen" anlamında "Muallim-i Sani" unvanıyla tanınan; ilimleri ilk kez sınıflandıran (İhsaü''l-Ulum) ve "El-Medinetü''l-Fazıla" (Erdemli Şehir) adlı eserinde ideal devlet düzenini anlatan Türk-İslam filozofu kimdir?',
   '{"options": ["İbn Sina", "Farabi", "İbn Rüşd", "Gazali", "Biruni"], "correctIndex": 1}'::jsonb,
-  '**Farabi**, İslam dünyasında pozitif bilimlerin ve felsefenin öncüsüdür. Muallim-i Sani (İkinci Öğretmen) olarak bilinir. Ayrıca dünyanın ilk modern müzik kitabı olan "Kitabü''l-Musiki"yi kaleme almıştır.',
+  'Farabi, İslam dünyasında pozitif bilimlerin ve felsefenin öncüsüdür. Muallim-i Sani (İkinci Öğretmen) olarak bilinir. Ayrıca dünyanın ilk modern müzik kitabı olan "Kitabü''l-Musiki"yi kaleme almıştır.',
   'ÖSYM "Muallim-i Sani" dendiğinde Farabi''yi, "Avicenna" dendiğinde İbn Sina''yı, "Averroes" dendiğinde İbn Rüşd''ü test eder. Üç unvan sınavların değişmez tuzak şıklarıdır.'
 );
 
@@ -880,7 +880,7 @@ insert into public.questions (
   2,
   'Avrupa''da "Avicenna" ve "Tıbbın Hükümdarı" olarak bilinen, mikropların varlığını ve bulaşıcı hastalıkları Newton ve Pasteur''den asırlar önce açıklayan, kaleme aldığı "El-Kanun fi''t-Tıb" (Tıbbın Kanunu) eseri yüzyıllarca Avrupa üniversitelerinde ders kitabı okutulan Türk-İslam bilgini aşağıdakilerden hangisidir?',
   '{"options": ["İbn Sina", "Zekeriya er-Razi", "İbnü''n-Nefs", "Cabir bin Hayyan", "Akşemseddin"], "correctIndex": 0}'::jsonb,
-  '**İbn Sina (Avicenna)**, tıp tarihinin en büyük dehalarındandır. El-Kanun fi''t-Tıb ve Kitabü''ş-Şifa en önemli eserleridir. Ayrıca fizikte ivme ve hareket konusunda "Kasr-ı Meyil" teorisini ortaya atmıştır.',
+  'İbn Sina (Avicenna), tıp tarihinin en büyük dehalarındandır. El-Kanun fi''t-Tıb ve Kitabü''ş-Şifa en önemli eserleridir. Ayrıca fizikte ivme ve hareket konusunda "Kasr-ı Meyil" teorisini ortaya atmıştır.',
   'Zekeriya er-Razi (çiçek-kızamık farkı, El-Havi Ansiklopedisi) ile İbnü''n-Nefs (küçük kan dolaşımı) İbn Sina''nın en güçlü çeldiricileridir. Avicenna ve El-Kanun unvanları doğrudan İbn Sina''yı işaret eder.'
 );
 
@@ -899,9 +899,9 @@ insert into public.questions (
   'İlk Türk-İslam Devletleri',
   'multiple_choice',
   3,
-  'Artuklular döneminde Diyarbakır sarayında yaşayan; su saatleri, otomatik çalışan mekanik cihazlar ve şifreli kilitler geliştirerek dünya bilim tarihinde **robotik ve sibernetik biliminin kurucusu** kabul edilen ve mekanik çizimlerini "Kitabü''l-Hiyel" adlı eserinde toplayan bilim insanı kimdir?',
+  'Artuklular döneminde Diyarbakır sarayında yaşayan; su saatleri, otomatik çalışan mekanik cihazlar ve şifreli kilitler geliştirerek dünya bilim tarihinde robotik ve sibernetik biliminin kurucusu kabul edilen ve mekanik çizimlerini "Kitabü''l-Hiyel" adlı eserinde toplayan bilim insanı kimdir?',
   '{"options": ["Ali Kuşçu", "Takiyüddin Mehmet", "El-Cezeri", "Harezmi", "Fezari"], "correctIndex": 2}'::jsonb,
-  '**El-Cezeri (İbnü''l-İzz)**, Cizreli dahi mühendistir. Artuklular himayesinde yaşamış, robotik ve otomatik kontrol (sibernetik) sisteminin temellerini atmıştır. Leonardo da Vinci''nin ilham kaynaklarındandır.',
+  'El-Cezeri (İbnü''l-İzz), Cizreli dahi mühendistir. Artuklular himayesinde yaşamış, robotik ve otomatik kontrol (sibernetik) sisteminin temellerini atmıştır. Leonardo da Vinci''nin ilham kaynaklarındandır.',
   'Adaylar Osmanlı''da ilk rasathaneyi açan Takiyüddin Mehmet veya cebirin kurucusu Harezmi ile karıştırabilir. Sibernetik ve robotik denince tek isim Cezeri''dir.'
 );
 
@@ -921,7 +921,7 @@ insert into public.questions (
   'multiple_choice',
   2,
   'Karahanlılar döneminde yazılan ilk Türk-İslam yazılı edebi eserleri ile ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["Yusuf Has Hacip $\\rightarrow$ Kutadgu Bilig (İlk siyasetname, Tamgaç Buğra Han''a sunulmuştur)", "Kaşgarlı Mahmut $\\rightarrow$ Divan-ı Lügati''t-Türk (İlk Türkçe sözlük, Halife el-Muktedi Billah''a sunulmuştur)", "Edip Ahmet Yükneki $\\rightarrow$ Atabetü''l-Hakayık (Hakikatlerin eşiği, ahlak ve tasavvuf kitabı)", "Ahmet Yesevi $\\rightarrow$ Divan-ı Hikmet (İlk Türk mutasavvıfı, Piri Türkistan)", "Ali Şir Nevai $\\rightarrow$ Şehname (Türk-İran mücadelelerini anlatan ilk Türkçe destan)"], "correctIndex": 4}'::jsonb,
-  '**Şehname**, İranlı şair **Firdevsi** tarafından Gazneli Mahmut''a Farsça olarak sunulan bir eserdir (eserde Alp Er Tunga ''Afrasiyap'' olarak geçer). Ali Şir Nevai ise Timur döneminde Çağatay Türkçesiyle Türkçe''nin Farsça''dan üstün olduğunu savunan "Muhakemetü''l-Lügateyn"i yazmıştır.',
+  '{"options": ["Yusuf Has Hacip $\ → $ Kutadgu Bilig (İlk siyasetname, Tamgaç Buğra Han''a sunulmuştur)", "Kaşgarlı Mahmut $\ → $ Divan-ı Lügati''t-Türk (İlk Türkçe sözlük, Halife el-Muktedi Billah''a sunulmuştur)", "Edip Ahmet Yükneki $\ → $ Atabetü''l-Hakayık (Hakikatlerin eşiği, ahlak ve tasavvuf kitabı)", "Ahmet Yesevi $\ → $ Divan-ı Hikmet (İlk Türk mutasavvıfı, Piri Türkistan)", "Ali Şir Nevai $\ → $ Şehname (Türk-İran mücadelelerini anlatan ilk Türkçe destan)"], "correctIndex": 4}'::jsonb,
+  'Şehname, İranlı şair Firdevsi tarafından Gazneli Mahmut''a Farsça olarak sunulan bir eserdir (eserde Alp Er Tunga ''Afrasiyap'' olarak geçer). Ali Şir Nevai ise Timur döneminde Çağatay Türkçesiyle Türkçe''nin Farsça''dan üstün olduğunu savunan "Muhakemetü''l-Lügateyn"i yazmıştır.',
   'ÖSYM Ali Şir Nevai (Muhakemetü''l-Lügateyn) ile Kaşgarlı Mahmut''un (Divan-ı Lügati''t-Türk) amaçlarını birbirine karıştırarak sorar: Her ikisi de Türkçenin zenginliğini savunmuştur; Kaşgarlı Arapça''ya karşı, Ali Şir Nevai ise Farsça''ya karşı savunmuştur.'
 );

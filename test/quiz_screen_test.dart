@@ -400,4 +400,96 @@ void main() {
       },
     );
   });
+  group('TASK-76: Question.cleanText Sanitizer & Supabase Parser Testleri', () {
+    test(
+      'LaTeX okları, ok sembolleri ve math dolar işaretleri temizlenmeli',
+      () {
+        expect(
+          Question.cleanText(
+            r'Hunlar $\rightarrow$ Göktürkler \rightarrow Uygurlar -> Karahanlılar',
+          ),
+          equals('Hunlar → Göktürkler → Uygurlar → Karahanlılar'),
+        );
+        expect(
+          Question.cleanText(
+            r'Batı $\leftarrow$ Doğu \leftarrow Merkez <-- Başkent',
+          ),
+          equals('Batı ← Doğu ← Merkez ← Başkent'),
+        );
+        expect(
+          Question.cleanText(r'$x$ ve $y$ faktörleri'),
+          equals('x ve y faktörleri'),
+        );
+      },
+    );
+
+    test(
+      'Markdown kalın, italik ve gereksiz çift tırnak kalıntıları temizlenmeli',
+      () {
+        expect(
+          Question.cleanText(
+            'Orta Asya\'nın en eski kültürü **Anav kültürü** olarak bilinir.',
+          ),
+          equals("Orta Asya'nın en eski kültürü Anav kültürü olarak bilinir."),
+        );
+        expect(
+          Question.cleanText(
+            'Avrupalılar tarafından *"Güneşin battığı yer"* olarak anılmıştır.',
+          ),
+          equals(
+            'Avrupalılar tarafından "Güneşin battığı yer" olarak anılmıştır.',
+          ),
+        );
+        expect(
+          Question.cleanText(
+            'Kırgızlara ait olan destan ""Manas Destanı"" dır.',
+          ),
+          equals('Kırgızlara ait olan destan "Manas Destanı" dır.'),
+        );
+      },
+    );
+
+    test('Question.fromSupabase kirli veriyi temizleyerek parse etmeli', () {
+      final dirtyRow = {
+        'id': 'supabase_q_test',
+        'lesson': 'Tarih',
+        'topic': 'İlk Türk Devletleri',
+        'prompt_text': r'Kut anlayışı $\rightarrow$ Veraset belirsizliği $\rightarrow$ **Taht kavgaları**',
+        'explanation': r'Bu durum devletlerin kısa sürede yıkılmasına \rightarrow yol açmıştır.',
+        'distractor_trap':
+            'Adaylar ""Kut"" inancının saltanat getirdiğini sanır.',
+        'difficulty': '2',
+        'interaction_data': {
+          'options': [
+            '**A)** Federal yapı',
+            r'B) $\rightarrow$ Boylar federasyonu',
+            'C) *"Töre kuralları"*',
+            'D) ""İkili teşkilat""',
+            'E) Kurultay kararları',
+          ],
+          'correctIndex': 1,
+        },
+      };
+
+      final q = Question.fromSupabase(dirtyRow);
+
+      expect(
+        q.text,
+        equals('Kut anlayışı → Veraset belirsizliği → Taht kavgaları'),
+      );
+      expect(
+        q.explanation,
+        equals('Bu durum devletlerin kısa sürede yıkılmasına → yol açmıştır.'),
+      );
+      expect(
+        q.distractorTrap,
+        equals('Adaylar "Kut" inancının saltanat getirdiğini sanır.'),
+      );
+      expect(q.options[0], equals('A) Federal yapı'));
+      expect(q.options[1], equals('B) → Boylar federasyonu'));
+      expect(q.options[2], equals('C) "Töre kuralları"'));
+      expect(q.options[3], equals('D) "İkili teşkilat"'));
+      expect(q.options[4], equals('E) Kurultay kararları'));
+    });
+  });
 }
