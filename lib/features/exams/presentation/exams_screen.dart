@@ -31,7 +31,8 @@ class ExamsScreen extends ConsumerWidget {
         padding: AppSpacing.pagePadding(context),
         children: [
           const MascotCoachBanner(
-            mood: MascotMood.coach,
+            mood: MascotMood.exam,
+            badgeLabel: 'BAŞ GÖZETMEN',
             title: 'Deneme sınavları',
             message: 'Gerçek sınav provası! 60 soru, 65 dakika ve 4 yanlış 1 doğru kuralıyla netini test et.',
           ),

@@ -92,6 +92,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-65** | **Profil Ekranı Evrimi: Aday Kimlik Kartı, KPSS 2026 Geri Sayımı, Lig & Başarı Rozetleri Vitrini ve Bulut Eşitleme Merkezi** | Profil ekranının sıradan bir 'Ayarlar' listesi olmaktan çıkarılıp Duolingo/UWorld seviyesinde zenginleştirilmesi: Aday kimliği & avatarı, hedef puan & atama rotası, canlı 2026 KPSS geri sayımı, 4'lü metrik snapshot'ı (Seri, Soru, Net %, XP), Lig & Unvan vitrini, 6 adet motivasyon madalyası ve modern hesap ayarları | ✅ **Tamamlandı** |
 | **TASK-66** | **Bağımsız Çalışma Türleri & Antrenman Ekranı (`PracticeHubScreen`), Zenginleştirilmiş Alt Menü (`AppNavigationBar`) ve Görev Hatırlatıcılı Yeni Ana Sayfa** | Çalışma türlerinin (Konu Testi, Bilgi Kartları, Yanlış Defteri, Deneme, Mini Oyunlar, Çeldirici Avı) ana sayfadan ayrılıp bağımsız 'Pratik' sekmesine (`PracticeHubScreen`) taşınması; `AppNavigationBar`'ın 6 sekmeli zengin ve taşmasız dock yapısına yükseltilmesi; `HomeScreen`'in görev hatırlatıcıları, seri uyarıları, son kalınan yer ve günlük çalışma planı odaklı kişisel komuta merkezine dönüştürülmesi | ✅ **Tamamlandı** |
 | **TASK-67** | **Özgün İkon Mimarisi Dönüşümü: Sıradan Lucide İkonlarından `phosphor_flutter` (Duotone, Fill & Bold) Karakteristik İkon Sistemine Geçiş** | Her projede kullanılan sıradan tek çizgili `LucideIcons` ve `Icons.*` kullanımlarının kaldırılarak `phosphor_flutter` paketine geçilmesi; kart ve rozetlerde çift katmanlı `PhosphorIconsDuotone`, alt menü aktif sekmelerinde tok dolgulu `PhosphorIconsFill`, pasif sekme ve aksiyonlarda `PhosphorIconsBold` kullanılması | ✅ **Tamamlandı** |
+| **TASK-68** | **"Tuğrul Evreni" Maskot Çeşitlendirme (12 Özgün Karakter Modu), Etkileşimli Dokun-Konuş (`Tap-to-Inspire`) ve Dinamik Mood Aurası** | Kopya maskot görsellerinin yerine `image-generator` ile Tarihçi, Kâşif, Hukukçu, Haberci, Antrenör, Baş Gözetmen, Analist ve Ateşli Seri Tuğrul illüstrasyonlarının üretilmesi; `MascotCoachBanner` bileşeninin üzerine dokunulduğunda zıplayıp derse/ekrana özel KPSS strateji tüyoları veren etkileşimli (`StatefulWidget`) yapıya ve mood bazlı dinamik aura renklerine yükseltilmesi | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4055,6 +4056,74 @@ ADIM 4: Testlerin Güncellenmesi ve Doğrulama
 1. `test/theme_and_shell_test.dart`, `test/lessons_screen_test.dart`, `test/mascot_coach_banner_test.dart`, `test/overflow_fix_test.dart` ve `test/question_report_test.dart` içindeki ikon beklentilerini yeni `PhosphorIcons` sabitleriyle güncelle.
 2. `docs/task-board.md` içinde `TASK-67` durumunu `✅ **Tamamlandı**` yap.
 3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştırıp doğrula.
+```
+
+---
+
+### 📦 TASK-68: "Tuğrul Evreni" Maskot Çeşitlendirme (12 Özgün Karakter Modu), Etkileşimli Dokun-Konuş (`Tap-to-Inspire`) ve Dinamik Mood Aurası
+
+- **Durum:** ✅ **Tamamlandı**
+- **Kapsam:**
+  - **1. Gerçekten Özgün 12 Tuğrul Karakter Modu (`MascotMood` Genişlemesi):**
+    - Daha önce kopya dosyalardan oluşan ders maskotlarının özgün illüstrasyonlarla yenilenmesi ve yeni ekranlar için 4 yeni karakter modunun eklenmesi:
+      - `coach`: `assets/images/mascot/tugrul_coach.png` (Kadro Baş Koçu)
+      - `victory`: `assets/images/mascot/tugrul_victory.png` (Zafer & Kupa)
+      - `detective`: `assets/images/mascot/tugrul_detective.png` (Yanlış Defteri Dedektifi)
+      - `pro`: `assets/images/mascot/tugrul_pro.png` (VIP Altın Taçlı Tuğrul)
+      - `history`: `assets/images/mascot/tugrul_history.png` (Selçuklu/Osmanlı Börklü & Fermanlı Tarihçi Tuğrul)
+      - `geography`: `assets/images/mascot/tugrul_geography.png` (Kâşif Şapkalı, Pusulalı & Küreli Coğrafyacı Tuğrul)
+      - `citizenship`: `assets/images/mascot/tugrul_citizenship.png` (Hukuk Cübbeli, Adalet Terazili & Anayasa Kitaplı Tuğrul)
+      - `current`: `assets/images/mascot/tugrul_current.png` (Muhabir Gözlüklü, Gazeteli & Mikrofonlu Haberci Tuğrul)
+      - `practice`: `assets/images/mascot/tugrul_practice.png` (Alın Bantlı, Oyun Kollu & Şimşek Kartlı Antrenör Tuğrul — `PracticeHubScreen`)
+      - `exam`: `assets/images/mascot/tugrul_exam.png` (Altın Kronometreli & Optik Formlu Baş Gözetmen Tuğrul — `ExamsScreen`)
+      - `analyst`: `assets/images/mascot/tugrul_analyst.png` (Analist Gözlüklü & Yükselen Grafik Tablolu Stratejist Tuğrul — `StatsScreen` & `StudyPlannerScreen`)
+      - `streak`: `assets/images/mascot/tugrul_streak.png` (Alev Auralı Süper-Seri Tuğrul — Seri Rekorları & Yüksek Motivasyon)
+  - **2. Etkileşimli "Dokun-Konuş" (`Tap-to-Inspire`) Özelliği (`MascotCoachBanner`):**
+    - `MascotCoachBanner` bileşeninin `StatefulWidget` yapısına yükseltilmesi.
+    - Kullanıcı Tuğrul'a veya konuşma balonuna dokunduğunda:
+      - Tuğrul avatarı tatlı bir mikro-sıçrama (`AnimatedScale`) yapar.
+      - O anki `MascotMood` değerine özel tanımlanmış **KPSS Strateji & Ezber Tüyoları Havuzu**ndan (`mood.coachTips`) sıradaki ipucu mesajı konuşma balonunda gösterilir.
+      - Sağ üstte küçük bir `"💡 Tüyo Değiştir"` / dokunma göstergesi yer alır.
+  - **3. Mood'a Özel Dinamik Çerçeve, Aura ve Rozet İkonu (`mood.badgeIcon`):**
+    - Her `MascotMood` kendi karakteristik `PhosphorIconsFill` / `PhosphorIconsDuotone` rozet ikonuna (Tarih -> `scroll`, Coğrafya -> `compass`, Vatandaşlık -> `scales`, Pratik -> `gameController`, Sınav -> `timer`, Analist -> `chartLineUp`, Seri -> `fire`) ve tema uyumlu vurgu rengine sahip olur.
+  - **4. Tüm Ekranlarda Özel Tuğrul Modlarının Kullanılması:**
+    - `PracticeHubScreen` -> `MascotMood.practice`
+    - `ExamsScreen` -> `MascotMood.exam`
+    - `StatsScreen` ve `StudyPlannerScreen` -> `MascotMood.analyst`
+    - `HomeScreen` -> Seri >= 3 veya günlük hedef tamamlandıysa `MascotMood.streak`, değilse `MascotMood.coach`
+    - `LessonsScreen` / `LessonTopicsScreen` / `TopicTestsScreen` -> Derse göre `history`, `geography`, `citizenship`, `current`
+
+```text
+GÖREV: TASK-68 — "Tuğrul Evreni" 12 Karakter Modu, Etkileşimli Dokun-Konuş (Tap-to-Inspire) ve Dinamik Mood Aurası
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Sabit Color(0xFF...) KULLANMA. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: `MascotMood` Genişlemesi ve Koç Tüyoları Havuzu (`lib/shared/widgets/mascot_coach_banner.dart`)
+1. `MascotMood` enum'ına 4 yeni mod ekle:
+   `practice`, `exam`, `analyst`, `streak` (Toplam 12 mod).
+2. `MascotMoodExtension` içine:
+   - `assetPath`: 12 modun her biri için `assets/images/mascot/tugrul_<mood>.png` döndür.
+   - `badgeIcon`: Her moda özel `PhosphorIconsFill` ikonu döndür (`scroll`, `globeHemisphereEast`, `scales`, `newspaperClipping`, `gameController`, `timer`, `chartLineUp`, `fire`, `crown`, `magnifyingGlass`, `trophy`, `GraduationCap`).
+   - `coachTips`: Her moda özel 4'er adet vurucu KPSS tüyosu / ezber şifresi / motivasyon cümlesi (`List<String>`) tanımla (Örn. Tarih için: "💡 KPSS Tüyosu: Islahat Fermanı'nda gayrimüslimlere siyasi hak değil, devlet memuru olma hakkı verilmiştir!", Coğrafya için: "💡 KPSS Tüyosu: Türkiye'de dağlar doğu-batı uzanışlı olduğu için kuzey-güney yönlü ulaşım maliyeti yüksektir!" vb.).
+
+ADIM 2: Etkileşimli `MascotCoachBanner` (`StatefulWidget`)
+1. `MascotCoachBanner` bileşenini `StatefulWidget` yap.
+2. Kullanıcı karta veya Tuğrul avatarına tıkladığında (`InkWell` / `GestureDetector`):
+   - `_tipIndex` değerini artırarak `widget.mood.coachTips` listesindeki sıradaki KPSS tüyosuna geç (başlangıçta `_tipIndex == -1` iken `widget.message` gösterilir).
+   - Avatar üzerinde `AnimatedScale` (150ms) ile hafif bir dokunma tepkisi ver.
+   - Üst rozet satırının sağ tarafında zarif bir `💡 Tüyo Al` (`PhosphorIconsFill.lightbulb`) mikro rozeti göster; tıklandıkça `💡 Tüyo 1/4` şeklinde güncellensin.
+
+ADIM 3: Ekranların Yeni Tuğrul Modlarıyla Eşleştirilmesi
+1. `PracticeHubScreen`: `mood: MascotMood.practice`
+2. `ExamsScreen`: Deneme ekranının en üstüne veya mevcut koç alanına `MascotMood.exam` entegre et.
+3. `StatsScreen`: İstatistik ekranında `MascotMood.analyst` kullan.
+4. `HomeScreen`: `stats.dailySolvedCount >= stats.dailyGoal` ise `MascotMood.streak`, değilse `MascotMood.coach` kullan.
+
+ADIM 4: Test ve Doğrulama
+1. `test/mascot_coach_banner_test.dart` dosyasını genişlet:
+   - 12 `MascotMood` değerinin tamamının doğru `assetPath` ve `coachTips` döndürdüğünü doğrula.
+   - `MascotCoachBanner` üzerine tıklandığında (`tester.tap`) konuşma balonundaki mesajın koç tüyosuyla değiştiğini doğrula.
+2. `docs/task-board.md` içinde `TASK-68` durumunu `✅ **Tamamlandı**` yap.
+3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
 
 ---

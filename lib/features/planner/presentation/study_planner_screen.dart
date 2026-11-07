@@ -55,7 +55,7 @@ class StudyPlannerScreen extends ConsumerWidget {
           children: [
             // 1. Üst Koç Sahnesi
             const MascotCoachBanner(
-              mood: MascotMood.coach,
+              mood: MascotMood.analyst,
               badgeLabel: 'GÜNLÜK KAMP PLANI',
               title: 'Bugünkü Görevlerin',
               message: 'Planlı çalışan kadroyu kapar! Görevlerini tamamla, netlerini her gün istikrarla artır.',

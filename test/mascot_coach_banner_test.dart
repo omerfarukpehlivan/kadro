@@ -4,7 +4,28 @@ import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 void main() {
-  group('TASK-53: MascotMood & MascotMoodExtension Testleri', () {
+  group('TASK-68: MascotMood & MascotMoodExtension (12 Mod) Testleri', () {
+    test('MascotMood tam olarak 12 özgün karakter modu içermeli', () {
+      expect(MascotMood.values.length, 12);
+      expect(
+        MascotMood.values,
+        containsAll([
+          MascotMood.coach,
+          MascotMood.victory,
+          MascotMood.detective,
+          MascotMood.pro,
+          MascotMood.history,
+          MascotMood.geography,
+          MascotMood.citizenship,
+          MascotMood.current,
+          MascotMood.practice,
+          MascotMood.exam,
+          MascotMood.analyst,
+          MascotMood.streak,
+        ]),
+      );
+    });
+
     test('fromLesson metodu ders isimlerini doğru Tuğrul mood varyasyonlarına eşlemeli', () {
       expect(MascotMoodExtension.fromLesson('Tarih'), MascotMood.history);
       expect(MascotMoodExtension.fromLesson('tarih'), MascotMood.history);
@@ -33,7 +54,7 @@ void main() {
       expect(MascotMoodExtension.fromLesson(''), MascotMood.coach);
     });
 
-    test('Tüm MascotMood değerleri geçerli ve boş olmayan PNG dosya yolu döndürmeli', () {
+    test('Tüm 12 MascotMood değeri geçerli assetPath, badgeIcon ve dolu coachTips döndürmeli', () {
       for (final mood in MascotMood.values) {
         final path = mood.assetPath;
         expect(
@@ -42,22 +63,64 @@ void main() {
           reason: '$mood için assetPath boş olamaz',
         );
         expect(
-          path.startsWith('assets/images/mascot/'),
+          path.startsWith('assets/images/mascot/tugrul_'),
           true,
-          reason: '$mood assetPath doğru klasörde olmalı',
+          reason: '$mood assetPath doğru adlandırma kuralında olmalı',
         );
         expect(
           path.endsWith('.png'),
           true,
           reason: '$mood assetPath PNG olmalı',
         );
+
+        // Her mood için badgeIcon doğrulaması
+        expect(mood.badgeIcon, isNotNull);
+
+        // Her mood için en az 4 adet coachTips doğrulaması
+        final tips = mood.coachTips;
+        expect(
+          tips.length >= 4,
+          true,
+          reason: '$mood için en az 4 adet koç tüyosu bulunmalı',
+        );
+        for (final tip in tips) {
+          expect(tip.isNotEmpty, true);
+          expect(tip.contains('💡'), true);
+        }
       }
     });
+
+    test(
+      'Her mood kendine özgü ve karakteristik badgeIcon değerine sahip olmalı',
+      () {
+        expect(MascotMood.coach.badgeIcon, PhosphorIconsFill.graduationCap);
+        expect(MascotMood.victory.badgeIcon, PhosphorIconsFill.trophy);
+        expect(
+          MascotMood.detective.badgeIcon,
+          PhosphorIconsFill.magnifyingGlass,
+        );
+        expect(MascotMood.pro.badgeIcon, PhosphorIconsFill.crown);
+        expect(MascotMood.history.badgeIcon, PhosphorIconsFill.scroll);
+        expect(
+          MascotMood.geography.badgeIcon,
+          PhosphorIconsFill.globeHemisphereEast,
+        );
+        expect(MascotMood.citizenship.badgeIcon, PhosphorIconsFill.scales);
+        expect(
+          MascotMood.current.badgeIcon,
+          PhosphorIconsFill.newspaperClipping,
+        );
+        expect(MascotMood.practice.badgeIcon, PhosphorIconsFill.gameController);
+        expect(MascotMood.exam.badgeIcon, PhosphorIconsFill.timer);
+        expect(MascotMood.analyst.badgeIcon, PhosphorIconsFill.chartLineUp);
+        expect(MascotMood.streak.badgeIcon, PhosphorIconsFill.fire);
+      },
+    );
   });
 
-  group('TASK-53: MascotCoachBanner Widget Testleri', () {
+  group('TASK-68: MascotCoachBanner Widget & Tap-to-Inspire Testleri', () {
     testWidgets(
-      '92x92 borderlı çerçeve yapısında başlık, mesaj ve rozet eksiksiz render edilmeli',
+      'MascotCoachBanner başlık, mesaj ve moda özel rozeti render etmeli',
       (tester) async {
         tester.view.physicalSize = const Size(1080, 2400);
         tester.view.devicePixelRatio = 1.0;
@@ -83,7 +146,8 @@ void main() {
         expect(find.text('TARİH REHBERİ'), findsOneWidget);
         expect(find.text('Tarih Yol Haritası'), findsOneWidget);
         expect(find.text('Tarih konularını adım adım fethet!'), findsOneWidget);
-        expect(find.byIcon(PhosphorIconsFill.trophy), findsOneWidget);
+        expect(find.text('Tüyo Al'), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsFill.scroll), findsOneWidget);
         expect(find.byType(Image), findsOneWidget);
 
         // 92x92 boyutundaki borderlı görsel kutusunu doğrula
@@ -97,6 +161,67 @@ void main() {
           true,
           reason: 'Tuğrul 92x92 borderlı çerçeve kutusunda render edilmeli',
         );
+      },
+    );
+
+    testWidgets(
+      'MascotCoachBanner üzerine dokunulduğunda (Tap-to-Inspire) koç tüyosu sırayla değişmeli',
+      (tester) async {
+        const mood = MascotMood.geography;
+        final tips = mood.coachTips;
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MascotCoachBanner(
+                mood: mood,
+                badgeLabel: 'COĞRAFYA REHBERİ',
+                title: 'Coğrafya Konuları',
+                message: 'Coğrafya için harita odaklı çalış.',
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Başlangıç durumu: orijinal mesaj ve 'Tüyo Al' etiketi
+        expect(find.text('Coğrafya için harita odaklı çalış.'), findsOneWidget);
+        expect(find.text('Tüyo Al'), findsOneWidget);
+
+        // 1. Dokunma (Tap 1) -> 1. tüyoya geçiş
+        await tester.tap(find.byType(MascotCoachBanner));
+        await tester.pumpAndSettle();
+
+        expect(find.text(tips[0]), findsOneWidget);
+        expect(find.text('Tüyo 1/${tips.length}'), findsOneWidget);
+
+        // 2. Dokunma (Tap 2) -> 2. tüyoya geçiş
+        await tester.tap(find.byType(MascotCoachBanner));
+        await tester.pumpAndSettle();
+
+        expect(find.text(tips[1]), findsOneWidget);
+        expect(find.text('Tüyo 2/${tips.length}'), findsOneWidget);
+
+        // 3. Dokunma (Tap 3) -> 3. tüyoya geçiş
+        await tester.tap(find.byType(MascotCoachBanner));
+        await tester.pumpAndSettle();
+
+        expect(find.text(tips[2]), findsOneWidget);
+        expect(find.text('Tüyo 3/${tips.length}'), findsOneWidget);
+
+        // 4. Dokunma (Tap 4) -> 4. tüyoya geçiş
+        await tester.tap(find.byType(MascotCoachBanner));
+        await tester.pumpAndSettle();
+
+        expect(find.text(tips[3]), findsOneWidget);
+        expect(find.text('Tüyo 4/${tips.length}'), findsOneWidget);
+
+        // 5. Dokunma (Tap 5) -> Başa (1. tüyoya) dönmeli
+        await tester.tap(find.byType(MascotCoachBanner));
+        await tester.pumpAndSettle();
+
+        expect(find.text(tips[0]), findsOneWidget);
+        expect(find.text('Tüyo 1/${tips.length}'), findsOneWidget);
       },
     );
   });

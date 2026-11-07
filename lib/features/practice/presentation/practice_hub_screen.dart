@@ -104,7 +104,7 @@ class PracticeHubScreen extends ConsumerWidget {
         children: [
           // 1. Kadro Koçu Maskot Karşılama Kartı
           const MascotCoachBanner(
-            mood: MascotMood.coach,
+            mood: MascotMood.practice,
             badgeLabel: 'ANTRENMAN SAHASI',
             title: 'Çalışma Türleri',
             message: 'Bugün hangi modda pratik yapmak istersin? Test çöz, kartlarla tekrar yap veya oyunlarla hafızanı tazele!',

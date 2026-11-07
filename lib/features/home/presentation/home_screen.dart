@@ -35,8 +35,21 @@ class HomeScreen extends ConsumerWidget {
         children: [
           // 1. Kadro Koçu maskot konuşma balonu
           MascotCoachBanner(
-            mood: MascotMood.coach,
-            title: 'Hoş geldin',
+            mood:
+                (stats.dailySolvedCount >= stats.dailyGoal &&
+                    stats.dailyGoal > 0)
+                ? MascotMood.streak
+                : MascotMood.coach,
+            badgeLabel:
+                (stats.dailySolvedCount >= stats.dailyGoal &&
+                    stats.dailyGoal > 0)
+                ? 'SERİ CANAVARI'
+                : 'KADRO KOÇU',
+            title:
+                (stats.dailySolvedCount >= stats.dailyGoal &&
+                    stats.dailyGoal > 0)
+                ? 'Hedefe Ulaştın!'
+                : 'Hoş geldin',
             message: stats.dailySolvedCount == 0
                 ? 'Ben Kadro Koçun! KPSS Genel Kültür maratonunda bugün ilk pençeyi hangi konuya atıyoruz?'
                 : 'Harika uçuş! Bugün ${stats.dailySolvedCount} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',

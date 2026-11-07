@@ -9,7 +9,7 @@ import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/stats/presentation/quiz_history_screen.dart';
 import 'package:kadro/features/stats/presentation/quiz_session_detail_screen.dart';
-import 'package:kadro/shared/widgets/page_header.dart';
+import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -28,10 +28,11 @@ class StatsScreen extends ConsumerWidget {
       child: ListView(
         padding: AppSpacing.pagePadding(context),
         children: [
-          const PageHeader(
-            icon: PhosphorIconsDuotone.chartBar,
+          const MascotCoachBanner(
+            mood: MascotMood.analyst,
+            badgeLabel: 'PERFORMANS ANALİZİ',
             title: 'İstatistiklerin',
-            subtitle: 'Soru çözdükçe ders bazında netlerin burada görünecek.',
+            message: 'Soru çözdükçe ders bazında netlerin ve eksiklerin burada görünecek. Analizini incele ve stratejik çalış!',
           ),
           AppSpacing.gapMd,
 
