@@ -83,92 +83,92 @@ extension MascotMoodExtension on MascotMood {
     }
   }
 
-  /// Her moda özel 4 adet vurucu KPSS Genel Kültür tüyosu ve ezber şifresi.
+  /// Her moda özel 4 adet KPSS Sınav Formatı, Ders Soru/Konu Dağılımı ve Uygulama Kullanım Rehberi bilgisi.
   List<String> get coachTips {
     switch (this) {
       case MascotMood.coach:
         return const [
-          '💡 Koç Tüyosu: Günde 30 soru çözerek 1 yılda 10.000+ soru biriktirir ve dereceye ulaşırsın!',
-          '💡 Koç Tüyosu: Soru çözerken saat tutmak net hızını %25 artırır; turlama taktiğini ihmal etme!',
-          '💡 Koç Tüyosu: Düzenli günlük tekrar, haftada tek gün saatlerce çalışmaktan 3 kat daha kalıcıdır.',
-          '💡 Koç Tüyosu: Yanlış yaptığın her soru, gerçek sınavda kazanacağın potansiyel +1 net demektir!',
+          '💡 KPSS Genel Kültür: Sınavda toplam 60 soru sorulur (Tarih 27, Coğrafya 18, Vatandaşlık 9, Güncel Bilgiler 6) ve 65 dakika süre verilir.',
+          '💡 Puan Hesabı: KPSS\'de 4 yanlış 1 doğruyu götürür. Emin olmadığın soruları boş bırakmak netini korur.',
+          '💡 Uygulama Rehberi: Ana sayfadaki Çalışma Planlayıcı ve Pomodoro sayacı ile günlük soru ve süre hedeflerini takip edebilirsin.',
+          '💡 Çalışma Modları: Pratik sekmesinden Konu Testi, Bilgi Kartları, Yanlış Defteri ve 60 Saniyede Pençe modlarına ulaşabilirsin.',
         ];
       case MascotMood.victory:
         return const [
-          '💡 Zafer Tüyosu: Tebrikler! Başarı bir varış noktası değil, her gün tekrarlanan disiplinli bir alışkanlıktır.',
-          '💡 Zafer Tüyosu: Yüksek netin sırrı konsantrasyondur; bu tempoyu koruyarak ilk 1000 hedefine koş!',
-          '💡 Zafer Tüyosu: Zafer Karnesi ile başarına ortak ol; Instagram veya WhatsApp\'ta arkadaşlarınla paylaş!',
-          '💡 Zafer Tüyosu: Zirveye çıkmak zordur ama orada kalmak istikrar gerektirir, seriyi bırakma!',
+          '💡 Karne Rehberi: Bu ekranda çözdüğün testin Doğru, Yanlış, Boş sayılarını ve 4 yanlış 1 doğru düşülmüş gerçek KPSS Netini görürsün.',
+          '💡 Yanlış Defteri Köprüsü: Testte yanlış yaptığın sorular otomatik olarak Yanlış Defteri\'ne eklenir; oradan tekrar çözebilirsin.',
+          '💡 Zafer Karnesi Paylaşımı: Sonuç ekranındaki paylaş butonuyla 9:16 hikaye formatında net karneni oluşturup paylaşabilirsin.',
+          '💡 Kadro Ligi & XP: Tamamladığın her test ve doğru cevap sana XP kazandırır; haftalık ligde üst kademelere yükselirsin.',
         ];
       case MascotMood.detective:
         return const [
-          '💡 Dedektif Tüyosu: ÖSYM çeldiricileri genellikle en tanıdık gelen ama detayda yanıltan öncüllerdir.',
-          '💡 Dedektif Tüyosu: "Yalnızca", "her zaman", "tümü" gibi mutlak kelimeler içeren seçenekleri iki kez oku!',
-          '💡 Dedektif Tüyosu: Yanlış Defteri\'ndeki soruları aralıklı tekrarlarla çözerek kalıcı hafızaya kazı.',
-          '💡 Dedektif Tüyosu: Soru kökünün olumlu mu ("ulaşılabilir") olumsuz mu ("değildir") olduğunu mutlaka çiz!',
+          '💡 Yanlış Defteri Nasıl Çalışır?: Testlerde yanlış işaretlediğin her soru otomatik olarak bu havuza kaydedilir.',
+          '💡 Otomatik Temizleme: Yanlış Defteri\'ndeki bir soruyu tekrar çözdüğünde doğru yaparsan soru defterden otomatik olarak silinir.',
+          '💡 Ders Filtresi: Üstteki sekmelerden sadece Tarih, Coğrafya, Vatandaşlık veya Güncel Bilgiler yanlışlarını filtreleyip çözebilirsin.',
+          '💡 ÖSYM Çeldirici Tuzağı: Soru çözümlerindeki kehribar renkli uyarı kutuları, adayların en çok düştüğü yanıltıcı şıkkı açıklar.',
         ];
       case MascotMood.pro:
         return const [
-          '💡 VIP Koç Tüyosu: Kadro PRO ile internetsiz metroda veya kütüphanede çevrimdışı deneme çözebilirsin!',
-          '💡 VIP Koç Tüyosu: Detaylı ÖSYM Çeldirici Tuzağı analizi seni adayların %90\'ının önüne geçirir.',
-          '💡 VIP Koç Tüyosu: Sınırsız soru hakkıyla her gün en zayıf konudan 50 soru çözerek açığını kapat.',
-          '💡 VIP Koç Tüyosu: PRO analiz raporlarında en çok vakit kaybettiğin soru kalıplarını analiz et.',
+          '💡 Kadro PRO Avantajı: Günlük 30 soru sınırını kaldırarak tüm ders ve denemelerde sınırsız soru çözümü sağlar.',
+          '💡 Çevrimdışı (Offline) Mod: Konu testlerini ve denemeleri telefonuna indirerek internet olmadan metroda veya kütüphanede çözebilirsin.',
+          '💡 Reklamsız Deneyim: Kadro PRO üyeliği ile reklam beklemeden kesintisiz odaklanma ve detaylı çeldirici analizleri açılır.',
+          '💡 Bulut Senkronizasyonu: Tüm test geçmişin, yanlış defterin ve istatistiklerin hesabınla eşleşerek güvende tutulur.',
         ];
       case MascotMood.history:
         return const [
-          '💡 Tarih Şifresi: Islahat Fermanı\'nda gayrimüslimlere siyasi hak değil, devlet memuru olma hakkı tanınmıştır!',
-          '💡 Tarih Şifresi: İlk Türk devletlerinde kut anlayışı egemenliğin ilahi kaynaklı olduğunu gösterir; yerleşik hayatta da sürer.',
-          '💡 Tarih Şifresi: Amasya Genelgesi, Kurtuluş Savaşı\'nın amaç, gerekçe ve yöntemini belirten ilk ihtilal belgesidir.',
-          '💡 Tarih Şifresi: Lozan Barış Antlaşması\'nda çözülemeyip sonraya bırakılan tek konu Musul (Irak Sınırı) sorunudur.',
+          '💡 KPSS Tarih Ağırlığı: Genel Kültür testindeki 60 sorunun 27\'si (%45\'i) Tarih dersinden gelir; sınavın en yüksek puanlı dersidir.',
+          '💡 Konu Dağılımı (1/2): İslamiyet Öncesi (1-2 soru), İlk Türk-İslam (1-2 soru) ve Osmanlı Tarihi (9-11 soru) ilk bölümü oluşturur.',
+          '💡 Konu Dağılımı (2/2): İnkılap Tarihi / Kurtuluş Savaşı ile Atatürk İlke ve İnkılapları (~12 soru) ve Çağdaş Dünya Tarihi (3 soru) yer alır.',
+          '💡 Uygulama Yapısı: Tarih bölümü 7 ana üniteye ve kolaydan zora sıralanmış 10\'ar soruluk seviye testlerine ayrılmıştır.',
         ];
       case MascotMood.geography:
         return const [
-          '💡 Coğrafya Şifresi: Türkiye\'de dağlar doğu-batı uzanışlı olduğu için kuzey-güney ulaşımında geçitler kullanılır.',
-          '💡 Coğrafya Şifresi: Gerçek alan ile izdüşüm alan arasındaki farkın en fazla olduğu bölge Doğu Anadolu, en az Marmara\'dır.',
-          '💡 Coğrafya Şifresi: Türkiye\'de falezler en çok dağların denize paralel uzandığı Doğu Karadeniz ve Batı Akdeniz\'dedir.',
-          '💡 Coğrafya Şifresi: Karstik göller ve aşınım şekilleri en yoğun Akdeniz (Teke ve Taşeli platoları) bölgesindedir.',
+          '💡 KPSS Coğrafya Ağırlığı: Genel Kültür testindeki 60 sorunun 18\'i (%30\'u) Coğrafya dersinden sorulmaktadır.',
+          '💡 Fiziki Coğrafya Konuları: Türkiye\'nin Coğrafi Konumu, Yer Şekilleri, İklimi, Su-Toprak-Bitki varlığı (~7-8 soru) ilk kısmı oluşturur.',
+          '💡 Beşeri & Ekonomik Konular: Türkiye\'de Nüfus ve Yerleşme (~3 soru) ile Tarım, Hayvancılık, Madenler, Sanayi ve Ulaşım (~7-8 soru) yer alır.',
+          '💡 Uygulama Yapısı: Coğrafya yol haritasındaki 6 konunun tamamındaki testleri bitirdiğinde konu kartına yeşil onay işareti eklenir.',
         ];
       case MascotMood.citizenship:
         return const [
-          '💡 Vatandaşlık Şifresi: 1982 Anayasası\'na göre kanun teklif etmeye milletvekilleri yetkilidir; Cumhurbaşkanı bütçe hariç teklif veremez.',
-          '💡 Vatandaşlık Şifresi: Anayasa Mahkemesi 15 üyeden oluşur; 12 üyeyi Cumhurbaşkanı, 3 üyeyi TBMM seçer.',
-          '💡 Vatandaşlık Şifresi: Yönetmelikleri Cumhurbaşkanı, bakanlıklar ve kamu tüzel kişileri çıkarabilir.',
-          '💡 Vatandaşlık Şifresi: Memurlukta adaylık süresi en az 1 yıl, en çok 2 yıldır; adaylık süresinde başka kuruma nakil yapılamaz.',
+          '💡 KPSS Vatandaşlık Ağırlığı: Genel Kültür testindeki 60 sorunun 9\'u (%15\'i) Vatandaşlık (Anayasa) dersinden gelir.',
+          '💡 Konu Dağılımı: Temel Hukuk Kavramları (2-3 soru), 1982 Anayasası, Temel Haklar, Yasama, Yürütme ve Yargı (4-5 soru) sorulur.',
+          '💡 İdare Hukuku: Vatandaşlık testinin son 2-3 sorusu İdare Hukuku (Merkezi/Yerinden Yönetim ve Memurluk) konularından çıkar.',
+          '💡 Uygulama Yapısı: Bu bölümdeki 6 konuyu sırayla çözebilir, karıştırdığın kavramları Pratik sekmesindeki Bilgi Kartları ile tekrar edebilirsin.',
         ];
       case MascotMood.current:
         return const [
-          '💡 Güncel Bilgiler: UNESCO Dünya Mirası Listesi\'ndeki en son Türk kültür ve tabiat varlıklarını sınav öncesi mutlaka gözden geçir.',
-          '💡 Güncel Bilgiler: Türkiye\'nin üye olduğu uluslararası kuruluşlar (NATO, BM, G20, Türk Devletleri Teşkilatı) her yıl soru getirir.',
-          '💡 Güncel Bilgiler: Nobel ödülleri, uzay misyonları ve uluslararası spor başarıları son 1 yılın en sıcak konularıdır.',
-          '💡 Güncel Bilgiler: Türkiye\'nin milli teknoloji hamlesi projeleri (Togg, KAAN, TCG Anadolu) potansiyel sınav sorularıdır.',
+          '💡 KPSS Güncel Bilgiler Ağırlığı: Genel Kültür testinin son 6 sorusu (%10\'u) Güncel Bilgiler ve Sosyoekonomik Gelişmelerden oluşur.',
+          '💡 Kapsam (1/2): Türkiye ve Dünya Gündemi, Uluslararası Kuruluşlar (BM, NATO, Türk Devletleri Teşkilatı) ve Zirveler sorulur.',
+          '💡 Kapsam (2/2): Kültür, Sanat, Edebiyat, Bilim-Teknoloji hamleleri, UNESCO Miras Listesi ve Olimpiyat/Spor başarıları yer alır.',
+          '💡 Uygulama Yapısı: Güncel Bilgiler bölümü 6 alt başlıktan oluşur; hızlı tekrar için Bilgi Kartları modunu da kullanabilirsin.',
         ];
       case MascotMood.practice:
         return const [
-          '💡 Pratik Tüyosu: Farklı modları harmanla: Önce hap kartlarla oku, sonra konu testi çöz, en son blitz ile hızlan!',
-          '💡 Pratik Tüyosu: 60 Saniyede Pençe antrenmanı, zihindeki tereddütleri siler ve sınavdaki refleks karar hızını ikiye katlar.',
-          '💡 Pratik Tüyosu: Kavram Eşleştirme tahtası, Tarih antlaşmaları ve Coğrafya madenlerini ezberlemenin en pratik yoludur.',
-          '💡 Pratik Tüyosu: Yanlış defterini her pazar temizlemeyi rutin haline getir; netlerin hızla tırmansın!',
+          '💡 Antrenman Sahası: Bu ekranda klasik test dışında 6 farklı interaktif çalışma ve tekrar aracına tek merkezden erişebilirsin.',
+          '💡 Bilgi Kartları & Eşleştirme: Hap bilgileri ön/arka kartlarla ezberleyebilir veya Kavram Eşleştirme tahtasında terimleri eşleştirebilirsin.',
+          '💡 60 Saniyede Pençe & Çeldirici Avı: 60 saniyelik Doğru/Yanlış düellosu ile hız kazanabilir, ÖSYM Tuzak Soruları ile çeldiricileri öğrenebilirsin.',
+          '💡 Pomodoro & Sınav Sayacı: En alttaki sayaç kartından KPSS geri sayımını takip edebilir ve dikey/yatay masa saatiyle odaklanabilirsin.',
         ];
       case MascotMood.exam:
         return const [
-          '💡 Deneme Tüyosu: Genel Kültür 60 soru için 65 dakikadır; soru başına ortalama 65 saniye hedefin olsun.',
-          '💡 Deneme Tüyosu: Turlama Taktiği: İlk turda sadece kesin bildiklerini çöz, şüphelilere işaret koyup ikinci turda dön!',
-          '💡 Deneme Tüyosu: 4 yanlış 1 doğruyu götürür; iki şık arasında kalmadığın sürece kesinlikle tahminle işaretleme yapma!',
-          '💡 Deneme Tüyosu: Deneme biter bitmez hemen boş ve yanlışlarını incele; denemenin asıl faydası karne analizindedir.',
+          '💡 KPSS Genel Kültür Provası: Gerçek sınavda 60 soru (27 Tarih, 18 Coğrafya, 9 Vatandaşlık, 6 Güncel) için 65 dakika süre verilir.',
+          '💡 Süreli Deneme Motoru: Denemeyi başlattığında üstte geri sayım sayacı çalışır ve bitirdiğinde 4 yanlış 1 doğru net hesabın çıkarılır.',
+          '💡 Kamp & Mola Denemeleri: Tam 65 dakikalık Türkiye Geneli prova dışında 30 soruluk Kamp veya 15 soruluk Hızlı Mola denemesi çözebilirsin.',
+          '💡 Çözülen Deneme Takibi: Bitirdiğin denemelerin üzerinde son yaptığın net puanı yazar; dilediğin zaman "Denemeyi Tekrar Çöz" diyebilirsin.',
         ];
       case MascotMood.analyst:
         return const [
-          '💡 Analiz Tüyosu: Netlerin plato çizdiğinde en zayıf dersine odaklanıp oradan 10\'ar soruluk mikro testler çöz.',
-          '💡 Analiz Tüyosu: KPSS Lisans\'ta Tarih (%45) ve Coğrafya (%30) Genel Kültür puanının %75\'ini belirler; öncelik ver.',
-          '💡 Analiz Tüyosu: Soru başına çözüm süren 50 saniyenin altındaysa harika hızdasın; doğruluğu korumaya dikkat et.',
-          '💡 Analiz Tüyosu: Haftalık Kadro Ligi\'nde üst sıralara tırmanmak için her gün en az 1 test çözerek çarpanını koru.',
+          '💡 İstatistik & Analiz: Bu ekranda çözdüğün tüm soruların ders bazlı doğruluk oranlarını ve soru başına ortalama çözüm süreni görürsün.',
+          '💡 Ders Ustalık Seviyesi: Başarı oranına göre derslerin "Kritik (<%50)", "Gelişiyor (%50-79)" ve "Usta (%80+)" olarak sınıflandırılır.',
+          '💡 Çözülen Testler Arşivi: Daha önce tamamladığın tüm testlerin tarih, doğru/yanlış ve net geçmişini buradan inceleyebilirsin.',
+          '💡 Kadro Ligi & Rozetler: Topladığın XP puanlarıyla Bronz, Gümüş, Altın ve Müsteşar Ligi kademelerinde sıralamanı takip edebilirsin.',
         ];
       case MascotMood.streak:
         return const [
-          '💡 Seri Canavarı: Seri (streak) ateşi yanarken öğrenme motivasyonu zirvededir; zinciri asla kırma!',
-          '💡 Seri Canavarı: Günde sadece 5 soru bile çözsen serin korunur; yorgun günlerde bile en azından 1 mini test çöz.',
-          '💡 Seri Canavarı: 7 günlük kesintisiz seri tamamladığında Kadro Ligi\'nde +50 bonus XP kazanırsın!',
-          '💡 Seri Canavarı: Başarı her gün tekrarlanan küçük adımların toplamıdır; serin senin disiplin kalkanındır!',
+          '💡 Günlük Seri (Streak) Nedir?: Uygulamada her gün en az 1 soru çözdüğünde günlük çalışma serin kesintisiz olarak artar.',
+          '💡 Günlük Soru Hedefi: Profil ekranından günlük soru hedefini (30, 50 veya 100 soru) kendi çalışma tempona göre değiştirebilirsin.',
+          '💡 Görev Hatırlatıcıları: Ana sayfadaki hatırlatıcı kartı, o gün kalan soru sayını ve bekleyen çalışma planı görevlerini özetler.',
+          '💡 Zayıf Konu Tespiti: Uygulama en çok yanlış yaptığın dersi otomatik tespit eder ve ana sayfada 10 soruluk güçlendirme testi sunar.',
         ];
     }
   }
