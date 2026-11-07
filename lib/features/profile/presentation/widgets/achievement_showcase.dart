@@ -202,9 +202,8 @@ class _BadgeTile extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             badge.title,
-            style: theme.textTheme.labelSmall?.copyWith(
+            style: theme.textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
-              fontSize: 11,
               color: badge.isUnlocked
                   ? colorScheme.onSurface
                   : colorScheme.onSurfaceVariant.withAlpha(150),
@@ -217,7 +216,6 @@ class _BadgeTile extends StatelessWidget {
           Text(
             badge.progressText,
             style: theme.textTheme.labelSmall?.copyWith(
-              fontSize: 9,
               color: badge.isUnlocked
                   ? colorScheme.secondary
                   : colorScheme.outline,

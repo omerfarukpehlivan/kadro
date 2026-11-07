@@ -42,6 +42,82 @@ void main() {
         equals(const Color(0xFF334155)),
       );
     });
+
+    test('TASK-72: 15 M3 metin stilinin tamamı hiyerarşik ve doğru font boyutlarına sahiptir', () {
+      final textTheme = AppTheme.light.textTheme;
+
+      // Başlık Hiyerarşisi (displayLarge > displayMedium > displaySmall > headlineLarge > headlineMedium > headlineSmall > titleLarge > titleMedium > titleSmall)
+      expect(textTheme.displayLarge?.fontSize, equals(32.0));
+      expect(textTheme.displayMedium?.fontSize, equals(28.0));
+      expect(textTheme.displaySmall?.fontSize, equals(24.0));
+      expect(textTheme.headlineLarge?.fontSize, equals(22.0));
+      expect(textTheme.headlineMedium?.fontSize, equals(20.0));
+      expect(textTheme.headlineSmall?.fontSize, equals(18.0));
+      expect(textTheme.titleLarge?.fontSize, equals(16.5));
+      expect(textTheme.titleMedium?.fontSize, equals(15.0));
+      expect(textTheme.titleSmall?.fontSize, equals(13.5));
+
+      expect(
+        textTheme.displayLarge!.fontSize!,
+        greaterThan(textTheme.displayMedium!.fontSize!),
+      );
+      expect(
+        textTheme.displayMedium!.fontSize!,
+        greaterThan(textTheme.displaySmall!.fontSize!),
+      );
+      expect(
+        textTheme.displaySmall!.fontSize!,
+        greaterThan(textTheme.headlineLarge!.fontSize!),
+      );
+      expect(
+        textTheme.headlineLarge!.fontSize!,
+        greaterThan(textTheme.headlineMedium!.fontSize!),
+      );
+      expect(
+        textTheme.headlineMedium!.fontSize!,
+        greaterThan(textTheme.headlineSmall!.fontSize!),
+      );
+      expect(
+        textTheme.headlineSmall!.fontSize!,
+        greaterThan(textTheme.titleLarge!.fontSize!),
+      );
+      expect(
+        textTheme.titleLarge!.fontSize!,
+        greaterThan(textTheme.titleMedium!.fontSize!),
+      );
+      expect(
+        textTheme.titleMedium!.fontSize!,
+        greaterThan(textTheme.titleSmall!.fontSize!),
+      );
+
+      // Gövde Hiyerarşisi (bodyLarge > bodyMedium > bodySmall)
+      expect(textTheme.bodyLarge?.fontSize, equals(15.0));
+      expect(textTheme.bodyMedium?.fontSize, equals(13.5));
+      expect(textTheme.bodySmall?.fontSize, equals(12.0));
+
+      expect(
+        textTheme.bodyLarge!.fontSize!,
+        greaterThan(textTheme.bodyMedium!.fontSize!),
+      );
+      expect(
+        textTheme.bodyMedium!.fontSize!,
+        greaterThan(textTheme.bodySmall!.fontSize!),
+      );
+
+      // Etiket Hiyerarşisi (labelLarge > labelMedium > labelSmall)
+      expect(textTheme.labelLarge?.fontSize, equals(13.0));
+      expect(textTheme.labelMedium?.fontSize, equals(11.5));
+      expect(textTheme.labelSmall?.fontSize, equals(10.5));
+
+      expect(
+        textTheme.labelLarge!.fontSize!,
+        greaterThan(textTheme.labelMedium!.fontSize!),
+      );
+      expect(
+        textTheme.labelMedium!.fontSize!,
+        greaterThan(textTheme.labelSmall!.fontSize!),
+      );
+    });
   });
 
   group('Shell Modernizasyon Testleri', () {

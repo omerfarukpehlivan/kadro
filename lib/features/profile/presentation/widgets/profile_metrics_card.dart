@@ -163,8 +163,8 @@ class _MetricItem extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w900,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w800,
             color: colorScheme.onSurface,
           ),
         ),
@@ -173,7 +173,6 @@ class _MetricItem extends StatelessWidget {
           label,
           style: theme.textTheme.labelSmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
-            fontSize: 10,
           ),
           textAlign: TextAlign.center,
           maxLines: 1,

@@ -350,7 +350,7 @@ class _ExamPackCard extends ConsumerWidget {
                   children: [
                     Text(
                       title,
-                      style: theme.textTheme.titleSmall?.copyWith(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: colorScheme.onSurface,
                       ),

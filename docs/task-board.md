@@ -95,7 +95,8 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-68** | **"Tuğrul Evreni" Maskot Çeşitlendirme (12 Özgün Karakter Modu), Etkileşimli Dokun-Konuş (`Tap-to-Inspire`) ve Dinamik Mood Aurası** | Kopya maskot görsellerinin yerine `image-generator` ile Tarihçi, Kâşif, Hukukçu, Haberci, Antrenör, Baş Gözetmen, Analist ve Ateşli Seri Tuğrul illüstrasyonlarının üretilmesi; `MascotCoachBanner` bileşeninin üzerine dokunulduğunda zıplayıp derse/ekrana özel KPSS strateji tüyoları veren etkileşimli (`StatefulWidget`) yapıya ve mood bazlı dinamik aura renklerine yükseltilmesi | ✅ **Tamamlandı** (`ede6127`) |
 | **TASK-69** | **`AppTopBar` / `AppBar` Uzun Başlık Taşması (Overflow) Düzeltmesi & Pratik Sekmesi Akademik İkon/Maskot/Söylem Revizyonu (Oyun Kolu İkonunun Kaldırılması)** | `AppTopBar` içindeki sayfa başlığı (`Row` -> `Text`) sığmadığında oluşan `RenderFlex overflow` hatasının `Flexible` + `TextOverflow.ellipsis` ve kompakt font ölçeklemesiyle giderilmesi; diğer tüm `AppBar` başlıklarının taşmaya karşı korunması; Pratik sekmesindeki ve `MascotMood.practice` modundaki `gameController` (oyun kolu) ikonunun ve oyun söylemlerinin kaldırılarak ciddi akademik hedef/antrenman (`PhosphorIconsBold.target` / `PhosphorIconsFill.target`) ikonuna ve soru çözüm odaklı Tuğrul görseline dönüştürülmesi | ✅ **Tamamlandı** (`865e05f`) |
 | **TASK-70** | **Sonuç Ekranlarında "Tek Bakışta Sıfır Kaydırma" (`Zero-Scroll Single-Viewport`) Kompakt UI/UX Dönüşümü (`QuizResultScreen`, `_BlitzSummaryView`, `_FlashcardsSummaryView`)** | Test Sonu Karnesi (`QuizResultScreen`), 60 Saniyede Pençe Özeti (`_BlitzSummaryView`) ve Bilgi Kartları Özeti (`_FlashcardsSummaryView`) ekranlarındaki aşırı büyük kart dolgularının (`padding: 24`), devasa fontların (`displayMedium` / `headlineMedium`) ve geniş boşlukların (`gapLg`) kompaktlaştırılması; tüm skorların ve aksiyon butonlarının kullanıcıya scroll yaptırmadan tek ekranda görünmesi | ✅ **Tamamlandı** (`9862149`) |
-| **TASK-71** | **Mobil Ekranlar İçin `AppBar` ve Alt Detay Sayfası Başlık Tipografisi Ölçeklemesi (Kesilmeleri Önleyen Kompakt Başlık Sistemi)** | M3 varsayılan `22px` (`titleLarge`) `AppBar` başlıklarının Türkçe ders/konu adlarında (`'Tarih Konuları'`, `'Güncel Bilgiler Konuları'`, `'İslamiyet Öncesi Türk Tarihi'`) aşırı büyük durup kesilmesini (`...`) önlemek için global `AppBarTheme` başlık stilinin (`16px`), `titleSpacing: 0` boşluğunun, `TopicTestsScreen` / `LessonTopicsScreen` / `QuizScreen` / `AppTopBar` ve `MascotCoachBanner` başlık boyutlarının mobil ekranlara uygun zarif ölçeğe çekilmesi | ✅ **Tamamlandı** |
+| **TASK-71** | **Mobil Ekranlar İçin `AppBar` ve Alt Detay Sayfası Başlık Tipografisi Ölçeklemesi (Kesilmeleri Önleyen Kompakt Başlık Sistemi)** | M3 varsayılan `22px` (`titleLarge`) `AppBar` başlıklarının Türkçe ders/konu adlarında (`'Tarih Konuları'`, `'Güncel Bilgiler Konuları'`, `'İslamiyet Öncesi Türk Tarihi'`) aşırı büyük durup kesilmesini (`...`) önlemek için global `AppBarTheme` başlık stilinin (`16px`), `titleSpacing: 0` boşluğunun, `TopicTestsScreen` / `LessonTopicsScreen` / `QuizScreen` / `AppTopBar` ve `MascotCoachBanner` başlık boyutlarının mobil ekranlara uygun zarif ölçeğe çekilmesi | ✅ **Tamamlandı** (`d8f663b`) |
+| **TASK-72** | **Proje Genelinde Standart Tipografi & Font-Size Ölçek Sistemi (`AppTheme` 12 Seviyeli Modüler Tipografi Standardı & Sıfır Hardcoded `fontSize`)** | `lib/app/theme.dart` içinde `displayLarge`'dan `labelSmall`'a kadar tüm 15 M3 metin stilinin birbiriyle uyumlu matematiksel mobil ölçeğe (`28 / 22 / 19 / 17 / 15.5 / 14 / 15 / 13.5 / 12 / 13 / 11.5 / 10.5 px`) bağlanması; `lib/app/theme.dart` dışındaki tüm ekranlarda dağınık `fontSize:` ezme (override) kullanımlarının temizlenmesi ve ekranlar arası başlık/kart/metrik tipografi rollerinin standartlaştırılması | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4290,6 +4291,77 @@ ADIM 4: Test ve Doğrulama
 1. `test/overflow_fix_test.dart` içine 360x640 dar mobil ekranda `LessonTopicsScreen` (`'Güncel Bilgiler Konuları'` ve `'Tarih Konuları'`) ve `TopicTestsScreen` (`'İslamiyet Öncesi Türk Tarihi'`) açıldığında başlıkların taşma yapmadan ve `titleMedium` / `titleSmall` ölçeğinde (`fontSize <= 16`) render edildiğini doğrulayan bir widget testi ekle.
 2. `docs/task-board.md` içinde `TASK-71` durumunu `✅ **Tamamlandı**` yap.
 3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
+```
+
+---
+
+### 📦 TASK-72: Proje Genelinde Standart Tipografi & Font-Size Ölçek Sistemi (`AppTheme` Modüler Tipografi Standardı & Sıfır Hardcoded `fontSize`)
+
+- **Durum:** ✅ **Tamamlandı**
+- **Problem Analizi:**
+  - `lib/app/theme.dart` içinde yalnızca 4 başlık stiline (`headlineSmall`, `titleLarge`, `titleMedium`, `titleSmall`) açık `fontSize` verilmiş; diğer stiller (`display*`, `headlineLarge/Medium`, `bodyLarge/Medium/Small`, `labelLarge/Medium/Small`) ham Material 3 varsayılanlarında bırakılmıştır.
+  - Ayrıca 7 farklı dosyada (`home_screen.dart`, `practice_hub_screen.dart`, `mascot_coach_banner.dart`, `achievement_showcase.dart`, `candidate_hero_card.dart`, `profile_metrics_card.dart`, `app_navigation_bar.dart`) yerel `fontSize: 9`, `9.5`, `10`, `10.5`, `11` gibi manuel ezmeler (overrides) bulunmakta; farklı ekranlarda aynı hiyerarşideki kart başlıkları (`HomeScreen` `headlineSmall` 20px vs `ExamsScreen` `titleSmall` 14px vs `LessonsScreen` `titleMedium` 15.5px) farklı boyutlar kullanmaktadır.
+- **Kadro Standart Mobil Tipografi Ölçeği (`lib/app/theme.dart`):**
+  - `displayLarge`: `32px`, `w800`, `height: 1.15`, `letterSpacing: -0.5`
+  - `displayMedium`: `28px`, `w800`, `height: 1.15`, `letterSpacing: -0.4`
+  - `displaySmall`: `24px`, `w800`, `height: 1.20`, `letterSpacing: -0.35` (Hikaye paylaşım kartı net skoru)
+  - `headlineLarge`: `22px`, `w800`, `height: 1.20`, `letterSpacing: -0.3`
+  - `headlineMedium`: `20px`, `w800`, `height: 1.25`, `letterSpacing: -0.25` (Karne ana net skoru)
+  - `headlineSmall`: `18px`, `w700`, `height: 1.25`, `letterSpacing: -0.2` (Büyük özet metrikleri, boş durum ana başlıkları)
+  - `titleLarge`: `16.5px`, `w700`, `height: 1.30`, `letterSpacing: -0.2` (`PageHeader`, `CandidateHeroCard` aday adı, özet istatistik sayıları)
+  - `titleMedium`: `15px`, `w700`, `height: 1.30`, `letterSpacing: -0.15` (**Standart `AppBar` / `AppTopBar` Sayfa Başlığı**, **Tam Genişlik Ana Kart Başlıkları** (`LessonsScreen`, `ExamsScreen`, `HomeScreen`), **`SectionTitle`**)
+  - `titleSmall`: `13.5px`, `w700`, `height: 1.30`, `letterSpacing: -0.1` (**Alt Detay `AppBar` Başlığı**, **`MascotCoachBanner` Başlığı**, **2'li Grid ve Liste Kart Başlıkları**)
+  - `bodyLarge`: `15px`, `w500`, `height: 1.45`, `letterSpacing: 0` (**Soru Kökü Metni**, Bilgi Kartı ana metni)
+  - `bodyMedium`: `13.5px`, `w400`, `height: 1.40`, `letterSpacing: 0` (**Şık Metinleri (`OptionTile`)**, standart gövde metni)
+  - `bodySmall`: `12px`, `w400`, `height: 1.35`, `letterSpacing: 0` (**Kart Alt Açıklamaları**, `MascotCoachBanner` konuşma balonu, soru çözüm açıklaması)
+  - `labelLarge`: `13px`, `w700`, `height: 1.20`, `letterSpacing: 0.1` (Birincil/İkincil Buton metinleri)
+  - `labelMedium`: `11.5px`, `w700`, `height: 1.20`, `letterSpacing: 0.1` (Üst bar rozetleri, çipler, orta etiketler)
+  - `labelSmall`: `10.5px`, `w700`, `height: 1.15`, `letterSpacing: 0.1` (**Tüm Mikro Rozetler / Pill Etiketler / Alt Menü Etiketleri**)
+
+```text
+GÖREV: TASK-72 — Proje Genelinde Standart Tipografi & Font-Size Ölçek Sistemi (AppTheme Modüler Tipografi Standardı & Sıfır Hardcoded fontSize)
+ÖNEMLİ: GEMINI.md kuralı gereği sabit `fontSize` YALNIZCA `lib/app/theme.dart` içinde tanımlanabilir! Diğer hiçbir dosyada `fontSize:` parametresi KULLANMA; her yerde `Theme.of(context).textTheme` rollerini kullan.
+
+ADIM 1: `lib/app/theme.dart` İçinde 15 Metin Stilinin Tamamını Standartlaştırma
+1. `lib/app/theme.dart` içindeki `_buildTextTheme(TextTheme base)` metodunda hem `FLUTTER_TEST` erken dönüşünde hem de `GoogleFonts` dönüşünde 15 M3 stilinin tamamını şu standart ölçekle tanımla:
+   - Başlıklar (`Plus Jakarta Sans`):
+     - `displayLarge`: `fontSize: 32, fontWeight: FontWeight.w800, height: 1.15, letterSpacing: -0.5`
+     - `displayMedium`: `fontSize: 28, fontWeight: FontWeight.w800, height: 1.15, letterSpacing: -0.4`
+     - `displaySmall`: `fontSize: 24, fontWeight: FontWeight.w800, height: 1.20, letterSpacing: -0.35`
+     - `headlineLarge`: `fontSize: 22, fontWeight: FontWeight.w800, height: 1.20, letterSpacing: -0.3`
+     - `headlineMedium`: `fontSize: 20, fontWeight: FontWeight.w800, height: 1.25, letterSpacing: -0.25`
+     - `headlineSmall`: `fontSize: 18, fontWeight: FontWeight.w700, height: 1.25, letterSpacing: -0.2`
+     - `titleLarge`: `fontSize: 16.5, fontWeight: FontWeight.w700, height: 1.30, letterSpacing: -0.2`
+     - `titleMedium`: `fontSize: 15, fontWeight: FontWeight.w700, height: 1.30, letterSpacing: -0.15`
+     - `titleSmall`: `fontSize: 13.5, fontWeight: FontWeight.w700, height: 1.30, letterSpacing: -0.1`
+   - Gövde ve Etiketler (`Inter`):
+     - `bodyLarge`: `fontSize: 15, fontWeight: FontWeight.w500, height: 1.45`
+     - `bodyMedium`: `fontSize: 13.5, fontWeight: FontWeight.w400, height: 1.40`
+     - `bodySmall`: `fontSize: 12, fontWeight: FontWeight.w400, height: 1.35`
+     - `labelLarge`: `fontSize: 13, fontWeight: FontWeight.w700, height: 1.20, letterSpacing: 0.1`
+     - `labelMedium`: `fontSize: 11.5, fontWeight: FontWeight.w700, height: 1.20, letterSpacing: 0.1`
+     - `labelSmall`: `fontSize: 10.5, fontWeight: FontWeight.w700, height: 1.15, letterSpacing: 0.1`
+
+ADIM 2: `lib/app/theme.dart` Dışındaki Tüm Sabit `fontSize:` Kullanımlarını Temizleme
+1. Şu 7 dosyadaki tüm `fontSize:` satırlarını kaldır ve doğrudan ilgili `textTheme` stilini (`labelSmall`, `bodySmall`, `titleSmall`, `titleMedium`) kullan:
+   - `lib/app/widgets/app_navigation_bar.dart`: `fontSize: isCompact ? 9.5 : 11.0` satırını kaldır; `base?.copyWith(letterSpacing: isCompact ? -0.5 : -0.2, ...)` kullan (`labelSmall` zaten `10.5px`!).
+   - `lib/shared/widgets/mascot_coach_banner.dart`: 3 yerdeki `fontSize:` satırını kaldır (`badgeLabel` ve `Tüyo Al` için `textTheme.labelSmall`, konuşma balonu için `textTheme.bodySmall`).
+   - `lib/features/home/presentation/home_screen.dart`: `line 228` civarındaki `fontSize: isCompact ? 11 : null` satırını kaldır (`textTheme.bodySmall` veya `labelMedium` kullan).
+   - `lib/features/practice/presentation/practice_hub_screen.dart`: 5 yerdeki `fontSize: isCompact ? ...` satırını kaldır (`badgeText` için `textTheme.labelSmall`, açıklama için `textTheme.bodySmall`, aksiyon için `textTheme.labelMedium`).
+   - `lib/features/profile/presentation/widgets/achievement_showcase.dart`: `fontSize: 11` ve `fontSize: 9` satırlarını kaldır; rozet başlığı için `textTheme.labelMedium`, alt açıklaması için `textTheme.labelSmall` kullan.
+   - `lib/features/profile/presentation/widgets/candidate_hero_card.dart`: `fontSize: 10` satırını kaldır (`textTheme.labelSmall` kullan).
+   - `lib/features/profile/presentation/widgets/profile_metrics_card.dart`: `fontSize: 10` satırını kaldır (`textTheme.labelSmall` kullan) ve metrik değerini `textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)` yap.
+
+ADIM 3: Ekranlar Arası Başlık Hiyerarşisi Uyumu
+1. `lib/shared/widgets/section_title.dart`: `SectionTitle` stilini `textTheme.titleMedium?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.w800)` yap (böylece bölüm başlıkları `15px` olur ve içindeki `13.5px` `titleSmall` kart başlıklarından net şekilde ayrışır).
+2. `lib/features/home/presentation/home_screen.dart`: `_ContinueCard` içindeki konu başlığında `headlineSmall` yerine `textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)` kullan (diğer ana kartlarla birebir aynı ölçekte olsun).
+3. `lib/features/exams/presentation/exams_screen.dart`: Deneme paketi kart başlığında (`_ExamPackageCard`) `titleSmall` yerine `theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)` kullan (`LessonsScreen` ana ders kartlarıyla aynı `15px` ölçekte olsun).
+
+ADIM 4: Test ve Doğrulama
+1. `lib/` altında `lib/app/theme.dart` dışında hiçbir dosyada `fontSize:` kalmadığını doğrula.
+2. `test/theme_and_shell_test.dart` içine `AppTheme.light.textTheme` içindeki 15 metin stilinin tamamının hiyerarşik olarak doğru `fontSize` değerlerine (`displayLarge > displayMedium > displaySmall > headlineLarge > headlineMedium > headlineSmall > titleLarge > titleMedium > titleSmall` ve `bodyLarge > bodyMedium > bodySmall` ve `labelLarge > labelMedium > labelSmall`) sahip olduğunu doğrulayan bir birim testi ekle.
+3. `docs/task-board.md` içinde `TASK-72` durumunu `✅ **Tamamlandı**` yap.
+4. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
 
 ---

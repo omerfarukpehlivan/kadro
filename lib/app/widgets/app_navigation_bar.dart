@@ -24,7 +24,6 @@ class AppNavigationBar extends StatelessWidget {
     final labelStyle = WidgetStateProperty.resolveWith<TextStyle?>((states) {
       final base = Theme.of(context).textTheme.labelSmall;
       return base?.copyWith(
-        fontSize: isCompact ? 9.5 : 11.0,
         letterSpacing: isCompact ? -0.5 : -0.2,
         fontWeight: states.contains(WidgetState.selected)
             ? FontWeight.w800

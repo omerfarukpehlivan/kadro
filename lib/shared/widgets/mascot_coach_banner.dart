@@ -397,7 +397,6 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
                                   color: colorScheme.onPrimaryContainer,
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: 0.5,
-                                  fontSize: isCompact ? 9.5 : null,
                                 ),
                               ),
                             ),
@@ -435,7 +434,6 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
                                   style: textTheme.labelSmall?.copyWith(
                                     color: colorScheme.onTertiaryContainer,
                                     fontWeight: FontWeight.w800,
-                                    fontSize: isCompact ? 9.0 : 10.5,
                                   ),
                                 ),
                               ],
@@ -484,7 +482,6 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
                                 ? FontWeight.w500
                                 : FontWeight.w600,
                             height: 1.3,
-                            fontSize: isCompact ? 11 : null,
                           ),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,

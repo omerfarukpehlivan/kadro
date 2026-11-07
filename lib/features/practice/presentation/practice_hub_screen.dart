@@ -290,7 +290,6 @@ class _PracticeTile extends StatelessWidget {
                         style: textTheme.labelSmall?.copyWith(
                           color: onAccentContainerColor,
                           fontWeight: FontWeight.w800,
-                          fontSize: isCompact ? 10 : null,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -314,7 +313,6 @@ class _PracticeTile extends StatelessWidget {
                 style: textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
-                  fontSize: isCompact ? 11 : null,
                 ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -331,7 +329,6 @@ class _PracticeTile extends StatelessWidget {
                   style: textTheme.labelMedium?.copyWith(
                     color: accentColor,
                     fontWeight: FontWeight.w800,
-                    fontSize: isCompact ? 11 : null,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -429,7 +426,6 @@ class _DistractorHuntSpecialCard extends StatelessWidget {
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: colorScheme.onTertiaryContainer,
                           fontWeight: FontWeight.w800,
-                          fontSize: isCompact ? 10 : null,
                         ),
                       ),
                     ),
@@ -441,7 +437,6 @@ class _DistractorHuntSpecialCard extends StatelessWidget {
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
-                    fontSize: isCompact ? 11 : null,
                   ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

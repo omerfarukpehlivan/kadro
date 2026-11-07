@@ -18,7 +18,10 @@ class SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
       child: Text(
         text,
-        style: textTheme.titleSmall?.copyWith(color: colorScheme.primary),
+        style: textTheme.titleMedium?.copyWith(
+          color: colorScheme.primary,
+          fontWeight: FontWeight.w800,
+        ),
       ),
     );
   }

@@ -225,7 +225,6 @@ class _ReminderItem extends StatelessWidget {
                     message,
                     style: textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
-                      fontSize: isCompact ? 11 : null,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -316,11 +315,9 @@ class _DailyGoalCard extends StatelessWidget {
                     const SizedBox(height: 2),
                     Text(
                       '$solved / $goal soru',
-                      style:
-                          (isCompact
-                                  ? textTheme.titleMedium
-                                  : textTheme.headlineSmall)
-                              ?.copyWith(fontWeight: FontWeight.w800),
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const SizedBox(height: 10),
                     ClipRRect(

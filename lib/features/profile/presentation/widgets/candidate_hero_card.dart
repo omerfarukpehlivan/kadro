@@ -111,7 +111,6 @@ class CandidateHeroCard extends ConsumerWidget {
                                   style: textTheme.labelSmall?.copyWith(
                                     color: colorScheme.onTertiaryContainer,
                                     fontWeight: FontWeight.w900,
-                                    fontSize: 10,
                                   ),
                                 ),
                               ),
