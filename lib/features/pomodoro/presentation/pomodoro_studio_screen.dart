@@ -79,6 +79,15 @@ class _PomodoroStudioScreenState extends ConsumerState<PomodoroStudioScreen>
     }
   }
 
+  void _closeScreen() {
+    ref.read(pomodoroProvider.notifier).exitFocusMode();
+    ref.read(pomodoroProvider.notifier).setLandscapeMode(false);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final pomodoro = ref.watch(pomodoroProvider);
@@ -93,6 +102,7 @@ class _PomodoroStudioScreenState extends ConsumerState<PomodoroStudioScreen>
           child: _LandscapeStandByClockView(
             state: pomodoro,
             onToggleOrientation: _toggleOrientation,
+            onClose: _closeScreen,
           ),
         ),
       );
@@ -100,11 +110,19 @@ class _PomodoroStudioScreenState extends ConsumerState<PomodoroStudioScreen>
 
     // 2. Aktif Focus Modu (Başlatıldıktan sonra ekranda SADECE sayaç görünür!)
     if (pomodoro.isFocusMode) {
-      return Scaffold(
-        body: SafeArea(
-          child: _PureFocusTimerView(
-            state: pomodoro,
-            onToggleOrientation: _toggleOrientation,
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) return;
+          ref.read(pomodoroProvider.notifier).exitFocusMode();
+        },
+        child: Scaffold(
+          body: SafeArea(
+            child: _PureFocusTimerView(
+              state: pomodoro,
+              onToggleOrientation: _toggleOrientation,
+              onClose: _closeScreen,
+            ),
           ),
         ),
       );
@@ -115,6 +133,11 @@ class _PomodoroStudioScreenState extends ConsumerState<PomodoroStudioScreen>
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: _closeScreen,
+          tooltip: 'Geri Dön',
+          icon: const PhosphorIcon(PhosphorIconsBold.arrowLeft, size: 22),
+        ),
         titleSpacing: 0,
         title: Text(
           'Odak & Sınav Sayacı',
@@ -229,10 +252,12 @@ class _PomodoroStudioScreenState extends ConsumerState<PomodoroStudioScreen>
 class _PureFocusTimerView extends ConsumerWidget {
   final PomodoroState state;
   final VoidCallback onToggleOrientation;
+  final VoidCallback onClose;
 
   const _PureFocusTimerView({
     required this.state,
     required this.onToggleOrientation,
+    required this.onClose,
   });
 
   @override
@@ -246,10 +271,16 @@ class _PureFocusTimerView extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 1. Üst Minimal Durum Şeridi (Ders/Mola rozeti + Masa Saati çevirme)
+          // 1. Üst Minimal Durum Şeridi (Geri Dön + Ders/Mola rozeti + Masa Saati çevirme)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              IconButton.filledTonal(
+                onPressed: () => notifier.exitFocusMode(),
+                tooltip: 'Ayarlara Geri Dön',
+                icon: const PhosphorIcon(PhosphorIconsBold.arrowLeft, size: 20),
+              ),
+              const SizedBox(width: 8),
               Flexible(
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -385,10 +416,12 @@ class _PureFocusTimerView extends ConsumerWidget {
 class _LandscapeStandByClockView extends ConsumerWidget {
   final PomodoroState state;
   final VoidCallback onToggleOrientation;
+  final VoidCallback onClose;
 
   const _LandscapeStandByClockView({
     required this.state,
     required this.onToggleOrientation,
+    required this.onClose,
   });
 
   @override
@@ -402,11 +435,27 @@ class _LandscapeStandByClockView extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Sol Bölüm: Dev Saat Yüzü
+          // Sol Bölüm: Dev Saat Yüzü ve Sol Üst Geri Dön Butonu
           Expanded(
             flex: 3,
-            child: Center(
-              child: _ClockFaceRenderer(state: state, isLandscape: true),
+            child: Stack(
+              children: [
+                Center(
+                  child: _ClockFaceRenderer(state: state, isLandscape: true),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: IconButton.filledTonal(
+                    onPressed: onClose,
+                    tooltip: 'Geri Dön',
+                    icon: const PhosphorIcon(
+                      PhosphorIconsBold.arrowLeft,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 20),

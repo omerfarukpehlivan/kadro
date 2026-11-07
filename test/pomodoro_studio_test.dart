@@ -273,6 +273,13 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(PomodoroStudioScreen), findsOneWidget);
+
+        // Geri Dön butonuna basınca HomeScreen'e geri dönebilmeli
+        await tester.tap(find.byTooltip('Geri Dön'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(PomodoroStudioScreen), findsNothing);
+        expect(find.textContaining('KPSS 2026:'), findsOneWidget);
       },
     );
 
