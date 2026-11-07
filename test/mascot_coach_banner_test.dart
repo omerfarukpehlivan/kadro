@@ -146,7 +146,7 @@ void main() {
         expect(find.text('TARİH REHBERİ'), findsOneWidget);
         expect(find.text('Tarih Yol Haritası'), findsOneWidget);
         expect(find.text('Tarih konularını adım adım fethet!'), findsOneWidget);
-        expect(find.text('Tüyo Al'), findsOneWidget);
+        expect(find.text('Tüyo Al'), findsNothing);
         expect(find.byIcon(PhosphorIconsFill.scroll), findsOneWidget);
         expect(find.byType(Image), findsOneWidget);
 
@@ -161,67 +161,6 @@ void main() {
           true,
           reason: 'Tuğrul 92x92 borderlı çerçeve kutusunda render edilmeli',
         );
-      },
-    );
-
-    testWidgets(
-      'MascotCoachBanner üzerine dokunulduğunda (Tap-to-Inspire) koç tüyosu sırayla değişmeli',
-      (tester) async {
-        const mood = MascotMood.geography;
-        final tips = mood.coachTips;
-
-        await tester.pumpWidget(
-          const MaterialApp(
-            home: Scaffold(
-              body: MascotCoachBanner(
-                mood: mood,
-                badgeLabel: 'COĞRAFYA REHBERİ',
-                title: 'Coğrafya Konuları',
-                message: 'Coğrafya için harita odaklı çalış.',
-              ),
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-
-        // Başlangıç durumu: orijinal mesaj ve 'Tüyo Al' etiketi
-        expect(find.text('Coğrafya için harita odaklı çalış.'), findsOneWidget);
-        expect(find.text('Tüyo Al'), findsOneWidget);
-
-        // 1. Dokunma (Tap 1) -> 1. tüyoya geçiş
-        await tester.tap(find.byType(MascotCoachBanner));
-        await tester.pumpAndSettle();
-
-        expect(find.text(tips[0]), findsOneWidget);
-        expect(find.text('Tüyo 1/${tips.length}'), findsOneWidget);
-
-        // 2. Dokunma (Tap 2) -> 2. tüyoya geçiş
-        await tester.tap(find.byType(MascotCoachBanner));
-        await tester.pumpAndSettle();
-
-        expect(find.text(tips[1]), findsOneWidget);
-        expect(find.text('Tüyo 2/${tips.length}'), findsOneWidget);
-
-        // 3. Dokunma (Tap 3) -> 3. tüyoya geçiş
-        await tester.tap(find.byType(MascotCoachBanner));
-        await tester.pumpAndSettle();
-
-        expect(find.text(tips[2]), findsOneWidget);
-        expect(find.text('Tüyo 3/${tips.length}'), findsOneWidget);
-
-        // 4. Dokunma (Tap 4) -> 4. tüyoya geçiş
-        await tester.tap(find.byType(MascotCoachBanner));
-        await tester.pumpAndSettle();
-
-        expect(find.text(tips[3]), findsOneWidget);
-        expect(find.text('Tüyo 4/${tips.length}'), findsOneWidget);
-
-        // 5. Dokunma (Tap 5) -> Başa (1. tüyoya) dönmeli
-        await tester.tap(find.byType(MascotCoachBanner));
-        await tester.pumpAndSettle();
-
-        expect(find.text(tips[0]), findsOneWidget);
-        expect(find.text('Tüyo 1/${tips.length}'), findsOneWidget);
       },
     );
   });

@@ -197,14 +197,13 @@ extension MascotMoodExtension on MascotMood {
   }
 }
 
-/// "Kadro Koçu" maskot konuşma balonu ve etkileşimli rehberlik bileşeni (Tap-to-Inspire).
+/// "Kadro Koçu" maskot konuşma balonu ve rehberlik bileşeni.
 ///
 /// Web/Angular karşılığı:
 /// Gamification bildirim ve koçluk bileşeni (Duolingo banner/speech bubble).
-/// 92x92 boyutundaki çift katmanlı çerçeveli avatar yapısı, dokunulduğunda
-/// sıradaki KPSS Genel Kültür tüyosuna geçen `Tap-to-Inspire` mekanizması ve
+/// 92x92 boyutundaki çift katmanlı çerçeveli avatar yapısı ve
 /// dinamik mood aurası ile donatılmıştır.
-class MascotCoachBanner extends StatefulWidget {
+class MascotCoachBanner extends StatelessWidget {
   final MascotMood mood;
   final String title;
   final String message;
@@ -218,30 +217,8 @@ class MascotCoachBanner extends StatefulWidget {
     this.badgeLabel = 'KADRO KOÇU',
   });
 
-  @override
-  State<MascotCoachBanner> createState() => _MascotCoachBannerState();
-}
-
-class _MascotCoachBannerState extends State<MascotCoachBanner> {
-  int _tipIndex = -1;
-  bool _isPressed = false;
-
-  void _nextTip() {
-    setState(() {
-      _tipIndex = (_tipIndex + 1) % widget.mood.coachTips.length;
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant MascotCoachBanner oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.mood != widget.mood || oldWidget.message != widget.message) {
-      _tipIndex = -1;
-    }
-  }
-
   Color _getMoodColor(ColorScheme colorScheme) {
-    switch (widget.mood) {
+    switch (mood) {
       case MascotMood.coach:
       case MascotMood.history:
       case MascotMood.citizenship:
@@ -271,8 +248,6 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
     final minHeight = isCompact ? 96.0 : 122.0;
 
     final auraColor = _getMoodColor(colorScheme);
-    final tips = widget.mood.coachTips;
-    final displayedMessage = _tipIndex == -1 ? widget.message : tips[_tipIndex];
 
     return Container(
       constraints: BoxConstraints(minHeight: minHeight),
@@ -291,208 +266,142 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
           ),
         ],
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(22),
-          onTap: _nextTip,
-          onHighlightChanged: (highlighted) {
-            setState(() => _isPressed = highlighted);
-          },
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: isCompact ? 12 : 14,
-              vertical: isCompact ? 10 : 12,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: isCompact ? 12 : 14,
+          vertical: isCompact ? 10 : 12,
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Sol: Çift Katmanlı Borderlı Maskot Çerçevesi + Dinamik Rozet
+            Stack(
+              clipBehavior: Clip.none,
               children: [
-                // Sol: Çift Katmanlı Borderlı Maskot Çerçevesi + Dinamik Rozet
-                AnimatedScale(
-                  scale: _isPressed ? 0.94 : 1.0,
-                  duration: const Duration(milliseconds: 150),
-                  curve: Curves.easeOutCubic,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        width: avatarSize,
-                        height: avatarSize,
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(
-                            isCompact ? 16 : 20,
+                Container(
+                  width: avatarSize,
+                  height: avatarSize,
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(
+                      isCompact ? 16 : 20,
+                    ),
+                    border: Border.all(
+                      color: auraColor.withAlpha(100),
+                      width: 2,
+                    ),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                      isCompact ? 14 : 18,
+                    ),
+                    child: Image.asset(
+                      mood.assetPath,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          PhosphorIcon(
+                            PhosphorIconsDuotone.trophy,
+                            color: auraColor,
+                            size: isCompact ? 32 : 40,
                           ),
-                          border: Border.all(
-                            color: auraColor.withAlpha(100),
-                            width: 2,
-                          ),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                            isCompact ? 14 : 18,
-                          ),
-                          child: Image.asset(
-                            widget.mood.assetPath,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                PhosphorIcon(
-                                  PhosphorIconsDuotone.trophy,
-                                  color: auraColor,
-                                  size: isCompact ? 32 : 40,
-                                ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: -2,
-                        bottom: -2,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: colorScheme.tertiaryContainer,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: colorScheme.surface,
-                              width: 2,
-                            ),
-                          ),
-                          child: PhosphorIcon(
-                            widget.mood.badgeIcon,
-                            size: isCompact ? 10 : 12,
-                            color: colorScheme.onTertiaryContainer,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-                SizedBox(width: isCompact ? 10 : 14),
-
-                // Sağ: Rozetler, Başlık ve Tam Genişlik Konuşma Balonu
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Üst Rozet Satırı (badgeLabel + Tüyo Butonu)
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: isCompact ? 8 : 10,
-                                vertical: isCompact ? 2 : 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Text(
-                                widget.badgeLabel,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.labelSmall?.copyWith(
-                                  color: colorScheme.onPrimaryContainer,
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          // Etkileşimli Tüyo Rozeti
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isCompact ? 6 : 8,
-                              vertical: isCompact ? 2 : 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _tipIndex == -1
-                                  ? colorScheme.tertiaryContainer.withAlpha(140)
-                                  : colorScheme.tertiaryContainer,
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: colorScheme.tertiary.withAlpha(100),
-                                width: 1,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                PhosphorIcon(
-                                  PhosphorIconsFill.lightbulb,
-                                  size: isCompact ? 11 : 13,
-                                  color: colorScheme.onTertiaryContainer,
-                                ),
-                                const SizedBox(width: 3),
-                                Text(
-                                  _tipIndex == -1
-                                      ? 'Tüyo Al'
-                                      : 'Tüyo ${_tipIndex + 1}/${tips.length}',
-                                  style: textTheme.labelSmall?.copyWith(
-                                    color: colorScheme.onTertiaryContainer,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                Positioned(
+                  right: -2,
+                  bottom: -2,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: colorScheme.tertiaryContainer,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: colorScheme.surface,
+                        width: 2,
                       ),
-                      const SizedBox(height: 4),
-
-                      // Başlık (Kompakt ve 2 satıra kadar zarif geçiş - TASK-71)
-                      Text(
-                        widget.title,
-                        style: textTheme.titleMedium?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w800,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-
-                      // Konuşma Balonu (Tam genişlik ve 2-3 satır ritim)
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        width: double.infinity,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isCompact ? 10 : 12,
-                          vertical: isCompact ? 6 : 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _tipIndex == -1
-                              ? colorScheme.surfaceContainerHighest
-                              : colorScheme.tertiaryContainer.withAlpha(50),
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: _tipIndex == -1
-                                ? colorScheme.outlineVariant
-                                : colorScheme.tertiary.withAlpha(90),
-                          ),
-                        ),
-                        child: Text(
-                          displayedMessage,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: _tipIndex == -1
-                                ? FontWeight.w500
-                                : FontWeight.w600,
-                            height: 1.4,
-                          ),
-                          maxLines: 3,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
+                    ),
+                    child: PhosphorIcon(
+                      mood.badgeIcon,
+                      size: isCompact ? 10 : 12,
+                      color: colorScheme.onTertiaryContainer,
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
+            SizedBox(width: isCompact ? 10 : 14),
+
+            // Sağ: Rozet, Başlık ve Tam Genişlik Konuşma Balonu
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Üst Rozet (badgeLabel)
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isCompact ? 8 : 10,
+                      vertical: isCompact ? 2 : 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      badgeLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Başlık (Kompakt ve 2 satıra kadar zarif geçiş - TASK-71)
+                  Text(
+                    title,
+                    style: textTheme.titleMedium?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w800,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+
+                  // Konuşma Balonu (Tam genişlik ve 2-3 satır ritim)
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: isCompact ? 10 : 12,
+                      vertical: isCompact ? 6 : 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: colorScheme.outlineVariant,
+                      ),
+                    ),
+                    child: Text(
+                      message,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w500,
+                        height: 1.4,
+                      ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
