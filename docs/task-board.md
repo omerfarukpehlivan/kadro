@@ -94,7 +94,8 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-67** | **Özgün İkon Mimarisi Dönüşümü: Sıradan Lucide İkonlarından `phosphor_flutter` (Duotone, Fill & Bold) Karakteristik İkon Sistemine Geçiş** | Her projede kullanılan sıradan tek çizgili `LucideIcons` ve `Icons.*` kullanımlarının kaldırılarak `phosphor_flutter` paketine geçilmesi; kart ve rozetlerde çift katmanlı `PhosphorIconsDuotone`, alt menü aktif sekmelerinde tok dolgulu `PhosphorIconsFill`, pasif sekme ve aksiyonlarda `PhosphorIconsBold` kullanılması | ✅ **Tamamlandı** |
 | **TASK-68** | **"Tuğrul Evreni" Maskot Çeşitlendirme (12 Özgün Karakter Modu), Etkileşimli Dokun-Konuş (`Tap-to-Inspire`) ve Dinamik Mood Aurası** | Kopya maskot görsellerinin yerine `image-generator` ile Tarihçi, Kâşif, Hukukçu, Haberci, Antrenör, Baş Gözetmen, Analist ve Ateşli Seri Tuğrul illüstrasyonlarının üretilmesi; `MascotCoachBanner` bileşeninin üzerine dokunulduğunda zıplayıp derse/ekrana özel KPSS strateji tüyoları veren etkileşimli (`StatefulWidget`) yapıya ve mood bazlı dinamik aura renklerine yükseltilmesi | ✅ **Tamamlandı** (`ede6127`) |
 | **TASK-69** | **`AppTopBar` / `AppBar` Uzun Başlık Taşması (Overflow) Düzeltmesi & Pratik Sekmesi Akademik İkon/Maskot/Söylem Revizyonu (Oyun Kolu İkonunun Kaldırılması)** | `AppTopBar` içindeki sayfa başlığı (`Row` -> `Text`) sığmadığında oluşan `RenderFlex overflow` hatasının `Flexible` + `TextOverflow.ellipsis` ve kompakt font ölçeklemesiyle giderilmesi; diğer tüm `AppBar` başlıklarının taşmaya karşı korunması; Pratik sekmesindeki ve `MascotMood.practice` modundaki `gameController` (oyun kolu) ikonunun ve oyun söylemlerinin kaldırılarak ciddi akademik hedef/antrenman (`PhosphorIconsBold.target` / `PhosphorIconsFill.target`) ikonuna ve soru çözüm odaklı Tuğrul görseline dönüştürülmesi | ✅ **Tamamlandı** (`865e05f`) |
-| **TASK-70** | **Sonuç Ekranlarında "Tek Bakışta Sıfır Kaydırma" (`Zero-Scroll Single-Viewport`) Kompakt UI/UX Dönüşümü (`QuizResultScreen`, `_BlitzSummaryView`, `_FlashcardsSummaryView`)** | Test Sonu Karnesi (`QuizResultScreen`), 60 Saniyede Pençe Özeti (`_BlitzSummaryView`) ve Bilgi Kartları Özeti (`_FlashcardsSummaryView`) ekranlarındaki aşırı büyük kart dolgularının (`padding: 24`), devasa fontların (`displayMedium` / `headlineMedium`) ve geniş boşlukların (`gapLg`) kompaktlaştırılması; tüm skorların ve aksiyon butonlarının kullanıcıya scroll yaptırmadan tek ekranda görünmesi | ✅ **Tamamlandı** |
+| **TASK-70** | **Sonuç Ekranlarında "Tek Bakışta Sıfır Kaydırma" (`Zero-Scroll Single-Viewport`) Kompakt UI/UX Dönüşümü (`QuizResultScreen`, `_BlitzSummaryView`, `_FlashcardsSummaryView`)** | Test Sonu Karnesi (`QuizResultScreen`), 60 Saniyede Pençe Özeti (`_BlitzSummaryView`) ve Bilgi Kartları Özeti (`_FlashcardsSummaryView`) ekranlarındaki aşırı büyük kart dolgularının (`padding: 24`), devasa fontların (`displayMedium` / `headlineMedium`) ve geniş boşlukların (`gapLg`) kompaktlaştırılması; tüm skorların ve aksiyon butonlarının kullanıcıya scroll yaptırmadan tek ekranda görünmesi | ✅ **Tamamlandı** (`9862149`) |
+| **TASK-71** | **Mobil Ekranlar İçin `AppBar` ve Alt Detay Sayfası Başlık Tipografisi Ölçeklemesi (Kesilmeleri Önleyen Kompakt Başlık Sistemi)** | M3 varsayılan `22px` (`titleLarge`) `AppBar` başlıklarının Türkçe ders/konu adlarında (`'Tarih Konuları'`, `'Güncel Bilgiler Konuları'`, `'İslamiyet Öncesi Türk Tarihi'`) aşırı büyük durup kesilmesini (`...`) önlemek için global `AppBarTheme` başlık stilinin (`16px`), `titleSpacing: 0` boşluğunun, `TopicTestsScreen` / `LessonTopicsScreen` / `QuizScreen` / `AppTopBar` ve `MascotCoachBanner` başlık boyutlarının mobil ekranlara uygun zarif ölçeğe çekilmesi | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4232,6 +4233,62 @@ ADIM 3: `_FlashcardsSummaryView` (`lib/features/flashcards/presentation/flashcar
 ADIM 4: Test ve Doğrulama
 1. `test/quiz_screen_test.dart`, `test/flashcards_screen_test.dart`, `test/games_screen_test.dart` ve `test/overflow_fix_test.dart` testlerinin tamamının geçtiğini ve standart telefon ekranında (`390x844` ve `360x640`) `QuizResultScreen` içindeki `'Ana Sayfaya Dön'` butonunun kaydırma gerekmeden ekranda (`hitTestable`) yer aldığını doğrula.
 2. `docs/task-board.md` içinde `TASK-70` durumunu `✅ **Tamamlandı**` yap.
+3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
+```
+
+---
+
+### 📦 TASK-71: Mobil Ekranlar İçin `AppBar` ve Alt Detay Sayfası Başlık Tipografisi Ölçeklemesi (Kesilmeleri Önleyen Kompakt Başlık Sistemi)
+
+- **Durum:** ✅ **Tamamlandı**
+- **Problem Analizi:**
+  - Material 3 varsayılan olarak `AppBar` başlıklarında `titleLarge` (`22px`) kullanır. Türkçe akademik ders ve konu başlıkları (`"Tarih Konuları"`, `"Güncel Bilgiler Konuları"`, `"İslamiyet Öncesi Türk Tarihi"`, `"Osmanlı Kültür ve Uygarlığı"`) `22px` boyutta mobil ekranlarda aşırı büyük durmakta ve yanındaki geri butonu / aksiyon butonları nedeniyle kesilmektedir (`...`).
+  - Aynı şekilde `TopicTestsScreen` ve `LessonTopicsScreen` içindeki `MascotCoachBanner` başlığı (`titleMedium`, `maxLines: 1`) uzun konu adlarında hem büyük durmakta hem de tek satırda kesilmektedir.
+- **Çözüm:**
+  - Global `AppTheme` (`lib/app/theme.dart`) içinde `appBarTheme` tanımlanarak tüm `AppBar` başlıklarının varsayılan boyutu `22px` yerine zarif ve okunaklı `16px` (`FontWeight.w700`, `letterSpacing: -0.2`) ve `titleSpacing: 4` seviyesine çekilir; `titleLarge` (`18.5px`) ve `titleMedium` (`15.5px`) ölçekleri mobil ekranlara göre dengelenir.
+  - `LessonTopicsScreen`, `TopicTestsScreen`, `QuizScreen` ve `AppTopBar` başlıkları ile `MascotCoachBanner` başlığı mobil ekranlarda kesilmeden tam okunacak şekilde optimize edilir.
+
+```text
+GÖREV: TASK-71 — Mobil Ekranlar İçin AppBar ve Alt Detay Sayfası Başlık Tipografisi Ölçeklemesi
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Sabit fontSize yalnızca lib/app/theme.dart içinde tanımlanabilir; diğer ekranlarda Theme.of(context).textTheme stillerini (titleSmall, titleMedium, labelMedium vb.) kullan!
+
+ADIM 1: Global Tema Tipografi ve `AppBarTheme` Ölçeklemesi (`lib/app/theme.dart`)
+1. `lib/app/theme.dart` içindeki `_buildTextTheme` metodunda başlık boyutlarını mobil ekranlarda kaba durmayacak şekilde rafine et (hem test ortamı erken dönüşünde hem `GoogleFonts.plusJakartaSans` dönüşünde):
+   - `headlineSmall`: `fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.3`
+   - `titleLarge`: `fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: -0.25` (M3'ün 22px devasa boyutu yerine zarif 18px)
+   - `titleMedium`: `fontSize: 15.5, fontWeight: FontWeight.w600, letterSpacing: -0.15`
+   - `titleSmall`: `fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: -0.1`
+2. `AppTheme.light` ve `AppTheme.dark` içinde `copyWith` içine `appBarTheme` ekle:
+   ```dart
+   appBarTheme: baseLight.appBarTheme.copyWith(
+     titleSpacing: 4,
+     titleTextStyle: textTheme.titleMedium?.copyWith(
+       fontWeight: FontWeight.w700,
+       color: highContrastScheme.onSurface,
+     ),
+   ),
+   ```
+   (Dark temada da `baseDark.appBarTheme` ve `highContrastDarkScheme.onSurface` ile aynısını uygula). Böylece tüm alt sayfalardaki `AppBar` başlıkları 22px yerine zarif `titleMedium` (15.5px) boyutunda ve geri butonuna yakın (`titleSpacing: 4`) çizilir!
+
+ADIM 2: `AppTopBar`, `LessonTopicsScreen`, `TopicTestsScreen` ve `QuizScreen` Başlık Düzenlemeleri
+1. `lib/app/widgets/app_top_bar.dart`:
+   - `AppTopBar` başlığındaki `Text(title)` stilini `textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)` yap (böylece `'Çalışma Türleri'` gibi başlıklar mobil ekranda aşırı büyük durmaz ve kesilmez).
+2. `lib/features/lessons/presentation/lesson_topics_screen.dart`:
+   - `AppBar` içinde `titleSpacing: 0` ver, `title: Text('${lesson.name} Konuları', maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800))` kullan.
+   - Sağdaki `'Tümünü İndir'` (`TextButton.icon`) butonuna `style: TextButton.styleFrom(visualDensity: VisualDensity.compact, padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6))` ve `label: Text('Tümünü İndir', style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700))` vererek başlığın alanını daraltmasını önle.
+3. `lib/features/lessons/presentation/topic_tests_screen.dart`:
+   - `'İslamiyet Öncesi Türk Tarihi'` gibi uzun konu adlarının yer aldığı `AppBar` içinde `titleSpacing: 0` ver ve üst satırdaki `Text(widget.topic)` bileşenine `style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)` (14px) ver; böylece en uzun konu başlıkları dahi mobilde kaba durmaz ve kesilmez!
+4. `lib/features/quiz/presentation/quiz_screen.dart`:
+   - `AppBar` içinde `titleSpacing: 0` ve `title: Text(widget.customTitle ?? '${question.lesson} Testi', maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800))` kullan.
+
+ADIM 3: `MascotCoachBanner` Başlık Uyumu (`lib/shared/widgets/mascot_coach_banner.dart`)
+1. `lib/shared/widgets/mascot_coach_banner.dart` içindeki `Text(widget.title)` bileşeninde:
+   - Stili her zaman `textTheme.titleSmall?.copyWith(color: colorScheme.onSurface, fontWeight: FontWeight.w800)` yap (mobilde `'İslamiyet Öncesi Türk Tarihi Testleri'` veya `'Tarih Yol Haritası'` başlığının kart içinde aşırı büyük durmasını önler).
+   - `maxLines: 2` yap ki `'İslamiyet Öncesi Türk Tarihi Testleri'` gibi uzun konu başlıkları yarıda `...` ile kesilmek yerine temiz şekilde alt satıra geçebilsin.
+
+ADIM 4: Test ve Doğrulama
+1. `test/overflow_fix_test.dart` içine 360x640 dar mobil ekranda `LessonTopicsScreen` (`'Güncel Bilgiler Konuları'` ve `'Tarih Konuları'`) ve `TopicTestsScreen` (`'İslamiyet Öncesi Türk Tarihi'`) açıldığında başlıkların taşma yapmadan ve `titleMedium` / `titleSmall` ölçeğinde (`fontSize <= 16`) render edildiğini doğrulayan bir widget testi ekle.
+2. `docs/task-board.md` içinde `TASK-71` durumunu `✅ **Tamamlandı**` yap.
 3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
 

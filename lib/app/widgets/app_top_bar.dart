@@ -64,9 +64,8 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: textTheme.titleLarge?.copyWith(
+              style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w800,
-                fontSize: isCompact ? 17 : null,
               ),
             ),
           ),

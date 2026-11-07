@@ -439,10 +439,13 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
+          titleSpacing: 0,
           title: Text(
             widget.customTitle ?? 'Test',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w800),
           ),
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -494,10 +497,13 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
         title: Text(
           widget.customTitle ?? '${question.lesson} Testi',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleSmall
+              ?.copyWith(fontWeight: FontWeight.w800),
         ),
         actions: [
           _QuizModeBadge(mode: _effectiveMode, onToggle: _toggleQuizMode),

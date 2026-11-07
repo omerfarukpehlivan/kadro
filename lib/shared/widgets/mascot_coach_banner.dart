@@ -445,18 +445,14 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
                       ),
                       const SizedBox(height: 4),
 
-                      // Başlık (Tek satır, sayfalar arası dikey zıplamayı önler)
+                      // Başlık (Kompakt ve 2 satıra kadar zarif geçiş - TASK-71)
                       Text(
                         widget.title,
-                        style:
-                            (isCompact
-                                    ? textTheme.titleSmall
-                                    : textTheme.titleMedium)
-                                ?.copyWith(
-                                  color: colorScheme.onSurface,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                        maxLines: 1,
+                        style: textTheme.titleSmall?.copyWith(
+                          color: colorScheme.onSurface,
+                          fontWeight: FontWeight.w800,
+                        ),
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),

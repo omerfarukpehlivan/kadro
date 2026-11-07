@@ -51,7 +51,28 @@ class AppTheme {
     if (!kIsWeb) {
       try {
         if (Platform.environment.containsKey('FLUTTER_TEST')) {
-          return base;
+          return base.copyWith(
+            headlineSmall: base.headlineSmall?.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
+            ),
+            titleLarge: base.titleLarge?.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.25,
+            ),
+            titleMedium: base.titleMedium?.copyWith(
+              fontSize: 15.5,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.15,
+            ),
+            titleSmall: base.titleSmall?.copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.1,
+            ),
+          );
         }
       } catch (_) {
         // Platform.environment desteklenmeyen ortamlarda normal akışa devam edilir.
@@ -83,19 +104,27 @@ class AppTheme {
       ),
       headlineSmall: GoogleFonts.plusJakartaSans(
         textStyle: bodyTheme.headlineSmall,
+        fontSize: 20,
         fontWeight: FontWeight.w700,
+        letterSpacing: -0.3,
       ),
       titleLarge: GoogleFonts.plusJakartaSans(
         textStyle: bodyTheme.titleLarge,
+        fontSize: 18,
         fontWeight: FontWeight.w700,
+        letterSpacing: -0.25,
       ),
       titleMedium: GoogleFonts.plusJakartaSans(
         textStyle: bodyTheme.titleMedium,
+        fontSize: 15.5,
         fontWeight: FontWeight.w600,
+        letterSpacing: -0.15,
       ),
       titleSmall: GoogleFonts.plusJakartaSans(
         textStyle: bodyTheme.titleSmall,
+        fontSize: 14,
         fontWeight: FontWeight.w600,
+        letterSpacing: -0.1,
       ),
     );
   }
@@ -145,11 +174,20 @@ class AppTheme {
       outlineVariant: const Color(0xFFE2E8F0),
     );
 
+    final textTheme = _buildTextTheme(baseLight.textTheme);
+
     return baseLight.copyWith(
       colorScheme: highContrastScheme,
       scaffoldBackgroundColor: const Color(0xFFF8FAFC),
       cardColor: const Color(0xFFFFFFFF),
-      textTheme: _buildTextTheme(baseLight.textTheme),
+      textTheme: textTheme,
+      appBarTheme: baseLight.appBarTheme.copyWith(
+        titleSpacing: 4,
+        titleTextStyle: textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: highContrastScheme.onSurface,
+        ),
+      ),
     );
   }
 
@@ -198,11 +236,20 @@ class AppTheme {
       outlineVariant: const Color(0xFF334155),
     );
 
+    final textTheme = _buildTextTheme(baseDark.textTheme);
+
     return baseDark.copyWith(
       colorScheme: highContrastDarkScheme,
       scaffoldBackgroundColor: const Color(0xFF0B1120),
       cardColor: const Color(0xFF1E293B),
-      textTheme: _buildTextTheme(baseDark.textTheme),
+      textTheme: textTheme,
+      appBarTheme: baseDark.appBarTheme.copyWith(
+        titleSpacing: 4,
+        titleTextStyle: textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          color: highContrastDarkScheme.onSurface,
+        ),
+      ),
     );
   }
 }

@@ -76,21 +76,37 @@ class LessonTopicsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
         title: Text(
           '${lesson.name} Konuları',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w800),
         ),
         actions: [
           Tooltip(
             message: '${lesson.name} Tüm Konuları İndir (PRO)',
             child: TextButton.icon(
               onPressed: () => _downloadAllTopics(context, ref),
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+              ),
               icon: const PhosphorIcon(
                 PhosphorIconsBold.downloadSimple,
                 size: 16,
               ),
-              label: const Text('Tümünü İndir'),
+              label: Text(
+                'Tümünü İndir',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
         ],

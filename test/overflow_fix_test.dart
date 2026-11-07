@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kadro/app/theme.dart';
 import 'package:kadro/app/widgets/app_navigation_bar.dart';
 import 'package:kadro/app/widgets/app_top_bar.dart';
 import 'package:kadro/core/services/purchase_service.dart';
+import 'package:kadro/features/lessons/data/kpss_lessons.dart';
+import 'package:kadro/features/lessons/presentation/lesson_topics_screen.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
+import 'package:kadro/features/lessons/presentation/topic_tests_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
@@ -316,6 +320,78 @@ void main() {
 
         expect(find.text('Net Puanın'), findsOneWidget);
         expect(homeButton.hitTestable(), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'TASK-71: LessonTopicsScreen ve TopicTestsScreen 360x640 dar ekranda zarif başlık ölçeğinde (<=16px) ve taşmasız render edilir',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(360, 640);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        final tarihLesson = kpssLessons.firstWhere((l) => l.name == 'Tarih');
+        final guncelLesson = kpssLessons.firstWhere(
+          (l) => l.name == 'Güncel Bilgiler',
+        );
+
+        // 1. Tarih Konuları
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: LessonTopicsScreen(lesson: tarihLesson),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final tarihTitleFinder = find.text('Tarih Konuları');
+        expect(tarihTitleFinder, findsOneWidget);
+        final tarihTextWidget = tester.widget<Text>(tarihTitleFinder);
+        expect(tarihTextWidget.style?.fontSize, isNotNull);
+        expect(tarihTextWidget.style!.fontSize!, lessThanOrEqualTo(16.0));
+        expect(tester.takeException(), isNull);
+
+        // 2. Güncel Bilgiler Konuları (Daha uzun başlık)
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: LessonTopicsScreen(lesson: guncelLesson),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final guncelTitleFinder = find.text('Güncel Bilgiler Konuları');
+        expect(guncelTitleFinder, findsOneWidget);
+        final guncelTextWidget = tester.widget<Text>(guncelTitleFinder);
+        expect(guncelTextWidget.style?.fontSize, isNotNull);
+        expect(guncelTextWidget.style!.fontSize!, lessThanOrEqualTo(16.0));
+        expect(tester.takeException(), isNull);
+
+        // 3. TopicTestsScreen ('İslamiyet Öncesi Türk Tarihi')
+        await tester.pumpWidget(
+          ProviderScope(
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const TopicTestsScreen(
+                lessonName: 'Tarih',
+                topic: 'İslamiyet Öncesi Türk Tarihi',
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 300));
+
+        final topicTitleFinder = find.text('İslamiyet Öncesi Türk Tarihi');
+        expect(topicTitleFinder, findsWidgets);
+        final firstTopicWidget = tester.widget<Text>(topicTitleFinder.first);
+        expect(firstTopicWidget.style?.fontSize, isNotNull);
+        expect(firstTopicWidget.style!.fontSize!, lessThanOrEqualTo(16.0));
         expect(tester.takeException(), isNull);
       },
     );

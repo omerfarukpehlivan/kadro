@@ -120,10 +120,18 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.topic, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(
+              widget.topic,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
             Text(
               '${widget.lessonName} · ${_testChunks.length} Test (${_allQuestions.length} Soru)',
               maxLines: 1,
