@@ -290,43 +290,66 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
     final textTheme = theme.textTheme;
     final isCompact = ResponsiveBreakpoints.isCompact(context);
     final avatarSize = isCompact ? 72.0 : 92.0;
-    final minHeight = isCompact ? 96.0 : 122.0;
 
     final auraColor = _getMoodColor(colorScheme);
     final tips = widget.mood.coachTips;
 
-    return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 260),
-      switchInCurve: Curves.easeOutBack,
-      switchOutCurve: Curves.easeIn,
-      transitionBuilder: (child, animation) {
-        final rotateAnim = Tween<double>(begin: 0.88, end: 1.0).animate(
-          animation,
-        );
-        return FadeTransition(
-          opacity: animation,
-          child: ScaleTransition(scale: rotateAnim, child: child),
-        );
-      },
-      child: _isFlipped
-          ? _buildBackFace(
-              context: context,
-              colorScheme: colorScheme,
-              textTheme: textTheme,
-              auraColor: auraColor,
-              minHeight: minHeight,
-              isCompact: isCompact,
-              tips: tips,
-            )
-          : _buildFrontFace(
-              context: context,
-              colorScheme: colorScheme,
-              textTheme: textTheme,
-              auraColor: auraColor,
-              avatarSize: avatarSize,
-              minHeight: minHeight,
-              isCompact: isCompact,
+    final longestTip = tips.reduce(
+      (a, b) => a.length >= b.length ? a : b,
+    );
+
+    final frontChild = _buildFrontFace(
+      context: context,
+      colorScheme: colorScheme,
+      textTheme: textTheme,
+      auraColor: auraColor,
+      avatarSize: avatarSize,
+      isCompact: isCompact,
+    );
+
+    final backChild = _buildBackFace(
+      context: context,
+      colorScheme: colorScheme,
+      textTheme: textTheme,
+      auraColor: auraColor,
+      isCompact: isCompact,
+      tips: tips,
+    );
+
+    final tallestBackMeasure = _buildBackFace(
+      context: context,
+      colorScheme: colorScheme,
+      textTheme: textTheme,
+      auraColor: auraColor,
+      isCompact: isCompact,
+      tips: tips,
+      overrideTipText: longestTip,
+    );
+
+    // Zero-Layout-Shift (Sıfır Zıplama):
+    // IntrinsicHeight + Stack içerisinde hem Ön Yüzün hem de En Uzun Tüyolu Arka Yüzün
+    // yüksekliğini aynı anda referans alır ve her iki yüzü bu yüksekliğe eşitler (stretch).
+    // Böylece ön/arka yüz ve tüyo geçişlerinde ne kartın kendisi ne de altındaki sayfa
+    // 1 piksel bile zıplamaz!
+    return IntrinsicHeight(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          IgnorePointer(
+            child: Opacity(
+              opacity: 0.0,
+              child: ExcludeSemantics(child: frontChild),
             ),
+          ),
+          IgnorePointer(
+            child: Opacity(
+              opacity: 0.0,
+              child: ExcludeSemantics(child: tallestBackMeasure),
+            ),
+          ),
+          _isFlipped ? backChild : frontChild,
+        ],
+      ),
     );
   }
 
@@ -337,12 +360,12 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
     required TextTheme textTheme,
     required Color auraColor,
     required double avatarSize,
-    required double minHeight,
     required bool isCompact,
   }) {
+    final fixedMinHeight = isCompact ? 132.0 : 146.0;
     return Container(
       key: const ValueKey('mascot_front_face'),
-      constraints: BoxConstraints(minHeight: minHeight),
+      constraints: BoxConstraints(minHeight: fixedMinHeight),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
@@ -433,6 +456,7 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Üst Rozet Satırı + Sağda zarif çevirme ikonu
@@ -520,15 +544,16 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
     required ColorScheme colorScheme,
     required TextTheme textTheme,
     required Color auraColor,
-    required double minHeight,
     required bool isCompact,
     required List<String> tips,
+    String? overrideTipText,
   }) {
-    final currentTip = tips[_tipIndex % tips.length];
+    final fixedMinHeight = isCompact ? 132.0 : 146.0;
+    final currentTip = overrideTipText ?? tips[_tipIndex % tips.length];
 
     return Container(
-      key: ValueKey('mascot_back_face_$_tipIndex'),
-      constraints: BoxConstraints(minHeight: minHeight),
+      key: const ValueKey('mascot_back_face'),
+      constraints: BoxConstraints(minHeight: fixedMinHeight),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
@@ -556,6 +581,7 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
                 // Üst Satır: Sayfa/Ders Tüyo Başlığı + Sayaç + Ön Yüze Dön Butonu

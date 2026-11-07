@@ -186,7 +186,7 @@ void main() {
 
         // Başlangıçta (Ön Yüz) sadece orijinal mesaj görünür, tüyo görünmez
         expect(find.text('Coğrafya için harita odaklı çalış.'), findsOneWidget);
-        expect(find.text(tips[0]), findsNothing);
+        final initialSize = tester.getSize(find.byType(MascotCoachBanner));
 
         // 1. Tıklama -> Kart döner (Arka Yüz) ve 1. tüyo tam metin olarak görünür
         await tester.tap(find.byType(MascotCoachBanner));
@@ -197,6 +197,11 @@ void main() {
           find.text('COĞRAFYA REHBERİ · KPSS TÜYOSU (1/${tips.length})'),
           findsOneWidget,
         );
+        // Sıfır zıplama kontrolü: Ön yüz ve arka yüz yüksekliği birebir aynı kalmalı
+        expect(
+          tester.getSize(find.byType(MascotCoachBanner)).height,
+          equals(initialSize.height),
+        );
 
         // 2. Tıklama -> 2. tüyoya geçer
         await tester.tap(find.byType(MascotCoachBanner));
@@ -206,6 +211,10 @@ void main() {
         expect(
           find.text('COĞRAFYA REHBERİ · KPSS TÜYOSU (2/${tips.length})'),
           findsOneWidget,
+        );
+        expect(
+          tester.getSize(find.byType(MascotCoachBanner)).height,
+          equals(initialSize.height),
         );
       },
     );
