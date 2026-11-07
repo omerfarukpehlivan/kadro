@@ -7,6 +7,7 @@ import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/games/presentation/concept_match_screen.dart';
 import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
+import 'package:kadro/features/pomodoro/presentation/pomodoro_studio_screen.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
@@ -203,6 +204,88 @@ class PracticeHubScreen extends ConsumerWidget {
                       );
                     },
                   ),
+                ),
+              ],
+            ),
+          ),
+          AppSpacing.gapMd,
+
+          // 5. Odak & Sınav Sayacı (Pomodoro Stüdyosu & Masa Saati Modu)
+          const SectionTitle('Odak & Sınav Sayacı'),
+          TactileCard(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const PomodoroStudioScreen()),
+              );
+            },
+            borderColor: colorScheme.primary.withAlpha(90),
+            backgroundColor: colorScheme.surface,
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Center(
+                    child: PhosphorIcon(
+                      PhosphorIconsDuotone.timer,
+                      color: colorScheme.onPrimaryContainer,
+                      size: 26,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Text(
+                            'Pomodoro & Sınav Sayacı',
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.secondaryContainer,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'Flip & Halka Saat',
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(
+                                    color: colorScheme.onSecondaryContainer,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Dikey/yatay masa saati, 3 farklı saat tasarımı ve KPSS geri sayımı.',
+                        style: Theme.of(context).textTheme.bodySmall
+                            ?.copyWith(color: colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                PhosphorIcon(
+                  PhosphorIconsBold.caretRight,
+                  color: colorScheme.onSurfaceVariant,
+                  size: 18,
                 ),
               ],
             ),

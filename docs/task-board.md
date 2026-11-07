@@ -101,7 +101,8 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-74** | **Dikey Hizalama & Kenar Kılavuz Çizgisi Standardizasyonu (`AppTopBar`, `Body`, `SectionTitle`, `AppNavigationBar` ve `AppBarTheme` Sol/Sağ Flush Alignment)** | `AppBarTheme` içindeki `titleSpacing: 4` nedeniyle üst barın (`AppTopBar`) sol kenarının `4px`'ten başlayıp alt gövdenin (`16px`) dışına taşması hatasının düzeltilmesi; `AppTopBar` sol `titleSpacing` ve sağ `actions` boşluğunun, `SectionTitle` sol hizasının (`horizontal: 0`) ve `AppNavigationBar` yan boşluklarının `ResponsiveBreakpoints.horizontalPadding(context)` (`12px / 16px / 24px`) ile milimetrik olarak aynı dikey hizaya getirilmesi | ✅ **Tamamlandı** (`01178d3`) |
 | **TASK-75** | **Çözülen Test / Konu / Deneme Kartlarında Tamamlanma Durumu (`✅ Çözüldü` Rozeti, Son Net Özeti & `Tekrar Çöz` Aksiyonu) + Konu Kartı İndir İkonlarının ve Test Kartı Gereksiz Açıklamalarının Temizlenmesi** | Kullanıcı bir testi veya denemeyi bitirdiğinde (`studyStatsProvider.sessionHistory`), uygulamaya tekrar girdiğinde `TopicTestsScreen`, `LessonTopicsScreen` ve `ExamsScreen` kartlarında zümrüt yeşili kenarlık/arka plan tonu, `✅ Çözüldü · XD YY (Z.Z Net)` rozeti ve `Tekrar Çöz` butonunun gösterilmesi; `LessonTopicsScreen` konu kartlarındaki tekil indirme ikonlarının kaldırılıp sadece üstteki `Tümünü İndir` butonunun bırakılması; `TopicTestsScreen` test kartlarındaki mükerrer seviye başlığı ve `'Konuyu yeni bitirdiysen...'` açıklama metinlerinin kaldırılması | ✅ **Tamamlandı** (`cc400be`) |
 | **TASK-76** | **Soru Metinlerindeki LaTeX (`$\rightarrow$`, `arrow`), Markdown (`**...**`) ve Gereksiz Tırnak (`""`) Kalıntılarının 2 Katmanlı Temizliği (`Question.cleanText` + Supabase `UPDATE` SQL + Repo Soru Havuzu)** | `Question.fromSupabase` ve `Question.fromJson` içine anlık metin temizleyici (`Question.cleanText`) eklenmesi; tüm `docs/soru_havuzu/**/*.sql`, `.md` ve `assets/data/questions.json` dosyalarındaki LaTeX/Markdown/tırnak kalıntılarının temizlenmesi ve mevcut Supabase veritabanını tek tıkla güncelleyen `docs/soru_havuzu/fix_question_texts_supabase.sql` betiğinin oluşturulması | ✅ **Tamamlandı** (`fd51a3e`) |
-| **TASK-77** | **Konu Kartlarında (`LessonTopicsScreen`) Gerçek Test Sayısı (`solved/totalTests`) Rozeti ve Yalnızca Tüm Testler Çözülünce Tik (`✓`) Atılması** | `LessonTopicsScreen` konu kartlarında sadece 1 test çözülünce hemen tik (`✓`) atılması yerine, yalnızca konudaki tüm testler (`solvedTestCount >= totalTestCount`) tamamlandığında yol haritası düğümüne ve rozete tik atılması; rozet yazısının `'1 Test Çözüldü'` yerine `'1/9 Test'` (tamamlandığında `'9/9 Test Tamamlandı'`) olarak dinamik gösterilmesi | ✅ **Tamamlandı** |
+| **TASK-77** | **Konu Kartlarında (`LessonTopicsScreen`) Gerçek Test Sayısı (`solved/totalTests`) Rozeti ve Yalnızca Tüm Testler Çözülünce Tik (`✓`) Atılması** | `LessonTopicsScreen` konu kartlarında sadece 1 test çözülünce hemen tik (`✓`) atılması yerine, yalnızca konudaki tüm testler (`solvedTestCount >= totalTestCount`) tamamlandığında yol haritası düğümüne ve rozete tik atılması; rozet yazısının `'1 Test Çözüldü'` yerine `'1/9 Test'` (tamamlandığında `'9/9 Test Tamamlandı'`) olarak dinamik gösterilmesi | ✅ **Tamamlandı** (`a16908c`) |
+| **TASK-78** | **KPSS Sınav Geri Sayım & Çoklu Tasarımlı (Dikey / Yatay Masa Saati) Pomodoro Odak Stüdyosu (`PomodoroStudioScreen`, 3 Saat Tasarımı: `Halka` / `Flip Clock` / `Zen`, Ders Bazlı Süre Takibi & `HomeExamPomodoroBanner`)** | YPT (Yeolpumta), Flocus, Flip Focus ve iOS StandBy araştırması doğrultusunda: (1) KPSS Lisans / Önlisans / Ortaöğretim sınavlarına Gün-Saat-Dakika-Saniye canlı geri sayım + hazırlık süreci ilerleme çubuğu; (2) `25/5 Klasik`, `50/10 KPSS Derin Odak`, `65/15 Gerçek Sınav Provası` ve `Serbest Kronometre` modları; (3) 3 farklı saat tasarımı (`Akademik Halka`, `Retro Masa Saati / Flip Clock`, `Minimal Zen Tipografi`); (4) Tek tuşla Dikey/Yatay (`SystemChrome.setPreferredOrientations` + `OrientationBuilder`) tam ekran masa saati modu; (5) Ders etiketli (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`) odak süresi kaydı + XP ödülü ve `HomeScreen` / `PracticeHubScreen` entegrasyonu | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4706,6 +4707,150 @@ ADIM 3: Birim & Widget Testlerinin Yazılması (`test/lessons_screen_test.dart`)
    - Bir konuda 9 test varken sadece 1 test çözüldüğünde (`Tarih · İslamiyet Öncesi Türk Tarihi · Test 1`), `LessonTopicsScreen` üzerinde `'1/9 Test'` yazdığını ve düğümde tik (`PhosphorIconsBold.check`) **olmadığını** (`findsNothing`),
    - Konudaki tüm testler çözüldüğünde (örn. mock repo ile 2 testlik konuda Test 1 ve Test 2 çözüldüğünde), `'2/2 Test'` yazdığını ve düğümde tik (`PhosphorIconsBold.check`) + `PhosphorIconsFill.checkCircle` **bulunduğunu** (`findsOneWidget`) doğrula.
 2. `docs/task-board.md` içinde `TASK-77` durumunu `✅ **Tamamlandı**` olarak güncelle.
+3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
+```
+
+---
+
+### 📦 TASK-78: KPSS Sınav Geri Sayım & Çoklu Tasarımlı (Dikey / Yatay Masa Saati) Pomodoro Odak Stüdyosu (`PomodoroStudioScreen`, 3 Saat Tasarımı: `Halka` / `Flip Clock` / `Zen`, Ders Bazlı Süre Takibi & `HomeExamPomodoroBanner`)
+
+- **Durum:** ✅ **Tamamlandı**
+- **Sektör Araştırması & Benchmark Analizi (`YPT - Yeolpumta`, `Flocus`, `Flip Focus`, `Forest`, `Focus To-Do`, `iOS StandBy`):**
+  1. **YPT (Yeolpumta — Kore/Türkiye KPSS & YKS Öğrencilerinin 1 Numaralı Tercihi):**
+     - Öğrenciler sadece soyut bir 25 dakika sayacı istemiyor; **hangi derse (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`) ne kadar süre çalıştığını** kaydetmek ve sınava kalan süreyi (`D-Day: Gün / Saat / Dakika / Saniye`) aynı merkezde görmek istiyor.
+  2. **Flocus & Flip Focus & iOS StandBy (Çoklu Sayaç Tasarımı & Yatay Masa Saati Modu):**
+     - Öğrenciler çalışırken telefonu masaya dikey veya **yatay (Landscape StandBy)** koyup bir masa saati gibi kullanıyor.
+     - Farklı görsel zevkler için **3 ikonik saat yüzü (Clock Face Style)** sunuluyor:
+       1. **`Akademik Halka` (`PomodoroClockStyle.ring`):** Çevresinde akıcı dairesel ilerleme halkası (`CircularProgressIndicator` / `CustomPaint`), ortada net dijital süre, odak aşaması (`ODAKLANMA` / `KISA MOLA`) ve ders etiketi.
+       2. **`Retro Masa Saati (Flip Clock)` (`PomodoroClockStyle.flip`):** İki ayrı koyu/yüksek kontrastlı 3D kart (`Dakika` ve `Saniye` kutuları) ve ortalarında yatay ayrım çizgisiyle klasik masa üstü Flip Clock estetiği (`AnimatedSwitcher` ile yaprak geçişi).
+       3. **`Minimal Zen` (`PomodoroClockStyle.zen`):** Dikkat dağıtmayan ultra-minimalist dev tipografi, altında ince doğrusal zaman akış çubuğu ve motive edici KPSS koç sözü.
+  3. **KPSS'ye Özel Odak Şablonları (`PomodoroPreset`):**
+     - **Klasik Pomodoro (`25 dk Odak / 5 dk Mola`)**
+     - **KPSS Derin Odak (`50 dk Odak / 10 dk Mola`)** — Uzun tarih/coğrafya konu çalışmaları için
+     - **Gerçek Sınav Provası (`65 dk Odak / 15 dk Mola`)** — KPSS Genel Kültür (60 soru / 65 dk) kondisyonu için
+     - **Serbest Kronometre (`İleri Sayım / Stopwatch`)** — YPT tarzı süre sınırı olmadan çalıştıkça artan sayaç!
+
+```text
+GÖREV: TASK-78 — KPSS Sınav Geri Sayım & Çoklu Tasarımlı (Dikey / Yatay Masa Saati) Pomodoro Odak Stüdyosu
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme, yazı stillerini Theme.of(context).textTheme üzerinden al (lib/app/theme.dart dışında sabit Color(0xFF...) veya sabit fontSize YASAKTIR; büyük saat rakamları için textTheme.displayLarge?.copyWith(...) veya FittedBox(fit: BoxFit.scaleDown, child: Text(..., style: textTheme.displayLarge)) kullan!).
+
+ADIM 1: Veri Modelleri ve Riverpod State (`lib/features/pomodoro/data/pomodoro_notifier.dart`)
+1. `lib/features/pomodoro/data/pomodoro_notifier.dart` dosyasını oluştur:
+   - **Sınav Hedefi Enum (`KpssExamTarget`):**
+     - `KpssExamTarget.lisans` (`title: '2026 KPSS Lisans (GY-GK)'`, `examDate: DateTime(2026, 9, 6, 10, 15)`, `seasonStart: DateTime(2025, 9, 1)`)
+     - `KpssExamTarget.onlisans` (`title: '2026 KPSS Önlisans'`, `examDate: DateTime(2026, 10, 4, 10, 15)`, `seasonStart: DateTime(2025, 10, 1)`)
+     - `KpssExamTarget.ortaogretim` (`title: '2026 KPSS Ortaöğretim'`, `examDate: DateTime(2026, 10, 18, 10, 15)`, `seasonStart: DateTime(2025, 10, 1)`)
+   - **Saat Tasarımı Enum (`PomodoroClockStyle`):**
+     - `ring` (`label: 'Akademik Halka'`)
+     - `flip` (`label: 'Flip Masa Saati'`)
+     - `zen` (`label: 'Minimal Zen'`)
+   - **Çalışma Modu Şablonu (`PomodoroPreset`):**
+     - `classic25` (`label: '25/5 Klasik'`, `focusMinutes: 25`, `breakMinutes: 5`, `isStopwatch: false`)
+     - `deep50` (`label: '50/10 Derin Odak'`, `focusMinutes: 50`, `breakMinutes: 10`, `isStopwatch: false`)
+     - `exam65` (`label: '65/15 Sınav Provası'`, `focusMinutes: 65`, `breakMinutes: 15`, `isStopwatch: false`)
+     - `stopwatch` (`label: 'Serbest Kronometre'`, `focusMinutes: 0`, `breakMinutes: 5`, `isStopwatch: true`)
+   - **Durum Modeli (`PomodoroState`):**
+     - `final KpssExamTarget examTarget;`
+     - `final PomodoroClockStyle clockStyle;`
+     - `final PomodoroPreset preset;`
+     - `final String selectedLesson;` (`'Tarih'`, `'Coğrafya'`, `'Vatandaşlık'`, `'Güncel Bilgiler'`, `'Genel Tekrar'`)
+     - `final bool isRunning;`
+     - `final bool isBreak;`
+     - `final bool isLandscapeMode;` (Kullanıcının tek tuşla yatay masa saati moduna geçiş durumu)
+     - `final int remainingSeconds;` (Geri sayım modlarında kalan saniye)
+     - `final int elapsedSeconds;` (Kronometre modunda veya mevcut oturumda geçen saniye)
+     - `final int completedSessionsToday;`
+     - `final int totalFocusMinutesToday;`
+     - `final Map<String, int> lessonFocusMinutes;` (Ders bazlı bugün çalışılan dakika dağılımı)
+     - Yardımcı getter'lar:
+       - `String get formattedMinutes`: Görüntülenecek dakika (`preset.isStopwatch ? (elapsedSeconds ~/ 60) : (remainingSeconds ~/ 60)` -> `padLeft(2, '0')`).
+       - `String get formattedSeconds`: Görüntülenecek saniye (`preset.isStopwatch ? (elapsedSeconds % 60) : (remainingSeconds % 60)` -> `padLeft(2, '0')`).
+       - `String get formattedTime => '$formattedMinutes:$formattedSeconds';`
+       - `double get progress`: `preset.isStopwatch ? ((elapsedSeconds % 3600) / 3600.0) : (totalTargetSeconds == 0 ? 0.0 : (1.0 - (remainingSeconds / totalTargetSeconds)).clamp(0.0, 1.0))` (`totalTargetSeconds = (isBreak ? preset.breakMinutes : preset.focusMinutes) * 60`).
+   - **`PomodoroNotifier extends Notifier<PomodoroState>`:**
+     - `Timer? _timer;` (`ref.onDispose(() => _timer?.cancel());`)
+     - `void selectExamTarget(KpssExamTarget target)`
+     - `void selectClockStyle(PomodoroClockStyle style)`
+     - `void selectPreset(PomodoroPreset preset)`: Sayacı durdurur, `isBreak = false`, `remainingSeconds = preset.focusMinutes * 60`, `elapsedSeconds = 0` yapar.
+     - `void selectLesson(String lesson)`
+     - `void startPause()`: `isRunning` durumunu değiştirir; çalışıyorsa 1 saniyelik `Timer.periodic` başlatır, durduysa iptal eder.
+     - `void tick()` (testlerde de doğrudan çağrılabilir olması için `public` yap):
+       - Eğer `preset.isStopwatch` ise `elapsedSeconds + 1` artırır (her 60 saniyede `totalFocusMinutesToday` ve `lessonFocusMinutes[selectedLesson]` 1 artırılır).
+       - Geri sayım modunda `remainingSeconds > 0` ise `remainingSeconds - 1` ve `elapsedSeconds + 1` yapar; her 60 saniyede odak dakikasını kaydeder.
+       - `remainingSeconds <= 0` olduğunda oturumu tamamlar (`completeCurrentPhase()`): Eğer `!isBreak` ise `completedSessionsToday + 1` artırır, `isBreak = true`, `remainingSeconds = preset.breakMinutes * 60`, `isRunning = false` yapar; eğer `isBreak` ise tekrar odak moduna (`isBreak = false`, `remainingSeconds = preset.focusMinutes * 60`) döner.
+     - `void reset()`: Sayacı durdurur ve mevcut şablonun başlangıç süresine sıfırlar.
+     - `void switchPhase(bool toBreak)`: Odak (`false`) veya Mola (`true`) aşamasına manuel geçiş yapar.
+     - `void setLandscapeMode(bool value)`: `state = state.copyWith(isLandscapeMode: value);`
+   - Global provider:
+     `final pomodoroProvider = NotifierProvider<PomodoroNotifier, PomodoroState>(PomodoroNotifier.new);`
+
+ADIM 2: Çoklu Saat Tasarımı ve Yatay Masa Saati Ekranı (`lib/features/pomodoro/presentation/pomodoro_studio_screen.dart`)
+1. `PomodoroStudioScreen extends ConsumerStatefulWidget` oluştur:
+   - `final int initialTabIndex;` (`0`: Pomodoro Sayacı, `1`: Sınav Geri Sayımı — varsayılan `0`).
+   - `dispose()` içinde eğer yatay mod açıksa ekran yönünü dikey/varsayılana (`SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown, DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight])`) geri döndür.
+   - Yatay masa saati geçiş metodu (`_toggleOrientation()`):
+     - `final nextLandscape = !ref.read(pomodoroProvider).isLandscapeMode;`
+     - `ref.read(pomodoroProvider.notifier).setLandscapeMode(nextLandscape);`
+     - `if (nextLandscape) { SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]); } else { SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]); }`
+2. **`OrientationBuilder` & Yatay Masa Saati Görünümü (`_LandscapeStandByClockView`):**
+   - Eğer `MediaQuery.of(context).orientation == Orientation.landscape` veya `state.isLandscapeMode` aktifse:
+     - Tam ekran dikkat dağıtmayan masa saati düzeni (`Row`):
+       - **Sol (`Expanded`, flex: 3):** Seçilen saat tasarımı (`_ClockFaceRenderer` — `Akademik Halka`, `Flip Masa Saati` veya `Minimal Zen`) dev boyutta (`FittedBox` ile ölçeklenmiş) gösterilir.
+       - **Sağ (`Expanded`, flex: 2):**
+         - Üstte seçili ders rozeti (`state.selectedLesson`) + Odak/Mola durumu (`state.isBreak ? 'KISA MOLA' : 'ODAK ZAMANI'`) + Sınava kalan gün mini rozeti (`'⏳ KPSS: $remainingDays Gün'`).
+         - Ortada 3 saat tasarımı değiştirme çipleri (`Halka` / `Flip` / `Zen`).
+         - Altta büyük `Başlat / Duraklat` (`FilledButton.icon`), `Sıfırla` (`IconButton`) ve `'Dikey Görünüme Dön'` (`OutlinedButton.icon` -> `_toggleOrientation`) butonları.
+3. **Dikey Görünüm (`Scaffold`):**
+   - `AppBar`:
+     - `title: const Text('Odak & Sınav Sayacı')`
+     - `actions`: Sağ üstte **Yatay Masa Saati Modu** butonu (`IconButton` veya `TextButton.icon`: `PhosphorIconsBold.deviceMobileCamera` / `arrowsOutSimple`, `tooltip: 'Yatay Masa Saati Modu'`, `label: 'Masa Saati'`, `onPressed: _toggleOrientation`).
+   - Üstte 2 sekmeli geçiş (`SegmentedButton<int>` veya özel `TactileCard` sekme seçici):
+     - Sekme 0: **`Pomodoro Stüdyosu`** (`PhosphorIconsBold.timer`)
+     - Sekme 1: **`Sınav Geri Sayımı`** (`PhosphorIconsBold.calendarCheck`)
+   - **Sekme 0 — `Pomodoro Stüdyosu` İçeriği (`ListView`):**
+     1. **Üst Kompakt KPSS Geri Sayım Şeridi:** Seçili sınava (`state.examTarget.title`) kalan `X Gün · Y Saat · Z Dk` özet şeridi (tıklanınca Sekme 1'e geçer).
+     2. **Saat Tasarımı Seçici (`3 Tasarım Seçeneği`):**
+        - Yan yana 3 seçilebilir çip/buton (`Akademik Halka`, `Flip Masa Saati`, `Minimal Zen`).
+     3. **Ana Saat Sahnesi (`_ClockFaceRenderer` — `TactileCard` içinde):**
+        - Üstte `Odaklanma` / `Kısa Mola` geçiş hapları + **Ders Seçici Çipler** (`'Tarih'`, `'Coğrafya'`, `'Vatandaşlık'`, `'Güncel Bilgiler'`).
+        - Ortada seçilen tasarıma göre saat:
+          - **`PomodoroClockStyle.ring` (`Akademik Halka`):** `190x190` dairesel ilerleme halkası (`CircularProgressIndicator` `strokeWidth: 10`), ortasında `FittedBox` içinde `state.formattedTime` (`textTheme.displayLarge`), altında seçili ders ve aşama etiketi.
+          - **`PomodoroClockStyle.flip` (`Flip Masa Saati`):** Yan yana iki adet 3D masa saati yaprağı (`_FlipDigitCard(value: state.formattedMinutes, label: 'DAKİKA')` + `:` + `_FlipDigitCard(value: state.formattedSeconds, label: 'SANİYE')`). Her yaprağın ortasında ince yatay menteşe çizgisi (`Divider`), `colorScheme.primaryContainer` / `colorScheme.surfaceContainerHighest` kontrast yüzeyi ve `AnimatedSwitcher` geçişi bulunur.
+          - **`PomodoroClockStyle.zen` (`Minimal Zen`):** Çerçevesiz ferah tipografik saat (`FittedBox` ile büyük `state.formattedTime`), altında ince `LinearProgressIndicator` akış çubuğu ve motive edici odak mesajı (`'Her 25 dakikalık odak, sınavda 1 net demektir.'`).
+        - Altta Kontrol Butonları (`Row`):
+          - `Sıfırla` (`IconButton.filledTonal`, `PhosphorIconsBold.arrowCounterClockwise`)
+          - `Başlat` / `Duraklat` (`FilledButton.icon`, `state.isRunning ? 'Duraklat' : 'Odaklanmayı Başlat'`)
+          - `Masa Saati (Yatay)` (`IconButton.filledTonal`, `PhosphorIconsBold.deviceRotate`, `tooltip: 'Yatay Masa Saati'`)
+     4. **Süre Şablonları (`25/5 Klasik`, `50/10 Derin Odak`, `65/15 Sınav Provası`, `Serbest Kronometre`):**
+        - `Wrap` veya 2x2 kompakt kartlar halinde tek tıkla süre modunu değiştiren seçiciler.
+     5. **Bugünkü Odak İstatistiği Kartı (`YPT Tarzı Ders Dağılımı`):**
+        - Bugün tamamlanan Pomodoro sayısı (`${state.completedSessionsToday} Oturum`), toplam odak süresi (`${state.totalFocusMinutesToday} dk`) ve ders bazlı çalışılan dakikalar.
+   - **Sekme 1 — `Sınav Geri Sayımı` İçeriği (`_ExamCountdownTabView`):**
+     1. **Sınav Türü Seçici (`2026 KPSS Lisans (GY-GK)`, `2026 KPSS Önlisans`, `2026 KPSS Ortaöğretim`):**
+        - Seçilen sınava göre hedef tarih anında güncellenir.
+     2. **Canlı 4'lü Geri Sayım Panosu (`GÜN` · `SAAT` · `DAKİKA` · `SANİYE`):**
+        - 1 saniyelik `Timer.periodic` ile canlı akan 4 adet 3D `TactileCard` kutusu (`Gün`, `Saat`, `Dakika`, `Saniye`).
+     3. **Hazırlık Maratonu İlerleme Çubuğu:**
+        - Hazırlık sezonunun yüzde kaçının geride kaldığını (`%XX Tamamlandı`) ve kalan hafta/gün sayısını gösteren görsel ilerleme kartı.
+     4. **Koç Tuğrul'dan Kalan Süre Stratejisi + `'Hemen Pomodoro Başlat'` Aksiyonu.**
+
+ADIM 3: Ana Sayfa (`HomeScreen`), Pratik (`PracticeHubScreen`) ve Router (`router.dart`) Entegrasyonu
+1. `lib/app/router.dart` içine `/pomodoro` rotasını ekle (`builder: (context, state) => const PomodoroStudioScreen()`).
+2. `lib/features/home/presentation/home_screen.dart` içine `_DailyGoalCard` ile `_SmartRemindersCard` arasına kompakt ve çok şık **`_ExamAndPomodoroBanner`** (`TactileCard`) ekle:
+   - Sol tarafta: Canlı **`⏳ KPSS 2026: X Gün Kaldı`** + seçili Pomodoro modu (`25:00 Odak`),
+   - Sağ tarafta: **`'Pomodoro Başlat'` / `'Sayaç'`** aksiyon rozeti. Tıklandığında `PomodoroStudioScreen` açılır!
+   - (DİKKAT: `HomeScreen` üzerindeki mevcut `'Hoş geldin'`, `'Bugünkü hedefin'`, `'$solved / $goal soru'` ve `'Bugünün Çalışma Planı'` metinlerini BİREBİR koru ki mevcut testler kırılmasın!).
+3. `lib/features/practice/presentation/practice_hub_screen.dart` içine de `'Odak & Planlama'` (veya mevcut kartların altına) **`'Pomodoro & Sınav Sayacı'`** (`'Dikey/yatay masa saati, 3 farklı saat tasarımı ve KPSS geri sayımı.'`, rozet: `'Flip & Halka Saat'`) kartını ekle.
+
+ADIM 4: Test ve Doğrulama (`test/pomodoro_studio_test.dart`)
+1. `test/pomodoro_studio_test.dart` dosyasını oluştur:
+   - `PomodoroNotifier` birim testleri: Varsayılan `25:00` (`1500` sn) ile başladığını, `tick()` çağrıldığında sürenin azaldığını, `selectPreset(PomodoroPreset.deep50)` ile `50:00` olduğunu, `selectClockStyle(PomodoroClockStyle.flip)` ile saat tasarımının değiştiğini ve `selectExamTarget` ile sınav hedefinin güncellendiğini doğrula.
+   - `PomodoroStudioScreen` widget testleri:
+     - Ekran açıldığında `'Odak & Sınav Sayacı'` başlığının, `'25:00'` sayacının ve 3 saat tasarımı seçeneğinin (`'Akademik Halka'`, `'Flip Masa Saati'`, `'Minimal Zen'`) göründüğünü,
+     - `'Flip Masa Saati'` seçildiğinde `'DAKİKA'` ve `'SANİYE'` yapraklarının çizildiğini,
+     - `'Sınav Geri Sayımı'` sekmesine geçildiğinde `'2026 KPSS Lisans (GY-GK)'` ve `'GÜN'`, `'SAAT'`, `'DAKİKA'`, `'SANİYE'` kartlarının göründüğünü,
+     - Yatay ekran boyutunda (`tester.view.physicalSize = const Size(1600, 800)`) yatay masa saati görünümünün taşmasız (`0 overflow`) çizildiğini doğrula!
+2. `docs/task-board.md` içinde `TASK-78` durumunu `✅ **Tamamlandı**` yap.
 3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
 

@@ -7,6 +7,8 @@ import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
 import 'package:kadro/features/planner/presentation/widgets/home_daily_plan_card.dart';
+import 'package:kadro/features/pomodoro/data/pomodoro_notifier.dart';
+import 'package:kadro/features/pomodoro/presentation/pomodoro_studio_screen.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
@@ -58,6 +60,10 @@ class HomeScreen extends ConsumerWidget {
 
           // 2. Riverpod ile anlık güncellenen 3D Tactile günlük hedef kartı
           _DailyGoalCard(solved: stats.dailySolvedCount, goal: stats.dailyGoal),
+          AppSpacing.gapMd,
+
+          // 2.5. KPSS Sınav Geri Sayımı ve Pomodoro Odak Şeridi
+          const _ExamAndPomodoroBanner(),
           AppSpacing.gapMd,
 
           // 3. Akıllı Görev ve Durum Hatırlatıcıları Kartı
@@ -472,6 +478,102 @@ class _WeakLessonHomeBanner extends StatelessWidget {
             PhosphorIconsBold.caretRight,
             color: colorScheme.onSurfaceVariant,
             size: 20,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Ana sayfada KPSS'ye kalan süreyi ve seçili Pomodoro odak modunu gösteren kompakt komuta şeridi.
+class _ExamAndPomodoroBanner extends ConsumerWidget {
+  const _ExamAndPomodoroBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final pomodoro = ref.watch(pomodoroProvider);
+    final remainingDays = pomodoro.examTarget.remainingDays();
+
+    return TactileCard(
+      onTap: () {
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const PomodoroStudioScreen()));
+      },
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.primary.withAlpha(70),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(7),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: PhosphorIcon(
+              PhosphorIconsDuotone.timer,
+              size: 20,
+              color: colorScheme.onPrimaryContainer,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        '⏳ KPSS 2026: $remainingDays Gün Kaldı',
+                        style: textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${pomodoro.formattedTime} Odak · ${pomodoro.selectedLesson}',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                PhosphorIcon(
+                  PhosphorIconsBold.play,
+                  size: 13,
+                  color: colorScheme.onPrimary,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Sayaç',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onPrimary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

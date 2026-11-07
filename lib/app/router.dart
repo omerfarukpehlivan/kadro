@@ -10,6 +10,7 @@ import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
+import 'package:kadro/features/pomodoro/presentation/pomodoro_studio_screen.dart';
 import 'package:kadro/features/practice/presentation/practice_hub_screen.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
@@ -145,6 +146,10 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
       GoRoute(
         path: '/planner',
         builder: (context, state) => const StudyPlannerScreen(),
+      ),
+      GoRoute(
+        path: '/pomodoro',
+        builder: (context, state) => const PomodoroStudioScreen(),
       ),
       GoRoute(
         path: '/true-false',
