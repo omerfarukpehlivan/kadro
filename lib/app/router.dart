@@ -10,6 +10,7 @@ import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
+import 'package:kadro/features/practice/presentation/practice_hub_screen.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
@@ -40,13 +41,13 @@ class QuizRouteArgs {
 /// Uygulamanın merkezi yönlendirme (routing) tablosu.
 ///
 /// Angular'daki `app.routes.ts` ve `<router-outlet>` mimarisinin karşılığıdır.
-/// `StatefulShellRoute.indexedStack` kullanarak alt menü sekmelerinin (branches)
+/// `StatefulShellRoute.indexedStack` kullanarak 6 alt menü sekmesinin (branches)
 /// durumunu (state) kaybetmeden korunmasını sağlar (Angular tabs / nested routes gibi).
 GoRouter createAppRouter({String initialLocation = '/'}) {
   return GoRouter(
     initialLocation: initialLocation,
     routes: [
-      // Alt Menü Kabuğu (Tabs Shell)
+      // Alt Menü Kabuğu (Tabs Shell - 6 Sekmeli Dock)
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return AppShell(navigationShell: navigationShell);
@@ -70,7 +71,16 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
               ),
             ],
           ),
-          // 2: Denemeler
+          // 2: Pratik
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/practice',
+                builder: (context, state) => const PracticeHubScreen(),
+              ),
+            ],
+          ),
+          // 3: Denemeler
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -79,7 +89,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
               ),
             ],
           ),
-          // 3: İstatistik
+          // 4: İstatistik
           StatefulShellBranch(
             routes: [
               GoRoute(
@@ -88,7 +98,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
               ),
             ],
           ),
-          // 4: Profil
+          // 5: Profil
           StatefulShellBranch(
             routes: [
               GoRoute(

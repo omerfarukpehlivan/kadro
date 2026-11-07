@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
@@ -117,6 +118,11 @@ void main() {
         await tester.pumpAndSettle();
 
         // 1. Ana sayfada Bugünün Çalışma Planı kartını doğrula
+        await tester.scrollUntilVisible(
+          find.text('Bugünün Çalışma Planı'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
         expect(find.text('Bugünün Çalışma Planı'), findsOneWidget);
         expect(
           find.text('İslamiyet Öncesi Türk Tarihi 15 Soru Çöz'),

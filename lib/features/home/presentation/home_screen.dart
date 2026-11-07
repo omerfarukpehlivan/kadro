@@ -3,10 +3,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
-import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
-import 'package:kadro/features/games/presentation/concept_match_screen.dart';
-import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
+import 'package:kadro/features/planner/data/study_planner_notifier.dart';
+import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
 import 'package:kadro/features/planner/presentation/widgets/home_daily_plan_card.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
@@ -15,83 +14,18 @@ import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
-/// Ana sayfa: Kadro Koçu konuşma balonu, günlük hedef ve 2x2 Tactile Bento Grid çalışma türleri.
+/// Ana sayfa: Kadro Koçu konuşma balonu, günlük hedef, akıllı hatırlatıcılar ve çalışma planı.
+///
+/// Web/Angular benzetmesi: KPSS adayının günlük çalışma akışını ve hedeflerini
+/// koordine eden `HomeDashboardComponent` (Command Center).
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(studyStatsProvider);
-    final colorScheme = Theme.of(context).colorScheme;
-    final isCompact = ResponsiveBreakpoints.isCompact(context);
-    final isTablet = ResponsiveBreakpoints.isTablet(context);
-    final gridSpacing = isCompact ? AppSpacing.xs : AppSpacing.sm;
-
-    final tile1 = _StudyTypeTile(
-      icon: LucideIcons.target,
-      title: 'Konu testi',
-      description: 'Bir konu seç, 10-20 soruluk test çöz.',
-      badgeText: '10-20 Soru',
-      actionText: 'Başla',
-      accentColor: colorScheme.primary,
-      accentContainerColor: colorScheme.primaryContainer,
-      onAccentContainerColor: colorScheme.onPrimaryContainer,
-      onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => const QuizScreen()));
-      },
-    );
-
-    final tile2 = _StudyTypeTile(
-      icon: LucideIcons.layers,
-      title: 'Bilgi kartları',
-      description: 'Önünde soru, arkasında cevap. Hızlı tekrar için.',
-      badgeText: 'Hızlı Tekrar',
-      actionText: 'Başla',
-      accentColor: colorScheme.tertiary,
-      accentContainerColor: colorScheme.tertiaryContainer,
-      onAccentContainerColor: colorScheme.onTertiaryContainer,
-      onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => const FlashcardsScreen()));
-      },
-    );
-
-    final tile3 = _StudyTypeTile(
-      icon: LucideIcons.bookmark,
-      title: 'Yanlış defteri',
-      description: 'Yanlış yaptığın soruları tekrar çöz.',
-      badgeText: 'Akıllı Havuz',
-      actionText: 'Başla',
-      accentColor: colorScheme.error,
-      accentContainerColor: colorScheme.errorContainer,
-      onAccentContainerColor: colorScheme.onErrorContainer,
-      onTap: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => const MistakesScreen()));
-      },
-    );
-
-    final tile4 = _StudyTypeTile(
-      icon: LucideIcons.timer,
-      title: 'Deneme sınavı',
-      description: '60 soru, 65 dakika. Gerçek Genel Kültür sınav düzeni.',
-      badgeText: '65 Dakika',
-      actionText: 'Başla',
-      accentColor: colorScheme.secondary,
-      accentContainerColor: colorScheme.secondaryContainer,
-      onAccentContainerColor: colorScheme.onSecondaryContainer,
-      onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => const QuizScreen(
-              examDuration: Duration(minutes: 65),
-              customTitle: 'Genel Kültür Denemesi',
-            ),
-          ),
-        );
-      },
-    );
+    final plannerState = ref.watch(studyPlannerProvider);
+    final pendingCount = plannerState.remainingCount;
 
     return ResponsiveContentWrapper(
       maxWidth: 720,
@@ -99,7 +33,7 @@ class HomeScreen extends ConsumerWidget {
       child: ListView(
         padding: AppSpacing.pagePadding(context),
         children: [
-          // Kadro Koçu maskot konuşma balonu
+          // 1. Kadro Koçu maskot konuşma balonu
           MascotCoachBanner(
             mood: MascotMood.coach,
             title: 'Hoş geldin',
@@ -108,106 +42,188 @@ class HomeScreen extends ConsumerWidget {
                 : 'Harika uçuş! Bugün ${stats.dailySolvedCount} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',
           ),
           AppSpacing.gapMd,
-          // Riverpod ile anlık güncellenen 3D Tactile günlük hedef kartı
+
+          // 2. Riverpod ile anlık güncellenen 3D Tactile günlük hedef kartı
           _DailyGoalCard(solved: stats.dailySolvedCount, goal: stats.dailyGoal),
           AppSpacing.gapMd,
-          // Akıllı KPSS Günlük Çalışma Planı Kompakt Kartı
+
+          // 3. Akıllı Görev ve Durum Hatırlatıcıları Kartı
+          const SectionTitle('Görev & Durum Hatırlatıcıları'),
+          _SmartRemindersCard(pendingCount: pendingCount, stats: stats),
+          AppSpacing.gapMd,
+
+          // 4. Akıllı KPSS Günlük Çalışma Planı Kompakt Kartı
           const HomeDailyPlanCard(),
+
+          // 5. Zayıf konu güçlendirme kartı (varsa)
           if (stats.weakestLesson != 'Henüz veri yok') ...[
             AppSpacing.gapMd,
             _WeakLessonHomeBanner(weakestLesson: stats.weakestLesson),
           ],
-          AppSpacing.gapMd,
-          const SectionTitle('Çalışma türleri'),
-          // Adaptif Bento Grid (Tablette 4 sütun tek satır, mobilde 2x2 eşit yükseklikli grid)
-          if (isTablet) ...[
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(child: tile1),
-                  SizedBox(width: gridSpacing),
-                  Expanded(child: tile2),
-                  SizedBox(width: gridSpacing),
-                  Expanded(child: tile3),
-                  SizedBox(width: gridSpacing),
-                  Expanded(child: tile4),
-                ],
-              ),
-            ),
-          ] else ...[
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(child: tile1),
-                  SizedBox(width: gridSpacing),
-                  Expanded(child: tile2),
-                ],
-              ),
-            ),
-            SizedBox(height: gridSpacing),
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(child: tile3),
-                  SizedBox(width: gridSpacing),
-                  Expanded(child: tile4),
-                ],
-              ),
-            ),
-          ],
-          AppSpacing.gapMd,
-          const SectionTitle('Etkileşimli Mini Oyunlar'),
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  child: _StudyTypeTile(
-                    icon: LucideIcons.zap,
-                    title: '60 Saniyede Pençe',
-                    description: 'Doğru / Yanlış hızlı düello ile kombo yap.',
-                    badgeText: 'Kombo XP',
-                    actionText: 'Düelloya Gir',
-                    accentColor: colorScheme.tertiary,
-                    accentContainerColor: colorScheme.tertiaryContainer,
-                    onAccentContainerColor: colorScheme.onTertiaryContainer,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const TrueFalseBlitzScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                SizedBox(width: gridSpacing),
-                Expanded(
-                  child: _StudyTypeTile(
-                    icon: LucideIcons.puzzle,
-                    title: 'Kavram Eşleştir',
-                    description:
-                        'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.',
-                    badgeText: 'Hafıza Oyunu',
-                    actionText: 'Eşleştir',
-                    accentColor: colorScheme.primary,
-                    accentContainerColor: colorScheme.primaryContainer,
-                    onAccentContainerColor: colorScheme.onPrimaryContainer,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const ConceptMatchScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Adayın günlük görevlerini, seri durumunu ve antrenman hatırlatıcılarını
+/// özetleyen akıllı komuta merkezi kartı.
+///
+/// Web/Angular benzetmesi: Dashboard Notification / Smart Alert List component.
+class _SmartRemindersCard extends StatelessWidget {
+  final int pendingCount;
+  final StudyStatsState stats;
+
+  const _SmartRemindersCard({required this.pendingCount, required this.stats});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final remainingQuestions = (stats.dailyGoal - stats.dailySolvedCount).clamp(
+      0,
+      stats.dailyGoal,
+    );
+    final isGoalMet = stats.dailySolvedCount >= stats.dailyGoal;
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.primary.withAlpha(80),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      child: Column(
+        children: [
+          // 1. Görev Hatırlatıcısı
+          _ReminderItem(
+            icon: LucideIcons.listTodo,
+            title: 'Çalışma Planı',
+            message: pendingCount > 0
+                ? 'Bugün tamamlanmayı bekleyen $pendingCount çalışma görevin var'
+                : 'Bugünkü tüm çalışma planı görevlerini tamamladın!',
+            iconBgColor: colorScheme.primaryContainer,
+            iconColor: colorScheme.onPrimaryContainer,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const StudyPlannerScreen()),
+              );
+            },
+          ),
+          Divider(
+            height: 16,
+            thickness: 1,
+            color: colorScheme.outlineVariant.withAlpha(80),
+          ),
+          // 2. Seri & Hedef Hatırlatıcısı
+          _ReminderItem(
+            icon: LucideIcons.flame,
+            title: 'Seri & Hedef',
+            message: !isGoalMet
+                ? '${stats.streakDays} günlük serini korumak için kalan: $remainingQuestions soru'
+                : 'Günlük soru hedefini tamamladın, serin güvende!',
+            iconBgColor: colorScheme.tertiaryContainer,
+            iconColor: colorScheme.onTertiaryContainer,
+            onTap: () {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const QuizScreen()));
+            },
+          ),
+          Divider(
+            height: 16,
+            thickness: 1,
+            color: colorScheme.outlineVariant.withAlpha(80),
+          ),
+          // 3. Hızlı Pratik & Yanlış Defteri Hatırlatıcısı
+          _ReminderItem(
+            icon: LucideIcons.bookmarkCheck,
+            title: 'Hızlı Pratik',
+            message: 'Yanlış defteri ve çalışma modlarıyla netlerini artır',
+            iconBgColor: colorScheme.secondaryContainer,
+            iconColor: colorScheme.onSecondaryContainer,
+            onTap: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const MistakesScreen()));
+            },
           ),
         ],
+      ),
+    ).animate().fadeIn(duration: 200.ms);
+  }
+}
+
+/// `_SmartRemindersCard` içindeki her bir tıklanabilir hatırlatıcı satırı.
+///
+/// Web/Angular benzetmesi: `@Component` list-item bildirim satırı.
+class _ReminderItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String message;
+  final Color iconBgColor;
+  final Color iconColor;
+  final VoidCallback onTap;
+
+  const _ReminderItem({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.iconBgColor,
+    required this.iconColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final isCompact = ResponsiveBreakpoints.isCompact(context);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(isCompact ? 8 : 10),
+              decoration: BoxDecoration(
+                color: iconBgColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, size: isCompact ? 18 : 20, color: iconColor),
+            ),
+            SizedBox(width: isCompact ? 10 : 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    title,
+                    style: textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: colorScheme.onSurface,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    message,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontSize: isCompact ? 11 : null,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 6),
+            Icon(
+              LucideIcons.chevronRight,
+              size: 16,
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -351,144 +367,6 @@ class _DailyGoalCard extends StatelessWidget {
         .animate()
         .fadeIn(duration: 200.ms)
         .slideY(begin: 0.04, end: 0, duration: 200.ms);
-  }
-}
-
-/// 3D basılabilir, canlı rozetli ve aksiyon butonlu dikey Bento çalışma kartı.
-class _StudyTypeTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final VoidCallback? onTap;
-  final Color? accentColor;
-  final Color? accentContainerColor;
-  final Color? onAccentContainerColor;
-  final String badgeText;
-  final String actionText;
-
-  const _StudyTypeTile({
-    required this.icon,
-    required this.title,
-    required this.description,
-    this.onTap,
-    this.accentColor,
-    this.accentContainerColor,
-    this.onAccentContainerColor,
-    required this.badgeText,
-    this.actionText = 'Başla',
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final isCompact = ResponsiveBreakpoints.isCompact(context);
-
-    final effectiveAccent = accentColor ?? colorScheme.primary;
-    final effectiveAccentContainer =
-        accentContainerColor ?? colorScheme.primaryContainer;
-    final effectiveOnAccentContainer =
-        onAccentContainerColor ?? colorScheme.onPrimaryContainer;
-
-    return TactileCard(
-      onTap: onTap,
-      padding: EdgeInsets.all(isCompact ? 10 : 14),
-      backgroundColor: colorScheme.surface,
-      borderColor: effectiveAccent.withAlpha(110),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Üst Bölüm: İkon, Rozet, Başlık ve Açıklama (Üste hizalı)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(isCompact ? 8 : 10),
-                    decoration: BoxDecoration(
-                      color: effectiveAccentContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      icon,
-                      color: effectiveOnAccentContainer,
-                      size: isCompact ? 20 : 24,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Flexible(
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isCompact ? 6 : 8,
-                        vertical: isCompact ? 2 : 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: effectiveAccentContainer,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        badgeText,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: effectiveOnAccentContainer,
-                          fontWeight: FontWeight.w800,
-                          fontSize: isCompact ? 10 : null,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: isCompact ? 8 : 12),
-              Text(
-                title,
-                style:
-                    (isCompact ? textTheme.titleSmall : textTheme.titleMedium)
-                        ?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w800,
-                        ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                description,
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                  fontSize: isCompact ? 11 : null,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          // Alt Bölüm: Aksiyon butonu (justify-between ile en alta sabitlenir)
-          Row(
-            children: [
-              Text(
-                actionText,
-                style: textTheme.labelMedium?.copyWith(
-                  color: effectiveAccent,
-                  fontWeight: FontWeight.w800,
-                  fontSize: isCompact ? 11 : null,
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                LucideIcons.chevronRight,
-                size: isCompact ? 14 : 16,
-                color: effectiveAccent,
-              ),
-            ],
-          ),
-        ],
-      ),
-    ).animate().fadeIn(duration: 200.ms);
   }
 }
 

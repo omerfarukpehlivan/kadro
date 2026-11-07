@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart'; // Material Design bileşenleri
 import 'package:lucide_icons_flutter/lucide_icons.dart'; // Modern çizgisel ikon seti
 
-/// Alttaki havada duran sekme menüsü (Floating Pill/Dock Bottom Navigation Bar).
-/// Web'deki modern SaaS ve mobil uygulamalardaki floating dock tasarımına karşılık gelir.
+/// Alttaki havada duran 6 sekmeli dock menüsü (Floating Pill/Dock Bottom Navigation Bar).
+/// Web'deki modern SaaS ve mobil uygulamalardaki floating navigation bar mimarisine karşılık gelir.
 class AppNavigationBar extends StatelessWidget {
-  final int selectedIndex; // Şu an hangi sekmenin (tab) aktif/seçili olduğu sıra numarası (0-4)
+  final int
+  selectedIndex; // Şu an hangi sekmenin aktif/seçili olduğu sıra numarası (0-5)
   final ValueChanged<int> onDestinationSelected; // Kullanıcı bir sekmeye dokunduğunda çalışan bildirim fonksiyonu
 
   const AppNavigationBar({
@@ -16,13 +17,14 @@ class AppNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final isCompact = MediaQuery.sizeOf(context).width < 380;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isCompact = screenWidth < 400;
 
     final labelStyle = WidgetStateProperty.resolveWith<TextStyle?>((states) {
       final base = Theme.of(context).textTheme.labelSmall;
       return base?.copyWith(
-        fontSize: isCompact ? 10.5 : 12.0,
-        letterSpacing: isCompact ? -0.3 : -0.1,
+        fontSize: isCompact ? 9.5 : 11.0,
+        letterSpacing: isCompact ? -0.5 : -0.2,
         fontWeight: states.contains(WidgetState.selected)
             ? FontWeight.w800
             : FontWeight.w600,
@@ -33,9 +35,9 @@ class AppNavigationBar extends StatelessWidget {
       top: false,
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          isCompact ? 8 : 16,
+          isCompact ? 6 : 14,
           4,
-          isCompact ? 8 : 16,
+          isCompact ? 6 : 14,
           12,
         ),
         child: Container(
@@ -57,7 +59,10 @@ class AppNavigationBar extends StatelessWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(26),
             child: NavigationBarTheme(
-              data: NavigationBarThemeData(labelTextStyle: labelStyle),
+              data: NavigationBarThemeData(
+                labelTextStyle: labelStyle,
+                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+              ),
               child: NavigationBar(
                 height: 66,
                 elevation: 0,
@@ -66,27 +71,37 @@ class AppNavigationBar extends StatelessWidget {
                 selectedIndex: selectedIndex,
                 onDestinationSelected: onDestinationSelected,
                 destinations: const [
-                  // Alt menüdeki her bir sekme butonunun listesi (LucideIcons ile modernleştirildi)
+                  // 0: Ana Sayfa
                   NavigationDestination(
                     icon: Icon(LucideIcons.house),
                     selectedIcon: Icon(LucideIcons.house),
                     label: 'Ana Sayfa',
                   ),
+                  // 1: Dersler
                   NavigationDestination(
                     icon: Icon(LucideIcons.bookOpen),
                     selectedIcon: Icon(LucideIcons.bookOpen),
                     label: 'Dersler',
                   ),
+                  // 2: Pratik
+                  NavigationDestination(
+                    icon: Icon(LucideIcons.gamepad2),
+                    selectedIcon: Icon(LucideIcons.gamepad2),
+                    label: 'Pratik',
+                  ),
+                  // 3: Denemeler
                   NavigationDestination(
                     icon: Icon(LucideIcons.timer),
                     selectedIcon: Icon(LucideIcons.timer),
                     label: 'Denemeler',
                   ),
+                  // 4: İstatistik
                   NavigationDestination(
                     icon: Icon(LucideIcons.chartColumn),
                     selectedIcon: Icon(LucideIcons.chartColumn),
                     label: 'İstatistik',
                   ),
+                  // 5: Profil
                   NavigationDestination(
                     icon: Icon(LucideIcons.user),
                     selectedIcon: Icon(LucideIcons.user),

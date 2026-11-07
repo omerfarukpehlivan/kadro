@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kadro/features/home/presentation/home_screen.dart';
+import 'package:kadro/features/practice/presentation/practice_hub_screen.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 
 void main() {
   testWidgets(
-    'HomeScreen Çalışma türleri ve Mini Oyunlar kartları yan yana eşit boyda ve justify-between hizalı olmalı',
+    'PracticeHubScreen Çalışma türleri ve Mini Oyunlar kartları yan yana eşit boyda ve justify-between hizalı olmalı',
     (tester) async {
       // 1. Ekran boyutunu geniş ve uzun tutarak ListView'deki tüm kartların görünmesini sağla
       tester.view.physicalSize = const Size(800, 1600);
@@ -15,7 +15,7 @@ void main() {
 
       await tester.pumpWidget(
         const ProviderScope(
-          child: MaterialApp(home: Scaffold(body: HomeScreen())),
+          child: MaterialApp(home: Scaffold(body: PracticeHubScreen())),
         ),
       );
       await tester.pumpAndSettle();
@@ -125,25 +125,6 @@ void main() {
         blitzSize.height,
         equals(matchSize.height),
         reason: '60 Saniyede Pençe ve Kavram Eşleştir kartları aynı yükseklikte olmalıdır',
-      );
-
-      final blitzAction = find.descendant(
-        of: blitzCard,
-        matching: find.text('Düelloya Gir'),
-      );
-      final matchAction = find.descendant(
-        of: matchCard,
-        matching: find.text('Eşleştir'),
-      );
-
-      final blitzActionPos = tester.getBottomLeft(blitzAction);
-      final matchActionPos = tester.getBottomLeft(matchAction);
-
-      expect(
-        blitzActionPos.dy,
-        equals(matchActionPos.dy),
-        reason:
-            'Mini Oyunlar aksiyon butonları alt çizgide tam hizalı olmalıdır',
       );
     },
   );

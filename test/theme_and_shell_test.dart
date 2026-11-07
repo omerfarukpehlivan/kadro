@@ -53,6 +53,7 @@ void main() {
 
       expect(find.byIcon(LucideIcons.house), findsOneWidget);
       expect(find.byIcon(LucideIcons.bookOpen), findsOneWidget);
+      expect(find.byIcon(LucideIcons.gamepad2), findsOneWidget);
       expect(find.byIcon(LucideIcons.timer), findsOneWidget);
       expect(find.byIcon(LucideIcons.chartColumn), findsOneWidget);
       expect(find.byIcon(LucideIcons.user), findsOneWidget);

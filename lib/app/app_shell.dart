@@ -5,10 +5,11 @@ import 'package:kadro/app/widgets/app_top_bar.dart';
 import 'package:kadro/features/exams/presentation/exams_screen.dart';
 import 'package:kadro/features/home/presentation/home_screen.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
+import 'package:kadro/features/practice/presentation/practice_hub_screen.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
 import 'package:kadro/features/stats/presentation/stats_screen.dart';
 
-/// Uygulama kabuğu (shell): üst bar + seçili sekmenin ekranı + alt menü.
+/// Uygulama kabuğu (shell): üst bar + seçili sekmenin ekranı + 6 sekmeli alt menü.
 ///
 /// Angular'daki master layout component ve `<router-outlet>` karşılığıdır.
 /// `go_router` ile kullanıldığında `navigationShell` üzerinden sekmelerin durumunu korur;
@@ -28,6 +29,7 @@ class _AppShellState extends State<AppShell> {
   static const List<Widget> _pages = [
     HomeScreen(),
     LessonsScreen(),
+    PracticeHubScreen(),
     ExamsScreen(),
     StatsScreen(),
     ProfileScreen(),
@@ -36,6 +38,7 @@ class _AppShellState extends State<AppShell> {
   static const List<String> _titles = [
     'Kadro',
     'Dersler',
+    'Çalışma Türleri',
     'Denemeler',
     'İstatistik',
     'Profil',

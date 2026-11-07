@@ -30,6 +30,11 @@ void main() {
         await tester.pumpAndSettle();
         expect(find.widgetWithText(AppBar, 'Dersler'), findsOneWidget);
 
+        // Pratik sekmesine git
+        testRouter.go('/practice');
+        await tester.pumpAndSettle();
+        expect(find.widgetWithText(AppBar, 'Çalışma Türleri'), findsOneWidget);
+
         // Denemeler sekmesine git
         testRouter.go('/exams');
         await tester.pumpAndSettle();

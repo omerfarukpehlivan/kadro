@@ -16,6 +16,11 @@ void main() {
     expect(find.text('Hoş geldin'), findsNothing);
     expect(find.text('Tarih'), findsOneWidget);
 
+    // "Pratik"e geç.
+    await tester.tap(find.text('Pratik'));
+    await tester.pumpAndSettle();
+    expect(find.text('ANTRENMAN SAHASI'), findsOneWidget);
+
     // "Profil"e geç.
     await tester.tap(find.text('Profil'));
     await tester.pumpAndSettle();

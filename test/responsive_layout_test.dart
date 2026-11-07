@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/home/presentation/home_screen.dart';
+import 'package:kadro/features/practice/presentation/practice_hub_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 
@@ -133,16 +134,57 @@ void main() {
       expect(find.text('Hoş geldin'), findsOneWidget);
       expect(find.text('Hedef Takibi'), findsOneWidget);
 
-      // Aşağı kaydırarak bento grid çalışma türlerini görüntüle
-      await tester.drag(find.byType(ListView), const Offset(0, -400));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Çalışma türleri'), findsOneWidget);
-      expect(find.text('Konu testi'), findsOneWidget);
+      // Aşağı kaydırarak akıllı hatırlatıcıları görüntüle
+      await tester.scrollUntilVisible(
+        find.text('Görev & Durum Hatırlatıcıları'),
+        150,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Görev & Durum Hatırlatıcıları'), findsOneWidget);
+      expect(find.text('Çalışma Planı'), findsOneWidget);
 
       // RenderFlex overflow hatası olmadığını doğrula
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets(
+      'PracticeHubScreen 360x640 kompakt ekranda taşma olmadan çizilmeli',
+      (tester) async {
+        tester.view.physicalSize = const Size(360, 640);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        await tester.pumpWidget(
+          const ProviderScope(
+            child: MaterialApp(home: Scaffold(body: PracticeHubScreen())),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Çalışma Türleri'), findsOneWidget);
+        expect(find.text('ANTRENMAN SAHASI'), findsOneWidget);
+        expect(find.text('Çalışma türleri'), findsOneWidget);
+        expect(find.text('Konu testi'), findsOneWidget);
+
+        // Aşağı kaydırarak çeldirici avı ve mini oyunları görüntüle
+        await tester.scrollUntilVisible(
+          find.text('ÖSYM Çeldirici Avı'),
+          150,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(find.text('ÖSYM Çeldirici Avı'), findsOneWidget);
+
+        await tester.scrollUntilVisible(
+          find.text('Etkileşimli Mini Oyunlar'),
+          150,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(find.text('Etkileşimli Mini Oyunlar'), findsOneWidget);
+
+        // RenderFlex overflow hatası olmadığını doğrula
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('QuizScreen 360x640 kompakt ekranda taşma olmadan çizilmeli', (
       tester,

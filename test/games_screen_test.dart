@@ -115,9 +115,13 @@ void main() {
     );
 
     testWidgets(
-      'HomeScreen üzerinde Etkileşimli Mini Oyunlar vitrini görüntülenir',
+      'PracticeHubScreen üzerinde Etkileşimli Mini Oyunlar vitrini görüntülenir',
       (WidgetTester tester) async {
         await tester.pumpWidget(const MyApp());
+        await tester.pumpAndSettle();
+
+        // Alt menüden Pratik sekmesine geçelim
+        await tester.tap(find.text('Pratik'));
         await tester.pumpAndSettle();
 
         // Sayfayı aşağı kaydırıp mini oyunlar vitrinini bulalım
