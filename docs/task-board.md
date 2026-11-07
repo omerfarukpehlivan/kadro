@@ -93,7 +93,8 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-66** | **Bağımsız Çalışma Türleri & Antrenman Ekranı (`PracticeHubScreen`), Zenginleştirilmiş Alt Menü (`AppNavigationBar`) ve Görev Hatırlatıcılı Yeni Ana Sayfa** | Çalışma türlerinin (Konu Testi, Bilgi Kartları, Yanlış Defteri, Deneme, Mini Oyunlar, Çeldirici Avı) ana sayfadan ayrılıp bağımsız 'Pratik' sekmesine (`PracticeHubScreen`) taşınması; `AppNavigationBar`'ın 6 sekmeli zengin ve taşmasız dock yapısına yükseltilmesi; `HomeScreen`'in görev hatırlatıcıları, seri uyarıları, son kalınan yer ve günlük çalışma planı odaklı kişisel komuta merkezine dönüştürülmesi | ✅ **Tamamlandı** |
 | **TASK-67** | **Özgün İkon Mimarisi Dönüşümü: Sıradan Lucide İkonlarından `phosphor_flutter` (Duotone, Fill & Bold) Karakteristik İkon Sistemine Geçiş** | Her projede kullanılan sıradan tek çizgili `LucideIcons` ve `Icons.*` kullanımlarının kaldırılarak `phosphor_flutter` paketine geçilmesi; kart ve rozetlerde çift katmanlı `PhosphorIconsDuotone`, alt menü aktif sekmelerinde tok dolgulu `PhosphorIconsFill`, pasif sekme ve aksiyonlarda `PhosphorIconsBold` kullanılması | ✅ **Tamamlandı** |
 | **TASK-68** | **"Tuğrul Evreni" Maskot Çeşitlendirme (12 Özgün Karakter Modu), Etkileşimli Dokun-Konuş (`Tap-to-Inspire`) ve Dinamik Mood Aurası** | Kopya maskot görsellerinin yerine `image-generator` ile Tarihçi, Kâşif, Hukukçu, Haberci, Antrenör, Baş Gözetmen, Analist ve Ateşli Seri Tuğrul illüstrasyonlarının üretilmesi; `MascotCoachBanner` bileşeninin üzerine dokunulduğunda zıplayıp derse/ekrana özel KPSS strateji tüyoları veren etkileşimli (`StatefulWidget`) yapıya ve mood bazlı dinamik aura renklerine yükseltilmesi | ✅ **Tamamlandı** (`ede6127`) |
-| **TASK-69** | **`AppTopBar` / `AppBar` Uzun Başlık Taşması (Overflow) Düzeltmesi & Pratik Sekmesi Akademik İkon/Maskot/Söylem Revizyonu (Oyun Kolu İkonunun Kaldırılması)** | `AppTopBar` içindeki sayfa başlığı (`Row` -> `Text`) sığmadığında oluşan `RenderFlex overflow` hatasının `Flexible` + `TextOverflow.ellipsis` ve kompakt font ölçeklemesiyle giderilmesi; diğer tüm `AppBar` başlıklarının taşmaya karşı korunması; Pratik sekmesindeki ve `MascotMood.practice` modundaki `gameController` (oyun kolu) ikonunun ve oyun söylemlerinin kaldırılarak ciddi akademik hedef/antrenman (`PhosphorIconsBold.target` / `PhosphorIconsFill.target`) ikonuna ve soru çözüm odaklı Tuğrul görseline dönüştürülmesi | ✅ **Tamamlandı** |
+| **TASK-69** | **`AppTopBar` / `AppBar` Uzun Başlık Taşması (Overflow) Düzeltmesi & Pratik Sekmesi Akademik İkon/Maskot/Söylem Revizyonu (Oyun Kolu İkonunun Kaldırılması)** | `AppTopBar` içindeki sayfa başlığı (`Row` -> `Text`) sığmadığında oluşan `RenderFlex overflow` hatasının `Flexible` + `TextOverflow.ellipsis` ve kompakt font ölçeklemesiyle giderilmesi; diğer tüm `AppBar` başlıklarının taşmaya karşı korunması; Pratik sekmesindeki ve `MascotMood.practice` modundaki `gameController` (oyun kolu) ikonunun ve oyun söylemlerinin kaldırılarak ciddi akademik hedef/antrenman (`PhosphorIconsBold.target` / `PhosphorIconsFill.target`) ikonuna ve soru çözüm odaklı Tuğrul görseline dönüştürülmesi | ✅ **Tamamlandı** (`865e05f`) |
+| **TASK-70** | **Sonuç Ekranlarında "Tek Bakışta Sıfır Kaydırma" (`Zero-Scroll Single-Viewport`) Kompakt UI/UX Dönüşümü (`QuizResultScreen`, `_BlitzSummaryView`, `_FlashcardsSummaryView`)** | Test Sonu Karnesi (`QuizResultScreen`), 60 Saniyede Pençe Özeti (`_BlitzSummaryView`) ve Bilgi Kartları Özeti (`_FlashcardsSummaryView`) ekranlarındaki aşırı büyük kart dolgularının (`padding: 24`), devasa fontların (`displayMedium` / `headlineMedium`) ve geniş boşlukların (`gapLg`) kompaktlaştırılması; tüm skorların ve aksiyon butonlarının kullanıcıya scroll yaptırmadan tek ekranda görünmesi | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4185,6 +4186,53 @@ ADIM 3: Testlerin Güncellenmesi ve Doğrulama
 2. `test/overflow_fix_test.dart` (veya `test/practice_hub_and_reminders_test.dart`) içine 320x640 ve 360x640 dar ekranda `AppTopBar(title: 'Çalışma Türleri')` ve çok uzun bir başlıkla (`'Çok Uzun Bir KPSS Çalışma Sayfası Başlığı Testi'`) `RenderFlex overflow` oluşmadığını doğrulayan bir test ekle.
 3. `docs/task-board.md` içinde `TASK-69` durumunu `✅ **Tamamlandı**` yap.
 4. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
+```
+
+---
+
+### 📦 TASK-70: Sonuç Ekranlarında "Tek Bakışta Sıfır Kaydırma" (`Zero-Scroll Single-Viewport`) Kompakt UI/UX Dönüşümü (`QuizResultScreen`, `_BlitzSummaryView`, `_FlashcardsSummaryView`)
+
+- **Durum:** ✅ **Tamamlandı**
+- **Problem Analizi:**
+  - Sonuç ekranlarında (`QuizResultScreen`, `TrueFalseBlitzScreen` içindeki `_BlitzSummaryView` ve `FlashcardsScreen` içindeki `_FlashcardsSummaryView`) kartların iç dolguları (`padding: 24`), tipografi ölçekleri (`displayMedium`, `headlineMedium`) ve dikey boşluklar (`gapMd`, `gapLg`, `SizedBox(height: 24)`) aşırı büyük olduğu için kullanıcının alt kısımdaki ana aksiyon butonlarına (`Yanlış Defterine Git`, `Ana Sayfaya Dön`, `Tekrar Oyna`) ulaşmak için gereksiz yere ekranı aşağı kaydırması (scroll) gerekiyor.
+- **Çözüm (Single-Viewport Kompakt Karne Tasarımı):**
+  - Standart bir telefon ekranında (`>= 640px` yükseklik) sonuç ekranı açıldığı anda maskot özeti, net/skor kartları ve tüm alt aksiyon butonları **hiç scroll yapmadan tek bakışta** ekrana sığmalıdır.
+
+```text
+GÖREV: TASK-70 — Sonuç Ekranlarında "Tek Bakışta Sıfır Kaydırma" (Zero-Scroll Single-Viewport) Kompakt UI/UX Dönüşümü
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Sabit Color(0xFF...) KULLANMA. Mevcut testlerin aradığı metinleri ('Net Puanın', '%... Başarı', 'Doğru', 'Yanlış', 'Boş', 'Zafer Karneni Paylaş 📸', 'Ana Sayfaya Dön' vb.) koru.
+
+ADIM 1: `QuizResultScreen` (`lib/features/quiz/presentation/quiz_result_screen.dart`) Kompaktlaştırılması
+1. `ListView` içindeki dikey padding'i `const EdgeInsets.symmetric(horizontal: 16, vertical: 10)` yap; elemanlar arasındaki `AppSpacing.gapMd` (16px) ve `AppSpacing.gapLg` (24px) boşluklarını `AppSpacing.gapXs` (8px) veya `const SizedBox(height: 10)` seviyesine indir.
+2. `_NetScoreCard` bileşenini yüksek dikey blok (`vertical: 24`, `displayMedium`) olmaktan çıkarıp yatay ve kompakt bir Başarı Şeridine (`padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16)`) dönüştür:
+   - `Row` içinde sol tarafta (`Expanded`): `'Net Puanın'` (`labelMedium`) ve hemen altında `result.net.toStringAsFixed(2)` (`headlineMedium` veya `headlineLarge`, `FontWeight.w900`).
+   - Sağ tarafta: `'%${result.successRate} Başarı'` rozeti.
+3. `_ResultStatItem` (`Doğru`, `Yanlış`, `Boş`) kartlarını kompaktlaştır:
+   - `padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8)`
+   - İkon boyutu: `size: 18` (`SizedBox(height: 4)`)
+   - Sayı metni: `theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, color: color)`
+   - Etiket metni: `theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)`
+4. Aksiyon Butonlarını Kompaktlaştır:
+   - `'Zafer Karneni Paylaş 📸'` (`FilledButton.tonalIcon`), `'Yanlış Defterine Git (...)'`, `'Bilgi Kartlarıyla Hızlı Tekrar'` ve `'Ana Sayfaya Dön'` butonlarında `style: ...styleFrom(visualDensity: VisualDensity.compact, padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14))` kullanarak butonların devasa yükseklik kaplamasını önle; aralarındaki boşluğu `const SizedBox(height: 8)` tut.
+
+ADIM 2: `_BlitzSummaryView` (`lib/features/games/presentation/true_false_blitz_screen.dart`) Kompaktlaştırılması
+1. `_BlitzSummaryView` içindeki `ListView` padding'ini `const EdgeInsets.symmetric(horizontal: 16, vertical: 10)` yap.
+2. 2x2 skor kartlarındaki (`Doğru`, `Yanlış`, `Maksimum Kombo`, `Kazanılan XP`) `TactileCard` bileşenlerine `padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10)` ver:
+   - İkon boyutunu `size: 28` yerine `size: 20` yap (`const SizedBox(height: 4)`).
+   - Skor değerlerini `headlineMedium` yerine `titleLarge?.copyWith(fontWeight: FontWeight.w800)` yap.
+   - Kart satırları arasındaki boşluğu `const SizedBox(height: 8)`, butonlar öncesi boşluğu `const SizedBox(height: 12)` yap.
+3. Alttaki `'Tekrar Oyna'` ve `'Ana Sayfaya Dön'` butonlarını alt alta iki koca blok yapmak yerine yan yana tek satırda (`Row` + `Expanded` + `const SizedBox(width: 10)` + `Expanded`) ve `padding: const EdgeInsets.symmetric(vertical: 10)` ile göster.
+
+ADIM 3: `_FlashcardsSummaryView` (`lib/features/flashcards/presentation/flashcards_screen.dart`) Kompaktlaştırılması
+1. `_FlashcardsSummaryView` içindeki `PageHeader` sonrası `const SizedBox(height: 24)` boşluğunu `const SizedBox(height: 10)` yap.
+2. `'Kart Çalışması Özeti'` kartındaki `padding: const EdgeInsets.all(24)` değerini `const EdgeInsets.symmetric(vertical: 12, horizontal: 16)` yap ve içeride `Row(mainAxisAlignment: MainAxisAlignment.spaceBetween)` kullanarak sol tarafta `'Kart Çalışması Özeti'`, sağ tarafta `'$totalCards Kart'` (`titleLarge` bold) göster.
+3. `'Öğrenildi'` ve `'Tekrar Edilecek'` kartlarındaki `padding: const EdgeInsets.all(16)` değerini `const EdgeInsets.symmetric(vertical: 10, horizontal: 12)` yap; ikon boyutunu `size: 20`, sayıları `titleLarge` yap.
+4. Alttaki `'Yeniden Başla'` ve `'Ana Sayfaya Dön'` butonlarını yan yana tek bir `Row` (`Expanded` + `SizedBox(width: 8)` + `Expanded`) içine alarak dikey alanı koru.
+
+ADIM 4: Test ve Doğrulama
+1. `test/quiz_screen_test.dart`, `test/flashcards_screen_test.dart`, `test/games_screen_test.dart` ve `test/overflow_fix_test.dart` testlerinin tamamının geçtiğini ve standart telefon ekranında (`390x844` ve `360x640`) `QuizResultScreen` içindeki `'Ana Sayfaya Dön'` butonunun kaydırma gerekmeden ekranda (`hitTestable`) yer aldığını doğrula.
+2. `docs/task-board.md` içinde `TASK-70` durumunu `✅ **Tamamlandı**` yap.
+3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
 
 ---

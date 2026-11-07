@@ -275,5 +275,49 @@ void main() {
         expect(tester.takeException(), isNull);
       },
     );
+
+    testWidgets(
+      'TASK-70: QuizResultScreen standart telefon ekranlarında (390x844 ve 360x640) tek bakışta sıfır kaydırma (hitTestable) ile render edilir',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(390, 844);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        const result = QuizResult(
+          totalQuestions: 10,
+          correctCount: 8,
+          wrongCount: 2,
+          emptyCount: 0,
+        );
+
+        await tester.pumpWidget(
+          const MaterialApp(home: QuizResultScreen(result: result)),
+        );
+        await tester.pumpAndSettle();
+
+        // 390x844 ekranında en alttaki 'Ana Sayfaya Dön' butonu hiç scroll yapmadan doğrudan tıklanabilir (hitTestable) olmalı
+        final homeButton = find.widgetWithText(
+          OutlinedButton,
+          'Ana Sayfaya Dön',
+        );
+        expect(homeButton, findsOneWidget);
+        expect(homeButton.hitTestable(), findsOneWidget);
+        expect(find.text('Net Puanın'), findsOneWidget);
+        expect(find.text('7.50'), findsOneWidget);
+        expect(find.text('%80 Başarı'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+
+        // 360x640 kompakt ekranda da test edelim
+        tester.view.physicalSize = const Size(360, 640);
+        await tester.pumpWidget(
+          const MaterialApp(home: QuizResultScreen(result: result)),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Net Puanın'), findsOneWidget);
+        expect(homeButton.hitTestable(), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

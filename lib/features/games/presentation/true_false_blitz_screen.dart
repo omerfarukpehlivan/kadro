@@ -533,7 +533,7 @@ class _BlitzSummaryView extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       children: [
         MascotCoachBanner(
           mood: MascotMood.victory,
@@ -542,24 +542,28 @@ class _BlitzSummaryView extends StatelessWidget {
           message:
               'Toplam $earnedXp XP kazandın ve en yüksek ${maxCombo}x komboya ulaştın!',
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 10),
 
-        // Skor kartları 2x2
+        // Skor kartları 2x2 (Kompakt Single-Viewport - TASK-70)
         Row(
           children: [
             Expanded(
               child: TactileCard(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 10,
+                ),
                 child: Column(
                   children: [
                     PhosphorIcon(
                       PhosphorIconsDuotone.checkCircle,
                       color: colorScheme.tertiary,
-                      size: 28,
+                      size: 20,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
                       '$correctCount',
-                      style: textTheme.headlineMedium?.copyWith(
+                      style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -573,20 +577,24 @@ class _BlitzSummaryView extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Expanded(
               child: TactileCard(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 10,
+                ),
                 child: Column(
                   children: [
                     PhosphorIcon(
                       PhosphorIconsDuotone.xCircle,
                       color: colorScheme.error,
-                      size: 28,
+                      size: 20,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
                       '$wrongCount',
-                      style: textTheme.headlineMedium?.copyWith(
+                      style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -602,23 +610,27 @@ class _BlitzSummaryView extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
 
         Row(
           children: [
             Expanded(
               child: TactileCard(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 10,
+                ),
                 child: Column(
                   children: [
                     PhosphorIcon(
                       PhosphorIconsFill.lightning,
                       color: colorScheme.tertiary,
-                      size: 28,
+                      size: 20,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
                       '${maxCombo}x',
-                      style: textTheme.headlineMedium?.copyWith(
+                      style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: colorScheme.tertiary,
                       ),
@@ -633,20 +645,24 @@ class _BlitzSummaryView extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 8),
             Expanded(
               child: TactileCard(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 10,
+                ),
                 child: Column(
                   children: [
                     PhosphorIcon(
                       PhosphorIconsFill.lightning,
                       color: colorScheme.primary,
-                      size: 28,
+                      size: 20,
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
                       '+$earnedXp XP',
-                      style: textTheme.headlineMedium?.copyWith(
+                      style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: colorScheme.primary,
                       ),
@@ -663,25 +679,38 @@ class _BlitzSummaryView extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 12),
 
-        FilledButton.icon(
-          onPressed: onRestart,
-          icon: const PhosphorIcon(PhosphorIconsBold.arrowsCounterClockwise),
-          label: const Text('Tekrar Oyna'),
-          style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-          ),
-        ),
-        const SizedBox(height: 10),
-
-        OutlinedButton.icon(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const PhosphorIcon(PhosphorIconsBold.house),
-          label: const Text('Ana Sayfaya Dön'),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-          ),
+        // Yan yana kompakt aksiyon butonları (TASK-70)
+        Row(
+          children: [
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: onRestart,
+                icon: const PhosphorIcon(
+                  PhosphorIconsBold.arrowsCounterClockwise,
+                  size: 18,
+                ),
+                label: const Text('Tekrar Oyna'),
+                style: FilledButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const PhosphorIcon(PhosphorIconsBold.house, size: 18),
+                label: const Text('Ana Sayfaya Dön'),
+                style: OutlinedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );

@@ -95,7 +95,7 @@ class QuizResultScreen extends StatelessWidget {
           maxWidth: 720,
           padding: EdgeInsets.zero,
           child: ListView(
-            padding: AppSpacing.pagePadding(context),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             children: [
               // Zafer modunda Kadro Koçu maskot konuşma balonu
               MascotCoachBanner(
@@ -106,11 +106,11 @@ class QuizResultScreen extends StatelessWidget {
                     ? 'Muhteşem bir uçuş! Kadro Koçu seninle gurur duyuyor, kadro kapıları açılıyor!'
                     : 'Güzel mücadele! Yanlış Defteri\'ne düşen soruları birlikte inceleyip nete çevirelim.',
               ),
-              AppSpacing.gapMd,
+              const SizedBox(height: 10),
 
-              // Ana Net & Başarı Oranı 3D Kartı
+              // Ana Net & Başarı Oranı 3D Kartı (Kompakt Başarı Şeridi - TASK-70)
               _NetScoreCard(result: result),
-              AppSpacing.gapSm,
+              const SizedBox(height: 8),
 
               // Doğru, Yanlış ve Boş istatistikleri (3D Tactile)
               Row(
@@ -143,20 +143,27 @@ class QuizResultScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              AppSpacing.gapSm,
+              const SizedBox(height: 8),
 
-              // Zafer Karnesi Paylaşım Butonu (TASK-52)
+              // Zafer Karnesi Paylaşım Butonu (TASK-52 & TASK-70)
               FilledButton.tonalIcon(
                 onPressed: () => _showShareModal(context),
+                style: FilledButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 14,
+                  ),
+                ),
                 icon: const PhosphorIcon(
                   PhosphorIconsBold.shareNetwork,
                   size: 18,
                 ),
                 label: const Text('Zafer Karneni Paylaş 📸'),
               ),
-              AppSpacing.gapLg,
+              const SizedBox(height: 8),
 
-              // Akıllı İkili Aksiyon Köprüsü (TASK-50: Zero Dead-Ends UX)
+              // Akıllı İkili Aksiyon Köprüsü (TASK-50 & TASK-70: Zero Dead-Ends UX)
               if (result.wrongCount > 0) ...[
                 FilledButton.icon(
                   onPressed: () {
@@ -164,24 +171,48 @@ class QuizResultScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const MistakesScreen()),
                     );
                   },
-                  icon: const PhosphorIcon(PhosphorIconsBold.bookmarkSimple),
+                  style: FilledButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 14,
+                    ),
+                  ),
+                  icon: const PhosphorIcon(
+                    PhosphorIconsBold.bookmarkSimple,
+                    size: 18,
+                  ),
                   label: Text(
                     'Yanlış Defterine Git (${result.wrongCount} Yanlış)',
                   ),
                 ),
-                AppSpacing.gapXs,
+                const SizedBox(height: 8),
                 OutlinedButton.icon(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const PhosphorIcon(PhosphorIconsBold.house),
+                  style: OutlinedButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 14,
+                    ),
+                  ),
+                  icon: const PhosphorIcon(PhosphorIconsBold.house, size: 18),
                   label: const Text('Ana Sayfaya Dön'),
                 ),
               ] else ...[
                 FilledButton.icon(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const PhosphorIcon(PhosphorIconsBold.house),
+                  style: FilledButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 14,
+                    ),
+                  ),
+                  icon: const PhosphorIcon(PhosphorIconsBold.house, size: 18),
                   label: const Text('Ana Sayfaya Dön'),
                 ),
-                AppSpacing.gapXs,
+                const SizedBox(height: 8),
                 OutlinedButton.icon(
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
@@ -190,11 +221,18 @@ class QuizResultScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const PhosphorIcon(PhosphorIconsBold.cards),
+                  style: OutlinedButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 14,
+                    ),
+                  ),
+                  icon: const PhosphorIcon(PhosphorIconsBold.cards, size: 18),
                   label: const Text('Bilgi Kartlarıyla Hızlı Tekrar'),
                 ),
               ],
-              const SizedBox(height: 16),
+              const SizedBox(height: 10),
             ],
           ),
         ),
@@ -203,7 +241,7 @@ class QuizResultScreen extends StatelessWidget {
   }
 }
 
-/// Büyük Net ve Başarı yüzdesini vurgulayan 3D Tactile kart bileşeni.
+/// Büyük Net ve Başarı yüzdesini vurgulayan kompakt 3D Tactile Başarı Şeridi (TASK-70).
 class _NetScoreCard extends StatelessWidget {
   final QuizResult result;
 
@@ -217,26 +255,36 @@ class _NetScoreCard extends StatelessWidget {
     return TactileCard(
       backgroundColor: colorScheme.primaryContainer,
       borderColor: colorScheme.primary.withAlpha(120),
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      child: Column(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            'Net Puanın',
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: colorScheme.onPrimaryContainer,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Net Puanın',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  result.net.toStringAsFixed(2),
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            result.net.toStringAsFixed(2),
-            style: theme.textTheme.displayMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onPrimaryContainer,
-            ),
-          ),
-          const SizedBox(height: 8),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: colorScheme.surface,
               borderRadius: BorderRadius.circular(20),
@@ -255,7 +303,7 @@ class _NetScoreCard extends StatelessWidget {
   }
 }
 
-/// Doğru, Yanlış veya Boş sayılarını gösteren 3D istatistik kutusu.
+/// Doğru, Yanlış veya Boş sayılarını gösteren kompakt 3D istatistik kutusu (TASK-70).
 class _ResultStatItem extends StatelessWidget {
   final String label;
   final int count;
@@ -276,23 +324,24 @@ class _ResultStatItem extends StatelessWidget {
     return TactileCard(
       backgroundColor: theme.colorScheme.surfaceContainerHighest,
       borderColor: theme.colorScheme.outlineVariant,
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
       borderRadius: 14,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          PhosphorIcon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
+          PhosphorIcon(icon, color: color, size: 18),
+          const SizedBox(height: 4),
           Text(
             '$count',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w800,
               color: color,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           Text(
             label,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: theme.textTheme.labelSmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),

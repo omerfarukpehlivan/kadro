@@ -424,15 +424,16 @@ class _FlashcardsSummaryView extends StatelessWidget {
           title: 'Tebrikler!',
           subtitle: 'Tüm bilgi kartlarını tamamladın.',
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 10),
         Card(
           color: colorScheme.primaryContainer,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Kart Çalışması Özeti',
@@ -440,10 +441,9 @@ class _FlashcardsSummaryView extends StatelessWidget {
                     color: colorScheme.onPrimaryContainer,
                   ),
                 ),
-                const SizedBox(height: 12),
                 Text(
                   '$totalCards Kart',
-                  style: theme.textTheme.headlineMedium?.copyWith(
+                  style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: colorScheme.onPrimaryContainer,
                   ),
@@ -452,30 +452,33 @@ class _FlashcardsSummaryView extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 10),
         Row(
           children: [
             Expanded(
               child: Card(
                 color: colorScheme.surfaceContainerHighest,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 12,
+                  ),
                   child: Column(
                     children: [
                       Icon(
                         Icons.check_circle,
                         color: colorScheme.tertiary,
-                        size: 28,
+                        size: 20,
                       ),
-                      AppSpacing.gapXs,
+                      const SizedBox(height: 4),
                       Text(
                         '$learnedCount',
-                        style: theme.textTheme.headlineSmall?.copyWith(
+                        style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.tertiary,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text('Öğrenildi', style: theme.textTheme.bodySmall),
                     ],
                   ),
@@ -487,19 +490,22 @@ class _FlashcardsSummaryView extends StatelessWidget {
               child: Card(
                 color: colorScheme.surfaceContainerHighest,
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 12,
+                  ),
                   child: Column(
                     children: [
-                      Icon(Icons.replay, color: colorScheme.error, size: 28),
-                      AppSpacing.gapXs,
+                      Icon(Icons.replay, color: colorScheme.error, size: 20),
+                      const SizedBox(height: 4),
                       Text(
                         '$repeatCount',
-                        style: theme.textTheme.headlineSmall?.copyWith(
+                        style: theme.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: colorScheme.error,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text('Tekrar Edilecek', style: theme.textTheme.bodySmall),
                     ],
                   ),
@@ -527,18 +533,41 @@ class _FlashcardsSummaryView extends StatelessWidget {
           },
           icon: const PhosphorIcon(PhosphorIconsBold.target),
           label: const Text('Bu Konuyu Testle Pekiştir (10 Soru)'),
+          style: FilledButton.styleFrom(
+            visualDensity: VisualDensity.compact,
+            padding: const EdgeInsets.symmetric(vertical: 10),
+          ),
         ),
         const SizedBox(height: 8),
-        OutlinedButton.icon(
-          onPressed: onRestart,
-          icon: const PhosphorIcon(PhosphorIconsBold.arrowsCounterClockwise),
-          label: const Text('Yeniden Başla'),
-        ),
-        const SizedBox(height: 8),
-        TextButton.icon(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const PhosphorIcon(PhosphorIconsBold.house),
-          label: const Text('Ana Sayfaya Dön'),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: onRestart,
+                icon: const PhosphorIcon(
+                  PhosphorIconsBold.arrowsCounterClockwise,
+                  size: 18,
+                ),
+                label: const Text('Yeniden Başla'),
+                style: OutlinedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => Navigator.of(context).pop(),
+                icon: const PhosphorIcon(PhosphorIconsBold.house, size: 18),
+                label: const Text('Ana Sayfaya Dön'),
+                style: OutlinedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
