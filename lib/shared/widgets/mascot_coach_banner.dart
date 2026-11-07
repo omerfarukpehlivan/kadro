@@ -293,64 +293,144 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
 
     final auraColor = _getMoodColor(colorScheme);
     final tips = widget.mood.coachTips;
-
     final longestTip = tips.reduce(
       (a, b) => a.length >= b.length ? a : b,
     );
 
-    final frontChild = _buildFrontFace(
-      context: context,
-      colorScheme: colorScheme,
-      textTheme: textTheme,
-      auraColor: auraColor,
-      avatarSize: avatarSize,
-      isCompact: isCompact,
-    );
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : MediaQuery.sizeOf(context).width - 32;
 
-    final backChild = _buildBackFace(
-      context: context,
-      colorScheme: colorScheme,
-      textTheme: textTheme,
-      auraColor: auraColor,
-      isCompact: isCompact,
-      tips: tips,
-    );
+        final fixedCardHeight = _computeUnifiedHeight(
+          context: context,
+          maxWidth: maxWidth,
+          textTheme: textTheme,
+          avatarSize: avatarSize,
+          isCompact: isCompact,
+          longestTip: longestTip,
+        );
 
-    final tallestBackMeasure = _buildBackFace(
-      context: context,
-      colorScheme: colorScheme,
-      textTheme: textTheme,
-      auraColor: auraColor,
-      isCompact: isCompact,
-      tips: tips,
-      overrideTipText: longestTip,
-    );
+        final frontChild = _buildFrontFace(
+          context: context,
+          colorScheme: colorScheme,
+          textTheme: textTheme,
+          auraColor: auraColor,
+          avatarSize: avatarSize,
+          fixedHeight: fixedCardHeight,
+          isCompact: isCompact,
+        );
 
-    // Zero-Layout-Shift (Sıfır Zıplama):
-    // IntrinsicHeight + Stack içerisinde hem Ön Yüzün hem de En Uzun Tüyolu Arka Yüzün
-    // yüksekliğini aynı anda referans alır ve her iki yüzü bu yüksekliğe eşitler (stretch).
-    // Böylece ön/arka yüz ve tüyo geçişlerinde ne kartın kendisi ne de altındaki sayfa
-    // 1 piksel bile zıplamaz!
-    return IntrinsicHeight(
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          IgnorePointer(
-            child: Opacity(
-              opacity: 0.0,
-              child: ExcludeSemantics(child: frontChild),
-            ),
-          ),
-          IgnorePointer(
-            child: Opacity(
-              opacity: 0.0,
-              child: ExcludeSemantics(child: tallestBackMeasure),
-            ),
-          ),
-          _isFlipped ? backChild : frontChild,
-        ],
-      ),
+        final backChild = _buildBackFace(
+          context: context,
+          colorScheme: colorScheme,
+          textTheme: textTheme,
+          auraColor: auraColor,
+          fixedHeight: fixedCardHeight,
+          isCompact: isCompact,
+          tips: tips,
+        );
+
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 220),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (child, animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: _isFlipped ? backChild : frontChild,
+        );
+      },
     );
+  }
+
+  /// Ön yüz ve en uzun tüyolu arka yüz yüksekliğini TextPainter ile ölçüp
+  /// ikisinden büyük olanı döndürür (Sıfır zıplama / Zero Layout Shift).
+  double _computeUnifiedHeight({
+    required BuildContext context,
+    required double maxWidth,
+    required TextTheme textTheme,
+    required double avatarSize,
+    required bool isCompact,
+    required String longestTip,
+  }) {
+    final textDirection = Directionality.of(context);
+    final textScaler = MediaQuery.textScalerOf(context);
+    final hPad = (isCompact ? 12.0 : 14.0) * 2;
+    final vPad = (isCompact ? 10.0 : 12.0) * 2;
+
+    // 1. Ön yüz sağ sütun yüksekliği
+    final frontRightWidth =
+        (maxWidth - hPad - avatarSize - (isCompact ? 10.0 : 14.0)).clamp(
+          100.0,
+          1200.0,
+        );
+    final titleStyle =
+        (textTheme.titleMedium ?? const TextStyle(fontSize: 16)).copyWith(
+          fontWeight: FontWeight.w800,
+        );
+    final msgStyle =
+        (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(
+          fontWeight: FontWeight.w500,
+          height: 1.4,
+        );
+
+    final titlePainter = TextPainter(
+      text: TextSpan(text: widget.title, style: titleStyle),
+      textDirection: textDirection,
+      textScaler: textScaler,
+    )..layout(maxWidth: frontRightWidth);
+
+    final msgInnerWidth = (frontRightWidth - (isCompact ? 20.0 : 24.0)).clamp(
+      80.0,
+      1200.0,
+    );
+    final msgPainter = TextPainter(
+      text: TextSpan(text: widget.message, style: msgStyle),
+      textDirection: textDirection,
+      textScaler: textScaler,
+    )..layout(maxWidth: msgInnerWidth);
+
+    final frontContentHeight =
+        22.0 + // üst rozet satırı
+        4.0 +
+        titlePainter.height +
+        4.0 +
+        msgPainter.height +
+        (isCompact ? 12.0 : 16.0) + // konuşma balonu dikey iç dolgusu
+        4.0;
+    final frontTotalHeight =
+        (frontContentHeight > avatarSize ? frontContentHeight : avatarSize) +
+        vPad;
+
+    // 2. Arka yüz (en uzun tüyo) yüksekliği
+    final tipStyle =
+        (textTheme.bodyMedium ?? const TextStyle(fontSize: 14)).copyWith(
+          fontWeight: FontWeight.w600,
+          height: 1.45,
+        );
+    final backInnerWidth =
+        (maxWidth - hPad - (isCompact ? 24.0 : 28.0)).clamp(100.0, 1200.0);
+    final tipPainter = TextPainter(
+      text: TextSpan(text: longestTip, style: tipStyle),
+      textDirection: textDirection,
+      textScaler: textScaler,
+    )..layout(maxWidth: backInnerWidth);
+
+    final backTotalHeight =
+        vPad +
+        26.0 + // üst başlık/aksiyon satırı
+        8.0 +
+        tipPainter.height +
+        (isCompact ? 20.0 : 24.0) + // tüyo kutusu iç dikey dolgusu
+        4.0;
+
+    final minFloor = isCompact ? 126.0 : 140.0;
+    final maxCalculated = frontTotalHeight > backTotalHeight
+        ? frontTotalHeight
+        : backTotalHeight;
+    return maxCalculated > minFloor ? maxCalculated : minFloor;
   }
 
   /// Ön Yüz (Varsayılan): Tüyolar gizlidir, sayfa başlığı ve açıklama metni kesilmeden gösterilir.
@@ -360,12 +440,12 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
     required TextTheme textTheme,
     required Color auraColor,
     required double avatarSize,
+    required double fixedHeight,
     required bool isCompact,
   }) {
-    final fixedMinHeight = isCompact ? 132.0 : 146.0;
     return Container(
       key: const ValueKey('mascot_front_face'),
-      constraints: BoxConstraints(minHeight: fixedMinHeight),
+      constraints: BoxConstraints(minHeight: fixedHeight),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
@@ -544,16 +624,15 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
     required ColorScheme colorScheme,
     required TextTheme textTheme,
     required Color auraColor,
+    required double fixedHeight,
     required bool isCompact,
     required List<String> tips,
-    String? overrideTipText,
   }) {
-    final fixedMinHeight = isCompact ? 132.0 : 146.0;
-    final currentTip = overrideTipText ?? tips[_tipIndex % tips.length];
+    final currentTip = tips[_tipIndex % tips.length];
 
     return Container(
       key: const ValueKey('mascot_back_face'),
-      constraints: BoxConstraints(minHeight: fixedMinHeight),
+      constraints: BoxConstraints(minHeight: fixedHeight),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(22),
