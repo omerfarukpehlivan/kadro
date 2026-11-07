@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart'; // Material Design bileşenleri
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart'; // Karakteristik Phosphor ikon seti (Bold & Fill)
 
 /// Alttaki havada duran 6 sekmeli dock menüsü (Floating Pill/Dock Bottom Navigation Bar).
@@ -20,6 +21,9 @@ class AppNavigationBar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isCompact = screenWidth < 400;
+    final hPadding = isCompact
+        ? 8.0
+        : ResponsiveBreakpoints.horizontalPadding(context);
 
     final labelStyle = WidgetStateProperty.resolveWith<TextStyle?>((states) {
       final base = Theme.of(context).textTheme.labelSmall;
@@ -34,12 +38,7 @@ class AppNavigationBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          isCompact ? 6 : 14,
-          4,
-          isCompact ? 6 : 14,
-          12,
-        ),
+        padding: EdgeInsets.fromLTRB(hPadding, 4, hPadding, 12),
         child: Container(
           decoration: BoxDecoration(
             color: colorScheme.surface,

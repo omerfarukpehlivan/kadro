@@ -15,7 +15,7 @@ class SectionTitle extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(2, 10, 2, 10),
+      padding: const EdgeInsets.only(top: 6, bottom: 10),
       child: Text(
         text,
         style: textTheme.titleLarge?.copyWith(

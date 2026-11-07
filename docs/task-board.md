@@ -97,7 +97,8 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-70** | **Sonuç Ekranlarında "Tek Bakışta Sıfır Kaydırma" (`Zero-Scroll Single-Viewport`) Kompakt UI/UX Dönüşümü (`QuizResultScreen`, `_BlitzSummaryView`, `_FlashcardsSummaryView`)** | Test Sonu Karnesi (`QuizResultScreen`), 60 Saniyede Pençe Özeti (`_BlitzSummaryView`) ve Bilgi Kartları Özeti (`_FlashcardsSummaryView`) ekranlarındaki aşırı büyük kart dolgularının (`padding: 24`), devasa fontların (`displayMedium` / `headlineMedium`) ve geniş boşlukların (`gapLg`) kompaktlaştırılması; tüm skorların ve aksiyon butonlarının kullanıcıya scroll yaptırmadan tek ekranda görünmesi | ✅ **Tamamlandı** (`9862149`) |
 | **TASK-71** | **Mobil Ekranlar İçin `AppBar` ve Alt Detay Sayfası Başlık Tipografisi Ölçeklemesi (Kesilmeleri Önleyen Kompakt Başlık Sistemi)** | M3 varsayılan `22px` (`titleLarge`) `AppBar` başlıklarının Türkçe ders/konu adlarında (`'Tarih Konuları'`, `'Güncel Bilgiler Konuları'`, `'İslamiyet Öncesi Türk Tarihi'`) aşırı büyük durup kesilmesini (`...`) önlemek için global `AppBarTheme` başlık stilinin (`16px`), `titleSpacing: 0` boşluğunun, `TopicTestsScreen` / `LessonTopicsScreen` / `QuizScreen` / `AppTopBar` ve `MascotCoachBanner` başlık boyutlarının mobil ekranlara uygun zarif ölçeğe çekilmesi | ✅ **Tamamlandı** (`d8f663b`) |
 | **TASK-72** | **Proje Genelinde Standart Tipografi & Font-Size Ölçek Sistemi (`AppTheme` 12 Seviyeli Modüler Tipografi Standardı & Sıfır Hardcoded `fontSize`)** | `lib/app/theme.dart` içinde `displayLarge`'dan `labelSmall`'a kadar tüm 15 M3 metin stilinin birbiriyle uyumlu matematiksel mobil ölçeğe (`28 / 22 / 19 / 17 / 15.5 / 14 / 15 / 13.5 / 12 / 13 / 11.5 / 10.5 px`) bağlanması; `lib/app/theme.dart` dışındaki tüm ekranlarda dağınık `fontSize:` ezme (override) kullanımlarının temizlenmesi ve ekranlar arası başlık/kart/metrik tipografi rollerinin standartlaştırılması | ✅ **Tamamlandı** (`57c0804`) |
-| **TASK-73** | **`ui-ux-pro-max` Mobil Tipografi (`Base 16px`: `28-24-20-18-16-15-14-12-11 px`) ve 3 Kademeli Padding Hiyerarşisi Revizyonu** | Küçük kalan başlık ve gövde yazılarının iOS HIG / Material 3 / `ui-ux-pro-max` gerçek mobil ölçeğine (`titleLarge: 18px`, `titleMedium: 16px`, `titleSmall: 15px`, `bodyLarge: 16px`, `bodyMedium: 14px`, `bodySmall: 12px`, `labelLarge: 14px`, `labelMedium: 12px`, `labelSmall: 11px`) yükseltilmesi; `SectionTitle` (`18px`), `LessonsScreen` (`18px`), `MascotCoachBanner` (`16px` başlık + `14px` konuşma balonu), `PracticeHubScreen` (`15px` başlık + `14px` padding) ve `LessonTopicsScreen` (`16px` kesilmeyen başlık) hiyerarşisinin uygulanması | ✅ **Tamamlandı** |
+| **TASK-73** | **`ui-ux-pro-max` Mobil Tipografi (`Base 16px`: `28-24-20-18-16-15-14-12-11 px`) ve 3 Kademeli Padding Hiyerarşisi Revizyonu** | Küçük kalan başlık ve gövde yazılarının iOS HIG / Material 3 / `ui-ux-pro-max` gerçek mobil ölçeğine (`titleLarge: 18px`, `titleMedium: 16px`, `titleSmall: 15px`, `bodyLarge: 16px`, `bodyMedium: 14px`, `bodySmall: 12px`, `labelLarge: 14px`, `labelMedium: 12px`, `labelSmall: 11px`) yükseltilmesi; `SectionTitle` (`18px`), `LessonsScreen` (`18px`), `MascotCoachBanner` (`16px` başlık + `14px` konuşma balonu), `PracticeHubScreen` (`15px` başlık + `14px` padding) ve `LessonTopicsScreen` (`16px` kesilmeyen başlık) hiyerarşisinin uygulanması | ✅ **Tamamlandı** (`b77e3f8`) |
+| **TASK-74** | **Dikey Hizalama & Kenar Kılavuz Çizgisi Standardizasyonu (`AppTopBar`, `Body`, `SectionTitle`, `AppNavigationBar` ve `AppBarTheme` Sol/Sağ Flush Alignment)** | `AppBarTheme` içindeki `titleSpacing: 4` nedeniyle üst barın (`AppTopBar`) sol kenarının `4px`'ten başlayıp alt gövdenin (`16px`) dışına taşması hatasının düzeltilmesi; `AppTopBar` sol `titleSpacing` ve sağ `actions` boşluğunun, `SectionTitle` sol hizasının (`horizontal: 0`) ve `AppNavigationBar` yan boşluklarının `ResponsiveBreakpoints.horizontalPadding(context)` (`12px / 16px / 24px`) ile milimetrik olarak aynı dikey hizaya getirilmesi | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4439,6 +4440,40 @@ ADIM 2: Ekran ve Bileşen Tipografi & Padding Hiyerarşisini Güncelleme
 ADIM 3: Testlerin Güncellenmesi ve Doğrulama
 1. `test/theme_and_shell_test.dart` ve `test/overflow_fix_test.dart` içindeki font boyutu beklentilerini yeni `ui-ux-pro-max` mobil ölçeğine (`titleLarge: 18`, `titleMedium: 16`, `titleSmall: 15`, `bodyLarge: 16`, `bodyMedium: 14`, `bodySmall: 12`, `labelLarge: 14`, `labelMedium: 12`, `labelSmall: 11`) göre güncelle ve 360x640 dar ekranda sıfır taşma (`RenderFlex overflow`) olduğunu doğrula.
 2. `docs/task-board.md` içinde `TASK-73` durumunu `✅ **Tamamlandı**` yap.
+3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
+```
+
+---
+
+### 📦 TASK-74: Dikey Hizalama & Kenar Kılavuz Çizgisi Standardizasyonu (`AppTopBar`, `Body`, `SectionTitle`, `AppNavigationBar` ve `AppBarTheme` Sol/Sağ Flush Alignment)
+
+- **Durum:** 🔄 **Devam Ediyor**
+- **Problem Analizi:**
+  - `lib/app/theme.dart` içindeki `appBarTheme` üzerinde `titleSpacing: 4` tanımlandığı için, geri butonu (`leading`) olmayan `AppTopBar` (ve `QuizResultScreen` `AppBar`) başlığı soldan sadece **`4px`** içeriden başlamakta; oysa altındaki sayfa gövdesi (`AppSpacing.pagePadding(context)`) soldan **`16px`** (kompakt: `12px`, tablet: `24px`) içeriden başlamaktadır. Bu durum üst barın sol kenarının gövdedeki kartlara göre `12px` sola kayık (hizasız) durmasına yol açmaktadır.
+  - Aynı şekilde `AppTopBar`'ın sağındaki `PRO` rozetinin sağ marjini `12px` (`isCompact ? 8 : 12`), `AppNavigationBar`'ın yatay padding'i `14px` (`isCompact ? 6 : 14`) ve `SectionTitle`'ın yatay padding'i `2px` olduğu için sol ve sağ dikey hiza çizgileri birbirini tutmamaktadır.
+- **Çözüm (100% Flush Vertical Grid Line):**
+  - `AppTopBar` sol (`titleSpacing`) ve sağ (`PRO` rozeti sağ marjini), `Body` (`AppSpacing.pagePadding`), `SectionTitle` (`horizontal: 0`) ve `AppNavigationBar` yan boşlukları tamamen `ResponsiveBreakpoints.horizontalPadding(context)` (`12px` / `16px` / `24px`) değerine bağlanarak yukarıdan aşağıya jilet gibi tek bir sol ve sağ hiza çizgisi oluşturulur.
+
+```text
+GÖREV: TASK-74 — Dikey Hizalama & Kenar Kılavuz Çizgisi Standardizasyonu (AppTopBar, Body, SectionTitle, AppNavigationBar ve AppBarTheme Sol/Sağ Flush Alignment)
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy.
+
+ADIM 1: `lib/app/theme.dart` (`appBarTheme` `titleSpacing` Düzeltmesi)
+1. `lib/app/theme.dart` içindeki `AppTheme.light` ve `AppTheme.dark` altında yer alan `appBarTheme` içindeki `titleSpacing: 4` satırını `titleSpacing: 16` yap (böylece geri butonu olmayan tüm `AppBar` başlıkları standart `16px` sayfa kenar dolgusuyla birebir aynı hizadan başlar).
+
+ADIM 2: `AppTopBar` (`lib/app/widgets/app_top_bar.dart`) Sol ve Sağ Kenar Hizalaması
+1. `lib/app/widgets/app_top_bar.dart` içine `import 'package:kadro/core/utils/responsive_layout.dart';` ekle.
+2. `build` içinde `final hPadding = ResponsiveBreakpoints.horizontalPadding(context);` tanımla (`<380px` için `12.0`, standart telefon için `16.0`, tablet için `24.0`).
+3. `AppBar` içinde `titleSpacing: hPadding` ver! Böylece sol taraftaki Kadro Koçu avatarının sol kenarı, altındaki `MascotCoachBanner` ve tüm kartların sol kenarıyla (`hPadding`) **milimetrik olarak aynı dikey çizgide** hizalanır.
+4. Sağdaki `PRO` rozet konteynerinin `margin` değerini `EdgeInsets.only(right: hPadding)` yap! Böylece sağdaki `PRO` rozetinin sağ kenarı da altındaki kartların sağ kenarıyla (`hPadding`) **milimetrik olarak aynı dikey çizgide** hizalanır.
+
+ADIM 3: `SectionTitle` (`lib/shared/widgets/section_title.dart`) ve `AppNavigationBar` (`lib/app/widgets/app_navigation_bar.dart`) Hizalaması
+1. `lib/shared/widgets/section_title.dart` içinde `padding: const EdgeInsets.fromLTRB(2, 10, 2, 10)` değerini `const EdgeInsets.only(top: 6, bottom: 10)` (`horizontal: 0`) yap. Böylece bölüm başlıkları (`"Dersler"`, `"Çalışma türleri"` vb.) içeriden `2px` kaçmak yerine kartların sol kenarıyla %100 sıfıra sıfır (flush) hizalanır.
+2. `lib/app/widgets/app_navigation_bar.dart` içinde alt menünün dış `Padding` değerini `EdgeInsets.fromLTRB(ResponsiveBreakpoints.horizontalPadding(context), 4, ResponsiveBreakpoints.horizontalPadding(context), 12)` yap (ancak `<380px` çok dar ekranlarda 6 sekmenin sığması için `isCompact ? 8.0 : ResponsiveBreakpoints.horizontalPadding(context)` kullan). Böylece standart telefonlarda (`16px`) ve tabletlerde (`24px`) alt dock menüsü de üstteki kartlarla birebir aynı sol/sağ hizaya oturur.
+
+ADIM 4: Test ve Doğrulama
+1. `test/theme_and_shell_test.dart` (veya `test/app_spacing_test.dart`) içine standart telefon ekranında (`390x844`) `AppShell` içindeki `AppTopBar` sol avatar başlangıç X koordinatının (`tester.getTopLeft(...)`) ve `PRO` rozetinin sağ bitiş X koordinatının (`tester.getTopRight(...)`) gövdedeki `MascotCoachBanner` / kartların sol ve sağ X koordinatlarıyla (`16.0` ve `390.0 - 16.0 = 374.0`) birebir aynı hizada olduğunu doğrulayan bir hizalama testi ekle!
+2. `docs/task-board.md` içinde `TASK-74` durumunu `✅ **Tamamlandı**` yap.
 3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
 

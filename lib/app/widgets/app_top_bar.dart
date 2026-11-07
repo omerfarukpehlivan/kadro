@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
@@ -22,12 +23,15 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final isCompact = MediaQuery.sizeOf(context).width < 380;
+    final hPadding = ResponsiveBreakpoints.horizontalPadding(context);
 
     final stats = ref.watch(studyStatsProvider);
     final prefs = ref.watch(userPreferencesProvider);
 
     return AppBar(
       centerTitle: false,
+      automaticallyImplyLeading: false,
+      titleSpacing: hPadding,
       backgroundColor: colorScheme.surface,
       surfaceTintColor: colorScheme.surfaceTint,
       scrolledUnderElevation: 0.5,
@@ -103,46 +107,49 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
         ),
         SizedBox(width: isCompact ? 6 : 8),
         // PRO rozet butonu (PaywallScreen açar)
-        InkWell(
-          onTap: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
-          },
-          borderRadius: BorderRadius.circular(20),
-          child: Container(
-            margin: EdgeInsets.only(right: isCompact ? 8 : 12),
-            padding: EdgeInsets.symmetric(
-              horizontal: isCompact ? 8 : 10,
-              vertical: 5,
-            ),
-            decoration: BoxDecoration(
-              color: prefs.isPro
-                  ? colorScheme.tertiary
-                  : colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: colorScheme.outlineVariant),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                PhosphorIcon(
-                  PhosphorIconsFill.crown,
-                  size: 15,
-                  color: prefs.isPro
-                      ? colorScheme.onTertiary
-                      : colorScheme.onPrimaryContainer,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'PRO',
-                  style: textTheme.labelSmall?.copyWith(
+        Padding(
+          padding: EdgeInsets.only(right: hPadding),
+          child: InkWell(
+            onTap: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+            },
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: isCompact ? 8 : 10,
+                vertical: 5,
+              ),
+              decoration: BoxDecoration(
+                color: prefs.isPro
+                    ? colorScheme.tertiary
+                    : colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: colorScheme.outlineVariant),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PhosphorIcon(
+                    PhosphorIconsFill.crown,
+                    size: 15,
                     color: prefs.isPro
                         ? colorScheme.onTertiary
                         : colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.w800,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 4),
+                  Text(
+                    'PRO',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: prefs.isPro
+                          ? colorScheme.onTertiary
+                          : colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

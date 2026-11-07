@@ -85,26 +85,31 @@ class LessonTopicsScreen extends ConsumerWidget {
               ?.copyWith(fontWeight: FontWeight.w800),
         ),
         actions: [
-          Tooltip(
-            message: '${lesson.name} Tüm Konuları İndir (PRO)',
-            child: TextButton.icon(
-              onPressed: () => _downloadAllTopics(context, ref),
-              style: TextButton.styleFrom(
-                visualDensity: VisualDensity.compact,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
+          Padding(
+            padding: EdgeInsets.only(
+              right: ResponsiveBreakpoints.horizontalPadding(context) - 8,
+            ),
+            child: Tooltip(
+              message: '${lesson.name} Tüm Konuları İndir (PRO)',
+              child: TextButton.icon(
+                onPressed: () => _downloadAllTopics(context, ref),
+                style: TextButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                 ),
-              ),
-              icon: const PhosphorIcon(
-                PhosphorIconsBold.downloadSimple,
-                size: 16,
-              ),
-              label: Text(
-                'Tümünü İndir',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w700,
+                icon: const PhosphorIcon(
+                  PhosphorIconsBold.downloadSimple,
+                  size: 16,
+                ),
+                label: Text(
+                  'Tümünü İndir',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),

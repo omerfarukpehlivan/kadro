@@ -308,7 +308,7 @@ class AppTheme {
       cardColor: const Color(0xFFFFFFFF),
       textTheme: textTheme,
       appBarTheme: baseLight.appBarTheme.copyWith(
-        titleSpacing: 4,
+        titleSpacing: 16,
         titleTextStyle: textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.w700,
           color: highContrastScheme.onSurface,
@@ -370,7 +370,7 @@ class AppTheme {
       cardColor: const Color(0xFF1E293B),
       textTheme: textTheme,
       appBarTheme: baseDark.appBarTheme.copyWith(
-        titleSpacing: 4,
+        titleSpacing: 16,
         titleTextStyle: textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.w700,
           color: highContrastDarkScheme.onSurface,
