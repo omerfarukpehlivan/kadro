@@ -74,7 +74,7 @@ void main() {
 
         // 1. Hero Card & Countdown Testleri
         expect(find.byType(CandidateHeroCard), findsOneWidget);
-        expect(find.textContaining('2026 KPSS Lisans:'), findsOneWidget);
+        expect(find.textContaining('2027 KPSS Lisans:'), findsOneWidget);
         expect(find.textContaining('Gün Kaldı'), findsOneWidget);
         expect(find.text('Hedef Sihirbazını Aç'), findsOneWidget);
 

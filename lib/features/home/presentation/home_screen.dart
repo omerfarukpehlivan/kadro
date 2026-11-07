@@ -528,7 +528,7 @@ class _ExamAndPomodoroBanner extends ConsumerWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        '⏳ KPSS 2026: $remainingDays Gün Kaldı',
+                        '⏳ KPSS 2027: $remainingDays Gün Kaldı',
                         style: textTheme.labelLarge?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),

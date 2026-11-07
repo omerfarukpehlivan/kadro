@@ -1124,7 +1124,7 @@ class _ExamCountdownTab extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      'Sınav Tarihi: ${target.examDate.day}.${target.examDate.month}.${target.examDate.year} - 10:15',
+                      'Sınav Tarihi (Temsili): ${target.examDate.day.toString().padLeft(2, '0')}.${target.examDate.month.toString().padLeft(2, '0')}.${target.examDate.year} - 10:15',
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),

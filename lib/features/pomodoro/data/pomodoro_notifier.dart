@@ -2,24 +2,24 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// KPSS Sınav Türleri ve 2026 ÖSYM sınav takvimi hedef tarihleri.
+/// KPSS Sınav Türleri ve gelecek dönem ÖSYM sınav takvimi hedef tarihleri (Temsili / Projeksiyon).
 ///
 /// Web/Angular Karşılığı: Exam target configuration model.
 enum KpssExamTarget {
   lisans(
-    title: '2026 KPSS Lisans (GY-GK)',
-    examDateStr: '2026-09-06T10:15:00',
-    seasonStartStr: '2025-09-01T00:00:00',
+    title: '2027 KPSS Lisans (GY-GK)',
+    examDateStr: '2027-09-05T10:15:00',
+    seasonStartStr: '2026-09-01T00:00:00',
   ),
   onlisans(
-    title: '2026 KPSS Önlisans',
-    examDateStr: '2026-10-04T10:15:00',
-    seasonStartStr: '2025-10-01T00:00:00',
+    title: '2028 KPSS Önlisans',
+    examDateStr: '2028-10-08T10:15:00',
+    seasonStartStr: '2026-10-01T00:00:00',
   ),
   ortaogretim(
-    title: '2026 KPSS Ortaöğretim',
-    examDateStr: '2026-10-18T10:15:00',
-    seasonStartStr: '2025-10-01T00:00:00',
+    title: '2028 KPSS Ortaöğretim',
+    examDateStr: '2028-10-22T10:15:00',
+    seasonStartStr: '2026-10-01T00:00:00',
   );
 
   final String title;

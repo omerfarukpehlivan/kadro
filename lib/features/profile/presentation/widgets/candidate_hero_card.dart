@@ -129,7 +129,7 @@ class CandidateHeroCard extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '2026 KPSS Lisans Genel Kültür Hazırlığı',
+                          '2027 KPSS Lisans Genel Kültür Hazırlığı',
                           style: textTheme.labelSmall?.copyWith(
                             color: colorScheme.outline,
                             fontWeight: FontWeight.w500,
@@ -196,14 +196,14 @@ class CandidateHeroCard extends ConsumerWidget {
         ),
         AppSpacing.gapSm,
 
-        // 2. Canlı 2026 KPSS Geri Sayım Şeridi
+        // 2. Canlı 2027 KPSS Geri Sayım Şeridi
         const _KpssCountdownStrip(),
       ],
     );
   }
 }
 
-/// 2026 KPSS Lisans sınav tarihine kalan günleri motive edici dille sayan şerit.
+/// 2027 KPSS Lisans sınav tarihine kalan günleri motive edici dille sayan şerit.
 class _KpssCountdownStrip extends StatelessWidget {
   const _KpssCountdownStrip();
 
@@ -212,8 +212,8 @@ class _KpssCountdownStrip extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    // 2026 KPSS Lisans Genel Yetenek - Genel Kültür Hedef Tarihi (ÖSYM Takvimi Projeksiyonu: 6 Eylül 2026)
-    final targetDate = DateTime(2026, 9, 6);
+    // 2027 KPSS Lisans Genel Yetenek - Genel Kültür Hedef Tarihi (ÖSYM Takvimi Temsili Projeksiyon: 5 Eylül 2027)
+    final targetDate = DateTime(2027, 9, 5);
     final now = DateTime.now();
     final remainingDays = targetDate.difference(now).inDays.clamp(0, 999);
 
@@ -240,7 +240,7 @@ class _KpssCountdownStrip extends StatelessWidget {
                 ),
                 children: [
                   const TextSpan(
-                    text: '⏳ 2026 KPSS Lisans: ',
+                    text: '⏳ 2027 KPSS Lisans: ',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   TextSpan(

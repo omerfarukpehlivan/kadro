@@ -228,7 +228,7 @@ void main() {
         expect(find.text('SAAT'), findsOneWidget);
         expect(find.text('DAKİKA'), findsOneWidget);
         expect(find.text('SANİYE'), findsOneWidget);
-        expect(find.text('2026 KPSS Lisans (GY-GK)'), findsOneWidget);
+        expect(find.text('2027 KPSS Lisans (GY-GK)'), findsOneWidget);
         expect(find.text('Hemen Pomodoro Başlat'), findsOneWidget);
       },
     );
@@ -264,8 +264,8 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // KPSS 2026 banner'ı görünmeli
-        expect(find.textContaining('KPSS 2026:'), findsOneWidget);
+        // KPSS 2027 banner'ı görünmeli
+        expect(find.textContaining('KPSS 2027:'), findsOneWidget);
         expect(find.text('Sayaç'), findsOneWidget);
 
         // Sayaç butonuna basınca stüdyo açılmalı
@@ -279,7 +279,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(PomodoroStudioScreen), findsNothing);
-        expect(find.textContaining('KPSS 2026:'), findsOneWidget);
+        expect(find.textContaining('KPSS 2027:'), findsOneWidget);
       },
     );
 
