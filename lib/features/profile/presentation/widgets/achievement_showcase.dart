@@ -4,7 +4,7 @@ import 'package:kadro/features/profile/data/models/achievement_badge.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Memur adayının kazandığı ve hedeflediği KPSS motivasyon madalyalarını
 /// 3x2 grid düzeninde sergileyen vitrin bileşeni.
@@ -54,7 +54,7 @@ class AchievementShowcase extends StatelessWidget {
                   width: 2,
                 ),
               ),
-              child: Icon(
+              child: PhosphorIcon(
                 badge.icon,
                 size: 32,
                 color: badge.isUnlocked
@@ -172,7 +172,7 @@ class _BadgeTile extends StatelessWidget {
                       : colorScheme.surfaceContainerHighest,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
+                child: PhosphorIcon(
                   badge.icon,
                   size: 20,
                   color: badge.isUnlocked
@@ -190,8 +190,8 @@ class _BadgeTile extends StatelessWidget {
                       color: colorScheme.surface,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      LucideIcons.lock,
+                    child: PhosphorIcon(
+                      PhosphorIconsBold.lock,
                       size: 11,
                       color: colorScheme.outline,
                     ),

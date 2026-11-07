@@ -5,7 +5,7 @@ import 'package:kadro/features/auth/data/auth_notifier.dart';
 import 'package:kadro/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Memur Adayı Kimlik & Rütbe Kartı ve Canlı 2026 KPSS Geri Sayım Şeridi.
 ///
@@ -184,7 +184,10 @@ class CandidateHeroCard extends ConsumerWidget {
                         vertical: 4,
                       ),
                     ),
-                    icon: const Icon(LucideIcons.compass, size: 14),
+                    icon: const PhosphorIcon(
+                      PhosphorIconsBold.compass,
+                      size: 14,
+                    ),
                     label: const Text('Hedef Sihirbazını Aç'),
                   ),
                 ],
@@ -224,7 +227,11 @@ class _KpssCountdownStrip extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(LucideIcons.timer, size: 20, color: colorScheme.primary),
+          PhosphorIcon(
+            PhosphorIconsBold.timer,
+            size: 20,
+            color: colorScheme.primary,
+          ),
           AppSpacing.gapHorizontalSm,
           Expanded(
             child: Text.rich(

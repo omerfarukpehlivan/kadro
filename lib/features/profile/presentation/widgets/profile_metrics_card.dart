@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Memur adayının 4 temel performans metriğini (Seri, Soru, İsabet %, XP)
 /// ve Lig / Unvan durumunu özetleyen Duolingo tarzı dashboard bileşeni.
@@ -38,15 +38,15 @@ class ProfileMetricsCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MetricItem(
-                  icon: LucideIcons.flame,
-                  iconColor: Colors.deepOrange,
+                  icon: PhosphorIconsFill.fire,
+                  iconColor: colorScheme.error,
                   value: '${stats.streakDays} Gün',
                   label: 'Çalışma Serisi',
                 ),
               ),
               Expanded(
                 child: _MetricItem(
-                  icon: LucideIcons.checkCheck,
+                  icon: PhosphorIconsFill.checkCircle,
                   iconColor: colorScheme.primary,
                   value: '${stats.totalSolved}',
                   label: 'Çözülen Soru',
@@ -54,7 +54,7 @@ class ProfileMetricsCard extends StatelessWidget {
               ),
               Expanded(
                 child: _MetricItem(
-                  icon: LucideIcons.target,
+                  icon: PhosphorIconsBold.target,
                   iconColor: colorScheme.tertiary,
                   value: stats.totalSolved == 0
                       ? '–'
@@ -64,8 +64,8 @@ class ProfileMetricsCard extends StatelessWidget {
               ),
               Expanded(
                 child: _MetricItem(
-                  icon: LucideIcons.zap,
-                  iconColor: Colors.amber.shade700,
+                  icon: PhosphorIconsFill.lightning,
+                  iconColor: colorScheme.tertiary,
                   value: '${stats.totalXp}',
                   label: 'Toplam XP',
                 ),
@@ -86,8 +86,8 @@ class ProfileMetricsCard extends StatelessWidget {
                   color: colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(
-                  LucideIcons.shieldAlert,
+                child: PhosphorIcon(
+                  PhosphorIconsDuotone.shieldCheck,
                   size: 20,
                   color: colorScheme.onSecondaryContainer,
                 ),
@@ -159,7 +159,7 @@ class _MetricItem extends StatelessWidget {
 
     return Column(
       children: [
-        Icon(icon, color: iconColor, size: 20),
+        PhosphorIcon(icon, color: iconColor, size: 20),
         const SizedBox(height: 4),
         Text(
           value,

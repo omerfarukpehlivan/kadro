@@ -6,7 +6,7 @@ import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Kadro PRO 3'lü karma abonelik ve ödüllü reklam tanıtım ekranı (Paywall).
 ///
@@ -120,11 +120,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                           width: 80,
                           height: 80,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => Icon(
-                            LucideIcons.crown,
-                            size: 38,
-                            color: colorScheme.primary,
-                          ),
+                          errorBuilder: (context, error, stackTrace) =>
+                              PhosphorIcon(
+                                PhosphorIconsFill.crown,
+                                size: 38,
+                                color: colorScheme.primary,
+                              ),
                         ),
                       ),
                     ),
@@ -182,10 +183,10 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                           : colorScheme.outlineVariant,
                       child: Row(
                         children: [
-                          Icon(
+                          PhosphorIcon(
                             isSelected
-                                ? LucideIcons.circleCheck
-                                : LucideIcons.circle,
+                                ? PhosphorIconsFill.checkCircle
+                                : PhosphorIconsBold.circle,
                             color: isSelected
                                 ? colorScheme.primary
                                 : colorScheme.onSurfaceVariant.withAlpha(120),
@@ -393,7 +394,11 @@ class _ProFeatureRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(LucideIcons.check, size: 16, color: colorScheme.primary),
+          PhosphorIcon(
+            PhosphorIconsBold.check,
+            size: 16,
+            color: colorScheme.primary,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Column(

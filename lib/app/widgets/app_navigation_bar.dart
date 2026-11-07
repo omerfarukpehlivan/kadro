@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart'; // Material Design bileşenleri
-import 'package:lucide_icons_flutter/lucide_icons.dart'; // Modern çizgisel ikon seti
+import 'package:phosphor_flutter/phosphor_flutter.dart'; // Karakteristik Phosphor ikon seti (Bold & Fill)
 
 /// Alttaki havada duran 6 sekmeli dock menüsü (Floating Pill/Dock Bottom Navigation Bar).
 /// Web'deki modern SaaS ve mobil uygulamalardaki floating navigation bar mimarisine karşılık gelir.
+/// Seçili olmayan sekmelerde `PhosphorIconsBold`, seçili sekmelerde tok `PhosphorIconsFill` kullanılır.
 class AppNavigationBar extends StatelessWidget {
   final int
   selectedIndex; // Şu an hangi sekmenin aktif/seçili olduğu sıra numarası (0-5)
@@ -73,38 +74,40 @@ class AppNavigationBar extends StatelessWidget {
                 destinations: const [
                   // 0: Ana Sayfa
                   NavigationDestination(
-                    icon: Icon(LucideIcons.house),
-                    selectedIcon: Icon(LucideIcons.house),
+                    icon: PhosphorIcon(PhosphorIconsBold.house),
+                    selectedIcon: PhosphorIcon(PhosphorIconsFill.house),
                     label: 'Ana Sayfa',
                   ),
                   // 1: Dersler
                   NavigationDestination(
-                    icon: Icon(LucideIcons.bookOpen),
-                    selectedIcon: Icon(LucideIcons.bookOpen),
+                    icon: PhosphorIcon(PhosphorIconsBold.books),
+                    selectedIcon: PhosphorIcon(PhosphorIconsFill.books),
                     label: 'Dersler',
                   ),
                   // 2: Pratik
                   NavigationDestination(
-                    icon: Icon(LucideIcons.gamepad2),
-                    selectedIcon: Icon(LucideIcons.gamepad2),
+                    icon: PhosphorIcon(PhosphorIconsBold.gameController),
+                    selectedIcon: PhosphorIcon(
+                      PhosphorIconsFill.gameController,
+                    ),
                     label: 'Pratik',
                   ),
                   // 3: Denemeler
                   NavigationDestination(
-                    icon: Icon(LucideIcons.timer),
-                    selectedIcon: Icon(LucideIcons.timer),
+                    icon: PhosphorIcon(PhosphorIconsBold.timer),
+                    selectedIcon: PhosphorIcon(PhosphorIconsFill.timer),
                     label: 'Denemeler',
                   ),
                   // 4: İstatistik
                   NavigationDestination(
-                    icon: Icon(LucideIcons.chartColumn),
-                    selectedIcon: Icon(LucideIcons.chartColumn),
+                    icon: PhosphorIcon(PhosphorIconsBold.chartBar),
+                    selectedIcon: PhosphorIcon(PhosphorIconsFill.chartBar),
                     label: 'İstatistik',
                   ),
                   // 5: Profil
                   NavigationDestination(
-                    icon: Icon(LucideIcons.user),
-                    selectedIcon: Icon(LucideIcons.user),
+                    icon: PhosphorIcon(PhosphorIconsBold.userCircle),
+                    selectedIcon: PhosphorIcon(PhosphorIconsFill.userCircle),
                     label: 'Profil',
                   ),
                 ],

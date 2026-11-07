@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart'; // IconData için
-import 'package:lucide_icons_flutter/lucide_icons.dart'; // Modern çizgisel ikon seti
+import 'package:phosphor_flutter/phosphor_flutter.dart'; // Karakteristik Phosphor Duotone ikon seti
 
 /// KPSS Lisans Genel Kültür'deki bir ders.
 /// Şimdilik sabit bir liste; sorular ve konular eklendikçe burası bir
@@ -32,7 +32,7 @@ const List<Lesson> kpssLessons = [
     name: 'Tarih',
     section: 'Genel Kültür',
     questionCount: 27,
-    icon: LucideIcons.bookOpen,
+    icon: PhosphorIconsDuotone.scroll,
     badgeText: null,
     topics: [
       'İslamiyet Öncesi Türk Tarihi',
@@ -49,7 +49,7 @@ const List<Lesson> kpssLessons = [
     name: 'Coğrafya',
     section: 'Genel Kültür',
     questionCount: 18,
-    icon: LucideIcons.globe,
+    icon: PhosphorIconsDuotone.globeHemisphereEast,
     badgeText: null,
     topics: [
       'Türkiye\'nin Coğrafi Konumu',
@@ -65,7 +65,7 @@ const List<Lesson> kpssLessons = [
     name: 'Vatandaşlık',
     section: 'Genel Kültür',
     questionCount: 9,
-    icon: LucideIcons.scale,
+    icon: PhosphorIconsDuotone.scales,
     badgeText: null,
     topics: [
       'Temel Hukuk Kavramları',
@@ -81,7 +81,7 @@ const List<Lesson> kpssLessons = [
     name: 'Güncel Bilgiler',
     section: 'Genel Kültür',
     questionCount: 6,
-    icon: LucideIcons.newspaper,
+    icon: PhosphorIconsDuotone.newspaperClipping,
     badgeText: 'Her Hafta Yeni',
     topics: [
       'Türkiye ve Dünya Gündemi',

@@ -10,7 +10,7 @@ import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Dersler sekmesi: KPSS Genel Kültür dersleri (Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler).
 ///
@@ -173,7 +173,10 @@ class _LessonCard extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Icon(LucideIcons.chevronRight, color: colorScheme.outline),
+                PhosphorIcon(
+                  PhosphorIconsBold.caretRight,
+                  color: colorScheme.outline,
+                ),
               ],
             ),
             const SizedBox(height: 12),

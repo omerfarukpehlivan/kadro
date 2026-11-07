@@ -16,7 +16,7 @@ import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Profil sekmesi: Kadro PRO durumu, hedef sınav ve uygulama tercihleri.
 class ProfileScreen extends ConsumerWidget {
@@ -188,7 +188,7 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   );
                 },
-                icon: const Icon(LucideIcons.play, size: 16),
+                icon: const PhosphorIcon(PhosphorIconsBold.play, size: 16),
                 label: const Text('Bu Modla Hemen 10 Soru Çöz'),
               ),
             ),
@@ -333,10 +333,10 @@ class ProfileScreen extends ConsumerWidget {
             backgroundColor: colorScheme.surface,
             borderColor: colorScheme.outlineVariant,
             child: ListTile(
-              leading: const Icon(LucideIcons.shieldAlert),
+              leading: const PhosphorIcon(PhosphorIconsDuotone.shieldWarning),
               title: const Text('Hatalı Soru Raporları'),
               subtitle: const Text('İçerik editörü inceleme paneli'),
-              trailing: const Icon(LucideIcons.chevronRight),
+              trailing: const PhosphorIcon(PhosphorIconsBold.caretRight),
               onTap: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (_) => const AdminReportsScreen()),
@@ -377,8 +377,8 @@ class _AccountCard extends ConsumerWidget {
                     color: colorScheme.primaryContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    LucideIcons.cloud,
+                  child: PhosphorIcon(
+                    PhosphorIconsDuotone.cloud,
                     color: colorScheme.onPrimaryContainer,
                     size: 22,
                   ),
@@ -428,8 +428,8 @@ class _AccountCard extends ConsumerWidget {
           CircleAvatar(
             radius: 22,
             backgroundColor: colorScheme.primaryContainer,
-            child: Icon(
-              LucideIcons.userCheck,
+            child: PhosphorIcon(
+              PhosphorIconsDuotone.userCheck,
               color: colorScheme.onPrimaryContainer,
               size: 22,
             ),

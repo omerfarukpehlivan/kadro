@@ -11,7 +11,7 @@ import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Bağımsız Çalışma Türleri ve Antrenman Sahası ekranı (`PracticeHubScreen`).
 ///
@@ -31,7 +31,7 @@ class PracticeHubScreen extends ConsumerWidget {
 
     // Temel Çalışma Modları (Bento Grid Elemanları)
     final tile1 = _PracticeTile(
-      icon: LucideIcons.target,
+      icon: PhosphorIconsDuotone.target,
       title: 'Konu testi',
       description: 'Bir konu seç, 10-20 soruluk test çöz.',
       badgeText: '10-20 Soru',
@@ -46,7 +46,7 @@ class PracticeHubScreen extends ConsumerWidget {
     );
 
     final tile2 = _PracticeTile(
-      icon: LucideIcons.layers,
+      icon: PhosphorIconsDuotone.cards,
       title: 'Bilgi kartları',
       description: 'Önünde soru, arkasında cevap. Hızlı tekrar için.',
       badgeText: 'Hızlı Tekrar',
@@ -61,7 +61,7 @@ class PracticeHubScreen extends ConsumerWidget {
     );
 
     final tile3 = _PracticeTile(
-      icon: LucideIcons.bookmark,
+      icon: PhosphorIconsDuotone.bookmarks,
       title: 'Yanlış defteri',
       description: 'Yanlış yaptığın soruları tekrar çöz.',
       badgeText: 'Akıllı Havuz',
@@ -76,7 +76,7 @@ class PracticeHubScreen extends ConsumerWidget {
     );
 
     final tile4 = _PracticeTile(
-      icon: LucideIcons.timer,
+      icon: PhosphorIconsDuotone.timer,
       title: 'Deneme sınavı',
       description: '60 soru, 65 dakika. Gerçek Genel Kültür sınav düzeni.',
       badgeText: '65 Dakika',
@@ -166,7 +166,7 @@ class PracticeHubScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: _PracticeTile(
-                    icon: LucideIcons.zap,
+                    icon: PhosphorIconsFill.lightning,
                     title: '60 Saniyede Pençe',
                     description: 'Doğru / Yanlış hızlı düello ile kombo yap.',
                     badgeText: 'Kombo XP',
@@ -186,7 +186,7 @@ class PracticeHubScreen extends ConsumerWidget {
                 SizedBox(width: gridSpacing),
                 Expanded(
                   child: _PracticeTile(
-                    icon: LucideIcons.puzzle,
+                    icon: PhosphorIconsDuotone.puzzlePiece,
                     title: 'Kavram Eşleştir',
                     description:
                         'Tarih, Coğrafya ve Vatandaşlık kavramlarını eşleştir.',
@@ -268,7 +268,7 @@ class _PracticeTile extends StatelessWidget {
                       color: accentContainerColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
+                    child: PhosphorIcon(
                       icon,
                       color: onAccentContainerColor,
                       size: isCompact ? 20 : 24,
@@ -337,8 +337,8 @@ class _PracticeTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              Icon(
-                LucideIcons.chevronRight,
+              PhosphorIcon(
+                PhosphorIconsBold.caretRight,
                 size: isCompact ? 14 : 16,
                 color: accentColor,
               ),
@@ -386,8 +386,8 @@ class _DistractorHuntSpecialCard extends StatelessWidget {
               color: colorScheme.tertiaryContainer,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(
-              LucideIcons.triangleAlert,
+            child: PhosphorIcon(
+              PhosphorIconsDuotone.warning,
               color: colorScheme.onTertiaryContainer,
               size: isCompact ? 24 : 28,
             ),
@@ -450,7 +450,11 @@ class _DistractorHuntSpecialCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Icon(LucideIcons.chevronRight, color: colorScheme.tertiary, size: 22),
+          PhosphorIcon(
+            PhosphorIconsBold.caretRight,
+            color: colorScheme.tertiary,
+            size: 22,
+          ),
         ],
       ),
     ).animate().fadeIn(duration: 200.ms);

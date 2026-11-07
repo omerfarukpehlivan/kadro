@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Konu testleri için pedagojik ve motive edici zorluk seviyeleri.
 ///
@@ -65,17 +65,17 @@ extension TestDifficultyTierExtension on TestDifficultyTier {
     }
   }
 
-  /// Çizgisel modern Lucide ikonu.
+  /// Karakteristik Phosphor ikonu.
   IconData get icon {
     switch (this) {
       case TestDifficultyTier.warmup:
-        return LucideIcons.sprout;
+        return PhosphorIconsDuotone.plant;
       case TestDifficultyTier.standard:
-        return LucideIcons.target;
+        return PhosphorIconsDuotone.target;
       case TestDifficultyTier.distinction:
-        return LucideIcons.zap;
+        return PhosphorIconsFill.lightning;
       case TestDifficultyTier.trapMaster:
-        return LucideIcons.flame;
+        return PhosphorIconsFill.fire;
     }
   }
 

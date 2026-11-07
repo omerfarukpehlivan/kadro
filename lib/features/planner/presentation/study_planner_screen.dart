@@ -10,7 +10,7 @@ import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Tam Ekran Akıllı KPSS Çalışma Planlayıcı.
 ///
@@ -42,7 +42,7 @@ class StudyPlannerScreen extends ConsumerWidget {
           if (planner.completedCount > 0)
             TextButton.icon(
               onPressed: () => notifier.clearCompleted(),
-              icon: const Icon(LucideIcons.trash2, size: 16),
+              icon: const PhosphorIcon(PhosphorIconsBold.trash, size: 16),
               label: const Text('Tamamlananları Sil'),
             ),
         ],
@@ -85,8 +85,8 @@ class StudyPlannerScreen extends ConsumerWidget {
                     ),
                     child: Column(
                       children: [
-                        Icon(
-                          LucideIcons.calendarCheck2,
+                        PhosphorIcon(
+                          PhosphorIconsDuotone.calendarCheck,
                           size: 48,
                           color: colorScheme.primary,
                         ),
@@ -118,7 +118,7 @@ class StudyPlannerScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddTaskSheet(context),
-        icon: const Icon(LucideIcons.plus),
+        icon: const PhosphorIcon(PhosphorIconsBold.plus),
         label: const Text('Görev Ekle'),
       ),
     );
@@ -163,8 +163,8 @@ class _PlannerSummaryCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      LucideIcons.clock,
+                    PhosphorIcon(
+                      PhosphorIconsBold.clock,
                       size: 14,
                       color: colorScheme.onTertiaryContainer,
                     ),
@@ -216,8 +216,8 @@ class _QuickTemplatesStrip extends StatelessWidget {
       child: Row(
         children: [
           ActionChip(
-            avatar: Icon(
-              LucideIcons.plus,
+            avatar: PhosphorIcon(
+              PhosphorIconsBold.plus,
               size: 16,
               color: colorScheme.primary,
             ),
@@ -233,8 +233,8 @@ class _QuickTemplatesStrip extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           ActionChip(
-            avatar: Icon(
-              LucideIcons.plus,
+            avatar: PhosphorIcon(
+              PhosphorIconsBold.plus,
               size: 16,
               color: colorScheme.tertiary,
             ),
@@ -250,8 +250,8 @@ class _QuickTemplatesStrip extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           ActionChip(
-            avatar: Icon(
-              LucideIcons.plus,
+            avatar: PhosphorIcon(
+              PhosphorIconsBold.plus,
               size: 16,
               color: colorScheme.primary,
             ),
@@ -267,7 +267,11 @@ class _QuickTemplatesStrip extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           ActionChip(
-            avatar: Icon(LucideIcons.plus, size: 16, color: colorScheme.error),
+            avatar: PhosphorIcon(
+              PhosphorIconsBold.plus,
+              size: 16,
+              color: colorScheme.error,
+            ),
             label: const Text('+ Yanlışları Temizle'),
             onPressed: () {
               onAdd(
@@ -338,8 +342,10 @@ class _PlannerTaskTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             child: Padding(
               padding: const EdgeInsets.all(4),
-              child: Icon(
-                task.isCompleted ? LucideIcons.circleCheck : LucideIcons.circle,
+              child: PhosphorIcon(
+                task.isCompleted
+                    ? PhosphorIconsFill.checkCircle
+                    : PhosphorIconsBold.circle,
                 color: task.isCompleted
                     ? colorScheme.primary
                     : colorScheme.outline,
@@ -417,14 +423,18 @@ class _PlannerTaskTile extends StatelessWidget {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(LucideIcons.play, size: 12),
+                  PhosphorIcon(PhosphorIconsBold.play, size: 12),
                   SizedBox(width: 4),
                   Text('Başla'),
                 ],
               ),
             ),
           IconButton(
-            icon: Icon(LucideIcons.trash2, size: 18, color: colorScheme.error),
+            icon: PhosphorIcon(
+              PhosphorIconsBold.trash,
+              size: 18,
+              color: colorScheme.error,
+            ),
             onPressed: onRemove,
             tooltip: 'Görevi Sil',
           ),
@@ -505,7 +515,7 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
                 ),
               ),
               IconButton(
-                icon: const Icon(LucideIcons.x),
+                icon: const PhosphorIcon(PhosphorIconsBold.x),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -517,7 +527,7 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
             decoration: const InputDecoration(
               labelText: 'Görev Başlığı',
               hintText: 'Örn: Osmanlı Yükselme Dönemi 2 Test',
-              prefixIcon: Icon(LucideIcons.pencil),
+              prefixIcon: PhosphorIcon(PhosphorIconsBold.pencilSimple),
             ),
             onSubmitted: (_) => _submit(),
           ),
@@ -566,7 +576,7 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
           const SizedBox(height: 20),
           FilledButton.icon(
             onPressed: _submit,
-            icon: const Icon(LucideIcons.calendarPlus),
+            icon: const PhosphorIcon(PhosphorIconsBold.calendarPlus),
             label: const Text('Plana Ekle'),
           ),
         ],

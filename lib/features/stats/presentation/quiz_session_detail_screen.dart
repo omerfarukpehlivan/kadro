@@ -3,7 +3,7 @@ import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Çözülen bir test veya mini oyun oturumunun kapsamlı karne ve analitik detay ekranı.
 ///
@@ -78,7 +78,7 @@ class QuizSessionDetailScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _MetricTile(
-                        icon: LucideIcons.checkCircle,
+                        icon: PhosphorIconsFill.checkCircle,
                         iconColor: colorScheme.primary,
                         label: 'Doğru',
                         value: '${session.correctCount}',
@@ -87,7 +87,7 @@ class QuizSessionDetailScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: _MetricTile(
-                        icon: LucideIcons.xCircle,
+                        icon: PhosphorIconsFill.xCircle,
                         iconColor: colorScheme.error,
                         label: 'Yanlış',
                         value: '${session.wrongCount}',
@@ -96,7 +96,7 @@ class QuizSessionDetailScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: _MetricTile(
-                        icon: LucideIcons.minusCircle,
+                        icon: PhosphorIconsFill.minusCircle,
                         iconColor: colorScheme.outline,
                         label: 'Boş',
                         value: '${session.emptyCount}',
@@ -109,7 +109,7 @@ class QuizSessionDetailScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _MetricTile(
-                        icon: LucideIcons.target,
+                        icon: PhosphorIconsDuotone.target,
                         iconColor: colorScheme.tertiary,
                         label: 'Net Puan',
                         value: session.netScore.toStringAsFixed(2),
@@ -118,7 +118,7 @@ class QuizSessionDetailScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: _MetricTile(
-                        icon: LucideIcons.percent,
+                        icon: PhosphorIconsBold.percent,
                         iconColor: colorScheme.secondary,
                         label: 'Başarı Oranı',
                         value: '%$accuracy',
@@ -131,7 +131,7 @@ class QuizSessionDetailScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _MetricTile(
-                        icon: LucideIcons.clock,
+                        icon: PhosphorIconsBold.clock,
                         iconColor: colorScheme.outline,
                         label: 'Toplam Süre',
                         value:
@@ -141,7 +141,7 @@ class QuizSessionDetailScreen extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: _MetricTile(
-                        icon: LucideIcons.timer,
+                        icon: PhosphorIconsBold.timer,
                         iconColor: colorScheme.outline,
                         label: 'Soru Başına',
                         value: '$avgSeconds sn/soru',
@@ -166,7 +166,7 @@ class QuizSessionDetailScreen extends StatelessWidget {
                 ),
               );
             },
-            icon: const Icon(LucideIcons.play, size: 18),
+            icon: const PhosphorIcon(PhosphorIconsBold.play, size: 18),
             label: const Text('Aynı Dersten Yeni Test Çöz'),
           ),
         ],
@@ -204,7 +204,7 @@ class _MetricTile extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, size: 14, color: iconColor),
+              PhosphorIcon(icon, size: 14, color: iconColor),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(

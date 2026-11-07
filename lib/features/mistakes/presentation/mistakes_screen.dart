@@ -1,6 +1,6 @@
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
@@ -230,7 +230,7 @@ class _EmptyMistakesView extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const QuizScreen()),
                     );
                   },
-                  icon: const Icon(LucideIcons.play, size: 18),
+                  icon: const PhosphorIcon(PhosphorIconsBold.play, size: 18),
                   label: const Text('Yeni Test Çöz'),
                 ),
                 OutlinedButton.icon(
@@ -241,7 +241,7 @@ class _EmptyMistakesView extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(LucideIcons.layers, size: 18),
+                  icon: const PhosphorIcon(PhosphorIconsBold.cards, size: 18),
                   label: const Text('Bilgi Kartlarına Git'),
                 ),
               ],

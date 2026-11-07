@@ -3,7 +3,7 @@ import 'package:kadro/features/reports/data/models/question_report.dart';
 import 'package:kadro/features/reports/data/question_report_repository.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// İçerik editörü ve yönetici için bildirilen hatalı soruları inceleme ekranı (TASK-47).
 ///
@@ -45,7 +45,10 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
         title: const Text('Hatalı Soru Raporları'),
         actions: [
           IconButton(
-            icon: const Icon(LucideIcons.refreshCw, size: 20),
+            icon: const PhosphorIcon(
+              PhosphorIconsBold.arrowsCounterClockwise,
+              size: 20,
+            ),
             tooltip: 'Yenile',
             onPressed: _loadReports,
           ),
@@ -73,8 +76,8 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                         color: colorScheme.primaryContainer,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
-                        LucideIcons.shieldCheck,
+                      child: PhosphorIcon(
+                        PhosphorIconsDuotone.shieldCheck,
                         size: 48,
                         color: colorScheme.onPrimaryContainer,
                       ),
@@ -111,7 +114,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: PageHeader(
-                      icon: LucideIcons.shieldAlert,
+                      icon: PhosphorIconsDuotone.shieldWarning,
                       title: 'Soru Denetim Masası',
                       subtitle:
                           'Toplam ${reports.length} adet incelenmeyi bekleyen bildirim bulunuyor.',
@@ -173,8 +176,8 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(
-                                LucideIcons.alertTriangle,
+                              PhosphorIcon(
+                                PhosphorIconsBold.warning,
                                 size: 16,
                                 color: colorScheme.error,
                               ),

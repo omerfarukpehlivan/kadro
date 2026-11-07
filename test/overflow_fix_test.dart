@@ -13,7 +13,7 @@ import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/features/stats/presentation/stats_screen.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 void main() {
   group('TASK-61 UI Taşma (Overflow) ve Görsel Hata Düzeltmeleri Testleri', () {
@@ -176,7 +176,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Flag butonuna basarak modalı aç
-        await tester.tap(find.byIcon(LucideIcons.flag));
+        await tester.tap(find.byIcon(PhosphorIconsBold.flag));
         await tester.pumpAndSettle();
 
         expect(find.textContaining('Hatalı Soru Bildir'), findsOneWidget);

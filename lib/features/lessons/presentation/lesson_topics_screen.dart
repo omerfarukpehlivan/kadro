@@ -10,7 +10,7 @@ import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/lessons/presentation/topic_tests_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Bir derse ait KPSS konularını Duolingo/Brilliant tarzı dikey yol haritası (learning path)
 /// olarak listeleyen ekran.
@@ -82,7 +82,10 @@ class LessonTopicsScreen extends ConsumerWidget {
             message: '${lesson.name} Tüm Konuları İndir (PRO)',
             child: TextButton.icon(
               onPressed: () => _downloadAllTopics(context, ref),
-              icon: const Icon(LucideIcons.arrowDownToLine, size: 16),
+              icon: const PhosphorIcon(
+                PhosphorIconsBold.downloadSimple,
+                size: 16,
+              ),
               label: const Text('Tümünü İndir'),
             ),
           ),
@@ -198,7 +201,7 @@ class _TopicPathNode extends ConsumerWidget {
           builder: (dialogCtx) => AlertDialog(
             title: const Row(
               children: [
-                Icon(LucideIcons.wifiOff),
+                PhosphorIcon(PhosphorIconsBold.wifiSlash),
                 SizedBox(width: 8),
                 Text('İnternet Bağlantısı Yok'),
               ],
@@ -319,8 +322,8 @@ class _TopicPathNode extends ConsumerWidget {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(
-                                      LucideIcons.circleCheck,
+                                    PhosphorIcon(
+                                      PhosphorIconsFill.checkCircle,
                                       size: 13,
                                       color: colorScheme.onSecondaryContainer,
                                     ),
@@ -343,8 +346,8 @@ class _TopicPathNode extends ConsumerWidget {
                                 onTap: () => _handleDownload(context, ref),
                                 child: Padding(
                                   padding: const EdgeInsets.all(4),
-                                  child: Icon(
-                                    LucideIcons.arrowDownToLine,
+                                  child: PhosphorIcon(
+                                    PhosphorIconsBold.downloadSimple,
                                     size: 16,
                                     color: colorScheme.onSurfaceVariant
                                         .withAlpha(150),

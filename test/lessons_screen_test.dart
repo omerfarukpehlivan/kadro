@@ -5,7 +5,7 @@ import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/lessons/presentation/widgets/lesson_progress_ring.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 void main() {
   group('LessonProgressRing Widget Testleri', () {
@@ -17,7 +17,7 @@ void main() {
           home: Scaffold(
             body: Center(
               child: LessonProgressRing(
-                icon: LucideIcons.bookOpen,
+                icon: PhosphorIconsBold.bookOpen,
                 progress: 0.5,
                 solvedCount: 5,
                 totalCount: 10,
@@ -30,41 +30,45 @@ void main() {
 
       // Başlangıçta widget'lar mevcut olmalı
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.byIcon(LucideIcons.bookOpen), findsOneWidget);
-      // Henüz %100 tamamlanmadığı için checkCheck ikonu olmamalı
-      expect(find.byIcon(LucideIcons.checkCheck), findsNothing);
+      expect(find.byIcon(PhosphorIconsBold.bookOpen), findsOneWidget);
+      // Henüz %100 tamamlanmadığı için checkCircle ikonu olmamalı
+      expect(find.byIcon(PhosphorIconsFill.checkCircle), findsNothing);
 
       // 800ms'lik Tween animasyonunu tamamla
       await tester.pumpAndSettle();
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('%100 tamamlanma durumunda rozet ve checkCheck ikonu belirir', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: Center(
-              child: LessonProgressRing(
-                icon: LucideIcons.globe,
-                progress: 1.0,
-                solvedCount: 30,
-                totalCount: 30,
-                size: 52,
+    testWidgets(
+      '%100 tamamlanma durumunda rozet ve checkCircle ikonu belirir',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: LessonProgressRing(
+                  icon: PhosphorIconsDuotone.globeHemisphereEast,
+                  progress: 1.0,
+                  solvedCount: 30,
+                  totalCount: 30,
+                  size: 52,
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.byIcon(LucideIcons.globe), findsOneWidget);
-      // %100 tamamlanma rozeti
-      expect(find.byIcon(LucideIcons.checkCheck), findsOneWidget);
-    });
+        expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        expect(
+          find.byIcon(PhosphorIconsDuotone.globeHemisphereEast),
+          findsOneWidget,
+        );
+        // %100 tamamlanma rozeti
+        expect(find.byIcon(PhosphorIconsFill.checkCircle), findsOneWidget);
+      },
+    );
   });
 
   group('LessonsScreen ve Çözülen Test Sayacı Entegrasyonu', () {

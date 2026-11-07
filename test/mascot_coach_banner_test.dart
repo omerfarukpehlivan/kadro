@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 void main() {
   group('TASK-53: MascotMood & MascotMoodExtension Testleri', () {
@@ -83,7 +83,7 @@ void main() {
         expect(find.text('TARİH REHBERİ'), findsOneWidget);
         expect(find.text('Tarih Yol Haritası'), findsOneWidget);
         expect(find.text('Tarih konularını adım adım fethet!'), findsOneWidget);
-        expect(find.byIcon(LucideIcons.award), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsFill.trophy), findsOneWidget);
         expect(find.byType(Image), findsOneWidget);
 
         // 92x92 boyutundaki borderlı görsel kutusunu doğrula

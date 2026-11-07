@@ -7,7 +7,7 @@ import 'package:kadro/features/reports/data/models/question_report.dart';
 import 'package:kadro/features/reports/data/question_report_repository.dart';
 import 'package:kadro/features/reports/presentation/admin_reports_screen.dart';
 import 'package:kadro/features/reports/presentation/report_question_bottom_sheet.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -122,7 +122,7 @@ void main() {
           await tester.pumpAndSettle();
 
           // Bayrak butonu var mı?
-          final flagButton = find.byIcon(LucideIcons.flag);
+          final flagButton = find.byIcon(PhosphorIconsBold.flag);
           expect(flagButton, findsOneWidget);
 
           // Bayrak butonuna tıkla
@@ -188,7 +188,9 @@ void main() {
           );
 
           // Yenile butonuna tıkla
-          await tester.tap(find.byIcon(LucideIcons.refreshCw));
+          await tester.tap(
+            find.byIcon(PhosphorIconsBold.arrowsCounterClockwise),
+          );
           await tester.pumpAndSettle();
 
           expect(find.text('Soru Denetim Masası'), findsOneWidget);

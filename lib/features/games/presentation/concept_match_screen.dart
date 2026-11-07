@@ -5,7 +5,7 @@ import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Quizlet Match tarzı "Kavram Eşleştirme Tahtası" ekranı.
 ///
@@ -143,8 +143,8 @@ class _ConceptMatchScreenState extends ConsumerState<ConceptMatchScreen> {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        LucideIcons.puzzle,
+                      PhosphorIcon(
+                        PhosphorIconsDuotone.puzzlePiece,
                         size: 16,
                         color: colorScheme.primary,
                       ),
@@ -191,7 +191,9 @@ class _ConceptMatchScreenState extends ConsumerState<ConceptMatchScreen> {
               const SizedBox(height: 20),
               FilledButton.icon(
                 onPressed: () => setState(_resetBoard),
-                icon: const Icon(LucideIcons.rotateCcw),
+                icon: const PhosphorIcon(
+                  PhosphorIconsBold.arrowsCounterClockwise,
+                ),
                 label: const Text('Seti Sıfırla'),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),

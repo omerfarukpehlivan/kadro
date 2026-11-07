@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Ana Sayfa Kompakt Çalışma Planı Kartı.
 ///
@@ -28,7 +28,11 @@ class HomeDailyPlanCard extends ConsumerWidget {
           // 1. Üst Satır
           Row(
             children: [
-              Icon(LucideIcons.listTodo, color: colorScheme.primary, size: 22),
+              PhosphorIcon(
+                PhosphorIconsBold.listChecks,
+                color: colorScheme.primary,
+                size: 22,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -94,10 +98,10 @@ class HomeDailyPlanCard extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
                       children: [
-                        Icon(
+                        PhosphorIcon(
                           task.isCompleted
-                              ? LucideIcons.circleCheck
-                              : LucideIcons.circle,
+                              ? PhosphorIconsFill.checkCircle
+                              : PhosphorIconsBold.circle,
                           size: 18,
                           color: task.isCompleted
                               ? colorScheme.primary
@@ -154,7 +158,7 @@ class HomeDailyPlanCard extends ConsumerWidget {
                 MaterialPageRoute(builder: (_) => const StudyPlannerScreen()),
               );
             },
-            icon: const Icon(LucideIcons.calendarCheck, size: 16),
+            icon: const PhosphorIcon(PhosphorIconsBold.calendarCheck, size: 16),
             label: const Text('Planlayıcıyı Aç & Görev Ekle'),
           ),
         ],

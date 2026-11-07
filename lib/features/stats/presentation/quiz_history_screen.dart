@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/features/stats/presentation/quiz_session_detail_screen.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Çözülen tüm test oturumlarını ve denemeleri listeleyen arşiv ekranı.
 ///
@@ -29,8 +29,8 @@ class QuizHistoryScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      LucideIcons.archive,
+                    PhosphorIcon(
+                      PhosphorIconsDuotone.archive,
                       size: 48,
                       color: colorScheme.outline,
                     ),
@@ -117,8 +117,8 @@ class QuizHistoryScreen extends ConsumerWidget {
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            Icon(
-                              LucideIcons.clock,
+                            PhosphorIcon(
+                              PhosphorIconsBold.clock,
                               size: 12,
                               color: colorScheme.outline,
                             ),

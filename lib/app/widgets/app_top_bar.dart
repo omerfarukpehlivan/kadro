@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Gamified üst başlık barı (Material Design: Top App Bar).
 ///
@@ -45,8 +45,8 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
                   color: colorScheme.primaryContainer,
-                  child: Icon(
-                    LucideIcons.graduationCap,
+                  child: PhosphorIcon(
+                    PhosphorIconsDuotone.graduationCap,
                     size: 18,
                     color: colorScheme.onPrimaryContainer,
                   ),
@@ -73,8 +73,8 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                LucideIcons.flame,
+              PhosphorIcon(
+                PhosphorIconsFill.fire,
                 size: 16,
                 color: colorScheme.onTertiaryContainer,
               ),
@@ -110,8 +110,8 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  LucideIcons.crown,
+                PhosphorIcon(
+                  PhosphorIconsFill.crown,
                   size: 15,
                   color: prefs.isPro
                       ? colorScheme.onTertiary

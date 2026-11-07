@@ -1,6 +1,6 @@
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -525,19 +525,19 @@ class _FlashcardsSummaryView extends StatelessWidget {
               ),
             );
           },
-          icon: const Icon(LucideIcons.target),
+          icon: const PhosphorIcon(PhosphorIconsBold.target),
           label: const Text('Bu Konuyu Testle Pekiştir (10 Soru)'),
         ),
         const SizedBox(height: 8),
         OutlinedButton.icon(
           onPressed: onRestart,
-          icon: const Icon(Icons.refresh),
+          icon: const PhosphorIcon(PhosphorIconsBold.arrowsCounterClockwise),
           label: const Text('Yeniden Başla'),
         ),
         const SizedBox(height: 8),
         TextButton.icon(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.home),
+          icon: const PhosphorIcon(PhosphorIconsBold.house),
           label: const Text('Ana Sayfaya Dön'),
         ),
       ],

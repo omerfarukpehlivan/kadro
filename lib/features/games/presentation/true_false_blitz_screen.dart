@@ -7,7 +7,7 @@ import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// "60 Saniyede Pençe" Doğru / Yanlış Hızlı Düello Oyunu Ekranı.
 ///
@@ -200,7 +200,7 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
                       const SizedBox(height: 12),
                       FilledButton.icon(
                         onPressed: _nextItem,
-                        icon: const Icon(LucideIcons.arrowRight),
+                        icon: const PhosphorIcon(PhosphorIconsBold.arrowRight),
                         label: Text(
                           _currentIndex < widget.items.length - 1
                               ? 'Sonraki İfade'
@@ -216,7 +216,7 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
                           Expanded(
                             child: OutlinedButton.icon(
                               onPressed: () => _submitChoice(false),
-                              icon: const Icon(LucideIcons.x),
+                              icon: const PhosphorIcon(PhosphorIconsBold.x),
                               label: const Text('YANLIŞ'),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: colorScheme.error,
@@ -234,7 +234,7 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
                           Expanded(
                             child: FilledButton.icon(
                               onPressed: () => _submitChoice(true),
-                              icon: const Icon(LucideIcons.check),
+                              icon: const PhosphorIcon(PhosphorIconsBold.check),
                               label: const Text('DOĞRU'),
                               style: FilledButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
@@ -291,8 +291,8 @@ class _TopMetricBar extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                LucideIcons.timer,
+              PhosphorIcon(
+                PhosphorIconsBold.timer,
                 size: 16,
                 color: remainingSeconds <= 10
                     ? colorScheme.onErrorContainer
@@ -329,8 +329,8 @@ class _TopMetricBar extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                LucideIcons.zap,
+              PhosphorIcon(
+                PhosphorIconsFill.lightning,
                 size: 16,
                 color: combo > 1
                     ? colorScheme.onTertiaryContainer
@@ -361,8 +361,8 @@ class _TopMetricBar extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                LucideIcons.zap,
+              PhosphorIcon(
+                PhosphorIconsFill.lightning,
                 size: 16,
                 color: colorScheme.onPrimaryContainer,
               ),
@@ -480,8 +480,10 @@ class _ExplanationCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                isCorrect ? LucideIcons.circleCheck : LucideIcons.circleX,
+              PhosphorIcon(
+                isCorrect
+                    ? PhosphorIconsFill.checkCircle
+                    : PhosphorIconsFill.xCircle,
                 size: 18,
                 color: borderColor,
               ),
@@ -549,8 +551,8 @@ class _BlitzSummaryView extends StatelessWidget {
               child: TactileCard(
                 child: Column(
                   children: [
-                    Icon(
-                      LucideIcons.checkCircle2,
+                    PhosphorIcon(
+                      PhosphorIconsDuotone.checkCircle,
                       color: colorScheme.tertiary,
                       size: 28,
                     ),
@@ -576,8 +578,8 @@ class _BlitzSummaryView extends StatelessWidget {
               child: TactileCard(
                 child: Column(
                   children: [
-                    Icon(
-                      LucideIcons.xCircle,
+                    PhosphorIcon(
+                      PhosphorIconsDuotone.xCircle,
                       color: colorScheme.error,
                       size: 28,
                     ),
@@ -608,8 +610,8 @@ class _BlitzSummaryView extends StatelessWidget {
               child: TactileCard(
                 child: Column(
                   children: [
-                    Icon(
-                      LucideIcons.zap,
+                    PhosphorIcon(
+                      PhosphorIconsFill.lightning,
                       color: colorScheme.tertiary,
                       size: 28,
                     ),
@@ -636,7 +638,11 @@ class _BlitzSummaryView extends StatelessWidget {
               child: TactileCard(
                 child: Column(
                   children: [
-                    Icon(LucideIcons.zap, color: colorScheme.primary, size: 28),
+                    PhosphorIcon(
+                      PhosphorIconsFill.lightning,
+                      color: colorScheme.primary,
+                      size: 28,
+                    ),
                     const SizedBox(height: 6),
                     Text(
                       '+$earnedXp XP',
@@ -661,7 +667,7 @@ class _BlitzSummaryView extends StatelessWidget {
 
         FilledButton.icon(
           onPressed: onRestart,
-          icon: const Icon(LucideIcons.rotateCcw),
+          icon: const PhosphorIcon(PhosphorIconsBold.arrowsCounterClockwise),
           label: const Text('Tekrar Oyna'),
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 14),
@@ -671,7 +677,7 @@ class _BlitzSummaryView extends StatelessWidget {
 
         OutlinedButton.icon(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(LucideIcons.house),
+          icon: const PhosphorIcon(PhosphorIconsBold.house),
           label: const Text('Ana Sayfaya Dön'),
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 14),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Kadro Koçu'nun ruh hali (mood) ve derse özel görsel varyasyonları.
 ///
@@ -145,11 +145,12 @@ class MascotCoachBanner extends StatelessWidget {
                       child: Image.asset(
                         mood.assetPath,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Icon(
-                          LucideIcons.award,
-                          color: colorScheme.primary,
-                          size: isCompact ? 32 : 40,
-                        ),
+                        errorBuilder: (context, error, stackTrace) =>
+                            PhosphorIcon(
+                              PhosphorIconsDuotone.trophy,
+                              color: colorScheme.primary,
+                              size: isCompact ? 32 : 40,
+                            ),
                       ),
                     ),
                   ),
@@ -166,8 +167,8 @@ class MascotCoachBanner extends StatelessWidget {
                           width: 2,
                         ),
                       ),
-                      child: Icon(
-                        LucideIcons.award,
+                      child: PhosphorIcon(
+                        PhosphorIconsFill.trophy,
                         size: isCompact ? 10 : 12,
                         color: colorScheme.onTertiaryContainer,
                       ),

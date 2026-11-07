@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Ders kartlarında dersin çözülen test oranını ve ikonunu dairesel bir ray üzerinde
 /// animasyonlu olarak gösteren bileşen.
@@ -7,7 +7,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 /// Web/Angular Karşılığı:
 /// `<app-radial-progress-bar [value]="progress" [icon]="icon">` (Radial / Circular Progress Ring).
 class LessonProgressRing extends StatelessWidget {
-  /// Dersin görselini temsil eden ikon (örn. LucideIcons.bookOpen).
+  /// Dersin görselini temsil eden ikon (örn. PhosphorIconsDuotone.scroll).
   final IconData icon;
 
   /// Çözülme oranı (0.0 ile 1.0 arasında değer alır).
@@ -64,7 +64,7 @@ class LessonProgressRing extends StatelessWidget {
               ),
             ),
 
-            // 2. Merkez İkon Kutusu
+            // 2. Merkez İkon Kutusu - PhosphorIcon ile çift katmanlı Duotone render edilir
             Container(
               width: size - 10,
               height: size - 10,
@@ -72,10 +72,12 @@ class LessonProgressRing extends StatelessWidget {
                 color: colorScheme.primaryContainer,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 22,
-                color: colorScheme.onPrimaryContainer,
+              child: Center(
+                child: PhosphorIcon(
+                  icon,
+                  size: 22,
+                  color: colorScheme.onPrimaryContainer,
+                ),
               ),
             ),
 
@@ -91,8 +93,8 @@ class LessonProgressRing extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(color: colorScheme.surface, width: 1.5),
                   ),
-                  child: Icon(
-                    LucideIcons.checkCheck,
+                  child: PhosphorIcon(
+                    PhosphorIconsFill.checkCircle,
                     size: 11,
                     color: colorScheme.onSecondary,
                   ),

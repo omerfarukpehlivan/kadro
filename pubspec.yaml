@@ -47,6 +47,10 @@ dependencies:
   google_mobile_ads: ^9.2.0
   flutter_local_notifications: ^22.3.3
   sentry_flutter: ^10.3.0
+  phosphor_flutter:
+    git:
+      url: https://github.com/phosphor-icons/flutter.git
+      ref: 6c707254398c362f76cb32e7986470a4033d512a
 
 dev_dependencies:
   flutter_test:

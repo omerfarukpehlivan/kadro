@@ -11,7 +11,7 @@ import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Denemeler sekmesi: sınav düzeni, süreli prova paketleri ve deneme başlatma.
 ///
@@ -42,21 +42,21 @@ class ExamsScreen extends ConsumerWidget {
               children: [
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(LucideIcons.listOrdered),
+                  leading: PhosphorIcon(PhosphorIconsBold.listNumbers),
                   title: Text('Soru sayısı'),
                   trailing: Text('60'),
                 ),
                 Divider(height: 1),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(LucideIcons.clock),
+                  leading: PhosphorIcon(PhosphorIconsBold.clock),
                   title: Text('Süre'),
                   trailing: Text('65 dakika'),
                 ),
                 Divider(height: 1),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: Icon(LucideIcons.calculator),
+                  leading: PhosphorIcon(PhosphorIconsBold.calculator),
                   title: Text('Net hesabı'),
                   subtitle: Text('4 yanlış 1 doğruyu götürür'),
                 ),
@@ -93,7 +93,7 @@ class ExamsScreen extends ConsumerWidget {
                     builder: (dialogCtx) => AlertDialog(
                       title: const Row(
                         children: [
-                          Icon(LucideIcons.wifiOff),
+                          PhosphorIcon(PhosphorIconsBold.wifiSlash),
                           SizedBox(width: 8),
                           Text('İnternet Bağlantısı Yok'),
                         ],
@@ -133,7 +133,7 @@ class ExamsScreen extends ConsumerWidget {
                 );
               }
             },
-            icon: const Icon(LucideIcons.play),
+            icon: const PhosphorIcon(PhosphorIconsFill.play),
             label: const Text('Genel Kültür Denemesi Başlat'),
           ).animate().fadeIn(duration: 200.ms),
           AppSpacing.gapXl,
@@ -144,7 +144,7 @@ class ExamsScreen extends ConsumerWidget {
             subtitle: '65 Dakika · 60 Soru',
             description: 'Gerçek sınav simülasyonu. Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler.',
             badgeText: 'ÖSYM Standardı',
-            icon: LucideIcons.award,
+            icon: PhosphorIconsDuotone.trophy,
             accentColor: colorScheme.primary,
             accentContainerColor: colorScheme.primaryContainer,
             onAccentContainerColor: colorScheme.onPrimaryContainer,
@@ -157,7 +157,7 @@ class ExamsScreen extends ConsumerWidget {
             subtitle: '40 Dakika · 45 Soru',
             description: 'Ağırlıklı derslere özel maraton kamp denemesi ile netlerini artır.',
             badgeText: 'Lokomotif Kamp',
-            icon: LucideIcons.flame,
+            icon: PhosphorIconsDuotone.fire,
             accentColor: colorScheme.tertiary,
             accentContainerColor: colorScheme.tertiaryContainer,
             onAccentContainerColor: colorScheme.onTertiaryContainer,
@@ -171,7 +171,7 @@ class ExamsScreen extends ConsumerWidget {
             description:
                 'Çay veya kahve molasında hızlı pratik yap, tempoyu koru.',
             badgeText: 'Hızlı Mola',
-            icon: LucideIcons.zap,
+            icon: PhosphorIconsDuotone.lightning,
             accentColor: colorScheme.secondary,
             accentContainerColor: colorScheme.secondaryContainer,
             onAccentContainerColor: colorScheme.onSecondaryContainer,
@@ -274,7 +274,7 @@ class _ExamPackCard extends ConsumerWidget {
           builder: (dialogCtx) => AlertDialog(
             title: const Row(
               children: [
-                Icon(LucideIcons.wifiOff),
+                PhosphorIcon(PhosphorIconsBold.wifiSlash),
                 SizedBox(width: 8),
                 Text('İnternet Bağlantısı Yok'),
               ],
@@ -336,7 +336,11 @@ class _ExamPackCard extends ConsumerWidget {
                   color: accentContainerColor,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: onAccentContainerColor, size: 22),
+                child: PhosphorIcon(
+                  icon,
+                  color: onAccentContainerColor,
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -399,8 +403,8 @@ class _ExamPackCard extends ConsumerWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  LucideIcons.circleCheck,
+                                PhosphorIcon(
+                                  PhosphorIconsFill.checkCircle,
                                   size: 13,
                                   color: colorScheme.onSecondaryContainer,
                                 ),
@@ -423,8 +427,8 @@ class _ExamPackCard extends ConsumerWidget {
                             onTap: () => _handleDownload(context, ref),
                             child: Padding(
                               padding: const EdgeInsets.all(4),
-                              child: Icon(
-                                LucideIcons.arrowDownToLine,
+                              child: PhosphorIcon(
+                                PhosphorIconsBold.downloadSimple,
                                 size: 16,
                                 color: colorScheme.onSurfaceVariant.withAlpha(
                                   150,
@@ -453,8 +457,8 @@ class _ExamPackCard extends ConsumerWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      LucideIcons.hardDrive,
+                    PhosphorIcon(
+                      PhosphorIconsBold.hardDrive,
                       size: 13,
                       color: colorScheme.secondary,
                     ),
@@ -487,7 +491,11 @@ class _ExamPackCard extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Icon(LucideIcons.arrowRight, size: 16, color: accentColor),
+                  PhosphorIcon(
+                    PhosphorIconsBold.arrowRight,
+                    size: 16,
+                    color: accentColor,
+                  ),
                 ],
               ),
             ],

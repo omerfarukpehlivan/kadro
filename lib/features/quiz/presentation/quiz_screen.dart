@@ -19,7 +19,7 @@ import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Varsayılan olarak gösterilen 3 özgün KPSS Lisans Genel Kültür sorusu.
 const List<Question> defaultSampleQuestions = [
@@ -455,33 +455,33 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     if (_isExamMode) {
       if (isAtHistory) {
         buttonAction = _goToNextQuestion;
-        buttonIcon = LucideIcons.arrowRight;
+        buttonIcon = PhosphorIconsBold.arrowRight;
         buttonLabel = 'Sonraki Soru';
       } else if (!_isLastQuestion) {
         buttonAction = _nextQuestion;
-        buttonIcon = LucideIcons.arrowRight;
+        buttonIcon = PhosphorIconsBold.arrowRight;
         buttonLabel = 'Sonraki Soru';
       } else {
         buttonAction = _finishQuiz;
-        buttonIcon = Icons.emoji_events_outlined;
+        buttonIcon = PhosphorIconsFill.trophy;
         buttonLabel = 'Testi Bitir ve Sonucu Gör';
       }
     } else {
       if (isAtHistory) {
         buttonAction = _goToNextQuestion;
-        buttonIcon = LucideIcons.arrowRight;
+        buttonIcon = PhosphorIconsBold.arrowRight;
         buttonLabel = 'Sonraki Soru';
       } else if (!_isAnswered) {
         buttonAction = _selectedOptionIndex != null ? _submitAnswer : null;
-        buttonIcon = Icons.check_circle_outline;
+        buttonIcon = PhosphorIconsFill.checkCircle;
         buttonLabel = 'Cevabı Onayla';
       } else if (!_isLastQuestion) {
         buttonAction = _nextQuestion;
-        buttonIcon = Icons.arrow_forward;
+        buttonIcon = PhosphorIconsBold.arrowRight;
         buttonLabel = 'Sonraki Soru';
       } else {
         buttonAction = _finishQuiz;
-        buttonIcon = Icons.emoji_events_outlined;
+        buttonIcon = PhosphorIconsFill.trophy;
         buttonLabel = 'Testi Bitir ve Sonucu Gör';
       }
     }
@@ -494,7 +494,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           if (widget.examDuration != null)
             _ExamTimerBadge(remainingSeconds: _remainingSeconds),
           IconButton(
-            icon: const Icon(LucideIcons.flag, size: 20),
+            icon: const PhosphorIcon(PhosphorIconsBold.flag, size: 20),
             tooltip: 'Hatalı Soru Bildir',
             onPressed: () {
               showModalBottomSheet<void>(
@@ -589,7 +589,10 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                     flex: 2,
                     child: OutlinedButton.icon(
                       onPressed: _previousQuestion,
-                      icon: const Icon(LucideIcons.arrowLeft, size: 18),
+                      icon: const PhosphorIcon(
+                        PhosphorIconsBold.arrowLeft,
+                        size: 18,
+                      ),
                       label: const Text('Önceki Soru'),
                     ),
                   ),
@@ -598,7 +601,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                     flex: 3,
                     child: FilledButton.icon(
                       onPressed: buttonAction,
-                      icon: Icon(buttonIcon),
+                      icon: PhosphorIcon(buttonIcon),
                       label: Text(buttonLabel),
                     ),
                   ),
@@ -717,8 +720,8 @@ class _MistakeNoticeCard extends StatelessWidget {
               color: colorScheme.primaryContainer,
               shape: BoxShape.circle,
             ),
-            child: Icon(
-              LucideIcons.bookmarkCheck,
+            child: PhosphorIcon(
+              PhosphorIconsFill.bookmarks,
               size: 20,
               color: colorScheme.onPrimaryContainer,
             ),
@@ -747,7 +750,7 @@ class _MistakeNoticeCard extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(LucideIcons.x, size: 18),
+            icon: const PhosphorIcon(PhosphorIconsBold.x, size: 18),
             color: colorScheme.onSurfaceVariant,
             tooltip: 'Kapat',
             onPressed: onDismiss,
@@ -818,8 +821,8 @@ class _ExplanationCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        LucideIcons.triangleAlert,
+                      PhosphorIcon(
+                        PhosphorIconsFill.warning,
                         size: 16,
                         color: colorScheme.onTertiaryContainer,
                       ),
@@ -942,8 +945,10 @@ class _QuizModeBadge extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  isExam ? LucideIcons.fileText : LucideIcons.lightbulb,
+                PhosphorIcon(
+                  isExam
+                      ? PhosphorIconsBold.fileText
+                      : PhosphorIconsBold.lightbulb,
                   size: 14,
                   color: isExam
                       ? colorScheme.onSecondaryContainer

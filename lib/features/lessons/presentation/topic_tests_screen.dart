@@ -11,7 +11,7 @@ import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Bir konuya ait tüm soruları kolaydan zora doğru sıralayan ve
 /// 10'ar soruluk numaralandırılmış testlere (Test 1, Test 2, ...) bölen ekran.
@@ -171,7 +171,7 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(LucideIcons.bookOpenCheck, size: 48),
+              const PhosphorIcon(PhosphorIconsDuotone.bookOpenText, size: 48),
               const SizedBox(height: 12),
               Text(
                 'Test Bulunamadı',

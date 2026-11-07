@@ -4,7 +4,7 @@ import 'package:kadro/app/theme.dart';
 import 'package:kadro/main.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 void main() {
   group('AppTheme Tests', () {
@@ -45,21 +45,24 @@ void main() {
   });
 
   group('Shell Modernizasyon Testleri', () {
-    testWidgets('AppNavigationBar içinde LucideIcons ikonları render edilir', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(const MyApp());
-      await tester.pumpAndSettle();
+    testWidgets(
+      'AppNavigationBar içinde PhosphorIcons ikonları render edilir',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(const MyApp());
+        await tester.pumpAndSettle();
 
-      expect(find.byIcon(LucideIcons.house), findsOneWidget);
-      expect(find.byIcon(LucideIcons.bookOpen), findsOneWidget);
-      expect(find.byIcon(LucideIcons.gamepad2), findsOneWidget);
-      expect(find.byIcon(LucideIcons.timer), findsOneWidget);
-      expect(find.byIcon(LucideIcons.chartColumn), findsOneWidget);
-      expect(find.byIcon(LucideIcons.user), findsOneWidget);
-      expect(find.byIcon(LucideIcons.crown), findsOneWidget);
-      expect(find.text('PRO'), findsOneWidget);
-    });
+        // Seçili tab (0 - Ana Sayfa) Fill ikonu kullanır
+        expect(find.byIcon(PhosphorIconsFill.house), findsOneWidget);
+        // Diğer seçili olmayan sekmeler Bold ikonu kullanır
+        expect(find.byIcon(PhosphorIconsBold.books), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsBold.gameController), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsBold.timer), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsBold.chartBar), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsBold.userCircle), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsFill.crown), findsOneWidget);
+        expect(find.text('PRO'), findsOneWidget);
+      },
+    );
   });
 
   group('TactileCard ve MascotCoachBanner Testleri', () {

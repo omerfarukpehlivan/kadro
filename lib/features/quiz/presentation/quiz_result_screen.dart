@@ -9,7 +9,7 @@ import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/presentation/widgets/victory_story_card.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Test tamamlandığında net ve başarı oranını gösteren karne ekranı.
 ///
@@ -67,7 +67,7 @@ class QuizResultScreen extends StatelessWidget {
                       );
                     }
                   },
-                  icon: const Icon(LucideIcons.copy, size: 16),
+                  icon: const PhosphorIcon(PhosphorIconsBold.copy, size: 16),
                   label: const Text('Skorumu & Metni Kopyala'),
                 ),
                 const SizedBox(height: 8),
@@ -119,7 +119,7 @@ class QuizResultScreen extends StatelessWidget {
                     child: _ResultStatItem(
                       label: 'Doğru',
                       count: result.correctCount,
-                      icon: LucideIcons.check,
+                      icon: PhosphorIconsBold.check,
                       color: Theme.of(context).colorScheme.tertiary,
                     ),
                   ),
@@ -128,7 +128,7 @@ class QuizResultScreen extends StatelessWidget {
                     child: _ResultStatItem(
                       label: 'Yanlış',
                       count: result.wrongCount,
-                      icon: Icons.cancel_outlined,
+                      icon: PhosphorIconsBold.x,
                       color: Theme.of(context).colorScheme.error,
                     ),
                   ),
@@ -137,7 +137,7 @@ class QuizResultScreen extends StatelessWidget {
                     child: _ResultStatItem(
                       label: 'Boş',
                       count: result.emptyCount,
-                      icon: Icons.help_outline,
+                      icon: PhosphorIconsBold.question,
                       color: Theme.of(context).colorScheme.outline,
                     ),
                   ),
@@ -148,7 +148,10 @@ class QuizResultScreen extends StatelessWidget {
               // Zafer Karnesi Paylaşım Butonu (TASK-52)
               FilledButton.tonalIcon(
                 onPressed: () => _showShareModal(context),
-                icon: const Icon(LucideIcons.share2, size: 18),
+                icon: const PhosphorIcon(
+                  PhosphorIconsBold.shareNetwork,
+                  size: 18,
+                ),
                 label: const Text('Zafer Karneni Paylaş 📸'),
               ),
               AppSpacing.gapLg,
@@ -161,7 +164,7 @@ class QuizResultScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const MistakesScreen()),
                     );
                   },
-                  icon: const Icon(LucideIcons.bookmarkCheck),
+                  icon: const PhosphorIcon(PhosphorIconsBold.bookmarkSimple),
                   label: Text(
                     'Yanlış Defterine Git (${result.wrongCount} Yanlış)',
                   ),
@@ -169,13 +172,13 @@ class QuizResultScreen extends StatelessWidget {
                 AppSpacing.gapXs,
                 OutlinedButton.icon(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(LucideIcons.house),
+                  icon: const PhosphorIcon(PhosphorIconsBold.house),
                   label: const Text('Ana Sayfaya Dön'),
                 ),
               ] else ...[
                 FilledButton.icon(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(LucideIcons.house),
+                  icon: const PhosphorIcon(PhosphorIconsBold.house),
                   label: const Text('Ana Sayfaya Dön'),
                 ),
                 AppSpacing.gapXs,
@@ -187,7 +190,7 @@ class QuizResultScreen extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(LucideIcons.layers),
+                  icon: const PhosphorIcon(PhosphorIconsBold.cards),
                   label: const Text('Bilgi Kartlarıyla Hızlı Tekrar'),
                 ),
               ],
@@ -277,7 +280,7 @@ class _ResultStatItem extends StatelessWidget {
       borderRadius: 14,
       child: Column(
         children: [
-          Icon(icon, color: color, size: 24),
+          PhosphorIcon(icon, color: color, size: 24),
           const SizedBox(height: 8),
           Text(
             '$count',

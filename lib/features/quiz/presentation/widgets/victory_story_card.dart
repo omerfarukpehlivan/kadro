@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Instagram ve WhatsApp hikayelerine uygun 9:16 formatında Zafer Karnesi paylaşım kartı.
 ///
@@ -53,8 +53,8 @@ class VictoryStoryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    LucideIcons.trophy,
+                  PhosphorIcon(
+                    PhosphorIconsFill.trophy,
                     color: colorScheme.tertiary,
                     size: 16,
                   ),
@@ -80,8 +80,8 @@ class VictoryStoryCard extends StatelessWidget {
                 'assets/images/mascot/tugrul_victory.png',
                 height: 84,
                 fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => Icon(
-                  LucideIcons.trophy,
+                errorBuilder: (context, error, stackTrace) => PhosphorIcon(
+                  PhosphorIconsDuotone.trophy,
                   size: 72,
                   color: colorScheme.tertiary,
                 ),

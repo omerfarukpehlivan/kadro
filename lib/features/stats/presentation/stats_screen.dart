@@ -11,7 +11,7 @@ import 'package:kadro/features/stats/presentation/quiz_history_screen.dart';
 import 'package:kadro/features/stats/presentation/quiz_session_detail_screen.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// İstatistik sayfası: Riverpod üzerinden canlı soru, XP/Lig, Ustalık Haritası,
 /// Başarım Rozetleri (Achievements), Haftalık Kadro Ligi ve Test Geçmişini gösterir.
@@ -29,7 +29,7 @@ class StatsScreen extends ConsumerWidget {
         padding: AppSpacing.pagePadding(context),
         children: [
           const PageHeader(
-            icon: LucideIcons.chartColumn,
+            icon: PhosphorIconsDuotone.chartBar,
             title: 'İstatistiklerin',
             subtitle: 'Soru çözdükçe ders bazında netlerin burada görünecek.',
           ),
@@ -46,7 +46,7 @@ class StatsScreen extends ConsumerWidget {
                 child: _StatCard(
                   label: 'Çözülen soru',
                   value: '${stats.totalSolved}',
-                  icon: LucideIcons.check,
+                  icon: PhosphorIconsBold.check,
                 ),
               ),
               AppSpacing.gapHorizontalSm,
@@ -56,7 +56,7 @@ class StatsScreen extends ConsumerWidget {
                   value: stats.totalSolved == 0
                       ? '–'
                       : '%${stats.accuracyPercent}',
-                  icon: LucideIcons.target,
+                  icon: PhosphorIconsBold.target,
                 ),
               ),
             ],
@@ -67,7 +67,7 @@ class StatsScreen extends ConsumerWidget {
           _StatCard(
             label: 'En zayıf ders',
             value: stats.weakestLesson,
-            icon: LucideIcons.flame,
+            icon: PhosphorIconsFill.fire,
           ),
           if (stats.weakestLesson != 'Henüz veri yok') ...[
             AppSpacing.gapSm,
@@ -125,8 +125,8 @@ class _LeagueAndStreakCard extends StatelessWidget {
                     color: colorScheme.tertiaryContainer,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(
-                    LucideIcons.trophy,
+                  child: PhosphorIcon(
+                    PhosphorIconsFill.trophy,
                     color: colorScheme.onTertiaryContainer,
                     size: 24,
                   ),
@@ -170,8 +170,8 @@ class _LeagueAndStreakCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(
-                      LucideIcons.flame,
+                    PhosphorIcon(
+                      PhosphorIconsFill.fire,
                       size: 14,
                       color: colorScheme.onTertiaryContainer,
                     ),
@@ -217,25 +217,25 @@ class _AchievementsCard extends StatelessWidget {
       _AchievementData(
         title: 'İlk Pençe',
         description: '1 soru çöz',
-        icon: LucideIcons.flame,
+        icon: PhosphorIconsFill.fire,
         isUnlocked: stats.totalSolved >= 1,
       ),
       _AchievementData(
         title: 'Keskin Nişancı',
         description: '%70+ Doğruluk',
-        icon: LucideIcons.target,
+        icon: PhosphorIconsBold.target,
         isUnlocked: stats.totalSolved >= 5 && stats.accuracyPercent >= 70,
       ),
       _AchievementData(
         title: 'Deneme Fatihi',
         description: '1 Deneme bitir',
-        icon: LucideIcons.trophy,
+        icon: PhosphorIconsFill.trophy,
         isUnlocked: stats.sessionHistory.isNotEmpty,
       ),
       _AchievementData(
         title: 'Gümüş Kadro Adayı',
         description: '250+ XP topla',
-        icon: LucideIcons.shieldCheck,
+        icon: PhosphorIconsDuotone.shieldCheck,
         isUnlocked: stats.totalXp >= 250 || stats.leagueTier != 'Bronz Kadro',
       ),
     ];
@@ -254,8 +254,8 @@ class _AchievementsCard extends StatelessWidget {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(
-                      LucideIcons.medal,
+                    PhosphorIcon(
+                      PhosphorIconsDuotone.medal,
                       color: colorScheme.tertiary,
                       size: 20,
                     ),
@@ -363,9 +363,11 @@ class _BadgeTile extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(data.icon, color: iconColor, size: 20),
-              Icon(
-                data.isUnlocked ? LucideIcons.circleCheck : LucideIcons.lock,
+              PhosphorIcon(data.icon, color: iconColor, size: 20),
+              PhosphorIcon(
+                data.isUnlocked
+                    ? PhosphorIconsFill.checkCircle
+                    : PhosphorIconsBold.lock,
                 size: 14,
                 color: data.isUnlocked
                     ? colorScheme.primary
@@ -436,8 +438,8 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(
-                      LucideIcons.crown,
+                    PhosphorIcon(
+                      PhosphorIconsFill.crown,
                       color: colorScheme.tertiary,
                       size: 20,
                     ),
@@ -612,8 +614,8 @@ class _MasteryHeatmapCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                LucideIcons.shieldCheck,
+              PhosphorIcon(
+                PhosphorIconsDuotone.shieldCheck,
                 color: colorScheme.primary,
                 size: 20,
               ),
@@ -830,7 +832,7 @@ class _StatCard extends StatelessWidget {
               ),
               if (icon != null) ...[
                 const SizedBox(width: 4),
-                Icon(icon, size: 18, color: colorScheme.primary),
+                PhosphorIcon(icon!, size: 18, color: colorScheme.primary),
               ],
             ],
           ),
@@ -1015,8 +1017,8 @@ class _WeakLessonActionCard extends StatelessWidget {
               color: colorScheme.errorContainer,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              LucideIcons.flame,
+            child: PhosphorIcon(
+              PhosphorIconsFill.fire,
               color: colorScheme.onErrorContainer,
               size: 22,
             ),

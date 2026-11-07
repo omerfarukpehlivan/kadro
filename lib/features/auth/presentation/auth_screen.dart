@@ -5,7 +5,7 @@ import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/auth/data/auth_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Giriş Yap ve Kayıt Ol ekranı (AuthScreen).
 ///
@@ -111,8 +111,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     const SizedBox(height: 16),
                     Row(
                       children: [
-                        Icon(
-                          LucideIcons.keyRound,
+                        PhosphorIcon(
+                          PhosphorIconsDuotone.key,
                           color: colorScheme.primary,
                           size: 24,
                         ),
@@ -139,7 +139,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                       textInputAction: TextInputAction.done,
                       decoration: const InputDecoration(
                         labelText: 'E-posta Adresi',
-                        prefixIcon: Icon(LucideIcons.mail, size: 20),
+                        prefixIcon: PhosphorIcon(
+                          PhosphorIconsBold.envelope,
+                          size: 20,
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || !value.contains('@')) {
@@ -239,7 +242,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           textInputAction: TextInputAction.next,
                           decoration: const InputDecoration(
                             labelText: 'Ad Soyad / Rumuz',
-                            prefixIcon: Icon(LucideIcons.user, size: 20),
+                            prefixIcon: PhosphorIcon(
+                              PhosphorIconsBold.user,
+                              size: 20,
+                            ),
                           ),
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
@@ -260,8 +266,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           labelText: _isLogin
                               ? 'E-posta veya Kullanıcı Adı'
                               : 'E-posta veya Kullanıcı Adı',
-                          prefixIcon: Icon(
-                            _isLogin ? LucideIcons.user : LucideIcons.mail,
+                          prefixIcon: PhosphorIcon(
+                            _isLogin
+                                ? PhosphorIconsBold.user
+                                : PhosphorIconsBold.envelope,
                             size: 20,
                           ),
                         ),
@@ -280,7 +288,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         onFieldSubmitted: (_) => _submit(),
                         decoration: const InputDecoration(
                           labelText: 'Şifre (En az 6 karakter)',
-                          prefixIcon: Icon(LucideIcons.lock, size: 20),
+                          prefixIcon: PhosphorIcon(
+                            PhosphorIconsBold.lock,
+                            size: 20,
+                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.length < 6) {
@@ -307,8 +318,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           ),
                           child: Row(
                             children: [
-                              Icon(
-                                LucideIcons.alertCircle,
+                              PhosphorIcon(
+                                PhosphorIconsFill.warningCircle,
                                 color: colorScheme.onErrorContainer,
                                 size: 18,
                               ),
@@ -337,10 +348,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                   color: colorScheme.onPrimary,
                                 ),
                               )
-                            : Icon(
+                            : PhosphorIcon(
                                 _isLogin
-                                    ? LucideIcons.logIn
-                                    : LucideIcons.userPlus,
+                                    ? PhosphorIconsBold.signIn
+                                    : PhosphorIconsBold.userPlus,
                                 size: 18,
                               ),
                         label: Text(

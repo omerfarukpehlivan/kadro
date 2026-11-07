@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/reports/data/models/question_report.dart';
 import 'package:kadro/features/reports/data/question_report_repository.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Test esnasında kullanıcının hatalı soruyu sebep ve isteğe bağlı not ile
 /// bildirmesini sağlayan modern alt sayfa bileşeni (BottomSheet - TASK-47).
@@ -127,8 +127,8 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
                       color: colorScheme.errorContainer,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(
-                      LucideIcons.flag,
+                    child: PhosphorIcon(
+                      PhosphorIconsBold.flag,
                       color: colorScheme.onErrorContainer,
                       size: 20,
                     ),
@@ -265,7 +265,10 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(LucideIcons.send, size: 18),
+                : const PhosphorIcon(
+                    PhosphorIconsBold.paperPlaneTilt,
+                    size: 18,
+                  ),
             label: Text(_isSubmitting ? 'İletiliyor...' : 'Bildirimi Gönder'),
           ),
         ],

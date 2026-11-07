@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Memur adayının motivasyonunu ve çalışma istikrarını artıran
 /// Duolingo/UWorld stili KPSS Başarı Madalyası modeli.
@@ -57,7 +57,7 @@ class AchievementBadge {
         id: 'first_claw',
         title: '🌱 İlk Pençe',
         description: 'İlk KPSS konu testini başarıyla tamamla.',
-        icon: LucideIcons.footprints,
+        icon: PhosphorIconsFill.footprints,
         isUnlocked: hasSolvedFirst,
         progressText: hasSolvedFirst
             ? 'Kazanıldı'
@@ -67,7 +67,7 @@ class AchievementBadge {
         id: 'accuracy_jump',
         title: '⚡ Net Sıçratıcı',
         description: 'En az 10 soruluk bir testte %80 ve üzeri başarı yakala.',
-        icon: LucideIcons.zap,
+        icon: PhosphorIconsFill.lightning,
         isUnlocked: hasHighAccuracy,
         progressText: hasHighAccuracy
             ? 'Kazanıldı'
@@ -77,7 +77,7 @@ class AchievementBadge {
         id: 'streak_monster',
         title: '🔥 Seri Canavarı',
         description: 'Aralıksız 7 gün soru çözerek haftalık seriyi tamamla.',
-        icon: LucideIcons.flame,
+        icon: PhosphorIconsFill.fire,
         isUnlocked: hasWeekStreak,
         progressText: hasWeekStreak ? 'Kazanıldı' : '$streakDays/7 Gün',
       ),
@@ -85,7 +85,7 @@ class AchievementBadge {
         id: 'history_conqueror',
         title: '🏛️ Tarih Fatihi',
         description: 'Genel Kültür lokomotifi Tarih dersinden 50 soru çöz.',
-        icon: LucideIcons.landmark,
+        icon: PhosphorIconsDuotone.scroll,
         isUnlocked: hasTarihMastery,
         progressText: hasTarihMastery ? 'Kazanıldı' : '$tarihSolved/50 Soru',
       ),
@@ -93,7 +93,7 @@ class AchievementBadge {
         id: 'night_owl',
         title: '🌙 Gece Kuşu',
         description: 'Saat 22:00\'den sonra sessiz saatlerde soru çöz.',
-        icon: LucideIcons.moon,
+        icon: PhosphorIconsFill.moon,
         isUnlocked: hasNightStudy,
         progressText: hasNightStudy ? 'Kazanıldı' : '22:00 Sonrası',
       ),
@@ -101,7 +101,7 @@ class AchievementBadge {
         id: 'trap_defuser',
         title: '🛡️ Mayın Temizleyici',
         description: 'ÖSYM çeldirici tuzaklarını aşarak en az 5 doğru yap.',
-        icon: LucideIcons.shieldCheck,
+        icon: PhosphorIconsDuotone.shieldCheck,
         isUnlocked: hasTrapMaster,
         progressText: hasTrapMaster ? 'Kazanıldı' : '$correctCount/5 Doğru',
       ),

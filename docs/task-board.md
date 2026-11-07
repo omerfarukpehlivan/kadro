@@ -91,6 +91,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-64** | **Yanlış Defteri 59px Taşma Düzeltmesi & Çevrimdışı İndirme UI/UX Dönüşümü (Zarif & Sade İndirme Modeli)** | Yanlış Defteri boş durumundaki butonların dar ekranda taşmasını önleyen `Wrap` düzeltmesi; her test/konu kartındaki göz yoran büyük 'İndir' butonlarının kaldırılarak Spotify/Duolingo stili zarif minimal rozet/mikro-ikon modeline geçilmesi ve üst başlığa 'Tümünü İndir' opsiyonunun eklenmesi | ✅ **Tamamlandı** |
 | **TASK-65** | **Profil Ekranı Evrimi: Aday Kimlik Kartı, KPSS 2026 Geri Sayımı, Lig & Başarı Rozetleri Vitrini ve Bulut Eşitleme Merkezi** | Profil ekranının sıradan bir 'Ayarlar' listesi olmaktan çıkarılıp Duolingo/UWorld seviyesinde zenginleştirilmesi: Aday kimliği & avatarı, hedef puan & atama rotası, canlı 2026 KPSS geri sayımı, 4'lü metrik snapshot'ı (Seri, Soru, Net %, XP), Lig & Unvan vitrini, 6 adet motivasyon madalyası ve modern hesap ayarları | ✅ **Tamamlandı** |
 | **TASK-66** | **Bağımsız Çalışma Türleri & Antrenman Ekranı (`PracticeHubScreen`), Zenginleştirilmiş Alt Menü (`AppNavigationBar`) ve Görev Hatırlatıcılı Yeni Ana Sayfa** | Çalışma türlerinin (Konu Testi, Bilgi Kartları, Yanlış Defteri, Deneme, Mini Oyunlar, Çeldirici Avı) ana sayfadan ayrılıp bağımsız 'Pratik' sekmesine (`PracticeHubScreen`) taşınması; `AppNavigationBar`'ın 6 sekmeli zengin ve taşmasız dock yapısına yükseltilmesi; `HomeScreen`'in görev hatırlatıcıları, seri uyarıları, son kalınan yer ve günlük çalışma planı odaklı kişisel komuta merkezine dönüştürülmesi | ✅ **Tamamlandı** |
+| **TASK-67** | **Özgün İkon Mimarisi Dönüşümü: Sıradan Lucide İkonlarından `phosphor_flutter` (Duotone, Fill & Bold) Karakteristik İkon Sistemine Geçiş** | Her projede kullanılan sıradan tek çizgili `LucideIcons` ve `Icons.*` kullanımlarının kaldırılarak `phosphor_flutter` paketine geçilmesi; kart ve rozetlerde çift katmanlı `PhosphorIconsDuotone`, alt menü aktif sekmelerinde tok dolgulu `PhosphorIconsFill`, pasif sekme ve aksiyonlarda `PhosphorIconsBold` kullanılması | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -3988,6 +3989,72 @@ ADIM 4: Testlerin Güncellenmesi ve Doğrulama
 1. `test/router_test.dart`, `test/widget_test.dart`, `test/responsive_layout_test.dart` ve `test/app_spacing_test.dart` dosyalarını yeni 6 sekmeli navigasyon ve `PracticeHubScreen` yapısıyla uyumlu hale getir.
 2. `PracticeHubScreen` ve `HomeScreen` üzerindeki yeni görev hatırlatıcılarının render edildiğini doğrulayan test senaryosu ekle.
 3. Sırasıyla `dart format lib test`, `flutter analyze` ve `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-67: Özgün İkon Mimarisi Dönüşümü: Sıradan Lucide İkonlarından `phosphor_flutter` (Duotone, Fill & Bold) Karakteristik İkon Sistemine Geçiş
+
+- **Durum:** ✅ **Tamamlandı**
+- **Kapsam:**
+  - Her web/AI projesinde kullanılan ve sıradanlaşmış tek çizgili `lucide_icons_flutter` (`LucideIcons`) ikonlarının yerine, Kadro'nun 3D Tactile kartlarına ve Tuğrul maskotuna karakter katan **`phosphor_flutter` (Phosphor Icons — Duotone, Fill & Bold)** sistemine geçilmesi.
+  - **1. Paket Kurulumu:**
+    - `flutter pub add phosphor_flutter` komutuyla paketin eklenmesi.
+  - **2. 3 Katmanlı İkon Görsel Dili:**
+    - **Kartlar, Dersler, Çalışma Türleri ve Madalyalar (`PhosphorIconsDuotone` & `PhosphorIcon`):**
+      - Çift tonlu (`Duotone`) ikonlar kullanılarak her ikonun içinde `%20` saydamlıkta ikinci bir derinlik katmanı oluşturulması.
+      - Ders ikonları (`kpss_lessons.dart`):
+        - Tarih: `PhosphorIconsDuotone.scroll` (Tarihi Parşömen / Ferman)
+        - Coğrafya: `PhosphorIconsDuotone.globeHemisphereEast` (Dünya Küresi)
+        - Vatandaşlık: `PhosphorIconsDuotone.scales` (Adalet Terazisi)
+        - Güncel Bilgiler: `PhosphorIconsDuotone.newspaperClipping` (Güncel Manşet)
+    - **Alt Navigasyon Çubuğu (`AppNavigationBar`):**
+      - Seçili olmayan sekmelerde (`icon`) tok çizgili `PhosphorIconsBold.*`,
+      - Seçili olan aktif sekmede (`selectedIcon`) içi dolu `PhosphorIconsFill.*` veya `PhosphorIconsDuotone.*` kullanılarak sekme geçişlerinde premium Duolingo/Spotify hissi verilmesi:
+        - Ana Sayfa: `PhosphorIconsBold.house` / `PhosphorIconsFill.house`
+        - Dersler: `PhosphorIconsBold.books` / `PhosphorIconsFill.books`
+        - Pratik: `PhosphorIconsBold.gameController` / `PhosphorIconsFill.gameController`
+        - Denemeler: `PhosphorIconsBold.timer` / `PhosphorIconsFill.timer`
+        - İstatistik: `PhosphorIconsBold.chartBar` / `PhosphorIconsFill.chartBar`
+        - Profil: `PhosphorIconsBold.userCircle` / `PhosphorIconsFill.userCircle`
+    - **Aksiyon Butonları, Oklar ve Rozetler (`PhosphorIconsBold` / `PhosphorIconsFill`):**
+      - Cılız çizgiler yerine tok `PhosphorIconsBold` ve `PhosphorIconsFill` kullanılması (`flame`, `lightning`, `trophy`, `medal`, `shieldCheck`, `caretRight`, `checkCircle`, `sealWarning` vb.).
+  - **3. Tüm Ekranların ve Testlerin Güncellenmesi:**
+    - `lib/` altındaki tüm ekran ve widget'larda `LucideIcons` kullanımlarının `PhosphorIconsDuotone` / `PhosphorIconsFill` / `PhosphorIconsBold` karşılıklarına dönüştürülmesi ve `PhosphorIcon(...)` veya `Icon(...)` ile tam uyumlu render edilmesi.
+    - `test/` altındaki ikon doğrulama testlerinin (`test/theme_and_shell_test.dart`, `test/lessons_screen_test.dart` vb.) yeni `PhosphorIcons` ikonlarıyla güncellenmesi.
+
+```text
+GÖREV: TASK-67 — Sıradan Lucide İkonlarından Phosphor Icons (Duotone, Fill & Bold) Sistemine Geçiş
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme üzerinden al. Kodların içine eğitici Türkçe doc comment'ler (///) ekle.
+
+ADIM 1: Paket Kurulumu
+1. `flutter pub add phosphor_flutter` komutuyla `phosphor_flutter` paketini projeye ekle.
+
+ADIM 2: Alt Menü (`AppNavigationBar`) ve Üst Bar (`AppTopBar`) Dönüşümü
+1. `lib/app/widgets/app_navigation_bar.dart`:
+   - Seçili olmayan `icon` için `PhosphorIconsBold`, seçili `selectedIcon` için `PhosphorIconsFill` kullan:
+     - 0 (Ana Sayfa): `PhosphorIconsBold.house` / `PhosphorIconsFill.house`
+     - 1 (Dersler): `PhosphorIconsBold.books` / `PhosphorIconsFill.books`
+     - 2 (Pratik): `PhosphorIconsBold.gameController` / `PhosphorIconsFill.gameController`
+     - 3 (Denemeler): `PhosphorIconsBold.timer` / `PhosphorIconsFill.timer`
+     - 4 (İstatistik): `PhosphorIconsBold.chartBar` / `PhosphorIconsFill.chartBar`
+     - 5 (Profil): `PhosphorIconsBold.userCircle` / `PhosphorIconsFill.userCircle`
+2. `lib/app/widgets/app_top_bar.dart`:
+   - Seri (streak) ateşi için `PhosphorIconsFill.fire`, XP için `PhosphorIconsFill.lightning` kullan.
+
+ADIM 3: Dersler, Çalışma Türleri, Ana Sayfa ve Tüm Ekranların `PhosphorIcons` Dönüşümü
+1. `lib/features/lessons/data/kpss_lessons.dart`:
+   - Tarih: `PhosphorIconsDuotone.scroll`
+   - Coğrafya: `PhosphorIconsDuotone.globeHemisphereEast`
+   - Vatandaşlık: `PhosphorIconsDuotone.scales`
+   - Güncel Bilgiler: `PhosphorIconsDuotone.newspaperClipping`
+2. `lib/features/lessons/presentation/widgets/lesson_progress_ring.dart` ve kart ikonlarında `PhosphorIcon(icon, ...)` kullanarak Duotone çift katmanlı görünümü aktif et (Not: `PhosphorIcon` hem `PhosphorIconData` hem normal `IconData` ile veya `Icon` ile çalışır; `PhosphorIcon` widget'ı Duotone katmanını gerçek çift tonlu çizer!).
+3. `HomeScreen`, `PracticeHubScreen`, `ExamsScreen`, `StatsScreen`, `ProfileScreen`, `QuizScreen`, `QuizResultScreen`, `MistakesScreen`, `StudyPlannerScreen`, `TrueFalseBlitzScreen`, `ConceptMatchScreen`, `PaywallScreen`, `OnboardingScreen`, `AuthScreen` ve paylaşılan widget'lardaki tüm `LucideIcons` kullanımlarını zengin `PhosphorIconsDuotone`, `PhosphorIconsFill` ve `PhosphorIconsBold` karşılıklarına geçir.
+
+ADIM 4: Testlerin Güncellenmesi ve Doğrulama
+1. `test/theme_and_shell_test.dart`, `test/lessons_screen_test.dart`, `test/mascot_coach_banner_test.dart`, `test/overflow_fix_test.dart` ve `test/question_report_test.dart` içindeki ikon beklentilerini yeni `PhosphorIcons` sabitleriyle güncelle.
+2. `docs/task-board.md` içinde `TASK-67` durumunu `✅ **Tamamlandı**` yap.
+3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştırıp doğrula.
 ```
 
 ---

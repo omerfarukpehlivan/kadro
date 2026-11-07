@@ -12,7 +12,7 @@ import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Ana sayfa: Kadro Koçu konuşma balonu, günlük hedef, akıllı hatırlatıcılar ve çalışma planı.
 ///
@@ -93,7 +93,7 @@ class _SmartRemindersCard extends StatelessWidget {
         children: [
           // 1. Görev Hatırlatıcısı
           _ReminderItem(
-            icon: LucideIcons.listTodo,
+            icon: PhosphorIconsBold.clipboardText,
             title: 'Çalışma Planı',
             message: pendingCount > 0
                 ? 'Bugün tamamlanmayı bekleyen $pendingCount çalışma görevin var'
@@ -113,7 +113,7 @@ class _SmartRemindersCard extends StatelessWidget {
           ),
           // 2. Seri & Hedef Hatırlatıcısı
           _ReminderItem(
-            icon: LucideIcons.flame,
+            icon: PhosphorIconsFill.fire,
             title: 'Seri & Hedef',
             message: !isGoalMet
                 ? '${stats.streakDays} günlük serini korumak için kalan: $remainingQuestions soru'
@@ -132,7 +132,7 @@ class _SmartRemindersCard extends StatelessWidget {
           ),
           // 3. Hızlı Pratik & Yanlış Defteri Hatırlatıcısı
           _ReminderItem(
-            icon: LucideIcons.bookmarkCheck,
+            icon: PhosphorIconsDuotone.bookmarks,
             title: 'Hızlı Pratik',
             message: 'Yanlış defteri ve çalışma modlarıyla netlerini artır',
             iconBgColor: colorScheme.secondaryContainer,
@@ -188,7 +188,11 @@ class _ReminderItem extends StatelessWidget {
                 color: iconBgColor,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: isCompact ? 18 : 20, color: iconColor),
+              child: PhosphorIcon(
+                icon,
+                size: isCompact ? 18 : 20,
+                color: iconColor,
+              ),
             ),
             SizedBox(width: isCompact ? 10 : 12),
             Expanded(
@@ -217,8 +221,8 @@ class _ReminderItem extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 6),
-            Icon(
-              LucideIcons.chevronRight,
+            PhosphorIcon(
+              PhosphorIconsBold.caretRight,
               size: 16,
               color: colorScheme.onSurfaceVariant,
             ),
@@ -272,8 +276,8 @@ class _DailyGoalCard extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            LucideIcons.flame,
+                          PhosphorIcon(
+                            PhosphorIconsFill.fire,
                             size: 14,
                             color: colorScheme.onTertiaryContainer,
                           ),
@@ -340,8 +344,8 @@ class _DailyGoalCard extends StatelessWidget {
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          LucideIcons.flame,
+                        PhosphorIcon(
+                          PhosphorIconsFill.fire,
                           size: isCompact ? 16 : 18,
                           color: colorScheme.tertiary,
                         ),
@@ -404,8 +408,8 @@ class _WeakLessonHomeBanner extends StatelessWidget {
               color: colorScheme.errorContainer,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              LucideIcons.flame,
+            child: PhosphorIcon(
+              PhosphorIconsFill.fire,
               color: colorScheme.onErrorContainer,
               size: 24,
             ),
@@ -454,8 +458,8 @@ class _WeakLessonHomeBanner extends StatelessWidget {
               ],
             ),
           ),
-          Icon(
-            LucideIcons.chevronRight,
+          PhosphorIcon(
+            PhosphorIconsBold.caretRight,
             color: colorScheme.onSurfaceVariant,
             size: 20,
           ),

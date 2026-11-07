@@ -6,7 +6,7 @@ import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// 3 Adımlı Kişiselleştirilmiş KPSS Hedef ve Çalışma Rotası Sihirbazı.
 ///
@@ -143,7 +143,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           )
                         : FilledButton.icon(
                             onPressed: _completeOnboarding,
-                            icon: const Icon(LucideIcons.compass, size: 18),
+                            icon: const PhosphorIcon(
+                              PhosphorIconsBold.compass,
+                              size: 18,
+                            ),
                             label: const Text('Rotamı Oluştur'),
                           ),
                   ),
@@ -191,7 +194,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _SelectableOptionCard(
               title: '80+ Puan · B Grubu Memurluk',
               subtitle: 'Genel İdare Hizmetleri, VHKİ, Düz Memurluk',
-              icon: LucideIcons.badgeCheck,
+              icon: PhosphorIconsDuotone.sealCheck,
               isSelected: _selectedScore == 80,
               onTap: () => setState(() => _selectedScore = 80),
             ),
@@ -199,7 +202,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _SelectableOptionCard(
               title: '85+ Puan · Merkez & Kurum Kadroları',
               subtitle: 'Bakanlıklar, Gelir Uzmanlığı, Bölge Müdürlükleri',
-              icon: LucideIcons.award,
+              icon: PhosphorIconsFill.trophy,
               isSelected: _selectedScore == 85,
               onTap: () => setState(() => _selectedScore = 85),
             ),
@@ -207,7 +210,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _SelectableOptionCard(
               title: '90+ Puan · Derece & A Grubu Kadrolar',
               subtitle: 'Müfettişlik, Uzmanlık ve İlk 1000 Derece Hedefi',
-              icon: LucideIcons.crown,
+              icon: PhosphorIconsFill.crown,
               isSelected: _selectedScore == 90,
               onTap: () => setState(() => _selectedScore = 90),
             ),
@@ -219,7 +222,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _SelectableOptionCard(
               title: 'Tarih · 27 Soru (%45 Ağırlık)',
               subtitle: 'İlk Türk Devletleri, Osmanlı ve İnkılap Tarihi',
-              icon: LucideIcons.bookOpen,
+              icon: PhosphorIconsDuotone.scroll,
               isSelected: _selectedLesson == 'Tarih',
               onTap: () => setState(() => _selectedLesson = 'Tarih'),
             ),
@@ -227,7 +230,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _SelectableOptionCard(
               title: 'Coğrafya · 18 Soru (%30 Ağırlık)',
               subtitle: 'Fiziki Özellikler, İklim, Nüfus ve Ekonomik Coğrafya',
-              icon: LucideIcons.mapPin,
+              icon: PhosphorIconsDuotone.globeHemisphereEast,
               isSelected: _selectedLesson == 'Coğrafya',
               onTap: () => setState(() => _selectedLesson = 'Coğrafya'),
             ),
@@ -235,7 +238,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _SelectableOptionCard(
               title: 'Vatandaşlık · 9 Soru (%15 Ağırlık)',
               subtitle: 'Temel Hukuk, Anayasa, Yasama, Yürütme ve İdare',
-              icon: LucideIcons.scale,
+              icon: PhosphorIconsDuotone.scales,
               isSelected: _selectedLesson == 'Vatandaşlık',
               onTap: () => setState(() => _selectedLesson = 'Vatandaşlık'),
             ),
@@ -243,7 +246,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _SelectableOptionCard(
               title: 'Güncel Bilgiler · 6 Soru (%10 Ağırlık)',
               subtitle: 'Uluslararası Kuruluşlar, Bilim, Kültür ve Sanat',
-              icon: LucideIcons.globe,
+              icon: PhosphorIconsDuotone.newspaperClipping,
               isSelected: _selectedLesson == 'Güncel Bilgiler',
               onTap: () => setState(() => _selectedLesson = 'Güncel Bilgiler'),
             ),
@@ -256,7 +259,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _SelectableOptionCard(
               title: '30 Soru / Gün · İstikrarlı Tempo',
               subtitle: 'Günde 25-35 dakika düzenli soru çözümü',
-              icon: LucideIcons.flame,
+              icon: PhosphorIconsFill.fire,
               isSelected: _selectedDailyGoal == 30,
               onTap: () => setState(() => _selectedDailyGoal = 30),
             ),
@@ -264,7 +267,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _SelectableOptionCard(
               title: '50 Soru / Gün · Yoğun Tempo',
               subtitle: 'Günde 45-60 dakika konu pekiştirme',
-              icon: LucideIcons.zap,
+              icon: PhosphorIconsFill.lightning,
               isSelected: _selectedDailyGoal == 50,
               onTap: () => setState(() => _selectedDailyGoal = 50),
             ),
@@ -272,7 +275,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _SelectableOptionCard(
               title: '100 Soru / Gün · Derece Kampı',
               subtitle: 'Günde 90+ dakika yoğun deneme ve kamp maratonu',
-              icon: LucideIcons.trendingUp,
+              icon: PhosphorIconsBold.trendUp,
               isSelected: _selectedDailyGoal == 100,
               onTap: () => setState(() => _selectedDailyGoal = 100),
             ),
@@ -355,8 +358,10 @@ class _SelectableOptionCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Icon(
-            isSelected ? LucideIcons.checkCircle2 : LucideIcons.circle,
+          PhosphorIcon(
+            isSelected
+                ? PhosphorIconsFill.checkCircle
+                : PhosphorIconsBold.circle,
             size: 22,
             color: isSelected ? colorScheme.primary : colorScheme.outline,
           ),
