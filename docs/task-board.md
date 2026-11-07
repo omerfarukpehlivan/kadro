@@ -98,7 +98,8 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-71** | **Mobil Ekranlar İçin `AppBar` ve Alt Detay Sayfası Başlık Tipografisi Ölçeklemesi (Kesilmeleri Önleyen Kompakt Başlık Sistemi)** | M3 varsayılan `22px` (`titleLarge`) `AppBar` başlıklarının Türkçe ders/konu adlarında (`'Tarih Konuları'`, `'Güncel Bilgiler Konuları'`, `'İslamiyet Öncesi Türk Tarihi'`) aşırı büyük durup kesilmesini (`...`) önlemek için global `AppBarTheme` başlık stilinin (`16px`), `titleSpacing: 0` boşluğunun, `TopicTestsScreen` / `LessonTopicsScreen` / `QuizScreen` / `AppTopBar` ve `MascotCoachBanner` başlık boyutlarının mobil ekranlara uygun zarif ölçeğe çekilmesi | ✅ **Tamamlandı** (`d8f663b`) |
 | **TASK-72** | **Proje Genelinde Standart Tipografi & Font-Size Ölçek Sistemi (`AppTheme` 12 Seviyeli Modüler Tipografi Standardı & Sıfır Hardcoded `fontSize`)** | `lib/app/theme.dart` içinde `displayLarge`'dan `labelSmall`'a kadar tüm 15 M3 metin stilinin birbiriyle uyumlu matematiksel mobil ölçeğe (`28 / 22 / 19 / 17 / 15.5 / 14 / 15 / 13.5 / 12 / 13 / 11.5 / 10.5 px`) bağlanması; `lib/app/theme.dart` dışındaki tüm ekranlarda dağınık `fontSize:` ezme (override) kullanımlarının temizlenmesi ve ekranlar arası başlık/kart/metrik tipografi rollerinin standartlaştırılması | ✅ **Tamamlandı** (`57c0804`) |
 | **TASK-73** | **`ui-ux-pro-max` Mobil Tipografi (`Base 16px`: `28-24-20-18-16-15-14-12-11 px`) ve 3 Kademeli Padding Hiyerarşisi Revizyonu** | Küçük kalan başlık ve gövde yazılarının iOS HIG / Material 3 / `ui-ux-pro-max` gerçek mobil ölçeğine (`titleLarge: 18px`, `titleMedium: 16px`, `titleSmall: 15px`, `bodyLarge: 16px`, `bodyMedium: 14px`, `bodySmall: 12px`, `labelLarge: 14px`, `labelMedium: 12px`, `labelSmall: 11px`) yükseltilmesi; `SectionTitle` (`18px`), `LessonsScreen` (`18px`), `MascotCoachBanner` (`16px` başlık + `14px` konuşma balonu), `PracticeHubScreen` (`15px` başlık + `14px` padding) ve `LessonTopicsScreen` (`16px` kesilmeyen başlık) hiyerarşisinin uygulanması | ✅ **Tamamlandı** (`b77e3f8`) |
-| **TASK-74** | **Dikey Hizalama & Kenar Kılavuz Çizgisi Standardizasyonu (`AppTopBar`, `Body`, `SectionTitle`, `AppNavigationBar` ve `AppBarTheme` Sol/Sağ Flush Alignment)** | `AppBarTheme` içindeki `titleSpacing: 4` nedeniyle üst barın (`AppTopBar`) sol kenarının `4px`'ten başlayıp alt gövdenin (`16px`) dışına taşması hatasının düzeltilmesi; `AppTopBar` sol `titleSpacing` ve sağ `actions` boşluğunun, `SectionTitle` sol hizasının (`horizontal: 0`) ve `AppNavigationBar` yan boşluklarının `ResponsiveBreakpoints.horizontalPadding(context)` (`12px / 16px / 24px`) ile milimetrik olarak aynı dikey hizaya getirilmesi | ✅ **Tamamlandı** |
+| **TASK-74** | **Dikey Hizalama & Kenar Kılavuz Çizgisi Standardizasyonu (`AppTopBar`, `Body`, `SectionTitle`, `AppNavigationBar` ve `AppBarTheme` Sol/Sağ Flush Alignment)** | `AppBarTheme` içindeki `titleSpacing: 4` nedeniyle üst barın (`AppTopBar`) sol kenarının `4px`'ten başlayıp alt gövdenin (`16px`) dışına taşması hatasının düzeltilmesi; `AppTopBar` sol `titleSpacing` ve sağ `actions` boşluğunun, `SectionTitle` sol hizasının (`horizontal: 0`) ve `AppNavigationBar` yan boşluklarının `ResponsiveBreakpoints.horizontalPadding(context)` (`12px / 16px / 24px`) ile milimetrik olarak aynı dikey hizaya getirilmesi | ✅ **Tamamlandı** (`01178d3`) |
+| **TASK-75** | **Çözülen Test / Konu / Deneme Kartlarında Tamamlanma Durumu (`✅ Çözüldü` Rozeti, Son Net Özeti & `Tekrar Çöz` Aksiyonu) + Konu Kartı İndir İkonlarının ve Test Kartı Gereksiz Açıklamalarının Temizlenmesi** | Kullanıcı bir testi veya denemeyi bitirdiğinde (`studyStatsProvider.sessionHistory`), uygulamaya tekrar girdiğinde `TopicTestsScreen`, `LessonTopicsScreen` ve `ExamsScreen` kartlarında zümrüt yeşili kenarlık/arka plan tonu, `✅ Çözüldü · XD YY (Z.Z Net)` rozeti ve `Tekrar Çöz` butonunun gösterilmesi; `LessonTopicsScreen` konu kartlarındaki tekil indirme ikonlarının kaldırılıp sadece üstteki `Tümünü İndir` butonunun bırakılması; `TopicTestsScreen` test kartlarındaki mükerrer seviye başlığı ve `'Konuyu yeni bitirdiysen...'` açıklama metinlerinin kaldırılması | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4475,6 +4476,97 @@ ADIM 4: Test ve Doğrulama
 1. `test/theme_and_shell_test.dart` (veya `test/app_spacing_test.dart`) içine standart telefon ekranında (`390x844`) `AppShell` içindeki `AppTopBar` sol avatar başlangıç X koordinatının (`tester.getTopLeft(...)`) ve `PRO` rozetinin sağ bitiş X koordinatının (`tester.getTopRight(...)`) gövdedeki `MascotCoachBanner` / kartların sol ve sağ X koordinatlarıyla (`16.0` ve `390.0 - 16.0 = 374.0`) birebir aynı hizada olduğunu doğrulayan bir hizalama testi ekle!
 2. `docs/task-board.md` içinde `TASK-74` durumunu `✅ **Tamamlandı**` yap.
 3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
+```
+
+---
+
+### 📦 TASK-75: Çözülen Test / Konu / Deneme Kartlarında Tamamlanma Durumu (`✅ Çözüldü` Rozeti, Son Net Özeti & `Tekrar Çöz` Aksiyonu) + Konu Kartı İndir İkonlarının ve Test Kartı Gereksiz Açıklamalarının Temizlenmesi
+
+- **Durum:** 🔄 **Devam Ediyor**
+- **Kapsam:**
+  1. **Proje Genelinde Çözülen Test / Konu / Deneme Kartı Görsel Farkındalığı (`StudyStatsState` Yardımcıları + UI):**
+     - `StudyStatsState` (`lib/features/stats/data/study_stats_notifier.dart`) içine yardımcı sorgu metotları eklenir:
+       - `QuizSessionRecord? findLatestSessionForTest({required String lesson, required String topic, required int testNumber})`: `sessionHistory` içinde `s.title.contains('$lesson · $topic · Test $testNumber')` koşulunu sağlayan en güncel kaydı döner.
+       - `int countSolvedTestsForTopic({required String lesson, required String topic})`: O konuya ait kaç farklı test numarasının (`Test 1`, `Test 2` vb.) çözüldüğünü döner.
+       - `QuizSessionRecord? findLatestSessionForTitle(String titlePrefix)`: Denemeler (`ExamsScreen`) için `s.title.startsWith(titlePrefix)` koşulunu sağlayan en güncel kaydı döner.
+     - **`TopicTestsScreen` (`lib/features/lessons/presentation/topic_tests_screen.dart`):**
+       - Eğer test daha önce çözülmüşse (`solvedSession != null`):
+         - `TactileCard` `borderColor: colorScheme.secondary.withAlpha(160)` ve `backgroundColor: colorScheme.secondaryContainer.withAlpha(35)` olur.
+         - Üst rozet satırına zümrüt yeşili (`colorScheme.secondaryContainer` / `onSecondaryContainer`) ve `PhosphorIconsFill.checkCircle` ikonlu **`Çözüldü · ${solvedSession.correctCount}D ${solvedSession.wrongCount}Y (${solvedSession.netScore.toStringAsFixed(1)} Net)`** rozeti eklenir.
+         - Sağ alttaki aksiyon butonu `'Test Çöz'` yerine **`'Tekrar Çöz'`** (`PhosphorIconsBold.arrowsCounterClockwise` ikonlu veya tonal buton) olur.
+     - **`LessonTopicsScreen` (`lib/features/lessons/presentation/lesson_topics_screen.dart`):**
+       - Eğer o konudan en az 1 test çözülmüşse (`solvedTestCount > 0`):
+         - Sol taraftaki yuvarlak yol haritası düğümü (`40x40`) `colorScheme.secondary` (Zümrüt) rengine bürünür ve içinde `PhosphorIcon(PhosphorIconsBold.check, size: 18, color: colorScheme.onSecondary)` gösterilir.
+         - Konu kartının kenarlığı `colorScheme.secondary.withAlpha(140)` olur ve kart üzerinde **`$solvedTestCount Test Çözüldü`** (`PhosphorIconsFill.checkCircle` ikonlu zümrüt rozet) gösterilir.
+     - **`ExamsScreen` (`lib/features/exams/presentation/exams_screen.dart`):**
+       - Eğer deneme paketi daha önce çözülmüşse (`solvedExam != null`):
+         - Kart kenarlığı `colorScheme.secondary.withAlpha(160)` olur, üstte **`Çözüldü · ${solvedExam.netScore.toStringAsFixed(1)} Net`** rozeti gösterilir ve alt buton **`'Denemeyi Tekrar Çöz'`** olarak güncellenir.
+  2. **`LessonTopicsScreen` Konu Kartlarındaki Tekil İndir İkonlarının Kaldırılması:**
+     - `LessonTopicsScreen` içindeki her bir `_TopicPathNode` kartının sağ üstünde yer alan tekil indirme ikonu (`PhosphorIconsBold.downloadSimple` / `Tooltip(message: 'Çevrimdışı İndir')`) kaldırılır; yalnızca `AppBar` sağ üstteki `'Tümünü İndir'` butonu korunur (eğer paket zaten indirilmişse zarif `'Cihazda'` rozeti kalabilir veya sadece çözüldü rozeti gösterilir).
+  3. **`TopicTestsScreen` Test Kartlarındaki Gereksiz Metinlerin Temizlenmesi:**
+     - `TopicTestsScreen` içindeki `_buildTestCard` bileşeninde zorluk seviyesi zaten üstteki rozette (`tier.title`: `'🌱 Basit Alıştırma'`, `'🏛️ Tam Sınav Ayarı'` vb.) yazmaktadır.
+     - Kartın ortasındaki mükerrer `Text(tier.cleanTitle)` ve altındaki uzun `Text(tier.description)` (`'Konuyu yeni bitirdiysen özgüven tazeleyen ısınma soruları.'` vb.) tamamen kaldırılır!
+     - Bunun yerine kartta sadece:
+       - Üstte: `'TEST ${index + 1}'` rozeti + Seviye rozeti (`tier.title`) + (varsa `✅ Çözüldü · XD YY` rozeti)
+       - Altta yan yana (`Row`): Sol tarafta `'${chunk.length} Soru · ~${(chunk.length * 1.1).round()} dk'`, sağ tarafta `'Test Çöz'` (veya çözüldüyse `'Tekrar Çöz'`) butonu yer alır!
+
+```text
+GÖREV: TASK-75 — Çözülen Test/Konu/Deneme Kartlarında Tamamlanma Durumu + Konu Kartı İndir İkonlarının ve Test Kartı Gereksiz Açıklamalarının Temizlenmesi
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına birebir uy. Renkleri yalnızca Theme.of(context).colorScheme, yazı stillerini Theme.of(context).textTheme üzerinden al.
+
+ADIM 1: `StudyStatsState` (`lib/features/stats/data/study_stats_notifier.dart`) Yardımcı Metotları
+1. `StudyStatsState` sınıfına şu 3 metodu ekle:
+   - `QuizSessionRecord? findLatestSessionForTest({required String lesson, required String topic, required int testNumber})`:
+     `sessionHistory` listesinde `s.title.contains('$lesson · $topic · Test $testNumber')` olan ilk (en güncel) kaydı döner; yoksa `null` döner.
+   - `int countSolvedTestsForTopic({required String lesson, required String topic})`:
+     `sessionHistory` içinde `'$lesson · $topic · Test '` içeren kayıtların farklı test numaralarını (`RegExp(r'Test (\d+)')`) sayarak kaç farklı testin çözüldüğünü (`Set<int>.length`) döner.
+   - `QuizSessionRecord? findLatestSessionForTitle(String titlePrefix)`:
+     `sessionHistory` içinde `s.title.startsWith(titlePrefix)` olan ilk kaydı döner; yoksa `null` döner.
+
+ADIM 2: `TopicTestsScreen` (`lib/features/lessons/presentation/topic_tests_screen.dart`) Sadeleştirme & Çözüldü Durumu
+1. `_buildTestCard` içinde `final stats = ref.watch(studyStatsProvider);` ve `final solvedSession = stats.findLatestSessionForTest(lesson: widget.lessonName, topic: widget.topic, testNumber: index + 1);` tanımla (`import 'package:kadro/features/stats/data/study_stats_notifier.dart';` ekle).
+2. Mükerrer `Text(tier.cleanTitle)` ve gereksiz `Text(tier.description)` (`'Konuyu yeni bitirdiysen...'`) satırlarını tamamen KALDIR!
+3. Kart tasarımını şu şekilde temiz ve kompakt yap:
+   - `TactileCard`:
+     - `backgroundColor`: `solvedSession != null ? colorScheme.secondaryContainer.withAlpha(35) : colorScheme.surface`
+     - `borderColor`: `solvedSession != null ? colorScheme.secondary.withAlpha(160) : colorScheme.outlineVariant`
+   - Üst Satır (`Wrap`):
+     - `'TEST ${index + 1}'` rozeti
+     - `tier.title` zorluk rozeti (`🌱 Basit Alıştırma`, `🏛️ Tam Sınav Ayarı` vb.)
+     - Eğer `solvedSession != null` ise: Zümrüt yeşili (`colorScheme.secondaryContainer` arka plan, `colorScheme.onSecondaryContainer` metin/ikon, `PhosphorIconsFill.checkCircle` size 13) rozet içinde:
+       `'Çözüldü · ${solvedSession.correctCount}D ${solvedSession.wrongCount}Y (${solvedSession.netScore.toStringAsFixed(1)} Net)'`
+   - Alt Satır (`Row`, `mainAxisAlignment: MainAxisAlignment.spaceBetween`):
+     - Sol (`Expanded`): `Text('${chunk.length} Soru · ~${(chunk.length * 1.1).round()} dk', style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant, fontWeight: FontWeight.w600))`
+     - Sağ: `FilledButton.tonal` (`onPressed: () => _startTest(index, chunk, tier)`):
+       `Text(solvedSession != null ? 'Tekrar Çöz' : 'Test Çöz')`
+
+ADIM 3: `LessonTopicsScreen` (`lib/features/lessons/presentation/lesson_topics_screen.dart`) Tekil İndir İkonunu Kaldırma & Çözüldü Durumu
+1. `_TopicPathNode` içinde:
+   - Tekil kart indirme butonunu (`Tooltip(message: 'Çevrimdışı İndir', ...)` ve `_handleDownload` metodunu) tamamen KALDIR! Üstteki `AppBar` içindeki `'Tümünü İndir'` butonu kalsın.
+   - `final stats = ref.watch(studyStatsProvider);` ile `final solvedTestCount = stats.countSolvedTestsForTopic(lesson: lessonName, topic: topic);` ve `final isTopicSolved = solvedTestCount > 0;` hesapla.
+   - Sol yuvarlak düğüm (`40x40`): Eğer `isTopicSolved` ise arka plan `colorScheme.secondary`, kenarlık `colorScheme.secondary` olsun ve numara yerine `PhosphorIcon(PhosphorIconsBold.check, size: 18, color: colorScheme.onSecondary)` göster!
+   - Sağ `TactileCard`:
+     - `borderColor: isTopicSolved ? colorScheme.secondary.withAlpha(150) : colorScheme.outlineVariant`
+     - `backgroundColor: isTopicSolved ? colorScheme.secondaryContainer.withAlpha(30) : colorScheme.surface`
+     - Eğer `isTopicSolved` veya `isDownloaded` ise üstte sağa/sola hizalı `Wrap` içinde:
+       - `isTopicSolved` ise: `PhosphorIconsFill.checkCircle` + `'$solvedTestCount Test Çözüldü'` rozeti (`secondaryContainer`).
+       - `isDownloaded` ise: `'Cihazda'` rozeti.
+     - Alt satırda `'Test Çöz'` butonu yer almaya devam etsin (mevcut testlerin `find.text('Test Çöz')` beklentisini kırmamak için buton yazısı `'Test Çöz'` kalsın veya yanında çözüldü rozeti zaten durumu net gösteriyor).
+
+ADIM 4: `ExamsScreen` (`lib/features/exams/presentation/exams_screen.dart`) Çözüldü Durumu
+1. `_ExamPackageCard` içinde `final solvedExam = ref.watch(studyStatsProvider).findLatestSessionForTitle(title);` kontrolü ekle.
+2. Eğer `solvedExam != null` ise:
+   - `TactileCard` `borderColor: colorScheme.secondary.withAlpha(160)` ve `backgroundColor: colorScheme.secondaryContainer.withAlpha(30)` olsun.
+   - Sağ üstteki rozet sütununa `PhosphorIconsFill.checkCircle` + `'Çözüldü (${solvedExam.netScore.toStringAsFixed(1)} Net)'` rozeti ekle.
+
+ADIM 5: Testlerin Güncellenmesi ve Doğrulama
+1. `test/topic_tests_screen_test.dart`:
+   - Kaldırılan `'Konuyu yeni bitirdiysen özgüven tazeleyen ısınma soruları.'` beklentisini `findsNothing` olarak güncelle.
+   - Bir test çözüldüğünde (`studyStatsProvider` içinde ilgili `QuizSessionRecord` varken) `TopicTestsScreen` üzerinde `'Çözüldü · '` rozetinin ve `'Tekrar Çöz'` butonunun göründüğünü doğrulayan yeni bir widget testi ekle!
+2. `test/offline_download_test.dart`:
+   - `LessonTopicsScreen` testinde kaldırılan kart içi `'Çevrimdışı İndir'` ikonu yerine `AppBar`'daki `'Tümünü İndir'` butonuna (`find.text('Tümünü İndir')`) tıklanarak `PaywallScreen` açıldığını doğrula.
+3. `docs/task-board.md` içinde `TASK-75` durumunu `✅ **Tamamlandı**` yap.
+4. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
 
 ---

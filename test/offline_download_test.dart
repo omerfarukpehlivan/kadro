@@ -348,9 +348,10 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // İndirme ikonuna bas
-        final downloadIconBtn = find.byTooltip('Çevrimdışı İndir').first;
-        await tester.tap(downloadIconBtn);
+        // AppBar içindeki 'Tümünü İndir' butonuna bas
+        final downloadAllBtn = find.text('Tümünü İndir');
+        expect(downloadAllBtn, findsOneWidget);
+        await tester.tap(downloadAllBtn);
         await tester.pumpAndSettle();
 
         expect(find.byType(PaywallScreen), findsOneWidget);

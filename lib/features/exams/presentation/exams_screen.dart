@@ -8,6 +8,7 @@ import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
@@ -321,10 +322,18 @@ class _ExamPackCard extends ConsumerWidget {
     final downloadedPackages = ref.watch(downloadedPackagesProvider);
     final isDownloaded = downloadedPackages.contains(packageId);
 
+    final solvedExam = ref
+        .watch(studyStatsProvider)
+        .findLatestSessionForTitle(title);
+
     return TactileCard(
       onTap: () => _startExam(context, ref),
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
+      backgroundColor: solvedExam != null
+          ? colorScheme.secondaryContainer.withAlpha(30)
+          : colorScheme.surface,
+      borderColor: solvedExam != null
+          ? colorScheme.secondary.withAlpha(160)
+          : colorScheme.outlineVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -371,6 +380,37 @@ class _ExamPackCard extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  if (solvedExam != null) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.secondaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          PhosphorIcon(
+                            PhosphorIconsFill.checkCircle,
+                            size: 13,
+                            color: colorScheme.onSecondaryContainer,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Çözüldü (${solvedExam.netScore.toStringAsFixed(1)} Net)',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSecondaryContainer,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                  ],
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,

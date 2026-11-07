@@ -6,6 +6,8 @@ import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/test_difficulty_tier.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
+import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 
 class MockQuestionRepository extends QuestionRepository {
   final List<Question> mockQuestions;
@@ -118,7 +120,7 @@ void main() {
           find.text(
             'Konuyu yeni bitirdiysen özgüven tazeleyen ısınma soruları.',
           ),
-          findsOneWidget,
+          findsNothing,
         );
 
         // İlk teste tıkla
@@ -133,6 +135,65 @@ void main() {
           ),
           findsOneWidget,
         );
+      },
+    );
+    testWidgets(
+      'TASK-75: Çözülmüş bir test için Çözüldü rozeti ve Tekrar Çöz butonu gösterilmeli',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 1600);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        final container = ProviderContainer(
+          overrides: [
+            questionRepositoryProvider.overrideWithValue(
+              MockQuestionRepository(sampleQuestions),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        // Test 1 için bir çözüm kaydı ekle
+        container
+            .read(studyStatsProvider.notifier)
+            .recordQuizSession(
+              QuizSessionRecord(
+                id: 'sess_test_1',
+                title: 'Tarih · İslamiyet Öncesi Türk Tarihi · Test 1 (Basit Alıştırma)',
+                lesson: 'Tarih',
+                totalQuestions: 10,
+                correctCount: 9,
+                wrongCount: 1,
+                emptyCount: 0,
+                netScore: 8.75,
+                earnedXp: 135,
+                durationSeconds: 300,
+                completedAt: DateTime.now(),
+              ),
+            );
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(
+              home: TopicTestsScreen(
+                lessonName: 'Tarih',
+                topic: 'İslamiyet Öncesi Türk Tarihi',
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Test 1 için Çözüldü rozeti ve Tekrar Çöz butonu görünmeli
+        expect(
+          find.textContaining('Çözüldü · 9D 1Y (8.8 Net)'),
+          findsOneWidget,
+        );
+        expect(find.text('Tekrar Çöz'), findsOneWidget);
+
+        // Çözülmemiş Test 2 ve Test 3 için 'Test Çöz' görünmeli
+        expect(find.text('Test Çöz'), findsNWidgets(2));
       },
     );
   });

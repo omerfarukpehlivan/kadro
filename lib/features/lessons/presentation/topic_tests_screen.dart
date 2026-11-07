@@ -9,6 +9,7 @@ import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/test_difficulty_tier.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -214,6 +215,13 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    final stats = ref.watch(studyStatsProvider);
+    final solvedSession = stats.findLatestSessionForTest(
+      lesson: widget.lessonName,
+      topic: widget.topic,
+      testNumber: index + 1,
+    );
+
     // Ortalama zorluk hesabı ve Seviye (Tier) belirleme
     final avgDifficulty = chunk.isNotEmpty
         ? chunk.map((q) => q.difficultyLevel).reduce((a, b) => a + b) /
@@ -228,12 +236,17 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
       padding: AppSpacing.cardMarginBottom,
       child: TactileCard(
         onTap: () => _startTest(index, chunk, tier),
+        backgroundColor: solvedSession != null
+            ? colorScheme.secondaryContainer.withAlpha(35)
+            : colorScheme.surface,
+        borderColor: solvedSession != null
+            ? colorScheme.secondary.withAlpha(160)
+            : colorScheme.outlineVariant,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Üst Satır: Test Numarası Rozeti ve Dikkat Çekici Seviye Rozeti
+            // Üst Satır: Test Numarası Rozeti, Seviye Rozeti ve Çözüldü Rozeti
             Wrap(
-              alignment: WrapAlignment.spaceBetween,
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: 8,
               runSpacing: 6,
@@ -279,50 +292,68 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
                     ],
                   ),
                 ),
+                if (solvedSession != null)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        PhosphorIcon(
+                          PhosphorIconsFill.checkCircle,
+                          size: 13,
+                          color: colorScheme.onSecondaryContainer,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Çözüldü · ${solvedSession.correctCount}D ${solvedSession.wrongCount}Y (${solvedSession.netScore.toStringAsFixed(1)} Net)',
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
-            // Orta Alan: Seviye Başlığı
-            Text(
-              tier.cleanTitle,
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Öngörülen Süre: ~${(chunk.length * 1.1).round()} dk',
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 6),
-
-            // Motive edici mini açıklama
-            Text(
-              tier.description,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant.withAlpha(200),
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-            const SizedBox(height: 10),
-
-            // Alt Satır: Sağa Yaslı Test Çöz Butonu
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton.tonal(
-                onPressed: () => _startTest(index, chunk, tier),
-                style: FilledButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 6,
+            // Alt Satır: Soru Sayısı / Süre ve Aksiyon Butonu
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Text(
+                    '${chunk.length} Soru · ~${(chunk.length * 1.1).round()} dk',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-                child: const Text('Test Çöz'),
-              ),
+                const SizedBox(width: 8),
+                FilledButton.tonal(
+                  onPressed: () => _startTest(index, chunk, tier),
+                  style: FilledButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
+                  ),
+                  child: Text(
+                    solvedSession != null ? 'Tekrar Çöz' : 'Test Çöz',
+                  ),
+                ),
+              ],
             ),
           ],
         ),

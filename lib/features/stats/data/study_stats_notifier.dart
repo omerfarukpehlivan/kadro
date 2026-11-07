@@ -90,6 +90,55 @@ class StudyStatsState {
     return 'Kritik (%$acc)';
   }
 
+  /// Belirli bir derse, konuya ve test numarasına ait en son oturum kaydını döner.
+  QuizSessionRecord? findLatestSessionForTest({
+    required String lesson,
+    required String topic,
+    required int testNumber,
+  }) {
+    final prefix = '$lesson · $topic · Test $testNumber';
+    for (final s in sessionHistory) {
+      if (s.title.contains(prefix)) {
+        return s;
+      }
+    }
+    return null;
+  }
+
+  /// Belirli bir ders ve konuya ait kaç farklı testin çözüldüğünü hesaplar.
+  int countSolvedTestsForTopic({
+    required String lesson,
+    required String topic,
+  }) {
+    final targetPattern = '$lesson · $topic · Test ';
+    final regex = RegExp(r'Test (\d+)');
+    final solvedNumbers = <int>{};
+
+    for (final s in sessionHistory) {
+      if (s.title.contains(targetPattern)) {
+        final match = regex.firstMatch(s.title);
+        if (match != null) {
+          final number = int.tryParse(match.group(1)!);
+          if (number != null) {
+            solvedNumbers.add(number);
+          }
+        }
+      }
+    }
+
+    return solvedNumbers.length;
+  }
+
+  /// Başlığı verilen önekle başlayan en son oturum kaydını döner (örn. deneme sınavları).
+  QuizSessionRecord? findLatestSessionForTitle(String titlePrefix) {
+    for (final s in sessionHistory) {
+      if (s.title.startsWith(titlePrefix)) {
+        return s;
+      }
+    }
+    return null;
+  }
+
   StudyStatsState copyWith({
     int? totalSolved,
     int? totalCorrect,
