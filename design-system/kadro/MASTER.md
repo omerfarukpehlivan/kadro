@@ -101,11 +101,33 @@ Material Design'ın düz kartları yerine Duolingo / Brilliant hissi veren fizik
 
 ---
 
-## ✍️ 7. Tipografi Hiyerarşisi (`google_fonts`)
+## ✍️ 7. Tipografi & Padding Hiyerarşisi (`ui-ux-pro-max` Mobil Standardı)
 
 - **Başlıklar & Skorlar (`display*`, `headline*`, `title*`):** `GoogleFonts.plusJakartaSans` (`FontWeight.w700` veya `w800` — Kendinden emin, dolgun kurumsal duruş).
-- **Gövde Metinleri & Sorular (`body*`, `label*`):** `GoogleFonts.inter` (`FontWeight.w400` / `w500` / `w600` — Yüksek okunaklılık, optik harf aralıkları).
+- **Gövde Metinleri & Sorular (`body*`, `label*`):** `GoogleFonts.inter` (`FontWeight.w400` / `w500` / `w600` / `w700` — Yüksek okunaklılık, optik harf aralıkları).
 - **Test Güvenlik Kilidi:** `AppTheme._buildTextTheme` içinde test ortamında (`Platform.environment['FLUTTER_TEST']`) dış ağdan font indirilmesi engellenir.
+
+### 📐 11 Kademeli Mobil Tipografi Ölçeği (`Base = 16px`)
+
+| Hiyerarşi Katmanı | Flutter `TextTheme` Rolü | Boyut (`px`) | Kalınlık | Satır Yüksekliği | Standart Kullanım Yeri |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **1. Hero / Dev Skor** | `displayLarge / Medium / Small` | **32 / 28 / 24** | `w800` | `1.15 - 1.20` | Zafer Karnesi Net Puanı (`24px`), Hikaye Paylaşım Kartı (`28px`) |
+| **2. Sayfa & Bölüm Ana Başlığı (H1)** | `headlineLarge / Medium / Small` | **24 / 22 / 20** | `w800` | `1.20 - 1.25` | `PageHeader`, Aday İsmi (`CandidateHeroCard`), İstatistik Büyük Özet Sayıları (`20px`) |
+| **3. Ana `AppBar` & Bölüm Başlığı (H2)** | `titleLarge` | **18px** | `w700 / w800` | `1.25` | `AppTopBar` başlığı, `SectionTitle` (`"Dersler"`, `"Çalışma türleri"`), `LessonsScreen` Ana Ders Kartı Başlıkları (`"Tarih"`, `"Coğrafya"`) |
+| **4. Standart Kart & Koç Başlığı (H3)** | `titleMedium` | **16px** | `w700` | `1.30` | `MascotCoachBanner` başlığı, Tam Genişlik Kart Başlıkları (`ExamsScreen`, `HomeScreen` Son Kalınan Yer, `TopicTestsScreen` Test 1/2), Alt Sayfa `AppBar` Başlığı (`"Tarih Konuları"`) |
+| **5. 2'li Grid & Alt Liste Başlığı (H4)** | `titleSmall` | **15px** | `w700` | `1.30` | 2x2 Bento Grid Kart Başlıkları (`PracticeHubScreen`), Konu Yol Haritası Başlıkları (`LessonTopicsScreen`), Uzun Konu Adlı `AppBar` Başlığı (`TopicTestsScreen`) |
+| **6. Birincil Okuma Metni (Base)** | `bodyLarge` | **16px** | `w500` | `1.50` | Soru Kökü Metni (`QuizScreen`), Bilgi Kartı (`FlashcardsScreen`) Ön/Arka Yüz Metni |
+| **7. Standart Gövde & Açıklama** | `bodyMedium` | **14px** | `w400 / w500` | `1.45` | Şık Metinleri (`OptionTile`), `MascotCoachBanner` Konuşma Balonu Metni, Ana Kart Alt Açıklamaları, Çözüm Açıklaması |
+| **8. İkincil Yardımcı Metin** | `bodySmall` | **12px** | `w500` | `1.35` | 2'li Grid Kart Alt Açıklamaları, İkincil Meta Bilgiler ve Sayaçlar |
+| **9. Buton & Aksiyon Yazıları** | `labelLarge` | **14px** | `w700` | `1.20` | Tüm ana butonlar (`FilledButton`, `OutlinedButton`) |
+| **10. Çip & Orta Rozetler** | `labelMedium` | **12px** | `w700` | `1.20` | Üst bar rozetleri (`0/20`, `PRO`), filtre çipleri, kart içi aksiyon linkleri |
+| **11. Mikro Rozet & Alt Menü** | `labelSmall` | **11px** | `w700` | `1.15` | Kart üstü pill etiketler (`"KADRO KOÇU"`, `"10-20 Soru"`) ve `AppNavigationBar` sekme yazıları |
+
+### 📏 3 Kademeli Padding & Boşluk Hiyerarşisi (`8pt / 4pt Grid`)
+1. **Sayfa Kenar Dolgusu (`AppSpacing.pagePadding`):** Yatay `16px` (Kompakt `<380px`: `12px`), Dikey `16px`; bölümler arası `16px` (`gapMd`).
+2. **Tam Genişlik Ana Kartlar (`Lessons`, `Exams`, `Home`, `Quiz`):** `EdgeInsets.all(16)` (`AppSpacing.cardPadding`); başlık-açıklama arası `6px`, kartlar arası `12px`.
+3. **2'li Bento Grid & Sonuç Kutuları (`PracticeHub`, `Stats`, `Result`):** Standart `EdgeInsets.all(14)`, Kompakt (`<380px`) `EdgeInsets.all(12)`.
+4. **Koç Kartı (`MascotCoachBanner`):** Yatay `14px`, Dikey `12px` (Kompakt: `12px / 10px`); konuşma balonu metni `bodyMedium` (`14px`).
 
 ---
 

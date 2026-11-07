@@ -109,7 +109,7 @@ class _LessonCard extends ConsumerWidget {
                         children: [
                           Text(
                             lesson.name,
-                            style: theme.textTheme.titleMedium?.copyWith(
+                            style: theme.textTheme.titleLarge?.copyWith(
                               color: colorScheme.onSurface,
                               fontWeight: FontWeight.w800,
                             ),
@@ -139,7 +139,7 @@ class _LessonCard extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Text(
                         'Sınavda ${lesson.questionCount} soru · ${lesson.topics.length} konu',
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
                       ),

@@ -136,6 +136,11 @@ void main() {
 
         expect(find.byType(StudyPlannerScreen), findsOneWidget);
         expect(find.text('Çalışma Planlayıcın'), findsOneWidget);
+        await tester.scrollUntilVisible(
+          find.text('Görev Listesi (3)'),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
         expect(find.text('Görev Listesi (3)'), findsOneWidget);
 
         // 3. Hızlı şablonlardan '+ 20 Tarih Sorusu'na tıkla ve görev sayısının 4 olduğunu doğrula

@@ -286,8 +286,8 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
             // Orta Alan: Seviye Başlığı
             Text(
               tier.cleanTitle,
-              style: textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(height: 4),
@@ -302,7 +302,7 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
             // Motive edici mini açıklama
             Text(
               tier.description,
-              style: textTheme.bodySmall?.copyWith(
+              style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant.withAlpha(200),
                 fontStyle: FontStyle.italic,
               ),

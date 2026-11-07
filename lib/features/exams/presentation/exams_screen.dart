@@ -445,7 +445,7 @@ class _ExamPackCard extends ConsumerWidget {
           const SizedBox(height: 10),
           Text(
             description,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
           ),

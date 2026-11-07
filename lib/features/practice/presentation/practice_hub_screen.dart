@@ -247,7 +247,7 @@ class _PracticeTile extends StatelessWidget {
 
     return TactileCard(
       onTap: onTap,
-      padding: EdgeInsets.all(isCompact ? 10 : 14),
+      padding: EdgeInsets.all(isCompact ? 12 : 14),
       backgroundColor: colorScheme.surface,
       borderColor: accentColor.withAlpha(110),
       child: Column(
@@ -300,12 +300,10 @@ class _PracticeTile extends StatelessWidget {
               SizedBox(height: isCompact ? 8 : 12),
               Text(
                 title,
-                style:
-                    (isCompact ? textTheme.titleSmall : textTheme.titleMedium)
-                        ?.copyWith(
-                          color: colorScheme.onSurface,
-                          fontWeight: FontWeight.w800,
-                        ),
+                style: textTheme.titleSmall?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -403,14 +401,10 @@ class _DistractorHuntSpecialCard extends StatelessWidget {
                   children: [
                     Text(
                       'ÖSYM Çeldirici Avı',
-                      style:
-                          (isCompact
-                                  ? theme.textTheme.titleSmall
-                                  : theme.textTheme.titleMedium)
-                              ?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: colorScheme.onSurface,
-                              ),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: colorScheme.onSurface,
+                      ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -434,7 +428,7 @@ class _DistractorHuntSpecialCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'Adayların en çok düştüğü çeldirici tuzaklı sorularla netlerini garantiye al.',
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w500,
                   ),

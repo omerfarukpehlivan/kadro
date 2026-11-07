@@ -43,19 +43,19 @@ void main() {
       );
     });
 
-    test('TASK-72: 15 M3 metin stilinin tamamı hiyerarşik ve doğru font boyutlarına sahiptir', () {
+    test('TASK-73: 15 M3 metin stilinin tamamı hiyerarşik ve doğru font boyutlarına (Base=16px) sahiptir', () {
       final textTheme = AppTheme.light.textTheme;
 
-      // Başlık Hiyerarşisi (displayLarge > displayMedium > displaySmall > headlineLarge > headlineMedium > headlineSmall > titleLarge > titleMedium > titleSmall)
+      // Başlık Hiyerarşisi (display -> headline -> title)
       expect(textTheme.displayLarge?.fontSize, equals(32.0));
       expect(textTheme.displayMedium?.fontSize, equals(28.0));
       expect(textTheme.displaySmall?.fontSize, equals(24.0));
-      expect(textTheme.headlineLarge?.fontSize, equals(22.0));
-      expect(textTheme.headlineMedium?.fontSize, equals(20.0));
-      expect(textTheme.headlineSmall?.fontSize, equals(18.0));
-      expect(textTheme.titleLarge?.fontSize, equals(16.5));
-      expect(textTheme.titleMedium?.fontSize, equals(15.0));
-      expect(textTheme.titleSmall?.fontSize, equals(13.5));
+      expect(textTheme.headlineLarge?.fontSize, equals(24.0));
+      expect(textTheme.headlineMedium?.fontSize, equals(22.0));
+      expect(textTheme.headlineSmall?.fontSize, equals(20.0));
+      expect(textTheme.titleLarge?.fontSize, equals(18.0));
+      expect(textTheme.titleMedium?.fontSize, equals(16.0));
+      expect(textTheme.titleSmall?.fontSize, equals(15.0));
 
       expect(
         textTheme.displayLarge!.fontSize!,
@@ -67,7 +67,7 @@ void main() {
       );
       expect(
         textTheme.displaySmall!.fontSize!,
-        greaterThan(textTheme.headlineLarge!.fontSize!),
+        greaterThanOrEqualTo(textTheme.headlineLarge!.fontSize!),
       );
       expect(
         textTheme.headlineLarge!.fontSize!,
@@ -91,8 +91,8 @@ void main() {
       );
 
       // Gövde Hiyerarşisi (bodyLarge > bodyMedium > bodySmall)
-      expect(textTheme.bodyLarge?.fontSize, equals(15.0));
-      expect(textTheme.bodyMedium?.fontSize, equals(13.5));
+      expect(textTheme.bodyLarge?.fontSize, equals(16.0));
+      expect(textTheme.bodyMedium?.fontSize, equals(14.0));
       expect(textTheme.bodySmall?.fontSize, equals(12.0));
 
       expect(
@@ -105,9 +105,9 @@ void main() {
       );
 
       // Etiket Hiyerarşisi (labelLarge > labelMedium > labelSmall)
-      expect(textTheme.labelLarge?.fontSize, equals(13.0));
-      expect(textTheme.labelMedium?.fontSize, equals(11.5));
-      expect(textTheme.labelSmall?.fontSize, equals(10.5));
+      expect(textTheme.labelLarge?.fontSize, equals(14.0));
+      expect(textTheme.labelMedium?.fontSize, equals(12.0));
+      expect(textTheme.labelSmall?.fontSize, equals(11.0));
 
       expect(
         textTheme.labelLarge!.fontSize!,

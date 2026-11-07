@@ -301,8 +301,8 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
           },
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: isCompact ? 10 : 14,
-              vertical: isCompact ? 8 : 12,
+              horizontal: isCompact ? 12 : 14,
+              vertical: isCompact ? 10 : 12,
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -446,7 +446,7 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
                       // Başlık (Kompakt ve 2 satıra kadar zarif geçiş - TASK-71)
                       Text(
                         widget.title,
-                        style: textTheme.titleSmall?.copyWith(
+                        style: textTheme.titleMedium?.copyWith(
                           color: colorScheme.onSurface,
                           fontWeight: FontWeight.w800,
                         ),
@@ -476,12 +476,12 @@ class _MascotCoachBannerState extends State<MascotCoachBanner> {
                         ),
                         child: Text(
                           displayedMessage,
-                          style: textTheme.bodySmall?.copyWith(
+                          style: textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurface,
                             fontWeight: _tipIndex == -1
                                 ? FontWeight.w500
                                 : FontWeight.w600,
-                            height: 1.3,
+                            height: 1.4,
                           ),
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
