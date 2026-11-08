@@ -889,7 +889,7 @@
     "id": "cografya_006",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Coğrafi Konumu",
-    "text": "Türkiye Yengeç Dönencesi'nin kuzeyinde (dönenceler dışında) yer almaktadır.\n\nBu durumun Türkiye üzerindeki doğrudan sonucu aşağıdakilerden hangisidir?",
+    "text": "Şemada gösterildiği gibi Türkiye Yengeç Dönencesi'nin kuzeyinde (dönenceler dışında) yer almaktadır.\n\nBu durumun Türkiye üzerindeki doğrudan sonucu aşağıdakilerden hangisidir?",
     "options": [
       "Güneş ışınlarının hiçbir zaman dik (90°) açıyla düşmemesi ve gölge boyunun asla sıfır olmaması",
       "Doğusu ile batısı arasında 76 dakikalık zaman farkı bulunması",
@@ -900,13 +900,14 @@
     "correctIndex": 0,
     "explanation": "Güneş ışınları yalnızca dönenceler arasına (23° 27' K - 23° 27' G) dik açıyla düşer. Türkiye 36°-42° Kuzey enlemlerinde yani Yengeç Dönencesi'nin kuzeyinde yer aldığı için hiçbir zaman dik açı alamaz ve düz zeminlerde yatay cisimlerin gölgesi asla sıfır olmaz; öğle vakti gölge yönü daima kuzeyi gösterir.",
     "difficulty": "easy",
-    "distractor_trap": "Adaylar dönenceler dışında olmayı bazen mevsim sayıları veya iklim kuşaklarıyla karıştırır. Dönenceler dışında olmanın matematiksel imzası: Dik açı alamama ve gölgenin sıfırlanamamasıdır."
+    "distractor_trap": "Adaylar dönenceler dışında olmayı bazen mevsim sayıları veya iklim kuşaklarıyla karıştırır. Dönenceler dışında olmanın matematiksel imzası: Dik açı alamama ve gölgenin sıfırlanamamasıdır.",
+    "image_url": "sun://golge"
   },
   {
     "id": "cografya_007",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Coğrafi Konumu",
-    "text": "21 Mart ve 23 Eylül (Ekinoks) tarihlerinde Güneş ışınları Ekvator'a dik düşer ve tüm Dünya'da gece ile gündüz süreleri 12'şer saat olarak eşitlenir.\n\nBuna göre 21 Mart tarihinde Türkiye ile ilgili olarak aşağıdakilerden hangisi söylenemez?",
+    "text": "Şemada 21 Mart ve 23 Eylül (Ekinoks) tarihlerinde Güneş ışınlarının Ekvator'a dik düştüğü ve tüm Dünya'da gece ile gündüz sürelerinin 12'şer saat olarak eşitlendiği gösterilmiştir.\n\nBuna göre 21 Mart tarihinde Türkiye ile ilgili olarak aşağıdakilerden hangisi söylenemez?",
     "options": [
       "Tüm illerde gece ve gündüz süresi birbirine eşittir.",
       "Aynı meridyen üzerinde bulunan merkezlerde Güneş aynı anda doğar ve aynı anda batar.",
@@ -917,7 +918,8 @@
     "correctIndex": 3,
     "explanation": "Ekinoks tarihlerinde (21 Mart ve 23 Eylül) Dünya'nın her yerinde 12 saat gece, 12 saat gündüz yaşanır. Dolayısıyla kuzeye gidildikçe gündüz uzamaz; Sinop'ta da Hatay'da da gündüz süresi tam 12 saattir.",
     "difficulty": "easy",
-    "distractor_trap": "Adaylar 21 Haziran ile Ekinoks tarihlerini karıştırabilir. 21 Haziran'da kuzeye gidildikçe gündüz uzarken, Ekinokslarda gece-gündüz farkı sıfırdır."
+    "distractor_trap": "Adaylar 21 Haziran ile Ekinoks tarihlerini karıştırabilir. 21 Haziran'da kuzeye gidildikçe gündüz uzarken, Ekinokslarda gece-gündüz farkı sıfırdır.",
+    "image_url": "sun://ekinoks"
   },
   {
     "id": "cografya_008",
@@ -992,7 +994,7 @@
     "id": "cografya_012",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Coğrafi Konumu",
-    "text": "21 Haziran tarihinde Türkiye'de yaşayan bir araştırmacı, bulunduğu şehirden başka bir şehre gittiğinde hem gündüz süresinin uzadığını hem de yerel saatin daha ileri olduğunu gözlemlemiştir.\n\nBuna göre araştırmacının hareket yönü aşağıdakilerden hangisidir?",
+    "text": "21 Haziran Yaz Gündönümü şemasında gösterildiği üzere, Türkiye'de bu tarihte kuzeye gidildikçe gündüz süresi uzamaktadır.\n\nBir araştırmacı, bulunduğu şehirden başka bir şehre gittiğinde hem gündüz süresinin uzadığını hem de yerel saatin daha ileri olduğunu gözlemlemiştir. Buna göre araştırmacının hareket yönü aşağıdakilerden hangisidir?",
     "options": [
       "Kuzeydoğu",
       "Kuzeybatı",
@@ -1003,7 +1005,8 @@
     "correctIndex": 0,
     "explanation": "21 Haziran'da Kuzey Yarım Küre'de kuzeye gidildikçe gündüz süresi uzar (Demek ki kuzeye gitmiştir). Yerel saatin daha ileri olması için ise doğuya gidilmesi gerekir. İki bilgi birleştirildiğinde araştırmacının Kuzeydoğu yönünde hareket ettiği anlaşılır.",
     "difficulty": "medium",
-    "distractor_trap": "Tarihe dikkat edilmelidir! Eğer tarih 21 Aralık olsaydı, gündüzün uzaması için güneye gidilmesi gerekirdi (Güneydoğu olurdu). 21 Haziran dediği için kuzeye gidilmelidir."
+    "distractor_trap": "Tarihe dikkat edilmelidir! Eğer tarih 21 Aralık olsaydı, gündüzün uzaması için güneye gidilmesi gerekirdi (Güneydoğu olurdu). 21 Haziran dediği için kuzeye gidilmelidir.",
+    "image_url": "sun://21_haziran"
   },
   {
     "id": "cografya_013",
@@ -1077,7 +1080,7 @@
     "id": "cografya_017",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Coğrafi Konumu",
-    "text": "Türkiye'de 21 Aralık tarihinde en uzun gece ile en kısa gündüz yaşanır.\n\nBuna göre 21 Aralık günü aşağıdaki illerden hangisinde gündüz süresi diğerlerine göre daha uzundur?",
+    "text": "21 Aralık Kış Gündönümü şemasında gösterildiği gibi Güneş ışınları Oğlak Dönencesi'ne dik düşmekte ve Türkiye'de en uzun gece yaşanmaktadır. Türkiye'de bu tarihte güneyden kuzeye gidildikçe gece süresi uzamakta, gündüz süresi kısalmaktadır.\n\nBuna göre 21 Aralık günü aşağıdaki illerden hangisinde gündüz süresi diğerlerine göre daha uzundur?",
     "options": [
       "Sinop",
       "Trabzon",
@@ -1088,7 +1091,8 @@
     "correctIndex": 4,
     "explanation": "21 Aralık'ta Güneş ışınları Oğlak Dönencesi'ne (Güney Yarım Küre) dik düşer. Bu tarihte güneye (Ekvator'a) doğru gidildikçe gündüz süresi uzar, gece kısalır. Seçenekler arasında en güneyde yer alan Mersin'de gündüz süresi Sinop veya Ankara'ya göre daha uzundur.",
     "difficulty": "medium",
-    "distractor_trap": "Adayların aklında 'kuzeye gidildikçe gündüz uzar' genellemesi kalır. Oysa bu kural yalnızca 21 Haziran için geçerlidir! 21 Aralık kış gün dönümünde güneye gidildikçe gündüz uzar."
+    "distractor_trap": "Adayların aklında 'kuzeye gidildikçe gündüz uzar' genellemesi kalır. Oysa bu kural yalnızca 21 Haziran için geçerlidir! 21 Aralık kış gün dönümünde güneye gidildikçe gündüz uzar.",
+    "image_url": "sun://21_aralik"
   },
   {
     "id": "cografya_018",
@@ -1366,7 +1370,7 @@
     "id": "cografya_034",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Coğrafi Konumu",
-    "text": "Türkiye'de 21 Haziran tarihinde;\n- Sinop'ta gündüz süresi yaklaşık 15 saat 15 dakika,\n- Hatay'da ise gündüz süresi yaklaşık 14 saat 40 dakikadır.\n\nSinop ile Hatay arasındaki bu 35 dakikalık gündüz süresi farkının temel nedeni aşağıdakilerden hangisidir?",
+    "text": "21 Haziran Yaz Gündönümü şemasında gösterildiği gibi Türkiye'de;\n- Sinop'ta gündüz süresi yaklaşık 15 saat 15 dakika,\n- Hatay'da ise gündüz süresi yaklaşık 14 saat 40 dakikadır.\n\nSinop ile Hatay arasındaki bu 35 dakikalık gündüz süresi farkının temel nedeni aşağıdakilerden hangisidir?",
     "options": [
       "Yerel saat farkı",
       "Eksen eğikliği ve enlem farkı",
@@ -1377,7 +1381,8 @@
     "correctIndex": 1,
     "explanation": "Dünya'nın eksen eğikliği (23° 27') ve yıllık hareketi nedeniyle 21 Haziran'da Kuzey Yarım Küre'de kuzeye gidildikçe gündüz süresi uzar. Sinop daha kuzeyde yer aldığı için Hatay'dan daha uzun gündüz yaşar. Bu durum enlem ve eksen eğikliğinin sonucudur.",
     "difficulty": "hard",
-    "distractor_trap": "Adaylar süre farkını meridyenle ilişkilendirip 'boylam' diyebilir. Gece-gündüz süre UZUNLUĞU enlemle belirlenir; yerel saat ise boylamla belirlenir."
+    "distractor_trap": "Adaylar süre farkını meridyenle ilişkilendirip 'boylam' diyebilir. Gece-gündüz süre UZUNLUĞU enlemle belirlenir; yerel saat ise boylamla belirlenir.",
+    "image_url": "sun://21_haziran"
   },
   {
     "id": "cografya_035",
@@ -2501,7 +2506,7 @@
     "id": "cografya_100",
     "lesson": "Coğrafya",
     "topic": "Türkiye'de Nüfus ve Yerleşme",
-    "text": "Türkiye'de nüfusun yaş gruplarına dağılımında 'ortanca yaş' (medyan yaş), nüfusu tam ortadan ikiye bölen yaştır.\n\nTürkiye'de 2000 yılında 24,8 olan ortanca yaşın günümüzde 34'ün üzerine çıkması aşağıdakilerden hangisinin doğrudan bir sonucudur?",
+    "text": "Şemada yer alan güncel Türkiye Nüfus Piramidi incelendiğinde; nüfusu tam ortadan ikiye bölen 'ortanca yaş'ın (medyan yaş) yükseldiği ve tabanın daraldığı görülmektedir.\n\nTürkiye'de 2000 yılında 24,8 olan ortanca yaşın günümüzde 34'ün üzerine çıkması aşağıdakilerden hangisinin doğrudan bir sonucudur?",
     "options": [
       "Bebek ölüm hızının olağanüstü artış göstermesinin",
       "Doğurganlık hızının düşmesi ve yaşlı nüfus oranının artmasının",
@@ -2512,7 +2517,8 @@
     "correctIndex": 1,
     "explanation": "Ortanca yaşın yükselmesi bir toplumun yaşlandığını ifade eder. Türkiye'de kadın başına düşen çocuk sayısının (doğurganlık hızı) 1.5 seviyelerine inmesi ve yaşam kalitesiyle ortalama ömrün uzaması ortanca yaşı hızla yukarı taşımıştır.",
     "difficulty": "medium",
-    "distractor_trap": "Ortanca yaşın yükselmesi gençleşme değil, tam tersine nüfusun yaşlanması (demografik yaşlanma) anlamına gelir."
+    "distractor_trap": "Ortanca yaşın yükselmesi gençleşme değil, tam tersine nüfusun yaşlanması (demografik yaşlanma) anlamına gelir.",
+    "image_url": "pyramid://turkey"
   },
   {
     "id": "cografya_101",
@@ -14765,7 +14771,7 @@
     "id": "bb87937e-e041-5c03-87c5-edfea962f2f8",
     "lesson": "Coğrafya",
     "topic": "Türkiye'de Nüfus ve Yerleşme",
-    "text": "TÜİK'in son yıllardaki Adrese Dayalı Nüfus Kayıt Sistemi (ADNKS) verileri incelendiğinde, Türkiye'nin nüfus piramidinde tabanın belirgin şekilde daraldığı gözlenmektedir.\n\nNüfus piramidinin tabanının daralması Türkiye nüfusu ile ilgili kesin olarak hangi göstergeyi kanıtlar?",
+    "text": "TÜİK ADNKS verilerine dayanan Türkiye Nüfus Piramidi incelendiğinde, piramidin tabanının belirgin şekilde daraldığı gözlenmektedir.\n\nNüfus piramidinin tabanının daralması Türkiye nüfusu ile ilgili kesin olarak hangi göstergeyi kanıtlar?",
     "options": [
       "Doğum oranlarının ve çocuk nüfus oranının azaldığını",
       "Toplam nüfus miktarının gerilemeye başladığını",
@@ -14776,7 +14782,8 @@
     "correctIndex": 0,
     "explanation": "Piramidin en alt basamağı 0-4 yaş grubunu (yeni doğanları) temsil eder. Tabanın daralması, doğurganlık hızının düştüğünü, ailelerin daha az çocuk sahibi olduğunu ve nüfus artış hızının gerilediğini doğrudan kanıtlar.",
     "difficulty": "medium",
-    "distractor_trap": "Adaylar nüfus artış hızı azalınca 'toplam nüfus da azaldı' sanırlar. Nüfus artış hızı sıfırın altına düşmedikçe toplam nüfus artmaya devam eder, sadece artış hızı yavaşlar."
+    "distractor_trap": "Adaylar nüfus artış hızı azalınca 'toplam nüfus da azaldı' sanırlar. Nüfus artış hızı sıfırın altına düşmedikçe toplam nüfus artmaya devam eder, sadece artış hızı yavaşlar.",
+    "image_url": "pyramid://turkey"
   },
   {
     "id": "d4217e1c-ca5a-5f6c-930a-baaee1ef4e3f",

@@ -2,6 +2,8 @@ import 'dart:ui';
 
 import 'package:kadro/shared/widgets/climate_chart/climate_chart_models.dart';
 import 'package:kadro/shared/widgets/geo_diagram/geo_diagram_models.dart';
+import 'package:kadro/shared/widgets/population_pyramid/population_pyramid_models.dart';
+import 'package:kadro/shared/widgets/sun_diagram/sun_diagram_models.dart';
 import 'package:kadro/shared/widgets/turkey_map/turkey_map_models.dart';
 
 /// KPSS çalışma uygulamasındaki tek bir soruyu temsil eden model.
@@ -36,6 +38,12 @@ class Question {
   /// Soruda yer alan jeomorfoloji ve yer şekilleri kesit diyagramı konfigürasyonu.
   final GeoDiagramConfig? geoConfig;
 
+  /// Soruda yer alan nüfus piramidi (Demografik yaş ve cinsiyet) konfigürasyonu.
+  final PopulationPyramidConfig? pyramidConfig;
+
+  /// Soruda yer alan Güneş açısı, ekinoks ve gölge şeması konfigürasyonu.
+  final SunDiagramConfig? sunConfig;
+
   const Question({
     required this.id,
     required this.lesson,
@@ -50,6 +58,8 @@ class Question {
     this.mapConfig,
     this.climateConfig,
     this.geoConfig,
+    this.pyramidConfig,
+    this.sunConfig,
   });
 
   /// Kullanıcının seçtiği şıkkın doğru olup olmadığını kontrol eden yardımcı metot.
@@ -77,6 +87,8 @@ class Question {
     TurkeyMapConfig? mapConfig,
     ClimateChartConfig? climateConfig,
     GeoDiagramConfig? geoConfig,
+    PopulationPyramidConfig? pyramidConfig,
+    SunDiagramConfig? sunConfig,
   }) {
     return Question(
       id: id ?? this.id,
@@ -92,7 +104,87 @@ class Question {
       mapConfig: mapConfig ?? this.mapConfig,
       climateConfig: climateConfig ?? this.climateConfig,
       geoConfig: geoConfig ?? this.geoConfig,
+      pyramidConfig: pyramidConfig ?? this.pyramidConfig,
+      sunConfig: sunConfig ?? this.sunConfig,
     );
+  }
+
+  /// Aktif nüfus piramidi konfigürasyonunu döner.
+  /// Doğrudan pyramidConfig tanımlıysa onu, yoksa imageUrl içindeki 'pyramid://'
+  /// URI şemasını ayrıştırarak üretilen piramidi döner.
+  PopulationPyramidConfig? get effectivePyramidConfig {
+    if (pyramidConfig != null) return pyramidConfig;
+    if (imageUrl != null && imageUrl!.startsWith('pyramid:')) {
+      return parsePyramidUri(imageUrl!);
+    }
+    return null;
+  }
+
+  /// 'pyramid://...' URI şemasını PopulationPyramidConfig nesnesine dönüştüren parser
+  static PopulationPyramidConfig? parsePyramidUri(String uriString) {
+    try {
+      if (!uriString.startsWith('pyramid:')) return null;
+      final uri = Uri.parse(uriString);
+      final path = uri.path.toLowerCase();
+      final host = uri.host.toLowerCase();
+
+      if (path.contains('turkey') ||
+          host.contains('turkey') ||
+          path.contains('nufus') ||
+          host.contains('nufus') ||
+          uriString.startsWith('pyramid://')) {
+        return PopulationPresets.turkeyCurrent;
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Aktif Güneş açısı ve mevsim şeması konfigürasyonunu döner.
+  /// Doğrudan sunConfig tanımlıysa onu, yoksa imageUrl içindeki 'sun://'
+  /// URI şemasını ayrıştırarak üretilen şemayı döner.
+  SunDiagramConfig? get effectiveSunConfig {
+    if (sunConfig != null) return sunConfig;
+    if (imageUrl != null && imageUrl!.startsWith('sun:')) {
+      return parseSunUri(imageUrl!);
+    }
+    return null;
+  }
+
+  /// 'sun://...' URI şemasını SunDiagramConfig nesnesine dönüştüren parser
+  static SunDiagramConfig? parseSunUri(String uriString) {
+    try {
+      final uri = Uri.parse(uriString);
+      final path = uri.path.toLowerCase();
+      final host = uri.host.toLowerCase();
+
+      if (path.contains('haziran') ||
+          host.contains('haziran') ||
+          path.contains('21_06')) {
+        return SunPresets.haziran21;
+      }
+      if (path.contains('aralik') ||
+          host.contains('aralik') ||
+          path.contains('21_12')) {
+        return SunPresets.aralik21;
+      }
+      if (path.contains('ekinoks') ||
+          host.contains('ekinoks') ||
+          path.contains('mart') ||
+          path.contains('eylul')) {
+        return SunPresets.ekinoks;
+      }
+      if (path.contains('golge') ||
+          host.contains('golge') ||
+          path.contains('donence')) {
+        return SunPresets.golgeYonu;
+      }
+
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Aktif jeomorfoloji kesit konfigürasyonunu döner.
@@ -789,6 +881,28 @@ class Question {
       );
     }
 
+    PopulationPyramidConfig? pyramidConfig;
+    if (json['pyramid_config'] is Map<String, dynamic>) {
+      pyramidConfig = PopulationPyramidConfig.fromJson(
+        json['pyramid_config'] as Map<String, dynamic>,
+      );
+    } else if (json['pyramidConfig'] is Map<String, dynamic>) {
+      pyramidConfig = PopulationPyramidConfig.fromJson(
+        json['pyramidConfig'] as Map<String, dynamic>,
+      );
+    }
+
+    SunDiagramConfig? sunConfig;
+    if (json['sun_config'] is Map<String, dynamic>) {
+      sunConfig = SunDiagramConfig.fromJson(
+        json['sun_config'] as Map<String, dynamic>,
+      );
+    } else if (json['sunConfig'] is Map<String, dynamic>) {
+      sunConfig = SunDiagramConfig.fromJson(
+        json['sunConfig'] as Map<String, dynamic>,
+      );
+    }
+
     return Question(
       id: json['id'] as String,
       lesson: json['lesson'] as String,
@@ -805,6 +919,8 @@ class Question {
       mapConfig: mapConfig,
       climateConfig: climateConfig,
       geoConfig: geoConfig,
+      pyramidConfig: pyramidConfig,
+      sunConfig: sunConfig,
     );
   }
 
@@ -847,6 +963,20 @@ class Question {
       );
     }
 
+    PopulationPyramidConfig? pyramidConfig;
+    if (interaction['pyramid_config'] is Map<String, dynamic>) {
+      pyramidConfig = PopulationPyramidConfig.fromJson(
+        interaction['pyramid_config'] as Map<String, dynamic>,
+      );
+    }
+
+    SunDiagramConfig? sunConfig;
+    if (interaction['sun_config'] is Map<String, dynamic>) {
+      sunConfig = SunDiagramConfig.fromJson(
+        interaction['sun_config'] as Map<String, dynamic>,
+      );
+    }
+
     return Question(
       id: row['id']?.toString() ?? '',
       lesson: row['lesson']?.toString() ?? 'Genel Kültür',
@@ -863,6 +993,8 @@ class Question {
       mapConfig: mapConfig,
       climateConfig: climateConfig,
       geoConfig: geoConfig,
+      pyramidConfig: pyramidConfig,
+      sunConfig: sunConfig,
     );
   }
 
@@ -890,6 +1022,12 @@ class Question {
     }
     if (geoConfig != null) {
       map['geo_config'] = geoConfig!.toJson();
+    }
+    if (pyramidConfig != null) {
+      map['pyramid_config'] = pyramidConfig!.toJson();
+    }
+    if (sunConfig != null) {
+      map['sun_config'] = sunConfig!.toJson();
     }
     return map;
   }
