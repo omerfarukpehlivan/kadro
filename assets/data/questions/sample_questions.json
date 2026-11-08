@@ -16098,5 +16098,59 @@
     "explanation": "Yeşil Yol Projesi DOKAP bünyesinde Doğu Karadeniz yaylalarını (Ayder, Pokut, Uzungöl vb.) yüksek rakımdan birbirine bağlayarak yayla ve doğa turizmini kesintisiz hale getirmeyi hedefler.",
     "difficulty": "medium",
     "distractor_trap": "DOKAP + Yaylaların birleştirilmesi = Yeşil Yol Projesi."
+  },
+  {
+    "id": "cog_map_001",
+    "lesson": "Coğrafya",
+    "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
+    "text": "Yukarıdaki dilsiz Türkiye haritasında numaralandırılarak gösterilen alanlardan hangisi, kalkerli (kireçtaşı) kimyasal tortul kayaç yapısı nedeniyle lapya, dolin, uvala ve polye gibi karstik aşınım şekillerinin en yaygın görüldüğü Teke ve Taşeli platoları kuşağındadır?",
+    "options": [
+      "I (Ergene)",
+      "II (Yıldız Dağları)",
+      "III (Teke Platosu)",
+      "IV (Çukurova)",
+      "V (Erzurum-Kars)"
+    ],
+    "correctIndex": 2,
+    "explanation": "Teke ve Taşeli Platoları (III numara) Akdeniz kuşağında kolay eriyebilen kalkerli arazisiyle Türkiye'nin en belirgin karstik sahasıdır. Mağaralar, obruklar ve polyeler burada yoğunlaşmıştır.",
+    "difficulty": "medium",
+    "distractor_trap": "ÖSYM adayların Karadeniz kıyılarını bol yağıştan dolayı karstik aşınım sahası sanmasını en büyük çeldirici olarak kullanır. Karstik şekillerin temel şartı yağış değil, eriyebilen kalkerli ana kayaçtır.",
+    "imageUrl": "https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "cog_map_002",
+    "lesson": "Coğrafya",
+    "topic": "Madenler ve Enerji Kaynakları",
+    "text": "Yukarıdaki Türkiye haritasında konumu kırmızı işaretle gösterilen, hafif ve dayanıklı yapısıyla uçak ve otomotiv sanayisinde kullanılan boksit (alüminyum) madeninin çıkarıldığı ve ülkemizin tek entegre alüminyum tesisine ev sahipliği yapan merkez aşağıdakilerden hangisidir?",
+    "options": [
+      "Konya — Seydişehir",
+      "Artvin — Murgul",
+      "Sivas — Divriği",
+      "Elazığ — Guleman",
+      "Kütahya — Emet"
+    ],
+    "correctIndex": 0,
+    "explanation": "Boksit madeninin ülkemizdeki en önemli çıkarım ve işleme tesisi Konya Seydişehir Alüminyum Tesisleri'dir. Murgul bakır, Divriği demir, Guleman krom, Emet ise bor sahasıdır.",
+    "difficulty": "medium",
+    "distractor_trap": "Adaylar alüminyum ve bor madenlerini karıştırıp Kütahya Emet ya da Balıkesir Bandırma'yı işaretleyebilmektedir. Boksit doğrudan Seydişehir ile özdeşleşmiştir.",
+    "imageUrl": "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    "id": "cog_map_003",
+    "lesson": "Coğrafya",
+    "topic": "Türkiye'de Nüfus ve Yerleşme",
+    "text": "Yukarıdaki haritada işaretlenen kıyı alanlarından hangisi, Marmara Bölgesi sınırları içinde yer almasına karşın ana transit ulaşım akslarına sapa kalması ve engebeli yer şekilleri nedeniyle seyrek nüfuslanmış alanlar arasında yer alır?",
+    "options": [
+      "Çatalca-Kocaeli Yöresi",
+      "Yıldız Dağları Yöresi (Istranca)",
+      "Güney Marmara Kıyıları",
+      "Ergene Havzası",
+      "Körfez Sanayi Hattı"
+    ],
+    "correctIndex": 1,
+    "explanation": "Yıldız Dağları (Istranca) Bölümü, İstanbul'a yakın olmasına rağmen Bulgaristan sınırında ana ticaret yollarına sapa kaldığı ve engebeli ormanlık araziye sahip olduğu için Türkiye'nin en tenha ve sanayileşmemiş kıyı kuşağıdır.",
+    "difficulty": "medium",
+    "distractor_trap": "ÖSYM Marmara Bölgesi'nin tamamının aşırı kalabalık ve sanayileşmiş olduğu algısını adaylara tuzak olarak kurar. Yıldız Dağları ve Biga Yarımadası Marmara'nın en tenha istisnalarıdır.",
+    "imageUrl": "https://images.unsplash.com/photo-1508873696983-2df5703bc225?auto=format&fit=crop&w=800&q=80"
   }
 ]
