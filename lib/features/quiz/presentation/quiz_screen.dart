@@ -557,6 +557,12 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             ),
             AppSpacing.gapMd,
 
+            // Varsa Harita / Şekil / Grafik Görseli Kartı
+            if (question.imageUrl != null && question.imageUrl!.isNotEmpty) ...[
+              _QuestionImageCard(imageUrl: question.imageUrl!),
+              AppSpacing.gapMd,
+            ],
+
             // Soru Metni Kartı
             _QuestionCard(text: question.text),
             AppSpacing.gapMd,
@@ -708,6 +714,167 @@ class _QuestionCard extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
+    );
+  }
+}
+
+/// Soruda yer alan harita, şema veya grafik görselini gösteren ve
+/// tıklandığında tam ekran pinch-to-zoom (yakınlaştırma) imkanı tanıyan kart bileşeni.
+class _QuestionImageCard extends StatelessWidget {
+  final String imageUrl;
+
+  const _QuestionImageCard({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return TactileCard(
+      padding: EdgeInsets.zero,
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.outlineVariant,
+      onTap: () => _showZoomableImageDialog(context, imageUrl),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          alignment: Alignment.bottomRight,
+          children: [
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: _buildImage(imageUrl),
+            ),
+            Container(
+              margin: const EdgeInsets.all(8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.black.withAlpha(170),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PhosphorIcon(
+                    PhosphorIconsRegular.magnifyingGlassPlus,
+                    size: 14,
+                    color: Colors.white,
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    'Büyüt',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage(String url) {
+    if (url.startsWith('assets/')) {
+      return Image.asset(
+        url,
+        fit: BoxFit.contain,
+        errorBuilder: (context, error, stackTrace) => _buildErrorWidget(),
+      );
+    }
+    return Image.network(
+      url,
+      fit: BoxFit.contain,
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return const Center(
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) => _buildErrorWidget(),
+    );
+  }
+
+  Widget _buildErrorWidget() {
+    return Container(
+      color: Colors.grey.withAlpha(25),
+      alignment: Alignment.center,
+      child: const Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          PhosphorIcon(
+            PhosphorIconsRegular.imageBroken,
+            size: 28,
+            color: Colors.grey,
+          ),
+          SizedBox(height: 6),
+          Text(
+            'Görsel yüklenemedi',
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showZoomableImageDialog(BuildContext context, String url) {
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (dialogContext) {
+        return Dialog(
+          insetPadding: const EdgeInsets.all(12),
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            children: [
+              InteractiveViewer(
+                minScale: 1.0,
+                maxScale: 4.0,
+                child: Center(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: _buildImage(url),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton.filled(
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.black54,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  icon: const PhosphorIcon(PhosphorIconsRegular.x),
+                ),
+              ),
+              Positioned(
+                bottom: 12,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      'İki parmağınızla yakınlaştırıp kaydırabilirsiniz',
+                      style: TextStyle(color: Colors.white, fontSize: 12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

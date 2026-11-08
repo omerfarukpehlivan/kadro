@@ -1,40 +1,39 @@
 # 🌍 Kadro KPSS Coğrafya Soru Havuzu — Supabase SQL Kurulum Rehberi
 
-Bu klasör, **Kadro: KPSS Lisans Genel Kültür** uygulaması için hazırlanan **240 adet %100 özgün, pedagojik açıklamalı ve 'ÖSYM Çeldirici Tuzağı' (UWorld modeli)** içeren Coğrafya sorularının Supabase veritabanına aktarılması için hazırlanmış SQL dosyalarını içerir.
+Bu klasör, **Kadro: KPSS Lisans Genel Kültür** uygulaması için hazırlanan **360+ adet %100 özgün, pedagojik açıklamalı, 'ÖSYM Çeldirici Tuzağı' (UWorld modeli)** ve **zoom destekli harita/görsel altyapısı** içeren Coğrafya sorularının Supabase veritabanına aktarılması için hazırlanmış SQL dosyalarını içerir.
 
 ---
 
 ## 📊 Soru Havuzu İstatistikleri ve Konu Dağılımı
 
-| Dosya Adı | Konu | Kolay (Z1) | Orta (Z2) | Zor (Z3) | Toplam |
-|:---|:---|:---:|:---:|:---:|:---:|
-| `01_turkiyenin_cografi_konumu.sql` | Türkiye'nin Coğrafi Konumu | 10 | 20 | 10 | **40** |
-| `02_turkiyenin_yer_sekilleri_ve_iklimi.sql` | Türkiye'nin Yer Şekilleri ve İklimi | 10 | 20 | 10 | **40** |
-| `03_turkiyede_nufus_ve_yerlesme.sql` | Türkiye'de Nüfus ve Yerleşme | 10 | 20 | 10 | **40** |
-| `04_turkiyede_tarim_ve_hayvancilik.sql` | Türkiye'de Tarım ve Hayvancılık | 10 | 20 | 10 | **40** |
-| `05_madenler_ve_enerji_kaynaklari.sql` | Madenler ve Enerji Kaynakları | 10 | 20 | 10 | **40** |
-| `06_sanayi_ticaret_ve_ulasim.sql` | Sanayi, Ticaret ve Ulaşım | 10 | 20 | 10 | **40** |
-| **00_tum_cografya_sorulari_tek_dosya.sql** | **TÜM COĞRAFYA (BİRLEŞİK)** | **60** | **120** | **60** | **240** |
+| Dosya Adı | Konu | Standart Testler (1-4) | Ek İleri & Check-Up (5-6) | Toplam Soru |
+|:---|:---|:---:|:---:|:---:|
+| `01_turkiyenin_cografi_konumu.sql` | Türkiye'nin Coğrafi Konumu | 40 Soru | +20 Soru | **60 Soru** |
+| `02_turkiyenin_yer_sekilleri_ve_iklimi.sql` | Türkiye'nin Yer Şekilleri ve İklimi | 40 Soru | +20 Soru | **60 Soru** |
+| `03_turkiyede_nufus_ve_yerlesme.sql` | Türkiye'de Nüfus ve Yerleşme | 40 Soru | +20 Soru | **60 Soru** |
+| `04_turkiyede_tarim_ve_hayvancilik.sql` | Türkiye'de Tarım ve Hayvancılık | 40 Soru | +20 Soru | **60 Soru** |
+| `05_madenler_ve_enerji_kaynaklari.sql` | Madenler ve Enerji Kaynakları | 40 Soru | +20 Soru | **60 Soru** |
+| `06_sanayi_ticaret_ve_ulasim.sql` | Sanayi, Ticaret ve Ulaşım | 40 Soru | +20 Soru | **60 Soru** |
+| **07_ek_testler_test5_ve_test6.sql** | **TÜM KONULAR İÇİN TEST 5 & TEST 6** | — | 120 Soru | **120 Soru** |
+| **08_resimli_sorular_ve_image_url_guncellemesi.sql** | **image_url Kolonu & Haritalı Sorular** | — | +3 Örnek | **Haritalı** |
+| **00_tum_cografya_sorulari_tek_dosya.sql** | **TÜM COĞRAFYA (360 SORU MASTER)** | **240 Soru** | **120 Soru** | **360 Soru** |
 
 ---
 
-## 🚀 Supabase'e Yükleme Adımları (Tek Tıkla Kurulum)
+## 🚀 Supabase'e Yükleme Adımları
 
-### Yöntem A: Tüm Soruları Tek Seferde Yükleme (Önerilen)
-1. **Supabase Dashboard**'unuza (`https://supabase.com/dashboard`) gidin ve projenizi açın.
-2. Sol menüden **"SQL Editor"** sekmesine tıklayın.
-3. **"New Query"** butonuna basarak boş bir SQL editörü açın.
-4. Bu klasördeki `00_tum_cografya_sorulari_tek_dosya.sql` dosyasının içeriğini kopyalayıp editöre yapıştırın.
-5. Sağ alttaki yeşil **"RUN"** butonuna tıklayın.
-6. Birkaç saniye içinde **"Success. No rows returned"** mesajını göreceksiniz. Tüm 240 soru veritabanınıza başarıyla eklenmiş olacaktır!
+### Senaryo 1: İlk 240 Soruyu Önceden Yüklemiş Olanlar (Hızlı Güncelleme)
+Eğer ilk 240 soruyu daha önce Supabase'e yüklediyseniz:
+1. Supabase SQL Editor'ü açın.
+2. `07_ek_testler_test5_ve_test6.sql` dosyasını çalıştırın (120 yeni soru eklenir).
+3. `08_resimli_sorular_ve_image_url_guncellemesi.sql` dosyasını çalıştırın (`image_url` kolonu açılır ve haritalı sorular eklenir).
 
-### Yöntem B: Konu Konu Parça Parça Yükleme
-- İsterseniz `01_...sql` dosyasından başlayarak sırasıyla her konuyu ayrı birer query olarak çalıştırabilirsiniz.
-- Her dosya kendi içinde `BEGIN;` ve `COMMIT;` transaction bloklarıyla koruma altındadır; işlem yarıda kalırsa rollback yapılır, veri bozulmaz.
+### Senaryo 2: Sıfırdan Tek Dosya ile Kurulum
+1. Supabase SQL Editor'de `08_resimli_sorular_ve_image_url_guncellemesi.sql` içindeki `ALTER TABLE public.questions ADD COLUMN IF NOT EXISTS image_url TEXT;` komutunu çalıştırın.
+2. Ardından `00_tum_cografya_sorulari_tek_dosya.sql` dosyasını yapıştırıp **RUN** butonuna tıklayın.
 
 ---
 
-## 🛡️ Soru Kalitesi ve Pedagojik Standartlar
-1. **Telif Garantisi:** Soruların tamamı KPSS müfredatı ve kaynak dokümanlar analiz edilerek sıfırdan özgün olarak yazılmıştır; ÖSYM'nin çıkmış sorularının birebir kopyası değildir.
-2. **"⚠️ ÖSYM Çeldirici Tuzağı" (UWorld Modeli):** Her soruda, adayın sınav anında en çok çelişkiye düşebileceği şıkkın neden yanıltıcı olduğu ve neden doğru sanıldığı psikolojik ve kavramsal olarak analiz edilmiştir.
-3. **Zorluk Seviyesi:** Her konu 4 dengeli testten (1 Isınma, 2 Standart ÖSYM Ayarı, 1 Kurtlar Sofrası / Net Sıçratan) oluşur.
+## 🗺️ Harita ve Görsel Desteği (Pinch-to-Zoom)
+- Uygulama içindeki Soru Çözüm ekranında haritalı sorularda görselin sağ altında **"🔍 Büyüt"** rozeti yer alır.
+- Haritaya dokunulduğunda tam ekran **InteractiveViewer** açılarak iki parmakla yakınlaştırma ve harita üzerinde kaydırma imkanı tanınır.

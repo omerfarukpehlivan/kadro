@@ -16,6 +16,10 @@ class Question {
   /// ve adayın neden bu şıkka düşebileceğini deşifre eden açıklama.
   final String? distractorTrap;
 
+  /// Coğrafya ve diğer derslerdeki harita, tablo, grafik veya şekil görseli URL'si.
+  /// Boş veya null ise soru yalnızca metin olarak render edilir.
+  final String? imageUrl;
+
   const Question({
     required this.id,
     required this.lesson,
@@ -26,6 +30,7 @@ class Question {
     required this.explanation,
     this.difficulty = 'medium',
     this.distractorTrap,
+    this.imageUrl,
   });
 
   /// Kullanıcının seçtiği şıkkın doğru olup olmadığını kontrol eden yardımcı metot.
@@ -49,6 +54,7 @@ class Question {
     String? explanation,
     String? difficulty,
     String? distractorTrap,
+    String? imageUrl,
   }) {
     return Question(
       id: id ?? this.id,
@@ -60,6 +66,7 @@ class Question {
       explanation: explanation ?? this.explanation,
       difficulty: difficulty ?? this.difficulty,
       distractorTrap: distractorTrap ?? this.distractorTrap,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -125,6 +132,8 @@ class Question {
     final rawTrap =
         json['distractor_trap'] as String? ?? json['distractorTrap'] as String?;
     final rawOptions = List<String>.from(json['options'] as List? ?? const []);
+    final rawImage =
+        json['image_url'] as String? ?? json['imageUrl'] as String?;
 
     return Question(
       id: json['id'] as String,
@@ -136,6 +145,9 @@ class Question {
       explanation: cleanText(rawExplanation),
       difficulty: json['difficulty'] as String? ?? 'medium',
       distractorTrap: rawTrap != null ? cleanText(rawTrap) : null,
+      imageUrl: (rawImage != null && rawImage.isNotEmpty && rawImage != 'null')
+          ? rawImage
+          : null,
     );
   }
 
@@ -154,6 +166,8 @@ class Question {
     final rawExplanation = row['explanation']?.toString() ?? '';
     final rawTrap =
         row['distractor_trap'] as String? ?? row['distractorTrap'] as String?;
+    final rawImage =
+        row['image_url']?.toString() ?? row['imageUrl']?.toString();
 
     return Question(
       id: row['id']?.toString() ?? '',
@@ -165,12 +179,15 @@ class Question {
       explanation: cleanText(rawExplanation),
       difficulty: row['difficulty']?.toString() ?? 'medium',
       distractorTrap: rawTrap != null ? cleanText(rawTrap) : null,
+      imageUrl: (rawImage != null && rawImage.isNotEmpty && rawImage != 'null')
+          ? rawImage
+          : null,
     );
   }
 
   /// Question nesnesini JSON formatına (Map) çevirir (LocalStorage veya veritabanı için).
   Map<String, dynamic> toJson() {
-    return {
+    final map = <String, dynamic>{
       'id': id,
       'lesson': lesson,
       'topic': topic,
@@ -181,6 +198,10 @@ class Question {
       'difficulty': difficulty,
       'distractor_trap': distractorTrap,
     };
+    if (imageUrl != null) {
+      map['image_url'] = imageUrl;
+    }
+    return map;
   }
 }
 
