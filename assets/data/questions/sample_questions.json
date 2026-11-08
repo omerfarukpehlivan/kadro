@@ -803,19 +803,18 @@
     "id": "cografya_001",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Coğrafi Konumu",
-    "text": "Haritada uç noktaları ve sınırları gösterilen Türkiye'nin en doğusu (Iğdır) ile en batısı (Çanakkale) arasında 76 dakikalık yerel saat farkı bulunmaktadır.\n\nBu durum Türkiye'nin hangi özelliğinin doğrudan bir sonucudur?",
+    "text": "Haritada koordinatları ve uç noktaları (I: Sinop, II: Hatay, III: Çanakkale, IV: Iğdır) gösterilen Türkiye'nin mutlak (matematiksel) konumu dikkate alındığında, aşağıdakilerden hangisi bu konumun doğrudan bir sonucu değildir?",
     "options": [
-      "Başlangıç Meridyeni'nin (Greenwich) doğusunda yer aldığına",
-      "Kuzey Yarım Küre'de ve Yengeç Dönencesi'nin kuzeyinde bulunduğuna",
-      "En doğusu ile en batısı arasında 76 dakikalık yerel saat farkı olduğuna",
-      "Ortalama yükseltisinin batıdan doğuya doğru arttığına",
-      "En kuzeyi ile en güneyi arasında kuş uçuşu yaklaşık 666 km mesafe olduğuna"
+      "En doğusu ile en batısı arasında 76 dakikalık yerel saat farkı bulunması",
+      "Kuzey Yarım Küre'de ve Yengeç Dönencesi'nin kuzeyinde yer alması",
+      "En kuzeyi ile en güneyi arasında 666 km kuş uçuşu mesafe olması",
+      "Ortalama yükseltisinin batıdan doğuya doğru belirgin biçimde artması",
+      "Güneş ışınlarının hiçbir zaman yatay düzleme 90° dik açıyla düşmemesi"
     ],
     "correctIndex": 3,
-    "explanation": "Türkiye'nin ortalama yükseltisinin fazla olması ve batıdan doğuya doğru artması jeolojik oluşum ve orojenik hareketlerle ilgili olup göreceli (özel) konumunun bir sonucudur. Paralel ve meridyen derecelerinden (matematiksel konum) yükselti profili çıkarılamaz.",
+    "explanation": "Türkiye'nin ortalama yükseltisinin 1132 metre olması ve batıdan doğuya doğru yükseltinin artması jeolojik oluşum ve levha hareketleriyle ilgili olup göreceli (özel) konumun bir sonucudur. Paralel ve meridyen derecelerinden (matematiksel konum) yükselti profili çıkarılamaz.",
     "difficulty": "easy",
-    "distractor_trap": "ÖSYM adayların 'doğu' kelimesini görünce otomatik olarak meridyenlerle ilişkilendirme ön yargısını kullanır. Yükselti değişimi matematiksel değil, tamamen jeomorfolojik ve özel konum unsurudur.",
-    "imageUrl": "assets/images/mascot/cografya_koordinat_haritasi.png",
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Adaylar 'batıdan doğuya' ifadesini meridyenlerle ilişkilendirme yanılgısına düşebilir. Yükselti değişimi matematiksel değil, tamamen jeomorfolojik ve özel konum unsurudur.",
     "image_url": "map://turkey/koordinat"
   },
   {
@@ -975,18 +974,19 @@
     "id": "cografya_011",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Coğrafi Konumu",
-    "text": "Aynı boylam (meridyen) üzerinde yer alan iki farklı merkezde yıl boyunca;\nI. Yerel saat,\nII. Öğle vakti (Güneş'in en tepeye çıktığı an),\nIII. Güneş'in doğuş ve batış anları,\nIV. Gündüz ve gece süreleri\n\nözelliklerinden hangileri kesinlikle aynıdır?",
+    "text": "Haritada numaralandırılarak gösterilen merkezler (I: Çanakkale, II: Ankara, III: Sivas, IV: Erzurum, V: Iğdır) dikkate alındığında, 21 Mart ekinoks tarihinde Güneş'in en erken doğduğu ve yerel saatin en ileri olduğu merkez hangisidir?",
     "options": [
-      "I ve II",
-      "I ve III",
-      "II ve IV",
-      "I, II ve III",
-      "II, III ve IV"
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
     ],
-    "correctIndex": 0,
-    "explanation": "Aynı boylam üzerindeki noktalarda yerel saat ve öğle vakti (günün en tepe anı ve gölgenin en kısa olduğu an) yılın 365 günü aynıdır. Ancak Güneş'in doğuş-batış saatleri ve gece-gündüz süreleri enleme göre değiştiği için sadece 21 Mart ve 23 Eylül (Ekinoks) tarihlerinde aynı olur.",
-    "difficulty": "medium",
-    "distractor_trap": "Adayların en büyük tuzağı 'Aynı boylamda Güneş aynı anda doğar' ezberidir. Güneş aynı boylamda sadece 21 Mart ve 23 Eylül ekinokslarında aynı anda doğup batar; diğer günlerde aydınlanma çemberi eğik geçtiği için doğuş saatleri farklıdır!"
+    "correctIndex": 4,
+    "explanation": "Dünya batıdan doğuya doğru döndüğü için doğudaki merkezlerde Güneş daha erken doğar, tepe noktasına daha erken ulaşır ve batar. Haritada en doğuda yer alan V numaralı Iğdır (45° Doğu) boylamı en ileri yerel saate sahiptir.",
+    "difficulty": "easy",
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Adaylar Türkiye'nin ortak ulusal saatinde tek bir saat kullanıldığını düşünerek yerel saatlerin de her yerde aynı olduğunu sanabilir. Ulusal saat ortak olsa bile boylam derecesine göre yerel saat farkları sabittir. En batıdaki merkeze (I) yönelen adaylar ise Güneş'in batış anını doğuş anıyla karıştırır.",
+    "image_url": "map://turkey/yerel_saat"
   },
   {
     "id": "cografya_012",
@@ -1485,42 +1485,19 @@
     "id": "cografya_041",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Haritada karstik şekillerin ve kalkerli arazinin en yoğun görüldüğü Akdeniz Bölgesi (Teke ve Taşeli Platoları) renkli alan ve işaretçilerle gösterilmiştir.\n\nBu arazilerde yer altı sularının kimyasal eritmesiyle oluşan aşağıdaki şekillerden hangisi en küçük karstik erime çukurudur?",
+    "text": "Haritada karstik şekillerin ve kalkerli arazinin en yaygın olduğu Teke (I) ve Taşeli (II) platoları gösterilmiştir.\n\nBu arazilerde yer altı sularının kireç taşını (kalkeri) kimyasal yolla eritmesi sonucu oluşan en küçük karstik erime çukuru aşağıdakilerden hangisidir?",
     "options": [
       "Lapya",
-      "Dolindir",
+      "Dolin",
       "Uvala",
       "Polye",
       "Obruk"
     ],
     "correctIndex": 0,
-    "explanation": "Kalkerli arazilerde yağış ve erime sularının kayaçları eritmesiyle oluşan birkaç milimetre ile birkaç metre arasındaki en küçük karstik erime çukuruna 'Lapya' adı verilir.",
+    "explanation": "Kalkerli (kireç taşı) arazilerde yağış sularının kayaçları eritmesiyle yüzeyde oluşan santimetre ile birkaç metre arasındaki en küçük karstik erime çukurlarına 'Lapya' adı verilir. Lapyaların büyümesiyle dolin, dolinlerin birleşmesiyle uvala, en büyük erime çukurlarına ise polye (göl ova) denir.",
     "difficulty": "easy",
-    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Polye (göl ova) karstik erime çukurlarının en büyüğüdür; Lapya ise en küçüğüdür. ÖSYM sıralamayı 'Lapya -> Dolin -> Uvala -> Polye' (küçükten büyüğe) şeklinde sıklıkla çeldirici olarak sorar.",
-    "imageUrl": "assets/images/mascot/cografya_karstik_harita.png",
-    "image_url": "map://turkey/karstik",
-    "map_config": {
-      "highlighted_provinces": {
-        "antalya": "#D97706",
-        "mersin": "#D97706",
-        "burdur": "#F59E0B",
-        "mugla": "#F59E0B"
-      },
-      "markers": [
-        {
-          "id": "1",
-          "label": "I",
-          "x": 215.0,
-          "y": 360.0
-        },
-        {
-          "id": "2",
-          "label": "II",
-          "x": 335.0,
-          "y": 370.0
-        }
-      ]
-    }
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Polye karstik erime çukurlarının en büyüğüdür; Lapya ise en küçüğüdür. ÖSYM sıralamayı 'Lapya -> Dolin -> Uvala -> Polye' (küçükten büyüğe) şeklinde sıklıkla çeldirici olarak sorar.",
+    "image_url": "map://turkey/karstik"
   },
   {
     "id": "cografya_042",
@@ -1679,18 +1656,19 @@
     "id": "cografya_051",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Türkiye'deki masif araziler I. Jeolojik Zaman'da (Paleozoyik) başkalaşıma uğramış sert ve oturmuş kütlelerdir. Bu alanlarda faylanma ve deprem riski genç arazilere oranla düşüktür.\n\nAşağıda verilen yörelerden hangisi Türkiye'deki masif alanlar arasında yer almaz?",
+    "text": "Kıyı çizgisine paralel uzanan dağ sıralarının kıyı boyunca deniz suları altında kalmasıyla oluşan ve çok sayıda adacığın kıyıya paralel dizildiği 'Dalmaçya kıyı tipi', haritada numaralandırılmış alanların hangisinde görülür?",
     "options": [
-      "Yıldız Dağları (Istranca) Masifi",
-      "Saruhan - Menteşe Masifi",
-      "Kırşehir Masifi",
-      "Gediz - Büyük Menderes Grabeni",
-      "Bitlis ve Mardin Masifleri"
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
     ],
     "correctIndex": 3,
-    "explanation": "Gediz ve Büyük Menderes grabenleri, Batı Anadolu Fay Sistemi (BAFS) üzerinde yer alan son derece genç, kırıklı ve I. derece deprem bölgesidir. Masif araziler ise Yıldız, Menteşe, Kırşehir, Bitlis, Mardin-Derik, Daday-Devrekani, Alanya-Anamur gibi oturmuş sert bloklardır.",
+    "explanation": "Türkiye'de Dalmaçya tipi kıyı yalnızca IV numara ile gösterilen Antalya'nın Kaş ve Finike kıyı kuşağında görülür. I numarada Boyuna kıyı (Karadeniz), II numarada Ria kıyı (Boğazlar), III numarada Enine kıyı (Ege), V numarada ise Delta/Kordonlu kıyı (Çukurova) hakimdir.",
     "difficulty": "medium",
-    "distractor_trap": "Menteşe yöresi bir masiftir ancak hemen yanı başındaki horst-graben olukları (Gediz, Menderes) aktif fayı temsil eder; adaylar Ege'deki kütleler ile graben düzlüklerini birbirine karıştırabilir."
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Adaylar çok fazla ada ve girintili-çıkıntılı kıyı olduğu için Ege kıyılarını (III) Dalmaçya kıyı tipiyle karıştırır. Oysa Ege'de dağlar kıyıya dik uzandığı için 'Enine kıyı tipi' görülür. Dalmaçya kıyı tipi Türkiye'de yalnızca Kaş-Finike (IV) hattında mevcuttur.",
+    "image_url": "map://turkey/kiyi_tipleri"
   },
   {
     "id": "cografya_052",
@@ -2189,18 +2167,19 @@
     "id": "cografya_081",
     "lesson": "Coğrafya",
     "topic": "Türkiye'de Nüfus ve Yerleşme",
-    "text": "Cumhuriyet döneminde Türkiye'de ilk genel nüfus sayımı hangi yılda yapılmıştır?",
+    "text": "Haritada numaralandırılmış alanlardan I (Yıldız Dağları), II (Biga Yarımadası), III (Menteşe Yöresi) ve IV (Hakkari) engebeli arazi ve ana ulaşım yollarına sapa kalma nedeniyle seyrek nüfuslu alanlardır.\n\nBuna göre, haritada V numara ile gösterilen sahanın Türkiye'nin nüfus yoğunluğu en yüksek yöresi olmasında aşağıdakilerden hangisinin etkisi diğerlerine göre daha azdır?",
     "options": [
-      "1923",
-      "1927",
-      "1935",
-      "1940",
-      "1950"
+      "Geniş tarım arazilerinin ve tarımsal üretimin payının yüksek olması",
+      "Sanayi kuruluşlarının ve organize sanayi bölgelerinin yoğunlaşması",
+      "Ulaşım ağlarının kavşak noktasında bulunması ve liman ticareti",
+      "Hizmet, bankacılık ve finans sektörünün merkezi konumunda olması",
+      "İş imkanlarının fazlalığına bağlı olarak sürekli yoğun göç alması"
     ],
-    "correctIndex": 1,
-    "explanation": "Cumhuriyet tarihinin ilk resmi genel nüfus sayımı 28 Ekim 1927 tarihinde gerçekleştirilmiş ve Türkiye nüfusu 13.6 milyon olarak tespit edilmiştir. İkinci sayım 1935'te yapılmış ve bundan sonra 1990'a kadar her 5 yılda bir tekrarlanmıştır.",
+    "correctIndex": 0,
+    "explanation": "V numaralı Çatalca-Kocaeli (İstanbul) platosu Türkiye'nin sanayi, ticaret, finans ve ulaşım merkezidir. Burada nüfusun aşırı yoğun olmasında tarımsal faaliyetlerin veya tarım arazilerinin payı yok denecek kadar azdır; alan tamamen sanayi ve yerleşim sahalarıyla kaplıdır.",
     "difficulty": "easy",
-    "distractor_trap": "Cumhuriyet 1923'te ilan edilse de ilk nüfus sayımı savaştan yeni çıkmış ülkenin toparlanması beklenerek 1927 yılında yapılabilmiştir."
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Adaylar Menteşe (III) veya Biga (II) yarımadalarının deniz kıyısında olmasından dolayı yoğun nüfuslu olduğunu zannedebilir. Oysa Menteşe aşırı dağlık, Biga ise ana ulaşım akslarına sapadır. Çatalca-Kocaeli (V) ise tarımla değil, sanayi ve hizmetle nüfus patlaması yaşamıştır.",
+    "image_url": "map://turkey/seyrek_nufus"
   },
   {
     "id": "cografya_082",
@@ -2359,18 +2338,19 @@
     "id": "cografya_091",
     "lesson": "Coğrafya",
     "topic": "Türkiye'de Nüfus ve Yerleşme",
-    "text": "Aşağıdaki harita yörelerinden hangisinde nüfusun seyrek olması 'karstik arazi yapısı ve yer altı sularının derine sızması' faktörüyle doğrudan ilişkilidir?",
+    "text": "Türkiye'de iç göç hareketleri genellikle ekonomik faaliyetlerin yetersiz olduğu kırsal alanlardan sanayi, turizm ve ticaretin geliştiği büyükşehirlere doğrudur.\n\nHaritada işaretli merkezlerden hangisi, diğerlerinin aksine sanayi ve iş olanaklarının yetersizliği nedeniyle sürekli 'net göç veren' bir ildir?",
     "options": [
-      "Yıldız Dağları Yöresi",
-      "Teke ve Taşeli Platoları",
-      "Biga Yarımadası",
-      "Ergene Havzası",
-      "Tuz Gölü Çevresi"
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
     ],
-    "correctIndex": 1,
-    "explanation": "Akdeniz'deki Teke ve Taşeli Platoları kalkerli (kireç taşı) karstik yapılıdır. Yağan yağmur suları yüzeyde akışa geçmeyip derin çatlaklardan yer altına sızar. Bu yüzden yüzey suyu fakirliği, terra rossa topraklarının zayıflığı ve engebe nedeniyle nüfus seyrektir.",
+    "correctIndex": 4,
+    "explanation": "Haritada I (Bursa), II (İzmir), III (Antalya) ve IV (Gaziantep) sanayi, tarım, ticaret ve turizm potansiyelleri sayesinde sürekli 'net göç alan' illerdir. Buna karşın V numaralı Bayburt, iş sahalarının darlığı, iklim koşulları ve engebeli arazi nedeniyle sürekli dışarıya göç veren (net göç hızı negatif) bir ildir.",
     "difficulty": "medium",
-    "distractor_trap": "Tuz Gölü çevresi kuraklıktan seyrektir; Yıldız Dağları ana yollara uzak ve engebeli olduğu için seyrektir; Teke-Taşeli ise karstik kireç taşı yapısı yüzünden seyrektir."
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Adaylar Güneydoğu'da bulunan Gaziantep'i (IV) doğuda olduğu için göç veren bir şehir sanabilir. Oysa Gaziantep sanayisi, ticareti ve bölgesel çekim gücüyle bölgeden ve komşu illerden en çok göç alan metropollerden biridir. Bayburt (V) ise Türkiye'nin en çok göç veren ve nüfusu en az olan illerindendir.",
+    "image_url": "map://turkey/goc_alan_merkezler"
   },
   {
     "id": "cografya_092",
@@ -2869,18 +2849,19 @@
     "id": "cografya_121",
     "lesson": "Coğrafya",
     "topic": "Türkiye'de Tarım ve Hayvancılık",
-    "text": "Türkiye'de tarımda verimi artırmanın ve üretimi iklim dalgalanmalarından kurtarmanın en temel yolu aşağıdakilerden hangisidir?",
+    "text": "Haritada I numara ile gösterilen Aydın ve çevresinde yetiştirilen, kış ılıklığı isteyen, taban arazilerde yoğunlaşan ve Türkiye'nin dünya üretiminde ve ihracatında açık ara birinci sırada olduğu tarım ürünü aşağıdakilerden hangisidir?",
     "options": [
-      "Tarım arazilerinin yüz ölçümünü sürekli genişletmek",
-      "Sulama imkanlarını yaygınlaştırmak",
-      "Tarımsal ilaç kullanımını katbekat artırmak",
-      "Kırsalda çalışan insan sayısını çoğaltmak",
-      "Tarlaları iki yılda bir nadasa bırakmak"
+      "İncir",
+      "Çay",
+      "Pamuk",
+      "Şekerpancarı",
+      "Tütün"
     ],
-    "correctIndex": 1,
-    "explanation": "Türkiye tarımının en kronik sorunu kuraklık ve yaz mevsiminde su yetersizliğidir. Sulama imkanları çözüldüğünde; üretimdeki yıllık dalgalanmalar sona erer, nadas uygulaması biter, birim alandan alınan verim tavan yapar ve yılda birden fazla hasat alınabilir.",
+    "correctIndex": 0,
+    "explanation": "Aydın (Büyük Menderes Havzası), Türkiye kuru incir üretiminin yaklaşık %60'ından fazlasını tek başına karşılar. Türkiye, dünya kuru incir üretiminde ve ihracatında açık ara 1. sıradadır.",
     "difficulty": "easy",
-    "distractor_trap": "Tarım arazisini genişletmek (ekstansif) verimi artırmaz; modern tarımın (entansif) temel kilidi sulamadır."
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Adaylar dünya lideri olduğumuz Fındık (Ordu-Giresun) veya Rize'deki Çay ile Aydın'ı karıştırabilir. Ancak incir Akdeniz iklim kuşağındaki Aydın ilinin simgesidir ve dünya ihracatında Türkiye'ye en yüksek döviz getiren kurutulmuş meyvedir.",
+    "image_url": "map://turkey/tarim_urunleri"
   },
   {
     "id": "cografya_122",
@@ -3039,18 +3020,19 @@
     "id": "cografya_131",
     "lesson": "Coğrafya",
     "topic": "Türkiye'de Tarım ve Hayvancılık",
-    "text": "Güneydoğu Anadolu Projesi'nin (GAP) hayata geçirilmesi ve Şanlıurfa Tünelleri ile Fırat'ın suyunun Harran Ovası'na akıtılması sonucunda, daha önce Ege ve Çukurova'nın lider olduğu hangi endüstriyel tarım ürününde Şanlıurfa açık ara Türkiye lideri konumuna yükselmiştir?",
+    "text": "Haritada I numara ile gösterilen Erzurum-Kars Platosu'nda büyükbaş mera hayvancılığının (sığır yetiştiriciliği) en yaygın ekonomik faaliyet olmasının temel doğal gerekçesi aşağıdakilerden hangisidir?",
     "options": [
-      "Tütün",
-      "Zeytin",
-      "Pamuk",
-      "Çay",
-      "Fındık"
+      "Yaz yağışlarına bağlı olarak dağ çayırlarının (alpin çayırları) gürleşmesi",
+      "Büyük tüketici kentlere ve pazar alanlarına çok yakın olması",
+      "Kış mevsiminin ılık geçmesi ve kar örtüsünün az kalması",
+      "Bozkır (step) bitki örtüsünün geniş alan kaplaması",
+      "Nadas tarımının yaygın olarak uygulanması"
     ],
-    "correctIndex": 2,
-    "explanation": "GAP ile sulama gelmeden önce Türkiye pamuk üretiminin merkezi Çukurova ve Ege (Büyük Menderes) idi. Sulamayla birlikte yüksek güneşlenme süresine sahip GAP sahası atağa geçmiş ve günümüzde Türkiye pamuğunun yarısından fazlasını tek başına Şanlıurfa üretir hale gelmiştir.",
-    "difficulty": "medium",
-    "distractor_trap": "GAP denince akla gelen bir numaralı ürün pamuktur. Çukurova ise pamuktan ziyade mısır ve narenciyeye yönelmiştir."
+    "correctIndex": 0,
+    "explanation": "Erzurum-Kars Platosu'nda sert karasal iklim hakimdir ve en fazla yağış yaz mevsiminde (konveksiyonel) düşer. Yaz yağışlarıyla kurumayan gür dağ çayırları (alpin çayırları), boyu uzun büyükbaş hayvanların otlaması için en elverişli doğal ortamı oluşturur.",
+    "difficulty": "easy",
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Adaylar 'pazar alanı ve tüketici nüfus' (B şıkkı) tuzağına düşebilir. Pazar alanına yakınlık Marmara ve Ege'deki besi/ahır hayvancılığının sebebidir. Erzurum-Kars'ta ise pazar çok uzaktır; temel etken tamamen doğal olan 'yaz yağışları ve gür çayırlardır'.",
+    "image_url": "map://turkey/hayvancilik"
   },
   {
     "id": "cografya_132",
@@ -3561,41 +3543,7 @@
     "explanation": "Türkiye'de taş kömürü yatakları yalnızca 1. Jeolojik Zaman'a (Paleozoik) ait masif arazilerde yer alan I numaralı Zonguldak, Karabük ve Bartın (Batı Karadeniz) havzasında bulunmaktadır. Diğer numaralı alanlar linyit veya demir madenleriyle öne çıkmaktadır.",
     "difficulty": "easy",
     "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: II ve III numaralı alanlar İç ve Doğu Anadolu'da linyit veya demir madenleriyle karıştırılabilir. Taş Kömürü Türkiye'de yalnızca I numaralı Zonguldak havzasında çıkarılır; 3. zamanda oluşan yaygın linyit ile 1. zamanda oluşan taş kömürü karıştırılmamalıdır.",
-    "image_url": "map://turkey/tas_komuru",
-    "map_config": {
-      "markers": [
-        {
-          "id": "0",
-          "label": "I",
-          "x": 358.1,
-          "y": 36.1
-        },
-        {
-          "id": "1",
-          "label": "II",
-          "x": 525.4,
-          "y": 232.2
-        },
-        {
-          "id": "2",
-          "label": "III",
-          "x": 719.4,
-          "y": 225.9
-        },
-        {
-          "id": "3",
-          "label": "IV",
-          "x": 63.1,
-          "y": 143.8
-        },
-        {
-          "id": "4",
-          "label": "V",
-          "x": 102.1,
-          "y": 162.4
-        }
-      ]
-    }
+    "image_url": "map://turkey/tas_komuru"
   },
   {
     "id": "cografya_162",
@@ -3754,18 +3702,19 @@
     "id": "cografya_171",
     "lesson": "Coğrafya",
     "topic": "Madenler ve Enerji Kaynakları",
-    "text": "Karabük ve Ereğli Demir-Çelik Fabrikaları'nın (KARDEMİR ve ERDEMİR) kuruluş yeri belirlenirken hammadde olan demir cevherinin bölgede bulunmamasına rağmen buranın tercih edilmesinin temel sebebi aşağıdakilerden hangisidir?",
+    "text": "Haritada boyanarak gösterilen sahada (Balıkesir/Bandırma-Susurluk, Bursa/Mustafakemalpaşa, Kütahya/Emet, Eskişehir/Kırka) dünya toplam rezervlerinin yaklaşık %72'si bulunan, roket yakıtından cam, porselen ve deterjan sanayisine kadar geniş kullanım alanı olan stratejik yer altı zenginliğimiz hangisidir?",
     "options": [
-      "Bölgede iş gücü maliyetlerinin çok düşük olması",
-      "Demiri eritecek yüksek kalorili taş kömürü yataklarına (enerji kaynağına) yakınlık",
-      "Karadeniz'in balıkçılık potansiyeli",
-      "Bölgede deprem riskinin sıfır olması",
-      "Geniş tarım arazilerinin varlığı"
+      "Taş kömürü",
+      "Linyit",
+      "Bor mineralleri",
+      "Bakır",
+      "Krom"
     ],
-    "correctIndex": 1,
-    "explanation": "Demir cevheri Sivas-Divriği ve Malatya'dan getirilmektedir. Karabük ve Ereğli'nin seçilme nedeni demir değil, demiri eritecek olan 2000°C ısıyı sağlayan taş kömürü yataklarının (Zonguldak havzası) hemen yanı başında olmasıdır (enerji kaynağına yakınlık).",
-    "difficulty": "medium",
-    "distractor_trap": "İskenderun liman/ulaşım için; Karabük-Ereğli ise enerji kaynağı (taş kömürü) için kurulmuştur!"
+    "correctIndex": 2,
+    "explanation": "Dünya toplam bor rezervlerinin yaklaşık %72'si Türkiye'de; Balıkesir (Bandırma, Susurluk, Bigadiç), Kütahya (Emet), Eskişehir (Kırka) ve Bursa havzasında yer alır. Türkiye'nin en stratejik madenidir.",
+    "difficulty": "easy",
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Ege ve Batı Anadolu'da linyit yatakları (Soma, Tunçbilek, Tavşanlı, Yatağan) çok yaygın olduğu için adaylar 'Linyit' şıkkına kayabilir. Oysa soruda geçen 'dünya rezervinin %72'si' ve 'roket-savunma sanayisi' ifadesi tartışmasız BOR mineralini ifade eder.",
+    "image_url": "map://turkey/bor_mineralleri"
   },
   {
     "id": "cografya_172",
@@ -4264,18 +4213,19 @@
     "id": "cografya_201",
     "lesson": "Coğrafya",
     "topic": "Sanayi, Ticaret ve Ulaşım",
-    "text": "Türkiye'de sanayi tesislerinin coğrafi dağılışı incelendiğinde Marmara Bölgesi'nin (özellikle Çatalca-Kocaeli ve Güney Marmara) sanayi üretiminde açık ara lider olduğu görülür.\n\nMarmara Bölgesi'nin sanayide lider konuma gelmesinde aşağıdakilerden hangisi doğrudan bir etken DEĞİLDİR?",
+    "text": "Haritada I numara ile gösterilen Sinop Limanı, Karadeniz Bölgesi'nin tek doğal limanı olmasına rağmen iç kesimlerle demir yolu bağlantısının olmaması ve Küre Dağları'nın ulaşımı güçleştirmesi sebebiyle yeterince gelişememiştir.\n\nBu durum Sinop Limanı'nın hangi özelliğinin yetersiz olmasıyla açıklanır?",
     "options": [
-      "Zengin yer altı maden yataklarına ve kömür havzalarına sahip olması",
-      "Ulaşım ağlarının (kara, deniz, hava, demiryolu) olağanüstü gelişmiş olması",
-      "Sermaye birikiminin ve finans merkezlerinin bölgede toplanması",
-      "Nitelikli ve kalifiye iş gücünün bölgede bulunması",
-      "Geniş bir tüketici pazarına yakın olması"
+      "Hinterlandının (art bölgesinin / etki alanının) dar olması",
+      "Kıyı derinliğinin (kıta sahanlığının) çok sığ olması",
+      "Açık deniz dalgalarına ve sert fırtınalara karşı korumasız olması",
+      "Çevresinde orman ürünleri ve doğal kaynakların bulunmaması",
+      "Gelgit (gelgit genliği) etkisinin çok yüksek olması"
     ],
     "correctIndex": 0,
-    "explanation": "Marmara Bölgesi maden ve enerji kaynakları bakımından Türkiye'nin en fakir bölgelerindendir. Marmara'nın sanayi devi olmasının sebebi yer altı zenginliği değil; sermaye, dev tüketim pazarı, nitelikli iş gücü ve dünyaya açılan kavşak ulaşım ağıdır.",
+    "explanation": "Bir limanın ticaret kapasitesi, gerisindeki kara parçasıyla (hinterland/art bölge) olan ulaşım kolaylığına bağlıdır. Sinop Limanı mükemmel bir doğal liman olmasına rağmen gerisindeki Küre Dağları aşılması güç bir engel oluşturmuş, demir yolu inşa edilememiş ve hinterlandı dar kaldığı için gelişememiştir. Samsun ise Canik Dağları'nın alçak olması ve demir yolu ağı sayesinde Karadeniz'in en büyük limanı olmuştur.",
     "difficulty": "easy",
-    "distractor_trap": "Maden çeşitliliği Doğu Anadolu'dadır. Marmara hammadde zengini olduğu için değil, pazar ve ulaşım merkezi olduğu için sanayileşmiştir."
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Adaylar 'doğal liman' olmanın ticareti doğrudan geliştireceğini sanır. ÖSYM 'Sinop vs. Samsun' kıyasını çok sever: Sinop doğaldır ama hinterlandı dardır; Samsun yapay mendireklidir ama hinterlandı çok geniştir.",
+    "image_url": "map://turkey/limanlar_ulasim"
   },
   {
     "id": "cografya_202",
@@ -4434,18 +4384,19 @@
     "id": "cografya_211",
     "lesson": "Coğrafya",
     "topic": "Sanayi, Ticaret ve Ulaşım",
-    "text": "Türkiye'de demiryolu hatları genellikle vadi tabanlarını ve doğal çöküntü oluklarını takip ederek uzanır. Arazinin çok engebeli olduğu veya dağların denize paralel uzandığı kıyılarda demiryolu ağı kurulması olağanüstü maliyetlidir.\n\nAşağıdaki liman kentlerinden hangisinin iç kesimlerle 'demir yolu bağlantısı BULUNMAZ'?",
+    "text": "Haritada I numara ile gösterilen Karabük ve Ereğli'de demir madeni yatakları bulunmamasına rağmen, Türkiye'nin ilk ağır demir-çelik fabrikalarının (KARDEMİR ve ERDEMİR) bu yörede kurulmasının temel nedeni aşağıdakilerden hangisidir?",
     "options": [
-      "Samsun",
-      "İzmir",
-      "Mersin",
-      "Antalya",
-      "İskenderun"
+      "Taş kömürü yataklarına (enerji kaynağına) yakın olması",
+      "Demir cevheri rezervlerinin bu yörede zengin olması",
+      "Büyük tüketici pazarlarına ve kalabalık şehirlere yakınlık",
+      "Nitelikli teknik iş gücünün bölgede hazır bulunması",
+      "Karadeniz kıyısında iklim şartlarının ılıman olması"
     ],
-    "correctIndex": 3,
-    "explanation": "Antalya, Türkiye'nin en büyük turizm ve ticaret limanlarından biri olmasına karşın gerisindeki dik Batı Toroslar (Beydağları) aşılamadığı için demiryolu bağlantısı kesinlikle YOKTUR. Samsun, İzmir, Mersin ve İskenderun'un ise demiryolu bağlantısı mevcuttur.",
-    "difficulty": "medium",
-    "distractor_trap": "ÖSYM demiryolu bağlantısı olmayan limanları sürekli yoklar: Trabzon, Rize, Giresun, Sinop, ANTALYA, Çanakkale! Antalya'da tren yoktur."
+    "correctIndex": 0,
+    "explanation": "Demir madenini eritip yüksek fırınları çalıştırmak için çok yüksek kaloriye ihtiyaç vardır ve bu kalori yalnızca taş kömürü (kok kömürü) ile sağlanır. Bu sebeple Karabük ve Ereğli tesisleri 'enerji kaynağına yakınlık' prensibiyle Zonguldak taş kömürü havzasında kurulmuştur. Demir cevheri ise Sivas Divriği ve Malatya'dan buraya taşınır.",
+    "difficulty": "easy",
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Adayların %60'ı 'demir madenine yakınlık' (hammadde) şıkkına düşer. ÖSYM demir-çelik sanayisinde kuruluş yerlerini sıkça sorgular: Karabük/Ereğli -> Enerji kaynağına yakınlık (Taş kömürü); İskenderun -> Ulaşım/Liman; Sivas/Divriği -> Hammaddeye yakınlık.",
+    "image_url": "map://turkey/demir_celik"
   },
   {
     "id": "cografya_212",

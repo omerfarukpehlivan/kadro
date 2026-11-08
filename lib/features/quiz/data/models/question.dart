@@ -133,7 +133,40 @@ class Question {
         );
       }
 
-      // 1. Taş Kömürü Madeni ve Batı Karadeniz Haritası (ÖSYM Klasik Soru Tipi)
+      // 1. Yerel Saat ve Boylam Farkları
+      if (path.contains('yerel_saat') || host.contains('yerel_saat')) {
+        return const TurkeyMapConfig(
+          markers: [
+            TurkeyMapMarker(
+              id: '1',
+              label: 'I',
+              offset: Offset(55.0, 130.0),
+            ), // Çanakkale (26° D)
+            TurkeyMapMarker(
+              id: '2',
+              label: 'II',
+              offset: Offset(360.0, 160.0),
+            ), // Ankara (33° D)
+            TurkeyMapMarker(
+              id: '3',
+              label: 'III',
+              offset: Offset(590.0, 170.0),
+            ), // Sivas (37° D)
+            TurkeyMapMarker(
+              id: '4',
+              label: 'IV',
+              offset: Offset(800.0, 135.0),
+            ), // Erzurum (41° D)
+            TurkeyMapMarker(
+              id: '5',
+              label: 'V',
+              offset: Offset(965.0, 160.0),
+            ), // Iğdır (45° D - +3 Saat)
+          ],
+        );
+      }
+
+      // 2. Taş Kömürü Madeni ve Batı Karadeniz Haritası (ÖSYM Klasik Soru Tipi)
       if (path.contains('tas_komuru') ||
           path.contains('komur') ||
           host.contains('tas_komuru')) {
@@ -168,7 +201,7 @@ class Question {
         );
       }
 
-      // 2. Karstik Araziler (Teke & Taşeli Platoları)
+      // 3. Karstik Araziler (Teke & Taşeli Platoları)
       if (path.contains('karstik') || host.contains('karstik')) {
         return const TurkeyMapConfig(
           highlightedProvinces: {
@@ -184,7 +217,298 @@ class Question {
         );
       }
 
-      // 3. Volkanik Araziler ve Dağlar
+      // 4. Kıyı Tipleri Dağılışı (Dalmaçya, Enine, Boyuna, Ria)
+      if (path.contains('kiyi_tipleri') || host.contains('kiyi_tipleri')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {'antalya': Color(0xFFD97706)},
+          markers: [
+            TurkeyMapMarker(
+              id: '1',
+              label: 'I',
+              offset: Offset(500.0, 30.0),
+            ), // Karadeniz / Boyuna Kıyı
+            TurkeyMapMarker(
+              id: '2',
+              label: 'II',
+              offset: Offset(60.0, 105.0),
+            ), // Çanakkale Boğazı / Ria Kıyı
+            TurkeyMapMarker(
+              id: '3',
+              label: 'III',
+              offset: Offset(70.0, 240.0),
+            ), // Ege / Enine Kıyı
+            TurkeyMapMarker(
+              id: '4',
+              label: 'IV',
+              offset: Offset(225.0, 395.0),
+            ), // Kaş-Finike / Dalmaçya Kıyı
+            TurkeyMapMarker(
+              id: '5',
+              label: 'V',
+              offset: Offset(505.0, 365.0),
+            ), // Çukurova / Limanlı-Delta Kıyı
+          ],
+        );
+      }
+
+      // 5. Türkiye'nin Seyrek ve Yoğun Nüfuslu Alanları
+      if (path.contains('seyrek_nufus') || host.contains('seyrek_nufus')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {
+            'kirklareli': Color(0xFFEF4444),
+            'canakkale': Color(0xFFEF4444),
+            'mugla': Color(0xFFEF4444),
+            'hakkari': Color(0xFFEF4444),
+            'istanbul': Color(0xFF10B981),
+          },
+          markers: [
+            TurkeyMapMarker(
+              id: '1',
+              label: 'I',
+              offset: Offset(120.0, 40.0),
+            ), // Yıldız Dağları
+            TurkeyMapMarker(
+              id: '2',
+              label: 'II',
+              offset: Offset(65.0, 140.0),
+            ), // Biga Yarımadası
+            TurkeyMapMarker(
+              id: '3',
+              label: 'III',
+              offset: Offset(120.0, 330.0),
+            ), // Menteşe Yöresi
+            TurkeyMapMarker(
+              id: '4',
+              label: 'IV',
+              offset: Offset(955.0, 320.0),
+            ), // Hakkari Bölümü
+            TurkeyMapMarker(
+              id: '5',
+              label: 'V',
+              offset: Offset(185.0, 65.0),
+            ), // Çatalca-Kocaeli (Yoğun Nüfus)
+          ],
+        );
+      }
+
+      // 6. Net Göç Alan ve Veren Merkezler
+      if (path.contains('goc_alan_merkezler') || host.contains('goc')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {
+            'bursa': Color(0xFF10B981),
+            'izmir': Color(0xFF10B981),
+            'antalya': Color(0xFF10B981),
+            'gaziantep': Color(0xFF10B981),
+            'bayburt': Color(0xFFEF4444),
+          },
+          markers: [
+            TurkeyMapMarker(
+              id: '1',
+              label: 'I',
+              offset: Offset(165.0, 140.0),
+            ), // Bursa
+            TurkeyMapMarker(
+              id: '2',
+              label: 'II',
+              offset: Offset(70.0, 240.0),
+            ), // İzmir
+            TurkeyMapMarker(
+              id: '3',
+              label: 'III',
+              offset: Offset(250.0, 355.0),
+            ), // Antalya
+            TurkeyMapMarker(
+              id: '4',
+              label: 'IV',
+              offset: Offset(630.0, 345.0),
+            ), // Gaziantep
+            TurkeyMapMarker(
+              id: '5',
+              label: 'V',
+              offset: Offset(720.0, 115.0),
+            ), // Bayburt
+          ],
+        );
+      }
+
+      // 7. Başlıca İhraç Tarım Ürünleri Yetişme Alanları
+      if (path.contains('tarim_urunleri') || host.contains('tarim')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {'aydin': Color(0xFFD97706)},
+          markers: [
+            TurkeyMapMarker(
+              id: '1',
+              label: 'I',
+              offset: Offset(110.0, 295.0),
+            ), // Aydın / Ege (İncir & Zeytin)
+            TurkeyMapMarker(
+              id: '2',
+              label: 'II',
+              offset: Offset(610.0, 80.0),
+            ), // Ordu-Giresun (Fındık)
+            TurkeyMapMarker(
+              id: '3',
+              label: 'III',
+              offset: Offset(765.0, 65.0),
+            ), // Rize (Çay)
+            TurkeyMapMarker(
+              id: '4',
+              label: 'IV',
+              offset: Offset(700.0, 345.0),
+            ), // Şanlıurfa (Pamuk)
+            TurkeyMapMarker(
+              id: '5',
+              label: 'V',
+              offset: Offset(400.0, 280.0),
+            ), // Konya (Tahıl & Şekerpancarı)
+          ],
+        );
+      }
+
+      // 8. Hayvancılık Türleri ve Meralar
+      if (path.contains('hayvancilik') || host.contains('hayvancilik')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {
+            'erzurum': Color(0xFFD97706),
+            'kars': Color(0xFFD97706),
+          },
+          markers: [
+            TurkeyMapMarker(
+              id: '1',
+              label: 'I',
+              offset: Offset(855.0, 110.0),
+            ), // Erzurum-Kars (Büyükbaş Mera)
+            TurkeyMapMarker(
+              id: '2',
+              label: 'II',
+              offset: Offset(275.0, 365.0),
+            ), // Teke-Taşeli (Kıl Keçisi)
+            TurkeyMapMarker(
+              id: '3',
+              label: 'III',
+              offset: Offset(390.0, 275.0),
+            ), // Konya (Küçükbaş Koyun)
+            TurkeyMapMarker(
+              id: '4',
+              label: 'IV',
+              offset: Offset(360.0, 160.0),
+            ), // Ankara (Tiftik Keçisi)
+            TurkeyMapMarker(
+              id: '5',
+              label: 'V',
+              offset: Offset(790.0, 60.0),
+            ), // Rize Yaylaları (Arıcılık)
+          ],
+        );
+      }
+
+      // 9. Bor Mineralleri Havzası (Dünya Rezervinin %72'si)
+      if (path.contains('bor_mineralleri') || host.contains('bor')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {
+            'balikesir': Color(0xFFD97706),
+            'bursa': Color(0xFFD97706),
+            'kutahya': Color(0xFFD97706),
+            'eskisehir': Color(0xFFD97706),
+          },
+          markers: [
+            TurkeyMapMarker(
+              id: '1',
+              label: 'I',
+              offset: Offset(125.0, 120.0),
+            ), // Balıkesir / Bandırma
+            TurkeyMapMarker(
+              id: '2',
+              label: 'II',
+              offset: Offset(190.0, 210.0),
+            ), // Kütahya / Emet
+            TurkeyMapMarker(
+              id: '3',
+              label: 'III',
+              offset: Offset(260.0, 195.0),
+            ), // Eskişehir / Kırka
+            TurkeyMapMarker(
+              id: '4',
+              label: 'IV',
+              offset: Offset(660.0, 190.0),
+            ), // Sivas / Divriği (Demir)
+            TurkeyMapMarker(
+              id: '5',
+              label: 'V',
+              offset: Offset(735.0, 235.0),
+            ), // Elazığ / Guleman (Krom)
+          ],
+        );
+      }
+
+      // 10. Hinterlandı Geniş / Dar Limanlar ve Ulaşım
+      if (path.contains('limanlar_ulasim') || host.contains('liman')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {'sinop': Color(0xFFD97706)},
+          markers: [
+            TurkeyMapMarker(
+              id: '1',
+              label: 'I',
+              offset: Offset(505.0, 28.0),
+            ), // Sinop Limanı (Hinterlandı Dar)
+            TurkeyMapMarker(
+              id: '2',
+              label: 'II',
+              offset: Offset(560.0, 60.0),
+            ), // Samsun Limanı (Gelişmiş)
+            TurkeyMapMarker(
+              id: '3',
+              label: 'III',
+              offset: Offset(65.0, 235.0),
+            ), // İzmir Limanı
+            TurkeyMapMarker(
+              id: '4',
+              label: 'IV',
+              offset: Offset(495.0, 345.0),
+            ), // Mersin Limanı
+            TurkeyMapMarker(
+              id: '5',
+              label: 'V',
+              offset: Offset(720.0, 68.0),
+            ), // Trabzon Limanı
+          ],
+        );
+      }
+
+      // 11. Demir-Çelik Ağır Sanayi Merkezleri
+      if (path.contains('demir_celik') || host.contains('sanayi')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {
+            'karabuk': Color(0xFFD97706),
+            'zonguldak': Color(0xFFD97706),
+            'hatay': Color(0xFFD97706),
+          },
+          markers: [
+            TurkeyMapMarker(
+              id: '1',
+              label: 'I',
+              offset: Offset(345.0, 55.0),
+            ), // Karabük & Ereğli (Enerjiye Yakınlık)
+            TurkeyMapMarker(
+              id: '2',
+              label: 'II',
+              offset: Offset(535.0, 375.0),
+            ), // İskenderun (Ulaşım & Liman)
+            TurkeyMapMarker(
+              id: '3',
+              label: 'III',
+              offset: Offset(660.0, 190.0),
+            ), // Sivas / Divriği (Hammadde)
+            TurkeyMapMarker(
+              id: '4',
+              label: 'IV',
+              offset: Offset(410.0, 155.0),
+            ), // Kırıkkale (Savunma Güvenliği)
+          ],
+        );
+      }
+
+      // 12. Volkanik Araziler ve Dağlar
       if (path.contains('volkanik') || host.contains('volkanik')) {
         return const TurkeyMapConfig(
           highlightedProvinces: {
