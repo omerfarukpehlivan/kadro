@@ -50,10 +50,9 @@ class TurkeyMap extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // Varsayılan zemin ve çizgi renkleri
-    final defaultBaseFill =
-        config.baseFillColor ??
-        (isDark ? const Color(0xFF334155) : const Color(0xFFEAEFF5));
+    // Varsayılan zemin ve çizgi renkleri (Açık temada yüksek kontrastlı belirgin tonlar)
+    final defaultBaseFill = config.baseFillColor ??
+        (isDark ? const Color(0xFF334155) : const Color(0xFFC8D7E6));
     final defaultStrokeColor =
         config.strokeColor ?? (isDark ? const Color(0xFF475569) : Colors.white);
 
@@ -149,24 +148,42 @@ class _TurkeyMapPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
 
-    // 1. İlleri çiz
+    // 1. Önce standart (vurgulanmamış) illeri çiz
+    final highlightedList = <(ProvinceData, Color)>[];
+
     for (final prov in TurkeyMapData.provinces.values) {
-      final path = TurkeySvgParser.parse(prov.pathData);
-
-      // Renk belirleme (Öncelik: seçili il > özel il rengi > bölge rengi > baz renk)
-      Color fillColor = baseFillColor;
-
+      Color? specialColor;
       if (config.selectedProvinceId == prov.id) {
-        fillColor = const Color(0xFF4F46E5); // Academic Indigo
+        specialColor = const Color(0xFF4F46E5); // Academic Indigo
       } else if (config.highlightedProvinces.containsKey(prov.id)) {
-        fillColor = config.highlightedProvinces[prov.id]!;
+        specialColor = config.highlightedProvinces[prov.id]!;
       } else if (config.highlightedRegions.containsKey(prov.region)) {
-        fillColor = config.highlightedRegions[prov.region]!;
+        specialColor = config.highlightedRegions[prov.region]!;
       }
 
-      fillPaint.color = fillColor;
+      if (specialColor != null) {
+        highlightedList.add((prov, specialColor));
+      } else {
+        final path = TurkeySvgParser.parse(prov.pathData);
+        fillPaint.color = baseFillColor;
+        canvas.drawPath(path, fillPaint);
+        canvas.drawPath(path, strokePaint);
+      }
+    }
+
+    // 2. Vurgulanmış illeri üst katmanda çiz (Sınır çizgileri komşular tarafından ezilmez)
+    final highlightStrokePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.white
+      ..strokeWidth = config.strokeWidth + 0.5
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    for (final item in highlightedList) {
+      final path = TurkeySvgParser.parse(item.$1.pathData);
+      fillPaint.color = item.$2;
       canvas.drawPath(path, fillPaint);
-      canvas.drawPath(path, strokePaint);
+      canvas.drawPath(path, highlightStrokePaint);
     }
 
     // 2. Dairesel İşaretçileri (Markers) Çiz

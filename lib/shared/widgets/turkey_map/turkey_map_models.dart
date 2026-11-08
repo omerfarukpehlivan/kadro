@@ -136,7 +136,7 @@ class TurkeyMapConfig {
     this.markers = const [],
     this.baseFillColor,
     this.strokeColor,
-    this.strokeWidth = 0.9,
+    this.strokeWidth = 1.1,
     this.selectedProvinceId,
     this.selectedMarkerId,
   });
@@ -200,7 +200,7 @@ class TurkeyMapConfig {
       markers: markerList,
       baseFillColor: parseColor(json['base_fill_color']),
       strokeColor: parseColor(json['stroke_color']),
-      strokeWidth: (json['stroke_width'] as num?)?.toDouble() ?? 0.9,
+      strokeWidth: (json['stroke_width'] as num?)?.toDouble() ?? 1.1,
       selectedProvinceId: json['selected_province_id'] as String?,
       selectedMarkerId: json['selected_marker_id'] as String?,
     );

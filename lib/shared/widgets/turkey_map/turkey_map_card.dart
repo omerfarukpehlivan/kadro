@@ -122,7 +122,7 @@ class TurkeyMapCard extends StatelessWidget {
               child: Container(
                 color: isDark
                     ? const Color(0xFF0F172A)
-                    : const Color(0xFFF1F5F9),
+                    : const Color(0xFFF8FAFC),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 6,
                   vertical: 10,
