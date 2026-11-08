@@ -4624,7 +4624,8 @@
     "correctIndex": 1,
     "explanation": "Sinop doğal limandır ancak arkasındaki Küre Dağları kıyıyı iç Anadolu'dan koparmıştır. Demiryolu yoktur, karayolu bağlantısı zayıftır; dolayısıyla hinterlandı dardır. Samsun ise arkasındaki Canik Dağları basık ve geçit verdiği için yapay olmasına rağmen Karadeniz'in en işlek limanı olmuştur.",
     "difficulty": "medium",
-    "distractor_trap": "Doğal liman olmak gelişmeyi garanti etmez; limanı liman yapan şey arkasındaki ulaşım ağı ve hinterland genişliğidir."
+    "distractor_trap": "Doğal liman olmak gelişmeyi garanti etmez; limanı liman yapan şey arkasındaki ulaşım ağı ve hinterland genişliğidir.",
+    "order_index": 1
   },
   {
     "id": "cografya_213",
@@ -16523,5 +16524,23 @@
     "distractor_trap": "ÖSYM Marmara Bölgesi'nin tamamının aşırı kalabalık ve sanayileşmiş olduğu algısını adaylara tuzak olarak kurar. Yıldız Dağları ve Biga Yarımadası Marmara'nın en tenha istisnalarıdır.",
     "imageUrl": "https://images.unsplash.com/photo-1508873696983-2df5703bc225?auto=format&fit=crop&w=800&q=80",
     "order_index": 11
+  },
+  {
+    "id": "cografya_sanayi_60",
+    "lesson": "Coğrafya",
+    "topic": "Sanayi, Ticaret ve Ulaşım",
+    "text": "Türkiye'de sanayi tesislerinin coğrafi dağılışı incelendiğinde Marmara Bölgesi'nin (özellikle Çatalca-Kocaeli ve Güney Marmara) sanayi üretiminde açık ara lider olduğu görülür.\n\nMarmara Bölgesi'nin sanayide lider konuma gelmesinde aşağıdakilerden hangisi doğrudan bir etken DEĞİLDİR?",
+    "options": [
+      "Zengin yer altı maden yataklarına ve taş kömürü havzalarına sahip olması",
+      "Ulaşım ağlarının (kara, deniz, hava, demiryolu) olağanüstü gelişmiş olması",
+      "Sermaye birikiminin ve finans merkezlerinin bölgede toplanması",
+      "Nitelikli ve kalifiye iş gücünün bölgede bulunması",
+      "Geniş bir tüketici pazarına ve hinterlanda yakın olması"
+    ],
+    "correctIndex": 0,
+    "explanation": "Marmara Bölgesi yer altı madenleri ve kömür gibi enerji kaynakları bakımından zengin değildir; aksine maden çeşitliliğinin en az olduğu bölgelerdendir. Marmara'nın sanayi devi olmasının nedeni hammadde değil; sermaye, devasa tüketim pazarı, kalifiye iş gücü ve küresel ulaşım kavşağında yer almasıdır.",
+    "difficulty": "hard",
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Adaylar sanayisi en gelişmiş bölgenin doğal olarak maden bakımından da zengin olması gerektiğini düşünür. Oysa maden çeşitliliği Doğu Anadolu'dadır; Marmara pazar ve ulaşım avantajıyla sanayileşmiştir.",
+    "order_index": 60
   }
 ]
