@@ -19,6 +19,7 @@ import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/turkey_map/turkey_map.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Varsayılan olarak gösterilen 3 özgün KPSS Lisans Genel Kültür sorusu.
@@ -557,8 +558,12 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             ),
             AppSpacing.gapMd,
 
-            // Varsa Harita / Şekil / Grafik Görseli Kartı
-            if (question.imageUrl != null && question.imageUrl!.isNotEmpty) ...[
+            // Varsa Harita (Vektörel veya Görsel) / Şekil / Grafik Görseli Kartı
+            if (question.effectiveMapConfig != null) ...[
+              TurkeyMapCard(config: question.effectiveMapConfig!),
+              AppSpacing.gapMd,
+            ] else if (question.imageUrl != null &&
+                question.imageUrl!.isNotEmpty) ...[
               _QuestionImageCard(imageUrl: question.imageUrl!),
               AppSpacing.gapMd,
             ],
@@ -740,10 +745,7 @@ class _QuestionImageCard extends StatelessWidget {
         child: Stack(
           alignment: Alignment.bottomRight,
           children: [
-            AspectRatio(
-              aspectRatio: 16 / 9,
-              child: _buildImage(imageUrl),
-            ),
+            AspectRatio(aspectRatio: 16 / 9, child: _buildImage(imageUrl)),
             Container(
               margin: const EdgeInsets.all(8),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -790,9 +792,7 @@ class _QuestionImageCard extends StatelessWidget {
       fit: BoxFit.contain,
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
-        return const Center(
-          child: CircularProgressIndicator(strokeWidth: 2),
-        );
+        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
       },
       errorBuilder: (context, error, stackTrace) => _buildErrorWidget(),
     );
@@ -858,8 +858,10 @@ class _QuestionImageCard extends StatelessWidget {
                 right: 0,
                 child: Center(
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black54,
                       borderRadius: BorderRadius.circular(20),

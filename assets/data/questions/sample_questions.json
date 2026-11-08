@@ -814,7 +814,9 @@
     "correctIndex": 3,
     "explanation": "Türkiye'nin ortalama yükseltisinin fazla olması ve batıdan doğuya doğru artması jeolojik oluşum ve orojenik hareketlerle ilgili olup göreceli (özel) konumunun bir sonucudur. Paralel ve meridyen derecelerinden (matematiksel konum) yükselti profili çıkarılamaz.",
     "difficulty": "easy",
-    "distractor_trap": "ÖSYM adayların 'doğu' kelimesini görünce otomatik olarak meridyenlerle ilişkilendirme ön yargısını kullanır. Yükselti değişimi matematiksel değil, tamamen jeomorfolojik ve özel konum unsurudur."
+    "distractor_trap": "ÖSYM adayların 'doğu' kelimesini görünce otomatik olarak meridyenlerle ilişkilendirme ön yargısını kullanır. Yükselti değişimi matematiksel değil, tamamen jeomorfolojik ve özel konum unsurudur.",
+    "imageUrl": "assets/images/mascot/cografya_koordinat_haritasi.png",
+    "image_url": "assets/images/mascot/cografya_koordinat_haritasi.png"
   },
   {
     "id": "cografya_002",
@@ -1483,18 +1485,42 @@
     "id": "cografya_041",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Türkiye arazisinin büyük bir bölümü III. ve IV. jeolojik zamanlarda (Tersiyer ve Kuaterner) meydana gelen orojenik ve epirojenik hareketlerle şekillenmiş genç oluşumlu bir ülkedir.\n\nAşağıdakilerden hangisi Türkiye'nin genç oluşumlu bir arazi yapısına sahip olduğunun doğrudan bir göstergesi değildir?",
+    "text": "Haritada karstik şekillerin ve kalkerli arazinin en yoğun görüldüğü Akdeniz Bölgesi (Teke ve Taşeli Platoları) renkli alan ve işaretçilerle gösterilmiştir.\n\nBu arazilerde yer altı sularının kimyasal eritmesiyle oluşan aşağıdaki şekillerden hangisi en küçük karstik erime çukurudur?",
     "options": [
-      "Linyit, bor, tuz ve petrol yataklarının yaygın olması",
-      "Deprem riskinin ve fay hatlarının geniş alan kaplaması",
-      "Akarsuların denge profiline henüz ulaşmamış olması",
-      "Jeotermal enerji potansiyeli ve sıcak su kaynaklarının zenginliği",
-      "Taş kömürü yataklarının Zonguldak ve çevresinde bulunması"
+      "Lapya",
+      "Dolindir",
+      "Uvala",
+      "Polye",
+      "Obruk"
     ],
-    "correctIndex": 4,
-    "explanation": "Taş kömürü I. Jeolojik Zaman'da (Paleozoyik) oluşmuş yaşlı bir karbon yatağıdır. Dolayısıyla taş kömürünün varlığı genç oluşumlu olmanın değil, arazide eski (masif/paleozoyik) arazilerin de bulunduğunun kanıtıdır. Linyit, petrol, bor, kaplıcalar ve denge profiline ulaşmamış dik vadiler ise III. ve IV. zamanın (genç oluşumun) kanıtlarıdır.",
+    "correctIndex": 0,
+    "explanation": "Kalkerli arazilerde yağış ve erime sularının kayaçları eritmesiyle oluşan birkaç milimetre ile birkaç metre arasındaki en küçük karstik erime çukuruna 'Lapya' adı verilir.",
     "difficulty": "easy",
-    "distractor_trap": "ÖSYM linyit ile taş kömürünü sınavlarda sıkça karşılaştırır. Linyit III. Zaman (genç), taş kömürü I. Zaman (yaşlı) arazisidir."
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: Polye (göl ova) karstik erime çukurlarının en büyüğüdür; Lapya ise en küçüğüdür. ÖSYM sıralamayı 'Lapya -> Dolin -> Uvala -> Polye' (küçükten büyüğe) şeklinde sıklıkla çeldirici olarak sorar.",
+    "imageUrl": "assets/images/mascot/cografya_karstik_harita.png",
+    "image_url": "map://turkey/karstik",
+    "map_config": {
+      "highlighted_provinces": {
+        "antalya": "#D97706",
+        "mersin": "#D97706",
+        "burdur": "#F59E0B",
+        "mugla": "#F59E0B"
+      },
+      "markers": [
+        {
+          "id": "1",
+          "label": "I",
+          "x": 215.0,
+          "y": 360.0
+        },
+        {
+          "id": "2",
+          "label": "II",
+          "x": 335.0,
+          "y": 370.0
+        }
+      ]
+    }
   },
   {
     "id": "cografya_042",
@@ -3523,18 +3549,53 @@
     "id": "cografya_161",
     "lesson": "Coğrafya",
     "topic": "Madenler ve Enerji Kaynakları",
-    "text": "Türkiye'de jeolojik zamanlar boyunca yoğun volkanik faaliyetler, kırılmalar ve başkalaşım (metamorfizma) süreçleri yaşanmıştır.\n\nTürkiye'de maden çeşitliliği ve rezerv zenginliği bakımından ilk sırada yer alan coğrafi bölüm ve ilimiz aşağıdakilerden hangisinde doğru verilmiştir?",
+    "text": "Haritada numaralarla gösterilen alanların hangisinde Taş kömürü çıkarılır?",
     "options": [
-      "Yukarı Fırat Bölümü — Elazığ",
-      "Çatalca - Kocaeli Bölümü — İstanbul",
-      "Kıyı Ege Bölümü — İzmir",
-      "Antalya Bölümü — Antalya",
-      "Konya Bölümü — Konya"
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
     ],
     "correctIndex": 0,
-    "explanation": "Türkiye'de maden çeşitliliğinin en fazla olduğu coğrafi bölge Doğu Anadolu, bölüm Yukarı Fırat Bölümü, il ise Elazığ'dır (Maden ilçesinde bakır, Guleman'da krom, Keban'da kurşun-çinko, Alacakaya'da mermer).",
+    "explanation": "Türkiye'de taş kömürü yatakları yalnızca 1. Jeolojik Zaman'a (Paleozoik) ait masif arazilerde yer alan I numaralı Zonguldak, Karabük ve Bartın (Batı Karadeniz) havzasında bulunmaktadır. Diğer numaralı alanlar linyit veya demir madenleriyle öne çıkmaktadır.",
     "difficulty": "easy",
-    "distractor_trap": "Sanayi devi Marmara olsa da yer altı maden çeşitliliği birincisi Yukarı Fırat Bölümü ve Elazığ'dır."
+    "distractor_trap": "⚠️ ÖSYM Çeldirici Tuzağı: II ve III numaralı alanlar İç ve Doğu Anadolu'da linyit veya demir madenleriyle karıştırılabilir. Taş Kömürü Türkiye'de yalnızca I numaralı Zonguldak havzasında çıkarılır; 3. zamanda oluşan yaygın linyit ile 1. zamanda oluşan taş kömürü karıştırılmamalıdır.",
+    "image_url": "map://turkey/tas_komuru",
+    "map_config": {
+      "markers": [
+        {
+          "id": "0",
+          "label": "I",
+          "x": 358.1,
+          "y": 36.1
+        },
+        {
+          "id": "1",
+          "label": "II",
+          "x": 525.4,
+          "y": 232.2
+        },
+        {
+          "id": "2",
+          "label": "III",
+          "x": 719.4,
+          "y": 225.9
+        },
+        {
+          "id": "3",
+          "label": "IV",
+          "x": 63.1,
+          "y": 143.8
+        },
+        {
+          "id": "4",
+          "label": "V",
+          "x": 102.1,
+          "y": 162.4
+        }
+      ]
+    }
   },
   {
     "id": "cografya_162",

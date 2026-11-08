@@ -1,3 +1,7 @@
+import 'dart:ui';
+
+import 'package:kadro/shared/widgets/turkey_map/turkey_map_models.dart';
+
 /// KPSS çalışma uygulamasındaki tek bir soruyu temsil eden model.
 ///
 /// Angular/TypeScript'teki `interface Question { ... }` veya DTO sınıfının
@@ -20,6 +24,10 @@ class Question {
   /// Boş veya null ise soru yalnızca metin olarak render edilir.
   final String? imageUrl;
 
+  /// Soruda yer alan dinamik ve interaktif Türkiye vektör haritası konfigürasyonu.
+  /// (İl/bölge boyama, Romen rakamlı marker'lar, koordinat işaretleyicileri).
+  final TurkeyMapConfig? mapConfig;
+
   const Question({
     required this.id,
     required this.lesson,
@@ -31,6 +39,7 @@ class Question {
     this.difficulty = 'medium',
     this.distractorTrap,
     this.imageUrl,
+    this.mapConfig,
   });
 
   /// Kullanıcının seçtiği şıkkın doğru olup olmadığını kontrol eden yardımcı metot.
@@ -55,6 +64,7 @@ class Question {
     String? difficulty,
     String? distractorTrap,
     String? imageUrl,
+    TurkeyMapConfig? mapConfig,
   }) {
     return Question(
       id: id ?? this.id,
@@ -67,7 +77,135 @@ class Question {
       difficulty: difficulty ?? this.difficulty,
       distractorTrap: distractorTrap ?? this.distractorTrap,
       imageUrl: imageUrl ?? this.imageUrl,
+      mapConfig: mapConfig ?? this.mapConfig,
     );
+  }
+
+  /// Aktif harita konfigürasyonunu döner.
+  /// Doğrudan mapConfig tanımlıysa onu, yoksa imageUrl içindeki 'map://'
+  /// URI şemasını ayrıştırarak üretilen haritayı döner.
+  TurkeyMapConfig? get effectiveMapConfig {
+    if (mapConfig != null) return mapConfig;
+    if (imageUrl != null && imageUrl!.startsWith('map:')) {
+      return parseMapUri(imageUrl!);
+    }
+    return null;
+  }
+
+  /// 'map://turkey/...' URI şemasını TurkeyMapConfig nesnesine dönüştüren parser
+  static TurkeyMapConfig? parseMapUri(String uriString) {
+    try {
+      final uri = Uri.parse(uriString);
+      final path = uri.path.toLowerCase();
+      final host = uri.host.toLowerCase();
+
+      // 1. Taş Kömürü Madeni ve Batı Karadeniz Haritası (ÖSYM Klasik Soru Tipi)
+      if (path.contains('tas_komuru') ||
+          path.contains('komur') ||
+          host.contains('tas_komuru')) {
+        return const TurkeyMapConfig(
+          markers: [
+            TurkeyMapMarker(
+              id: '0',
+              label: 'I',
+              offset: Offset(358.1, 36.1),
+            ), // Batı Karadeniz / Zonguldak
+            TurkeyMapMarker(
+              id: '1',
+              label: 'II',
+              offset: Offset(525.4, 232.2),
+            ), // İç Anadolu / Nevşehir-Niğde
+            TurkeyMapMarker(
+              id: '2',
+              label: 'III',
+              offset: Offset(719.4, 225.9),
+            ), // Doğu Anadolu / Elazığ-Malatya
+            TurkeyMapMarker(
+              id: '3',
+              label: 'IV',
+              offset: Offset(63.1, 143.8),
+            ), // Marmara / Çanakkale
+            TurkeyMapMarker(
+              id: '4',
+              label: 'V',
+              offset: Offset(102.1, 162.4),
+            ), // Balıkesir
+          ],
+        );
+      }
+
+      // 2. Karstik Araziler (Teke & Taşeli Platoları)
+      if (path.contains('karstik') || host.contains('karstik')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {
+            'antalya': Color(0xFFD97706),
+            'mersin': Color(0xFFD97706),
+            'burdur': Color(0xFFF59E0B),
+            'mugla': Color(0xFFF59E0B),
+          },
+          markers: [
+            TurkeyMapMarker(id: '1', label: 'I', offset: Offset(215.0, 360.0)),
+            TurkeyMapMarker(id: '2', label: 'II', offset: Offset(335.0, 370.0)),
+          ],
+        );
+      }
+
+      // 3. Volkanik Araziler ve Dağlar
+      if (path.contains('volkanik') || host.contains('volkanik')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {
+            'nevsehir': Color(0xFFDC2626),
+            'kayseri': Color(0xFFDC2626),
+            'nigde': Color(0xFFDC2626),
+            'aksaray': Color(0xFFDC2626),
+            'agri': Color(0xFFDC2626),
+            'van': Color(0xFFDC2626),
+            'bitlis': Color(0xFFDC2626),
+          },
+        );
+      }
+
+      // 4. Genel Query Parametreleri: map://turkey?provinces=zonguldak,karabuk&markers=I:358.1,36.1;II:525.4,232.2
+      final provParam =
+          uri.queryParameters['provinces'] ?? uri.queryParameters['highlight'];
+      final markerParam = uri.queryParameters['markers'];
+
+      final highlighted = <String, Color>{};
+      if (provParam != null && provParam.isNotEmpty) {
+        for (final p in provParam.split(',')) {
+          final cleanP = p.trim().toLowerCase();
+          if (cleanP.isNotEmpty) {
+            highlighted[cleanP] = const Color(0xFFD97706);
+          }
+        }
+      }
+
+      final parsedMarkers = <TurkeyMapMarker>[];
+      if (markerParam != null && markerParam.isNotEmpty) {
+        final items = markerParam.split(';');
+        for (final item in items) {
+          final parts = item.split(':');
+          if (parts.length == 2) {
+            final label = parts[0].trim();
+            final coords = parts[1].split(',');
+            if (coords.length == 2) {
+              final x = double.tryParse(coords[0].trim()) ?? 0.0;
+              final y = double.tryParse(coords[1].trim()) ?? 0.0;
+              parsedMarkers.add(
+                TurkeyMapMarker(id: label, label: label, offset: Offset(x, y)),
+              );
+            }
+          }
+        }
+      }
+
+      return TurkeyMapConfig(
+        highlightedProvinces: highlighted,
+        markers: parsedMarkers,
+      );
+    } catch (_) {
+      return null;
+    }
   }
 
   /// JSON (`Map<String, dynamic>`) verisinden Question nesnesi üreten factory constructor.
@@ -135,6 +273,17 @@ class Question {
     final rawImage =
         json['image_url'] as String? ?? json['imageUrl'] as String?;
 
+    TurkeyMapConfig? mapConfig;
+    if (json['map_config'] is Map<String, dynamic>) {
+      mapConfig = TurkeyMapConfig.fromJson(
+        json['map_config'] as Map<String, dynamic>,
+      );
+    } else if (json['mapConfig'] is Map<String, dynamic>) {
+      mapConfig = TurkeyMapConfig.fromJson(
+        json['mapConfig'] as Map<String, dynamic>,
+      );
+    }
+
     return Question(
       id: json['id'] as String,
       lesson: json['lesson'] as String,
@@ -148,6 +297,7 @@ class Question {
       imageUrl: (rawImage != null && rawImage.isNotEmpty && rawImage != 'null')
           ? rawImage
           : null,
+      mapConfig: mapConfig,
     );
   }
 
@@ -169,6 +319,13 @@ class Question {
     final rawImage =
         row['image_url']?.toString() ?? row['imageUrl']?.toString();
 
+    TurkeyMapConfig? mapConfig;
+    if (interaction['map_config'] is Map<String, dynamic>) {
+      mapConfig = TurkeyMapConfig.fromJson(
+        interaction['map_config'] as Map<String, dynamic>,
+      );
+    }
+
     return Question(
       id: row['id']?.toString() ?? '',
       lesson: row['lesson']?.toString() ?? 'Genel Kültür',
@@ -182,6 +339,7 @@ class Question {
       imageUrl: (rawImage != null && rawImage.isNotEmpty && rawImage != 'null')
           ? rawImage
           : null,
+      mapConfig: mapConfig,
     );
   }
 
@@ -200,6 +358,9 @@ class Question {
     };
     if (imageUrl != null) {
       map['image_url'] = imageUrl;
+    }
+    if (mapConfig != null) {
+      map['map_config'] = mapConfig!.toJson();
     }
     return map;
   }
