@@ -90,7 +90,7 @@ void main() {
         expect(find.text('Büyüt'), findsOneWidget);
 
         // Lejant kontrolü
-        expect(find.text('Yağış (mm)'), findsOneWidget);
+        expect(find.text('Aylık Yağış (mm)'), findsOneWidget);
         expect(find.text('Sıcaklık (°C)'), findsOneWidget);
 
         // İstatistik rozetleri kontrolü

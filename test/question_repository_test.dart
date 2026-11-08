@@ -51,7 +51,7 @@ void main() {
       );
 
       expect(cografyaQuestions.isNotEmpty, true);
-      expect(cografyaQuestions.length, 363);
+      expect(cografyaQuestions.length, 364);
       expect(cografyaQuestions.every((q) => q.lesson == 'Coğrafya'), true);
       expect(cografyaQuestions.any((q) => q.topic.contains('Türkiye')), true);
     });
@@ -98,24 +98,35 @@ void main() {
         'id': 'cog_map_001',
         'lesson': 'Coğrafya',
         'topic': 'Türkiye\'nin Yer Şekilleri ve İklimi',
-        'text': 'Yukarıdaki Türkiye haritasında numaralandırılmış alanlardan...',
+        'text':
+            'Yukarıdaki Türkiye haritasında numaralandırılmış alanlardan...',
         'options': ['I', 'II', 'III', 'IV', 'V'],
         'correctIndex': 2,
-        'explanation': 'III numaralı saha Doğu Karadeniz olup heyelan riski en yüksektir.',
+        'explanation':
+            'III numaralı saha Doğu Karadeniz olup heyelan riski en yüksektir.',
         'difficulty': 'medium',
-        'distractor_trap': 'ÖSYM daima I numaralı alanı çeldirici olarak kullanır.',
-        'image_url': 'https://storage.supabase.co/question-images/harita_01.webp',
+        'distractor_trap':
+            'ÖSYM daima I numaralı alanı çeldirici olarak kullanır.',
+        'image_url':
+            'https://storage.supabase.co/question-images/harita_01.webp',
       };
 
       final qFromJson = Question.fromJson(jsonSample);
-      expect(qFromJson.imageUrl, 'https://storage.supabase.co/question-images/harita_01.webp');
-      expect(qFromJson.toJson()['image_url'], 'https://storage.supabase.co/question-images/harita_01.webp');
+      expect(
+        qFromJson.imageUrl,
+        'https://storage.supabase.co/question-images/harita_01.webp',
+      );
+      expect(
+        qFromJson.toJson()['image_url'],
+        'https://storage.supabase.co/question-images/harita_01.webp',
+      );
 
       final supabaseSample = {
         'id': 'cog_map_002',
         'lesson': 'Coğrafya',
         'topic': 'Madenler ve Enerji Kaynakları',
-        'prompt_text': 'Haritada işaretli merkezlerin hangisinde boksit çıkarılır?',
+        'prompt_text':
+            'Haritada işaretli merkezlerin hangisinde boksit çıkarılır?',
         'interaction_data': {
           'options': ['Seydişehir', 'Murgul', 'Divriği', 'Guleman', 'Mazıdağı'],
           'correctIndex': 0,
@@ -126,7 +137,10 @@ void main() {
       };
 
       final qFromSupabase = Question.fromSupabase(supabaseSample);
-      expect(qFromSupabase.imageUrl, 'assets/images/maps/turkiye_madenler_map.png');
+      expect(
+        qFromSupabase.imageUrl,
+        'assets/images/maps/turkiye_madenler_map.png',
+      );
       expect(qFromSupabase.options.length, 5);
       expect(qFromSupabase.options.first, 'Seydişehir');
 

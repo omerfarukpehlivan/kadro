@@ -41,7 +41,7 @@ class ClimateChart extends StatelessWidget {
             children: [
               _buildLegendItem(
                 color: const Color(0xFF2563EB),
-                label: 'Yağış (mm)',
+                label: 'Aylık Yağış (mm)',
                 isSquare: true,
                 textColor: secondaryTextColor,
               ),

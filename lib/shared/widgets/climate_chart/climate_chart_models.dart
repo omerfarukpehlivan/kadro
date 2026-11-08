@@ -188,7 +188,7 @@ class ClimatePresets {
     title: 'Karadeniz İklimi (Rize)',
     subtitle: 'Her mevsim yağışlı, en fazla yağış sonbaharda',
     monthlyData: _buildPoints(
-      precip: [215, 175, 145, 95, 100, 135, 155, 190, 255, 285, 245, 235],
+      precip: [220, 180, 150, 100, 110, 140, 160, 200, 260, 290, 250, 240],
       temp: [
         6.5,
         6.8,
@@ -214,7 +214,7 @@ class ClimatePresets {
     title: 'İç Anadolu Karasal İklimi (Konya)',
     subtitle: 'En fazla yağış ilkbaharda, yazlar sıcak ve kurak',
     monthlyData: _buildPoints(
-      precip: [35, 30, 35, 48, 55, 28, 12, 10, 15, 30, 35, 40],
+      precip: [35, 30, 35, 48, 55, 28, 12, 10, 15, 30, 35, 47],
       temp: [0.0, 1.5, 5.5, 11.0, 16.0, 20.5, 23.5, 23.0, 18.5, 12.5, 6.5, 2.0],
     ),
   );
@@ -251,7 +251,7 @@ class ClimatePresets {
     title: 'Güneydoğu Anadolu İklimi (Şanlıurfa)',
     subtitle: 'Yaz sıcaklığı ve kuraklığı en şiddetli olan iklim',
     monthlyData: _buildPoints(
-      precip: [90, 80, 65, 45, 25, 3, 1, 1, 5, 35, 60, 85],
+      precip: [100, 90, 75, 55, 30, 4, 1, 1, 4, 35, 65, 90],
       temp: [
         5.5,
         7.0,
