@@ -104,7 +104,7 @@ const List<Lesson> kpssLessons = [
 /// - Kurtuluş Savaşı Hazırlık ve Cepheler: 10 test (100 soru)
 /// - Atatürk İlke ve İnkılapları: 8 test (80 soru)
 /// - Çağdaş Türk ve Dünya Tarihi: 7 test (70 soru)
-/// Coğrafya (4 test), Vatandaşlık (5 test) ve Güncel Bilgiler (4 test) havuzlarına göre varsayılan döner.
+/// Coğrafya (6 test), Vatandaşlık (5 test) ve Güncel Bilgiler (4 test) havuzlarına göre varsayılan döner.
 int defaultTopicTestCount(String lessonName, String topic) {
   if (lessonName == 'Tarih') {
     switch (topic) {
@@ -124,7 +124,7 @@ int defaultTopicTestCount(String lessonName, String topic) {
         return 7;
     }
   } else if (lessonName == 'Coğrafya') {
-    return 4;
+    return 6;
   } else if (lessonName == 'Vatandaşlık') {
     return 5;
   } else if (lessonName == 'Güncel Bilgiler') {
