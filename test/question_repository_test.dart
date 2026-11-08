@@ -33,6 +33,13 @@ void main() {
       expect(vatandaslikQuestions.first.lesson, 'Vatandaşlık');
       expect(vatandaslikQuestions.first.id, 'vat_001');
 
+      final guncelQuestions = await repository.getQuestionsByLesson(
+        'Güncel Bilgiler',
+      );
+      expect(guncelQuestions.length, 240);
+      expect(guncelQuestions.first.lesson, 'Güncel Bilgiler');
+      expect(guncelQuestions.first.id, 'gun_001');
+
       final olmayanDers = await repository.getQuestionsByLesson('Fizik');
       expect(olmayanDers.isEmpty, true);
     });
