@@ -6,6 +6,7 @@ import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/games/presentation/concept_match_screen.dart';
 import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
+import 'package:kadro/features/map_practice/presentation/map_practice_hub_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/pomodoro/presentation/pomodoro_studio_screen.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
@@ -210,7 +211,12 @@ class PracticeHubScreen extends ConsumerWidget {
           ),
           AppSpacing.gapMd,
 
-          // 5. Odak & Sınav Sayacı (Pomodoro Stüdyosu & Masa Saati Modu)
+          // 5. Görsel Öğrenme & Harita Atölyesi
+          const SectionTitle('Görsel Öğrenme & Harita Atölyesi'),
+          const _MapPracticeSpecialCard(),
+          AppSpacing.gapMd,
+
+          // 6. Odak & Sınav Sayacı (Pomodoro Stüdyosu & Masa Saati Modu)
           const SectionTitle('Odak & Sınav Sayacı'),
           TactileCard(
             onTap: () {
@@ -530,5 +536,102 @@ class _DistractorHuntSpecialCard extends StatelessWidget {
         ],
       ),
     ).animate().fadeIn(duration: 200.ms);
+  }
+}
+
+/// Harita Atölyesi (Görsel Coğrafya & 81 İl Dilsiz Harita) için vitrin kartı.
+class _MapPracticeSpecialCard extends StatelessWidget {
+  const _MapPracticeSpecialCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isCompact = ResponsiveBreakpoints.isCompact(context);
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: const Color(0xFF10B981).withValues(alpha: 0.5),
+      padding: EdgeInsets.all(isCompact ? 12 : 16),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const MapPracticeHubScreen()),
+        );
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(isCompact ? 10 : 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF10B981).withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const PhosphorIcon(
+              PhosphorIconsDuotone.mapTrifold,
+              color: Color(0xFF10B981),
+              size: 26,
+            ),
+          ),
+          SizedBox(width: isCompact ? 10 : 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(
+                      'Harita Atölyesi',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Text(
+                        '81 İl & Havzalar',
+                        style: TextStyle(
+                          color: Color(0xFF10B981),
+                          fontWeight: FontWeight.w800,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'İlleri, maden havzalarını, tarım liderlerini ve platoları interaktif haritada dokunarak keşfet.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          const PhosphorIcon(
+            PhosphorIconsBold.caretRight,
+            color: Color(0xFF10B981),
+            size: 22,
+          ),
+        ],
+      ),
+    );
   }
 }
