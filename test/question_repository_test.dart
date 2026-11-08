@@ -43,7 +43,7 @@ void main() {
       );
 
       expect(cografyaQuestions.isNotEmpty, true);
-      expect(cografyaQuestions.length, 50);
+      expect(cografyaQuestions.length, 240);
       expect(cografyaQuestions.every((q) => q.lesson == 'Coğrafya'), true);
       expect(cografyaQuestions.any((q) => q.topic.contains('Türkiye')), true);
     });

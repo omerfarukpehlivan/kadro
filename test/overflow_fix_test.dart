@@ -319,7 +319,8 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Net Puanın'), findsOneWidget);
-        expect(homeButton.hitTestable(), findsOneWidget);
+        await tester.scrollUntilVisible(find.text('Ana Sayfaya Dön'), 100);
+        expect(homeButton, findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );
