@@ -59,19 +59,25 @@ class QuestionRepository {
     final client = SupabaseConfig.clientOrNull;
     if (client != null) {
       try {
-        var query = client
+        var filterQuery = client
             .from('questions')
             .select()
             .eq('question_type', 'multiple_choice');
 
         if (lesson != null && lesson.isNotEmpty) {
-          query = query.eq('lesson', lesson);
+          filterQuery = filterQuery.eq('lesson', lesson);
         }
         if (topic != null && topic.isNotEmpty) {
-          query = query.eq('topic', topic);
+          filterQuery = filterQuery.eq('topic', topic);
         }
 
-        final List<dynamic> response = await query;
+        // Deterministik ve sabit sıralama: Önce order_index'e göre artan,
+        // order_index tanımlı olmayan eski kayıtlar en sona düşer.
+        final List<dynamic> response = await filterQuery.order(
+          'order_index',
+          ascending: true,
+          nullsFirst: false,
+        );
         if (response.isNotEmpty) {
           final cloudQuestions = response
               .map((row) => Question.fromSupabase(row as Map<String, dynamic>))

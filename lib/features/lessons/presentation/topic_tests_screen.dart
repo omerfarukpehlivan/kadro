@@ -78,8 +78,19 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
       }
     }
 
-    // Soruları kolaydan zora (difficultyLevel: 1 -> 2 -> 3) sırala
-    fetched.sort((a, b) => a.difficultyLevel.compareTo(b.difficultyLevel));
+    // Soruları sırala:
+    // 1. Öncelik: Eğer orderIndex tanımlıysa (1..60), doğrudan orderIndex'e göre sırala.
+    // 2. Fallback: orderIndex yoksa pedagojik olarak kolaydan zora (difficultyLevel: 1 -> 2 -> 3) sırala.
+    fetched.sort((a, b) {
+      final aOrder = a.orderIndex;
+      final bOrder = b.orderIndex;
+      if (aOrder != null && bOrder != null && aOrder > 0 && bOrder > 0) {
+        return aOrder.compareTo(bOrder);
+      }
+      if (aOrder != null && aOrder > 0) return -1;
+      if (bOrder != null && bOrder > 0) return 1;
+      return a.difficultyLevel.compareTo(b.difficultyLevel);
+    });
 
     // Soruları 10'ar soruluk test paketlerine böl
     final chunks = <List<Question>>[];
@@ -337,9 +348,7 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
                   vertical: 6,
                 ),
               ),
-              child: Text(
-                solvedSession != null ? 'Tekrar Çöz' : 'Test Çöz',
-              ),
+              child: Text(solvedSession != null ? 'Tekrar Çöz' : 'Test Çöz'),
             ),
           ],
         ),

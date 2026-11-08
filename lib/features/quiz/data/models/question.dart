@@ -44,6 +44,11 @@ class Question {
   /// Soruda yer alan Güneş açısı, ekinoks ve gölge şeması konfigürasyonu.
   final SunDiagramConfig? sunConfig;
 
+  /// Sorunun test ve konu içindeki sabit sıra numarası (1..60).
+  /// Veritabanındaki `order_index` alanı ile eşlenir ve test paketlerinin
+  /// kaymayan, deterministik sırada oluşmasını sağlar.
+  final int? orderIndex;
+
   const Question({
     required this.id,
     required this.lesson,
@@ -60,6 +65,7 @@ class Question {
     this.geoConfig,
     this.pyramidConfig,
     this.sunConfig,
+    this.orderIndex,
   });
 
   /// Kullanıcının seçtiği şıkkın doğru olup olmadığını kontrol eden yardımcı metot.
@@ -89,6 +95,7 @@ class Question {
     GeoDiagramConfig? geoConfig,
     PopulationPyramidConfig? pyramidConfig,
     SunDiagramConfig? sunConfig,
+    int? orderIndex,
   }) {
     return Question(
       id: id ?? this.id,
@@ -106,6 +113,7 @@ class Question {
       geoConfig: geoConfig ?? this.geoConfig,
       pyramidConfig: pyramidConfig ?? this.pyramidConfig,
       sunConfig: sunConfig ?? this.sunConfig,
+      orderIndex: orderIndex ?? this.orderIndex,
     );
   }
 
@@ -921,6 +929,8 @@ class Question {
       geoConfig: geoConfig,
       pyramidConfig: pyramidConfig,
       sunConfig: sunConfig,
+      orderIndex: (json['order_index'] as num?)?.toInt() ??
+          (json['orderIndex'] as num?)?.toInt(),
     );
   }
 
@@ -995,6 +1005,8 @@ class Question {
       geoConfig: geoConfig,
       pyramidConfig: pyramidConfig,
       sunConfig: sunConfig,
+      orderIndex: (row['order_index'] as num?)?.toInt() ??
+          (row['orderIndex'] as num?)?.toInt(),
     );
   }
 
@@ -1011,6 +1023,9 @@ class Question {
       'difficulty': difficulty,
       'distractor_trap': distractorTrap,
     };
+    if (orderIndex != null) {
+      map['order_index'] = orderIndex;
+    }
     if (imageUrl != null) {
       map['image_url'] = imageUrl;
     }
