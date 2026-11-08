@@ -1588,7 +1588,7 @@
     "id": "cografya_047",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "İç Anadolu Bölgesi'nde ilkbahar aylarında öğleden sonraları ısınan havanın yükselerek soğuması sonucu meydana gelen ve halk arasında 'kırkikindi' olarak adlandırılan yağışlar hangi oluşum türüne aittir?",
+    "text": "Grafikte sıcaklık ve yağış dağılışı gösterilen merkezde (İç Anadolu Karasal İklimi) ilkbahar aylarında öğleden sonraları ısınan havanın yükselerek soğuması sonucu meydana gelen ve halk arasında 'kırkikindi' olarak adlandırılan yağışlar hangi oluşum türüne aittir?",
     "options": [
       "Orografik (Yamaç) Yağışları",
       "Konveksiyonel (Yükselim) Yağışları",
@@ -1599,13 +1599,14 @@
     "correctIndex": 1,
     "explanation": "Güneş ışınlarıyla ısınan havanın dikey doğrultuda yükselmesi ve soğuyarak yoğuşması sonucu oluşan yağışlara konveksiyonel (yükselim) yağış denir. İç Anadolu'da ilkbaharda görülen 'kırkikindi' yağışları bunun en belirgin örneğidir.",
     "difficulty": "easy",
-    "distractor_trap": "Karadeniz kıyılarında dağlara çarparak yükselen yağışlar orografik (yamaç); Türkiye geneli kış yağışları ise cephesel (frontal) karakterlidir."
+    "distractor_trap": "Karadeniz kıyılarında dağlara çarparak yükselen yağışlar orografik (yamaç); Türkiye geneli kış yağışları ise cephesel (frontal) karakterlidir.",
+    "image_url": "climate://karasal"
   },
   {
     "id": "cografya_048",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Akdeniz iklim bölgesinde kızılçam ormanlarının tahrip edilmesiyle oluşan kısa boylu, sert yapraklı ve kuraklığa dayanıklı bodur ağaççıklardan oluşan bitki topluluğuna ne ad verilir?",
+    "text": "Grafikte sıcaklık ve yağış özellikleri (kışları ılık-yağışlı, yazları sıcak-kurak) gösterilen Akdeniz iklim bölgesinde kızılçam ormanlarının tahrip edilmesiyle oluşan kısa boylu, sert yapraklı ve kuraklığa dayanıklı bodur ağaççıklardan oluşan bitki topluluğuna ne ad verilir?",
     "options": [
       "Bozkır (Step)",
       "Maki",
@@ -1616,7 +1617,8 @@
     "correctIndex": 1,
     "explanation": "Kızılçam ormanlarının tahribatıyla zeytin, defne, mersin, keçiboynuzu, kermes meşesi gibi türlerden oluşan 'maki' topluluğu ortaya çıkar. Makilerin de tahrip edilmesiyle 'garig' (frigana) oluşur.",
     "difficulty": "easy",
-    "distractor_trap": "Maki kızılçamın tahribiyle; garig ise makinin tahribiyle oluşur. Karadeniz'deki orman tahribi ise 'psödömaki' (yalancı maki) oluşturur."
+    "distractor_trap": "Maki kızılçamın tahribiyle; garig ise makinin tahribiyle oluşur. Karadeniz'deki orman tahribi ise 'psödömaki' (yalancı maki) oluşturur.",
+    "image_url": "climate://akdeniz"
   },
   {
     "id": "cografya_049",
@@ -2014,7 +2016,7 @@
     "id": "cografya_072",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Karadeniz kıyı kuşağında yer almalarına rağmen Rize ile Sinop arasında yıllık yağış miktarı bakımından yaklaşık 3 kat fark (Rize ~2300 mm, Sinop ~700 mm) bulunmaktadır.\n\nSinop'un Rize'ye göre belirgin şekilde daha az yağış almasının temel morfolojik nedeni aşağıdakilerden hangisidir?",
+    "text": "Grafikte sıcaklık ve yağış rejimi gösterilen Doğu Karadeniz (Rize) kıyı kuşağında yıllık yağış miktarı ~2300 mm iken, aynı bölgedeki Sinop kıyısında bu miktar ~700 mm civarındadır.\n\nSinop'un Rize'ye göre belirgin şekilde daha az yağış almasının temel morfolojik nedeni aşağıdakilerden hangisidir?",
     "options": [
       "Sinop'un mutlak konum olarak daha batıda yer alması",
       "Sinop gerisindeki Küre Dağları'nın kıyıya dik uzanması",
@@ -2025,7 +2027,8 @@
     "correctIndex": 2,
     "explanation": "Rize'nin arkasındaki Kaçkar Dağları hemen kıyıdan dimdik yükselir ve 4000 metreye yaklaşan heybetiyle denizden gelen tüm nemi yamaç yağışına dönüştürür. Sinop gerisindeki Küre Dağları ise kıyıdan daha içeride başlar ve yükseltisi Kaçkarların yarısı kadardır; bu yüzden hava kütleleri yükselip yoğunlaşamadan iç kesimlere süzülür.",
     "difficulty": "hard",
-    "distractor_trap": "Küre Dağları kıyıya dik uzanmaz (paraleldir). Az yağışın nedeni dağların uzanış yönü değil; basık olması ve kıyı gerisindeki yükseltinin Kaçkarlar kadar olmamasıdır."
+    "distractor_trap": "Küre Dağları kıyıya dik uzanmaz (paraleldir). Az yağışın nedeni dağların uzanış yönü değil; basık olması ve kıyı gerisindeki yükseltinin Kaçkarlar kadar olmamasıdır.",
+    "image_url": "climate://karadeniz"
   },
   {
     "id": "cografya_073",
@@ -2065,7 +2068,7 @@
     "id": "cografya_075",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Güneydoğu Anadolu Bölgesi'nin yıllık yağış miktarı (yaklaşık 500-600 mm), İç Anadolu Bölgesi'nin yıllık yağış miktarından (yaklaşık 350-400 mm) belirgin şekilde daha fazladır.\n\nBuna rağmen Güneydoğu Anadolu Bölgesi'nde kuraklığın ve tarımsal sulama ihtiyacının İç Anadolu'dan çok daha şiddetli hissedilmesinin temel nedeni aşağıdakilerden hangisidir?",
+    "text": "Grafikte sıcaklık ve yağış değerleri gösterilen Güneydoğu Anadolu Bölgesi'nin yıllık yağış miktarı (~550 mm), İç Anadolu Bölgesi'nden (~380 mm) belirgin şekilde daha fazladır.\n\nBuna rağmen Güneydoğu Anadolu'da kuraklığın ve tarımsal sulama ihtiyacının grafikteki yüksek sıcaklıklara bağlı olarak İç Anadolu'dan çok daha şiddetli hissedilmesinin temel nedeni nedir?",
     "options": [
       "Güneydoğu'da tarım alanlarının daha geniş yer kaplaması",
       "Güneydoğu'nun yazın Basra Termik Alçak Basıncı ve Samyeli etkisiyle aşırı sıcak olması ve potansiyel buharlaşmanın yağışın katbekat üzerine çıkması",
@@ -2076,7 +2079,8 @@
     "correctIndex": 1,
     "explanation": "Güneydoğu Anadolu İç Anadolu'dan daha çok yağış almasına rağmen, yazın güneyden gelen Samyeli (Keşişleme) rüzgarı ve Basra Termik Alçak Basıncı'nın etkisiyle Türkiye'nin en yüksek yaz sıcaklıklarına ve en şiddetli buharlaşma oranına (şiddetli kuraklığa) maruz kalır.",
     "difficulty": "hard",
-    "distractor_trap": "En az yağış alan yer İç Anadolu (Konya/Tuz Gölü çevresi) olmasına rağmen, en şiddetli buharlaşma ve kuraklık Güneydoğu Anadolu'dadır."
+    "distractor_trap": "En az yağış alan yer İç Anadolu (Konya/Tuz Gölü çevresi) olmasına rağmen, en şiddetli buharlaşma ve kuraklık Güneydoğu Anadolu'dadır.",
+    "image_url": "climate://guneydogu"
   },
   {
     "id": "cografya_076",
@@ -14534,7 +14538,7 @@
     "id": "603ebb88-bb77-5727-b272-ce7011b790ef",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Erzurum-Kars ve Ardahan platolarında dünyanın en verimli yerli (zonal) toprağı kabul edilen Çernezyom (kara toprak) geniş yer kaplar.\n\nBu platolarda toprağın son derece zengin humus ve mineral içermesine rağmen tarımsal verimin ve ürün çeşitliliğinin çok düşük kalmasının temel nedeni nedir?",
+    "text": "Grafikte kış sıcaklıklarının sıfırın altına düştüğü ve en fazla yağışın yazın alındığı Erzurum-Kars ve Ardahan platolarında dünyanın en verimli yerli (zonal) toprağı kabul edilen Çernezyom (kara toprak) geniş yer kaplar.\n\nBu platolarda toprağın zengin humus içermesine rağmen tarımsal ürün çeşitliliğinin grafikteki iklim koşulları sebebiyle çok düşük kalmasının temel nedeni nedir?",
     "options": [
       "Toprağın aşırı derecede tuzlu ve çorak olması",
       "Yaz mevsiminin çok kısa, serin geçmesi ve don olaylarının erken başlaması",
@@ -14545,7 +14549,8 @@
     "correctIndex": 1,
     "explanation": "Çernezyom zengin çayır örtüsü altında gelişen muazzam verimli bir topraktır. Ancak Erzurum-Kars'ta sert karasal iklim egemendir; kışlar 6-7 ay sürer, donlu gün sayısı çok fazladır ve yaz çok kısa sürer. İklim koşulları elvermediği için tarım yapılamaz, alan büyükbaş mera hayvancılığına ayrılır.",
     "difficulty": "medium",
-    "distractor_trap": "ÖSYM 'Toprak verimli ise tarım neden gelişmemiştir?' tezadını sormayı çok sever. Cevap toprağın yapısı değil, tamamen iklim yetersizliğidir."
+    "distractor_trap": "ÖSYM 'Toprak verimli ise tarım neden gelişmemiştir?' tezadını sormayı çok sever. Cevap toprağın yapısı değil, tamamen iklim yetersizliğidir.",
+    "image_url": "climate://sert_karasal"
   },
   {
     "id": "c0081f4f-f133-5c11-b34b-442149ef3fe9",

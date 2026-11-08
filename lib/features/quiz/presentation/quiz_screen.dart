@@ -18,6 +18,7 @@ import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/shared/widgets/climate_chart/climate_chart_card.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/turkey_map/turkey_map.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -558,9 +559,12 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             ),
             AppSpacing.gapMd,
 
-            // Varsa Harita (Vektörel veya Görsel) / Şekil / Grafik Görseli Kartı
+            // Varsa Harita (Vektörel) veya İklim Grafiği / Görsel Kartı
             if (question.effectiveMapConfig != null) ...[
               TurkeyMapCard(config: question.effectiveMapConfig!),
+              AppSpacing.gapMd,
+            ] else if (question.effectiveClimateConfig != null) ...[
+              ClimateChartCard(config: question.effectiveClimateConfig!),
               AppSpacing.gapMd,
             ] else if (question.imageUrl != null &&
                 question.imageUrl!.isNotEmpty) ...[

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:kadro/shared/widgets/climate_chart/climate_chart_models.dart';
 import 'package:kadro/shared/widgets/turkey_map/turkey_map_models.dart';
 
 /// KPSS çalışma uygulamasındaki tek bir soruyu temsil eden model.
@@ -28,6 +29,9 @@ class Question {
   /// (İl/bölge boyama, Romen rakamlı marker'lar, koordinat işaretleyicileri).
   final TurkeyMapConfig? mapConfig;
 
+  /// Soruda yer alan iklim grafiği (Yağış-Sıcaklık Hythergraph) konfigürasyonu.
+  final ClimateChartConfig? climateConfig;
+
   const Question({
     required this.id,
     required this.lesson,
@@ -40,6 +44,7 @@ class Question {
     this.distractorTrap,
     this.imageUrl,
     this.mapConfig,
+    this.climateConfig,
   });
 
   /// Kullanıcının seçtiği şıkkın doğru olup olmadığını kontrol eden yardımcı metot.
@@ -65,6 +70,7 @@ class Question {
     String? distractorTrap,
     String? imageUrl,
     TurkeyMapConfig? mapConfig,
+    ClimateChartConfig? climateConfig,
   }) {
     return Question(
       id: id ?? this.id,
@@ -78,7 +84,62 @@ class Question {
       distractorTrap: distractorTrap ?? this.distractorTrap,
       imageUrl: imageUrl ?? this.imageUrl,
       mapConfig: mapConfig ?? this.mapConfig,
+      climateConfig: climateConfig ?? this.climateConfig,
     );
+  }
+
+  /// Aktif iklim grafiği konfigürasyonunu döner.
+  /// Doğrudan climateConfig tanımlıysa onu, yoksa imageUrl içindeki 'climate://'
+  /// URI şemasını ayrıştırarak üretilen iklim grafiğini döner.
+  ClimateChartConfig? get effectiveClimateConfig {
+    if (climateConfig != null) return climateConfig;
+    if (imageUrl != null && imageUrl!.startsWith('climate:')) {
+      return parseClimateUri(imageUrl!);
+    }
+    return null;
+  }
+
+  /// 'climate://...' URI şemasını ClimateChartConfig nesnesine dönüştüren parser
+  static ClimateChartConfig? parseClimateUri(String uriString) {
+    try {
+      final uri = Uri.parse(uriString);
+      final path = uri.path.toLowerCase();
+      final host = uri.host.toLowerCase();
+
+      if (path.contains('akdeniz') ||
+          host.contains('akdeniz') ||
+          path.contains('antalya')) {
+        return ClimatePresets.akdeniz;
+      }
+      if (path.contains('karadeniz') ||
+          host.contains('karadeniz') ||
+          path.contains('rize')) {
+        return ClimatePresets.karadeniz;
+      }
+      if (path.contains('sert_karasal') ||
+          host.contains('sert_karasal') ||
+          path.contains('erzurum') ||
+          path.contains('kars')) {
+        return ClimatePresets.sertKarasal;
+      }
+      if (path.contains('karasal') ||
+          host.contains('karasal') ||
+          path.contains('konya') ||
+          path.contains('step') ||
+          path.contains('ankara')) {
+        return ClimatePresets.karasal;
+      }
+      if (path.contains('guneydogu') ||
+          host.contains('guneydogu') ||
+          path.contains('urfa') ||
+          path.contains('sanliurfa')) {
+        return ClimatePresets.guneydogu;
+      }
+
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Aktif harita konfigürasyonunu döner.
@@ -645,6 +706,17 @@ class Question {
       );
     }
 
+    ClimateChartConfig? climateConfig;
+    if (json['climate_config'] is Map<String, dynamic>) {
+      climateConfig = ClimateChartConfig.fromJson(
+        json['climate_config'] as Map<String, dynamic>,
+      );
+    } else if (json['climateConfig'] is Map<String, dynamic>) {
+      climateConfig = ClimateChartConfig.fromJson(
+        json['climateConfig'] as Map<String, dynamic>,
+      );
+    }
+
     return Question(
       id: json['id'] as String,
       lesson: json['lesson'] as String,
@@ -659,6 +731,7 @@ class Question {
           ? rawImage
           : null,
       mapConfig: mapConfig,
+      climateConfig: climateConfig,
     );
   }
 
@@ -687,6 +760,13 @@ class Question {
       );
     }
 
+    ClimateChartConfig? climateConfig;
+    if (interaction['climate_config'] is Map<String, dynamic>) {
+      climateConfig = ClimateChartConfig.fromJson(
+        interaction['climate_config'] as Map<String, dynamic>,
+      );
+    }
+
     return Question(
       id: row['id']?.toString() ?? '',
       lesson: row['lesson']?.toString() ?? 'Genel Kültür',
@@ -701,6 +781,7 @@ class Question {
           ? rawImage
           : null,
       mapConfig: mapConfig,
+      climateConfig: climateConfig,
     );
   }
 
@@ -722,6 +803,9 @@ class Question {
     }
     if (mapConfig != null) {
       map['map_config'] = mapConfig!.toJson();
+    }
+    if (climateConfig != null) {
+      map['climate_config'] = climateConfig!.toJson();
     }
     return map;
   }
