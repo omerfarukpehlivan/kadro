@@ -1503,7 +1503,7 @@
     "id": "cografya_042",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Türkiye'de dağların uzanış doğrultusu iklim, ulaşım ve yerleşme üzerinde derin etkiler bırakmıştır.\n\nKaradeniz ve Akdeniz kıyılarında dağların kıyı çizgisine paralel uzanması sonucunda aşağıdakilerden hangisinin gerçekleştiği söylenemez?",
+    "text": "Şemada gösterilen Alp-Himalaya orojenezi sırasında esnek tortulların yan basınçlarla kıvrılması sonucu oluşan Antiklinal (Kuzey Anadolu ve Toros Dağları) ve Senklinal sistemleri Türkiye'de kıyı çizgisine paralel uzanmaktadır.\n\nBuna göre Karadeniz ve Akdeniz kıyılarında dağların kıyıya paralel uzanması sonucunda aşağıdakilerden hangisinin gerçekleştiği söylenemez?",
     "options": [
       "Kıyı ile iç kesimler arasında iklim farklılığının belirginleşmesi",
       "Kıta sahanlığının (şelf alanının) genel olarak dar olması",
@@ -1514,7 +1514,8 @@
     "correctIndex": 4,
     "explanation": "Dağların kıyıya paralel uzandığı boyuna kıyılarda kıyı oldukça düz ve sadedir; koy, körfez, ada ve doğal liman sayısı çok azdır. Koy, körfez ve ada sayısının en fazla olduğu bölge dağların kıyıya dik uzandığı Ege kıyılarıdır (enine kıyı tipi).",
     "difficulty": "easy",
-    "distractor_trap": "Adaylar Karadeniz ve Akdeniz'in kıyı uzunluğunu düşünüp koy ve körfezlerin buralarda da çok olduğunu zannedebilir. Oysa boyuna kıyıda doğal liman kıtlığı vardır (Sinop hariç)."
+    "distractor_trap": "Adaylar Karadeniz ve Akdeniz'in kıyı uzunluğunu düşünüp koy ve körfezlerin buralarda da çok olduğunu zannedebilir. Oysa boyuna kıyıda doğal liman kıtlığı vardır (Sinop hariç).",
+    "image_url": "geo://antiklinal_senklinal"
   },
   {
     "id": "cografya_043",
@@ -1537,7 +1538,7 @@
     "id": "cografya_044",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Kalker, jips ve kaya tuzu gibi suda kolay çözünebilen kayaçların bulunduğu sahalarda kimyasal çözünme sonucu karstik yer şekilleri meydana gelir.\n\nTürkiye'de karstik şekillerin (lapya, dolin, uvala, polye, obruk, mağara) en yaygın olarak görüldüğü coğrafi bölge aşağıdakilerden hangisidir?",
+    "text": "Kesitte gösterilen kalker, jips ve kaya tuzu gibi suda kolay çözünebilen karstik arazilerde yer altı sularının mağara tavanlarını eritip çökertmesi sonucu oluşan derin dairesel çukurluklara ne ad verilir?",
     "options": [
       "Güneydoğu Anadolu Bölgesi",
       "Akdeniz Bölgesi (Toroslar Kuşağı)",
@@ -1548,7 +1549,8 @@
     "correctIndex": 1,
     "explanation": "Türkiye'de kireç taşı (kalker) arazisinin ve dolayısıyla karstik aşınım-birikim şekillerinin en tipik ve yaygın görüldüğü saha Akdeniz Bölgesi'nde Batı ve Orta Toroslar (Teke ve Taşeli platoları çevresi) kuşağıdır.",
     "difficulty": "easy",
-    "distractor_trap": "Sivas çevresinde jips (alçı taşı), Çankırı'da kaya tuzu yaygın olsa da, Türkiye'de karst topoğrafyası denince akla gelen ana ve en geniş kuşak Akdeniz kireç taşı platosudur."
+    "distractor_trap": "Sivas çevresinde jips (alçı taşı), Çankırı'da kaya tuzu yaygın olsa da, Türkiye'de karst topoğrafyası denince akla gelen ana ve en geniş kuşak Akdeniz kireç taşı platosudur.",
+    "image_url": "geo://karstik_kesit"
   },
   {
     "id": "cografya_045",
@@ -1676,7 +1678,7 @@
     "id": "cografya_052",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "I. Kaz Dağı — Edremit Grabeni\nII. Madra Dağı — Bakırçay Grabeni\nIII. Yunt Dağı — Gediz Grabeni\nIV. Bozdağlar — Küçük Menderes Grabeni\nV. Erciyes Dağı — Develi Ovası\n\nYukarıdaki dağ-çöküntü alanı eşleştirmelerinden hangisi horst-graben sistemiyle açıklanamaz?",
+    "text": "Kesitte blok diyagramı gösterilen kırıklı dağ oluşumunda (Horst-Graben sistemi) sert kütlelerin yan basınçlarla kırılması sonucu yüksekte kalan bloklara Horst, çöken sahalara Graben adı verilir.\n\nBuna göre Ege Bölgesi'ndeki aşağıdaki Horst-Graben eşleştirmelerinden hangisi yanlıştır?",
     "options": [
       "I",
       "II",
@@ -1687,7 +1689,8 @@
     "correctIndex": 4,
     "explanation": "Kaz, Madra, Yunt, Bozdağlar ve Aydın dağları sert tabakaların kırılmasıyla yükselen horstlar, aralarındaki Bakırçay, Gediz, Küçük ve Büyük Menderes olukları ise grabenlerdir. Erciyes Dağı ise kırılma ile değil, volkanik püskürmeler sonucu oluşan stratovolkanik bir volkan konisidir.",
     "difficulty": "medium",
-    "distractor_trap": "Erciyes'in eteğindeki Develi ovası tektonik kökenli bir çöküntü havzası olsa da Erciyes Dağı bir horst değil, sönmüş bir volkan dağıdır."
+    "distractor_trap": "Erciyes'in eteğindeki Develi ovası tektonik kökenli bir çöküntü havzası olsa da Erciyes Dağı bir horst değil, sönmüş bir volkan dağıdır.",
+    "image_url": "geo://horst_graben"
   },
   {
     "id": "cografya_053",
@@ -1948,7 +1951,7 @@
     "id": "cografya_068",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Türkiye'de dağların zirvelerinde veya kıyılarında dalga aşındırmasıyla oluşan yeryüzü şekilleri bulunmaktadır.\n\nBuna göre kıyı kordonunun bir adayı karaya bağlamasıyla oluşan 'saplı ada' (tombolo) oluşumunun Türkiye'deki en tipik iki örneği aşağıdakilerden hangisinde birlikte verilmiştir?",
+    "text": "Şemada gösterildiği gibi kıyı açıklarındaki bir adanın, dalga ve akıntıların taşıdığı kumullardan oluşan bir kıyı kordonuyla karaya bağlanması sonucu 'Saplı Ada' (Tombolo) oluşur.\n\nTürkiye'de bu jeomorfolojik kıyı birikim şeklinin en tipik iki örneği aşağıdakilerden hangisinde birlikte verilmiştir?",
     "options": [
       "Kapıdağ Yarımadası — Sinop İnceburun",
       "Gelibolu Yarımadası — Datça Yarımadası",
@@ -1959,7 +1962,8 @@
     "correctIndex": 0,
     "explanation": "Dalgaların kıyı boyunca taşıdığı kumulların kıyıya yakın bir adayı anakaraya bağlamasıyla oluşan şekle 'tombolo' (saplı ada) denir. Türkiye'deki en belirgin tombolo örnekleri Marmara Denizi'ndeki Kapıdağ Yarımadası ve Sinop Boztepe/İnceburun Yarımadası'dır.",
     "difficulty": "medium",
-    "distractor_trap": "Kapıdağ ve Sinop yarımadaları aslında eskiden birer ada iken dalga biriktirmesi (tombolo) ile karaya bağlanmıştır."
+    "distractor_trap": "Kapıdağ ve Sinop yarımadaları aslında eskiden birer ada iken dalga biriktirmesi (tombolo) ile karaya bağlanmıştır.",
+    "image_url": "geo://tombolo"
   },
   {
     "id": "cografya_069",
@@ -1999,7 +2003,7 @@
     "id": "cografya_071",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Yer Şekilleri ve İklimi",
-    "text": "Türkiye'de akarsuların denge profiline ulaşmadığının en somut kanıtlarından biri vadilerinde görülen aşındırma basamakları ve mendereslerin içerisindeki gömük vadilerdir.\n\nEge Bölgesi'ndeki Büyük Menderes akarsuyu geniş tabanlı bir vadide kıvrımlar yaparak akarken, bazı kısımlarında yatağını derine doğru kazarak 'gömük menderes' (epijenik vadi) profili kazanmıştır.\n\nBir akarsuyun menderes çizerken yeniden derine aşındırma yapmaya başlaması aşağıdakilerden hangisinin gerçekleştiğinin kesin kanıtıdır?",
+    "text": "Şemada profilleri karşılaştırılan akarsu vadi tipleri (Çentik, Boğaz, Kanyon ve Menderesli vadi), akarsuyun yatak eğimi, aşındırma gücü ve denge profiline yakınlığı hakkında doğrudan bilgi verir.\n\nBuna göre Türkiye akarsularının büyük bölümünde 1 numaralı Çentik (V tipi) derin vadilerin yaygın olması ülkemizin hangi özelliğinin kanıtıdır?",
     "options": [
       "Bölgede ani bir iklim değişikliğiyle yağışların kuraklaşmasının",
       "Akarsu havzasının epirojenik hareketlerle toptan yükselmesinin (taban seviyesinin düşmesinin)",
@@ -2010,7 +2014,8 @@
     "correctIndex": 1,
     "explanation": "Menderes çizen bir akarsu taban seviyesine yaklaşmış demektir. Eğer menderes büklümleri korunarak vadi derine doğru yarılmaya başlıyorsa (gömük menderes / yarma vadi), arazi epirojenik olarak toptan yükselmiş (veya deniz seviyesi alçalmış), böylece akarsuyun aşındırma enerjisi yeniden canlanmıştır.",
     "difficulty": "hard",
-    "distractor_trap": "Menderes görünce adaylar arazinin sadece düz olduğunu düşünür. Gömük menderes ise arazinin toptan yükseldiğinin (epirojenez) en güçlü jeomorfolojik delilidir."
+    "distractor_trap": "Menderes görünce adaylar arazinin sadece düz olduğunu düşünür. Gömük menderes ise arazinin toptan yükseldiğinin (epirojenez) en güçlü jeomorfolojik delilidir.",
+    "image_url": "geo://vadi_tipleri"
   },
   {
     "id": "cografya_072",

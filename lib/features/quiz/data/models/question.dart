@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:kadro/shared/widgets/climate_chart/climate_chart_models.dart';
+import 'package:kadro/shared/widgets/geo_diagram/geo_diagram_models.dart';
 import 'package:kadro/shared/widgets/turkey_map/turkey_map_models.dart';
 
 /// KPSS çalışma uygulamasındaki tek bir soruyu temsil eden model.
@@ -32,6 +33,9 @@ class Question {
   /// Soruda yer alan iklim grafiği (Yağış-Sıcaklık Hythergraph) konfigürasyonu.
   final ClimateChartConfig? climateConfig;
 
+  /// Soruda yer alan jeomorfoloji ve yer şekilleri kesit diyagramı konfigürasyonu.
+  final GeoDiagramConfig? geoConfig;
+
   const Question({
     required this.id,
     required this.lesson,
@@ -45,6 +49,7 @@ class Question {
     this.imageUrl,
     this.mapConfig,
     this.climateConfig,
+    this.geoConfig,
   });
 
   /// Kullanıcının seçtiği şıkkın doğru olup olmadığını kontrol eden yardımcı metot.
@@ -71,6 +76,7 @@ class Question {
     String? imageUrl,
     TurkeyMapConfig? mapConfig,
     ClimateChartConfig? climateConfig,
+    GeoDiagramConfig? geoConfig,
   }) {
     return Question(
       id: id ?? this.id,
@@ -85,7 +91,62 @@ class Question {
       imageUrl: imageUrl ?? this.imageUrl,
       mapConfig: mapConfig ?? this.mapConfig,
       climateConfig: climateConfig ?? this.climateConfig,
+      geoConfig: geoConfig ?? this.geoConfig,
     );
+  }
+
+  /// Aktif jeomorfoloji kesit konfigürasyonunu döner.
+  /// Doğrudan geoConfig tanımlıysa onu, yoksa imageUrl içindeki 'geo://'
+  /// URI şemasını ayrıştırarak üretilen şemayı döner.
+  GeoDiagramConfig? get effectiveGeoConfig {
+    if (geoConfig != null) return geoConfig;
+    if (imageUrl != null && imageUrl!.startsWith('geo:')) {
+      return parseGeoUri(imageUrl!);
+    }
+    return null;
+  }
+
+  /// 'geo://...' URI şemasını GeoDiagramConfig nesnesine dönüştüren parser
+  static GeoDiagramConfig? parseGeoUri(String uriString) {
+    try {
+      final uri = Uri.parse(uriString);
+      final path = uri.path.toLowerCase();
+      final host = uri.host.toLowerCase();
+
+      if (path.contains('horst') ||
+          host.contains('horst') ||
+          path.contains('graben')) {
+        return GeoPresets.horstGraben;
+      }
+      if (path.contains('antiklinal') ||
+          host.contains('antiklinal') ||
+          path.contains('senklinal') ||
+          path.contains('kivrim')) {
+        return GeoPresets.antiklinalSenklinal;
+      }
+      if (path.contains('vadi') ||
+          host.contains('vadi') ||
+          path.contains('kanyon') ||
+          path.contains('centik')) {
+        return GeoPresets.vadiTipleri;
+      }
+      if (path.contains('karstik') ||
+          host.contains('karstik') ||
+          path.contains('obruk') ||
+          path.contains('magara')) {
+        return GeoPresets.karstikKesit;
+      }
+      if (path.contains('tombolo') ||
+          host.contains('tombolo') ||
+          path.contains('lagun') ||
+          path.contains('sapli_ada')) {
+        return GeoPresets.tombolo;
+      }
+
+      return null;
+    } catch (_) {
+      return null;
+    }
   }
 
   /// Aktif iklim grafiği konfigürasyonunu döner.
@@ -717,6 +778,17 @@ class Question {
       );
     }
 
+    GeoDiagramConfig? geoConfig;
+    if (json['geo_config'] is Map<String, dynamic>) {
+      geoConfig = GeoDiagramConfig.fromJson(
+        json['geo_config'] as Map<String, dynamic>,
+      );
+    } else if (json['geoConfig'] is Map<String, dynamic>) {
+      geoConfig = GeoDiagramConfig.fromJson(
+        json['geoConfig'] as Map<String, dynamic>,
+      );
+    }
+
     return Question(
       id: json['id'] as String,
       lesson: json['lesson'] as String,
@@ -732,6 +804,7 @@ class Question {
           : null,
       mapConfig: mapConfig,
       climateConfig: climateConfig,
+      geoConfig: geoConfig,
     );
   }
 
@@ -767,6 +840,13 @@ class Question {
       );
     }
 
+    GeoDiagramConfig? geoConfig;
+    if (interaction['geo_config'] is Map<String, dynamic>) {
+      geoConfig = GeoDiagramConfig.fromJson(
+        interaction['geo_config'] as Map<String, dynamic>,
+      );
+    }
+
     return Question(
       id: row['id']?.toString() ?? '',
       lesson: row['lesson']?.toString() ?? 'Genel Kültür',
@@ -782,6 +862,7 @@ class Question {
           : null,
       mapConfig: mapConfig,
       climateConfig: climateConfig,
+      geoConfig: geoConfig,
     );
   }
 
@@ -806,6 +887,9 @@ class Question {
     }
     if (climateConfig != null) {
       map['climate_config'] = climateConfig!.toJson();
+    }
+    if (geoConfig != null) {
+      map['geo_config'] = geoConfig!.toJson();
     }
     return map;
   }
