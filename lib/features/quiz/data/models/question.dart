@@ -99,6 +99,40 @@ class Question {
       final path = uri.path.toLowerCase();
       final host = uri.host.toLowerCase();
 
+      // 0. Türkiye Matematiksel Konumu ve Uç Noktalar (Sinop, Hatay, Çanakkale, Iğdır)
+      if (path.contains('koordinat') || host.contains('koordinat')) {
+        return const TurkeyMapConfig(
+          highlightedProvinces: {
+            'sinop': Color(0xFFD97706),
+            'hatay': Color(0xFFD97706),
+            'canakkale': Color(0xFFD97706),
+            'igdir': Color(0xFFD97706),
+          },
+          markers: [
+            TurkeyMapMarker(
+              id: '1',
+              label: 'I',
+              offset: Offset(490.0, 30.0),
+            ), // Sinop (En Kuzey)
+            TurkeyMapMarker(
+              id: '2',
+              label: 'II',
+              offset: Offset(540.0, 395.0),
+            ), // Hatay (En Güney)
+            TurkeyMapMarker(
+              id: '3',
+              label: 'III',
+              offset: Offset(55.0, 130.0),
+            ), // Çanakkale (En Batı)
+            TurkeyMapMarker(
+              id: '4',
+              label: 'IV',
+              offset: Offset(965.0, 160.0),
+            ), // Iğdır (En Doğu)
+          ],
+        );
+      }
+
       // 1. Taş Kömürü Madeni ve Batı Karadeniz Haritası (ÖSYM Klasik Soru Tipi)
       if (path.contains('tas_komuru') ||
           path.contains('komur') ||
@@ -216,6 +250,9 @@ class Question {
     if (raw.isEmpty) return raw;
 
     var text = raw;
+
+    // 0. String içindeki kaçışlı literal \n karakterlerini gerçek satır sonuna çevir
+    text = text.replaceAll(r'\n', '\n').replaceAll('\r', '');
 
     // 1. Ok işaretleri ve LaTeX yön göstergeleri
     // $\rightarrow$, $\Rightarrow$, \rightarrow, \Rightarrow, \to, -->, ->, &rarr;

@@ -803,7 +803,7 @@
     "id": "cografya_001",
     "lesson": "Coğrafya",
     "topic": "Türkiye'nin Coğrafi Konumu",
-    "text": "Türkiye, 36°-42° Kuzey paralelleri ile 26°-45° Doğu meridyenleri arasında yer almaktadır.\n\nYalnızca bu matematiksel koordinatlar dikkate alındığında Türkiye ile ilgili aşağıdaki yargılardan hangisine kesinlikle ulaşılamaz?",
+    "text": "Haritada uç noktaları ve sınırları gösterilen Türkiye'nin en doğusu (Iğdır) ile en batısı (Çanakkale) arasında 76 dakikalık yerel saat farkı bulunmaktadır.\n\nBu durum Türkiye'nin hangi özelliğinin doğrudan bir sonucudur?",
     "options": [
       "Başlangıç Meridyeni'nin (Greenwich) doğusunda yer aldığına",
       "Kuzey Yarım Küre'de ve Yengeç Dönencesi'nin kuzeyinde bulunduğuna",
@@ -816,7 +816,7 @@
     "difficulty": "easy",
     "distractor_trap": "ÖSYM adayların 'doğu' kelimesini görünce otomatik olarak meridyenlerle ilişkilendirme ön yargısını kullanır. Yükselti değişimi matematiksel değil, tamamen jeomorfolojik ve özel konum unsurudur.",
     "imageUrl": "assets/images/mascot/cografya_koordinat_haritasi.png",
-    "image_url": "assets/images/mascot/cografya_koordinat_haritasi.png"
+    "image_url": "map://turkey/koordinat"
   },
   {
     "id": "cografya_002",
