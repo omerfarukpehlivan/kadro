@@ -1,6 +1,6 @@
 -- =============================================================
 -- KPSS VATANDAŞLIK — KONU 3: TEMEL HAK VE ÖDEVLER
--- Toplam Soru: 40 (Zorluk: 10 Kolay, 20 Orta, 10 Zor)
+-- Toplam Soru: 50 (Zorluk: 10 Kolay, 20 Orta, 10 Zor)
 -- Standart: Özgün İçerik + Açıklama + ÖSYM Çeldirici Tuzağı
 -- =============================================================
 BEGIN;
@@ -864,6 +864,216 @@ insert into public.questions (
   '{"options": ["Milletlerarası kuruluşların onayladığı", "Mali kaynaklarının yeterliliği", "Nüfus artış hızı", "Muhalefet partilerinin mutabakatı", "Askeri harcamalardan artan pay"], "correctIndex": 1}'::jsonb,
   'Anayasa m. 65: ''Devlet, sosyal ve ekonomik alanlarda Anayasa ile belirlenen ödevlerini, bu ödevlerin amaçlarına uygun öncelikleri gözeterek, MALİ KAYNAKLARININ YETERLİLİĞİ ölçüsünde yerine getirir.'' Devlet param yetmiyor derse vatandaşa konut veya iş vermek zorunda bırakılamaz.',
   'Devletin sosyal hakları yerine getirmesindeki anayasal fren ''mali kaynaklarının yeterliliği''dir.'
+);
+
+-- Soru #41 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  'Anayasa''da güvence altına alınan temel hak ve özgürlüklerinin kamu gücü tarafından ihlal edildiğini iddia eden bir kişinin, olağan kanun yollarını tükettikten sonra nihai kararın tebliğinden veya öğrenilmesinden itibaren Anayasa Mahkemesi''ne BİREYSEL BAŞVURU yapma süresi kaç gündür?',
+  '{"options": ["15 gün", "30 gün", "45 gün", "60 gün", "90 gün"], "correctIndex": 1}'::jsonb,
+  '6216 sayılı Anayasa Mahkemesinin Kuruluşu ve Yargılama Usulleri Hakkında Kanun m. 47/5 uyarınca bireysel başvuru süresi, başvuru yollarının tüketildiği tarihten itibaren 30 GÜNDÜR.',
+  'AYM''de norm denetimi iptal davası açma süresi 60 gündür; vatandaşın BİREYSEL BAŞVURU süresi ise 30 GÜNDÜR!'
+);
+
+-- Soru #42 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  'Avrupa İnsan Hakları Sözleşmesi''ne (AİHS) ek 15 No''lu Protokol''ün yürürlüğe girmesiyle birlikte, iç hukuk yollarının tüketilmesinden sonra Avrupa İnsan Hakları Mahkemesi''ne (AİHM) bireysel başvuru yapma süresi kaç aya indirilmiştir?',
+  '{"options": ["1 ay", "3 ay", "4 ay", "6 ay", "12 ay"], "correctIndex": 2}'::jsonb,
+  'Eski düzenlemede AİHM başvuru süresi 6 ay idi. 15 No''lu Protokol''ün yürürlüğe girmesiyle kesinleşmiş nihai iç hukuk kararından itibaren AİHM''e başvuru süresi 4 AYA indirilmiştir.',
+  'Eski 6 ay kuralı güncellenmiştir; güncel AİHM başvuru süresi 4 AYDIR!'
+);
+
+-- Soru #43 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  '2820 sayılı Siyasi Partiler Kanunu''na göre Türkiye''de bir siyasi partinin kurulabilmesi için önceden izin almaksızın EN AZ kaç Türk vatandaşının bir araya gelmesi zorunludur?',
+  '{"options": ["10", "20", "30", "50", "100"], "correctIndex": 2}'::jsonb,
+  'Siyasi partiler, önceden izin almadan en az 30 TÜRK VATANDAŞI tarafından İçişleri Bakanlığı''na bildirimde bulunarak kurulur. Siyasi parti ''grubu'' kurmak için ise en az 20 milletvekili gerekir.',
+  'Siyasi parti kurmak için en az 30 VATANDAŞ; TBMM''de parti grubu kurmak için en az 20 MİLLETVEKİLİ gerekir. 20 ve 30 sayıları ÖSYM''nin en popüler tuzak ikilisidir.'
+);
+
+-- Soru #44 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''na göre bir siyasi partinin kapatılmasına ilişkin davayı açmaya yetkili makam ve kapatma kararını vermeye yetkili yargı organı hangi seçenekte doğru verilmiştir?',
+  '{"options": ["Davayı Adalet Bakanı açar — Kararı Yargıtay verir.", "Davayı TBMM Başkanı açar — Kararı Danıştay verir.", "Davayı Yargıtay Cumhuriyet Başsavcısı açar — Kararı Anayasa Mahkemesi verir.", "Davayı Cumhurbaşkanı açar — Kararı Uyuşmazlık Mahkemesi verir.", "Davayı HSK açar — Kararı Yargıtay Ceza Genel Kurulu verir."], "correctIndex": 2}'::jsonb,
+  'Anayasa m. 69: Siyasi partilerin kapatılması, YARGITAY CUMHURİYET BAŞSAVCISININ açacağı dava üzerine ANAYASA MAHKEMESİ tarafından karara bağlanır (kapatma kararı için 15 üyeden 10 üyenin oyu = 2/3 çoğunluk şarttır).',
+  'Davayı açan = Yargıtay Cumhuriyet Başsavcısı; Kapatma kararını veren = Anayasa Mahkemesi''dir.'
+);
+
+-- Soru #45 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  'Siyasi Partiler Kanunu''na göre genel seçimlerde ülke genel barajını (%7) aşamamış olsa bile, genel seçimlere katılan ve toplam geçerli oyların EN AZ yüzde kaçını alan siyasi partilere devlet bütçesinden orantılı olarak hazine yardımı yapılır?',
+  '{"options": ["%1", "%2", "%3", "%5", "%7"], "correctIndex": 2}'::jsonb,
+  'Siyasi Partiler Kanunu Ek m. 1 uyarınca, genel seçimlerde geçerli oyların EN AZ YÜZDE ÜÇÜNÜ (%3) alan siyasi partilere devlet hazinesinden yardım yapılır.',
+  'Meclise girmek için seçim barajı %7''dir; hazine yardımı alabilmek için asgari oy oranı ise YÜZDE 3''tür (%3).'
+);
+
+-- Soru #46 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  '3071 sayılı Dilekçe Hakkının Kullanılmasına Dair Kanun''a göre TBMM''ye veya yetkili idari makamlara verilen dilekçelere en geç kaç gün içinde gerekçeli olarak cevap verilmesi zorunludur?',
+  '{"options": ["15 gün", "30 gün", "60 gün", "90 gün", "120 gün"], "correctIndex": 1}'::jsonb,
+  'Dilekçe Kanunu m. 7 uyarınca yetkili makamlar dilekçe sahiplerine en geç 30 GÜN içinde cevap vermekle yükümlüdür. TBMM Dilekçe Komisyonu''nun inceleme ve karar süresi ise 60 gündür.',
+  'İdari makamların dilekçeye cevap süresi 30 gündür; Bilgi edinme başvurusunda ise bu süre 15 gündür.'
+);
+
+-- Soru #47 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''nın 74. maddesinde düzenlenen, idarenin her türlü eylem, işlem, tutum ve davranışını insan haklarına ve hukuka uygunluk yönünden inceleyen Kamu Denetçiliği Kurumu (Ombudsmanlık) nereye bağlı olarak kurulmuştur?',
+  '{"options": ["Cumhurbaşkanlığına", "TBMM Başkanlığına", "Adalet Bakanlığına", "Anayasa Mahkemesine", "Danıştay Başkanlığına"], "correctIndex": 1}'::jsonb,
+  'Anayasa m. 74 uyarınca TBMM BAŞKANLIĞINA BAĞLI olarak Kamu Denetçiliği Kurumu kurulmuştur. Kurumun başı olan Kamu Başdenetçisi TBMM tarafından gizli oyla 4 yıllığına seçilir.',
+  'Devlet Denetleme Kurulu (DDK) Cumhurbaşkanlığına bağlıdır; Kamu Denetçiliği Kurumu (Ombudsmanlık) ise TBMM BAŞKANLIĞINA bağlıdır!'
+);
+
+-- Soru #48 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''nın 30. maddesinde düzenlenen basın araçlarının korunması ilkesine göre aşağıdakilerden hangisi doğrudur?',
+  '{"options": ["Kanuna uygun kurulmuş basımevi ve matbaalar suç aleti olduğu gerekçesiyle zapt ve müsadere edilemez veya işletilmekten alıkonulamaz.", "Basımevleri her türlü suç iddiasında savcılık kararıyla doğrudan kapatılır.", "Basımevlerinin basacağı her gazete önceden mülki amirin sansür onayından geçmelidir.", "Basın araçları yalnızca olağanüstü hal döneminde müsadere edilebilir.", "Yabancı dilde yayın yapan matbaalar süresiz kapatılabilir."], "correctIndex": 0}'::jsonb,
+  'Anayasa m. 30 açık güvencesidir: ''Kanuna uygun şekilde basın işletmesi olarak kurulan basımevi ve eklentileri ile basın araçları, suç aleti olduğu gerekçesiyle zapt ve müsadere edilemez veya işletilmekten alıkonulamaz.''',
+  'Kanuna uygun basımevleri suç aleti olduğu iddiasıyla müsadere edilemez ve kapatılamaz; bu anayasal özel bir güvencedir.'
+);
+
+-- Soru #49 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  'Anayasa''nın 38. maddesinde güvence altına alınan ''Suç ve Cezalara İlişkin Esaslar'' arasında aşağıdakilerden hangisi YER ALMAZ?',
+  '{"options": ["Kimse, işlendiği zaman yürürlükte bulunan kanunun suç saymadığı bir fiilden dolayı cezalandırılamaz.", "Suçluluğu hükmen sabit oluncaya kadar, kimse suçlu sayılamaz (Masumiyet Karinesi).", "Hiç kimse, yalnızca sözleşmeden doğan bir yükümlülüğü yerine getirememesinden (borcunu ödeyememekten) dolayı özgürlüğünden alıkonulamaz.", "Ceza sorumluluğu şahsidir; kimse başkasının fiilinden dolayı sorumlu tutulamaz.", "Ağır kamu zararına yol açan ekonomik suçlarda suçlunun tüm malvarlığına genel müsadere cezası uygulanabilir."], "correctIndex": 4}'::jsonb,
+  'Anayasa m. 38 gereğince ''Genel müsadere cezası verilemez.'' 2004 anayasa değişikliği ile hem ölüm cezası hem de genel müsadere cezası kesin olarak yasaklanmıştır (yalnızca suça konu eşyanın özel müsaderesi mümkündür).',
+  'Türkiye''de GENEL MÜSADERE cezası kesinlikle yasaktır; hiçbir suç tipi için genel müsadere verilemez.'
+);
+
+-- Soru #50 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  'Anayasa''nın 51. maddesinde düzenlenen ''Sendika Kurma Hakkı'' ile ilgili olarak 2010 anayasa değişikliği ile yapılan önemli yenilik aşağıdakilerden hangisidir?',
+  '{"options": ["Aynı zamanda ve aynı işkolunda birden çok sendikaya üye olunamayacağı kuralı anayasadan çıkarılarak çoklu sendika üyeliği serbest bırakılmıştır.", "Memurlara grev hakkı tanınmıştır.", "Sendika kurmak için İçişleri Bakanlığı''ndan izin alma şartı getirilmiştir.", "Sendika kurma yaşı 25''e çıkarılmıştır.", "Sendika yöneticilerine milletvekili dokunulmazlığı verilmiştir."], "correctIndex": 0}'::jsonb,
+  '2010 anayasa değişikliğiyle ''Aynı zamanda ve aynı işkolunda birden çok sendikaya üye olunamaz'' sınırlaması anayasadan çıkarılmıştır. Böylece sendikal özgürlük genişletilmiştir.',
+  'Memurlara toplu sözleşme hakkı verilmiştir ancak GREV HAKKI MEMURA HALEN TANINMAMIŞTIR! Sendikada değişen kural çoklu sendika üyeliğidir.'
 );
 
 COMMIT;

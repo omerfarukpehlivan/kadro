@@ -1,6 +1,6 @@
 -- =============================================================
 -- KADRO KPSS LİSANS GENEL KÜLTÜR — TÜM VATANDAŞLIK SORULARI (MASTER)
--- Toplam: 6 Konu x 40 Soru = 240 Özgün Soru
+-- Toplam: 6 Konu x 40 Soru = 300 Özgün Soru
 -- Hedef Tablo: public.questions (Supabase)
 -- UWorld Modeli: prompt_text, options, correctIndex, explanation, distractor_trap
 -- =============================================================
@@ -841,6 +841,206 @@ insert into public.questions (
   'Eşin kardeşi (kayınbirader/baldız/görümce) eş için 2. derece yansoy kan hısımıdır; diğer eş için ise 2. DERECE YANSOY KAYIN HISIMIDIR.'
 );
 
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hukuk Kavramları',
+  'multiple_choice',
+  2,
+  'Borçlar Hukukunda borcun zamanaşımına (müruruzaman) uğraması durumunda borç ilişkisinin ve alacak hakkının hukuki akıbeti aşağıdakilerden hangisidir?',
+  '{"options": ["Borç kendiliğinden tamamen sona erer ve hukuk düzeninde yok sayılır.", "Borç sona ermez; yalnızca dava edilebilirlik niteliğini kaybederek ''Eksik Borç'' haline gelir ve borçlu zamanaşımı def''i ileri sürebilir.", "Borçlu hakkında zorunlu cebri icra takibi başlatılır.", "Borç devlet hazinesine intikal eder.", "Alacaklı hakimden borcun yenilenmesini (tecdit) talep edebilir."], "correctIndex": 1}'::jsonb,
+  'Zamanaşımı borcu ortadan kaldıran bir sebep DEĞİLDİR; borcu ''eksik borç'' (tabii borç) haline getirir. Borçlu ödemek zorunda değildir, mahkemede ''zamanaşımı def''i'' ileri sürebilir. Ancak borçlu kendi rızasıyla öderse yaptığı ödeme geçerlidir, geri isteyemez.',
+  'ÖSYM''nin en temel tuzağı: İfa, ibra, tecdit ve kusursuz imkansızlık borcu BİTİRİR; Zamanaşımı ise borcu BİTİRMEZ, sadece EKSİK BORÇ haline getirir!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hukuk Kavramları',
+  'multiple_choice',
+  2,
+  'Ayırt etme gücüne sahip 17 yaşındaki lise öğrencisi Can''ın, yasal temsilcisi olan anne ve babasının izni veya onayı olmaksızın bir mağazadan vadeli bilgisayar satın alması durumunda bu hukuki işlemin geçerlilik durumu nedir?',
+  '{"options": ["İşlem kurucu unsuru eksik olduğu için yoklukla maluldür.", "İşlem baştan itibaren mutlak butlanla kesin olarak geçersizdir.", "İşlem ''Tek Taraflı Bağlamazlık'' (Askıda Hükümsüzlük) durumundadır; yasal temsilci onay verirse geçerli hale gelir, vermezse baştan itibaren geçersiz olur.", "İşlem tamamen geçerlidir, velinin onayına gerek yoktur.", "İşlem nisbi butlanla geçerlidir, ancak Can 18 yaşına girince iptal davası açabilir."], "correctIndex": 2}'::jsonb,
+  'Ayırt etme gücü olan ergin olmayanlar (sınırlı ehliyetsizler), kendilerini borç altına sokan işlemleri yasal temsilcilerinin izni olmadan tek başlarına yapamazlar. Bu işlem ''Tek Taraflı Bağlamazlık'' hükmündedir; veli onay verirse sözleşme baştan itibaren geçerli olur.',
+  'Sınırlı ehliyetsizin borçlandırıcı işlemleri yokluk veya mutlak butlan DEĞİLDİR; askıda hükümsüzdür (tek taraflı bağlamazlık).'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hukuk Kavramları',
+  'multiple_choice',
+  2,
+  'Borçlar Kanunu''na göre aşağıdakilerden hangisi bir ''Haksız Fiil''in varlığı ve bundan dolayı tazminat sorumluluğunun doğması için aranan kurucu unsurlardan biri DEĞİLDİR?',
+  '{"options": ["Hukuka aykırı bir fiil", "Maddi veya manevi bir zararın doğması", "Fiil ile zarar arasında illiyet (nedensellik) bağının bulunması", "Failin kusurlu (kast veya ihmal) olması", "Taraflar arasında önceden yapılmış yazılı bir sözleşmenin bulunması"], "correctIndex": 4}'::jsonb,
+  'Haksız fiilin dört temel unsuru vardır: Hukuka aykırı fiil, zarar, illiyet bağı ve kusur. Taraflar arasında önceden sözleşme olması haksız fiil için şart değildir; tam tersine sözleşme ihlali ''sözleşmeye aykırılık'' sorumluluğunu doğurur.',
+  'Haksız fiil sözleşme dışı sorumluluktur; önceden sözleşme bulunması şartı kesinlikle aranmaz.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hukuk Kavramları',
+  'multiple_choice',
+  2,
+  'Borçlar Hukukunda mevcut bir borcun tarafların anlaşmasıyla sona erdirilip yerine yepyeni bir borcun ikame edilmesine (borcun yenilenmesine) ne ad verilir?',
+  '{"options": ["İbra", "Tecdit (Yenileme)", "Takas", "Kusursuz İmkânsızlık", "Alacaklı ve borçlu sıfatının birleşmesi"], "correctIndex": 1}'::jsonb,
+  'Mevcut eski borcun sona erdirilerek yerine yeni bir borç ilişkisinin kurulmasına ''Tecdit'' (Yenileme) denir. İbra ise alacaklının borçluyu borcundan tamamen ibra edip alacağını bağışlamasıdır.',
+  'Alacaktan vazgeçme = İbra; Eski borcu yeni borçla değiştirme = Tecdit (Yenileme).'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hukuk Kavramları',
+  'multiple_choice',
+  2,
+  'Hakkın bizzat sahibi tarafından korunması yolları değerlendirildiğinde; bir kişinin kendisinin veya başkasının hayatını veya malını derhal gerçekleşecek haksız bir saldırıdan korumak için saldırgana karşı ölçülü güç kullanmasına ne ad verilir?',
+  '{"options": ["Zaruret Hali (Iztırar)", "Meşru Müdafaa (Haklı Savunma)", "Kuvvet Kullanma", "İhkak-ı Hak", "Hakkın Kötüye Kullanılması"], "correctIndex": 1}'::jsonb,
+  'Haksız ve devam eden bir saldırıyı defetmek için saldırgana karşı orantılı güç kullanmaya ''Meşru Müdafaa'' denir. Meşru müdafaa hukuka uygunluk sebebidir; kişi ceza almaz ve tazminat ödemez.',
+  'Saldırgana zarar verilirse = Meşru Müdafaa (tazminat yok); Tehlikeden kaçmak için masum üçüncü kişinin malına zarar verilirse = Zaruret Hali (ıztırar - hakkaniyet tazminatı ödenir).'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hukuk Kavramları',
+  'multiple_choice',
+  2,
+  'Dağda yürüyüş yaparken aniden ortaya çıkan ayı saldırısından canını kurtarmak için dağcı Mehmet''in, yol kenarında gördüğü Ali''ye ait kulübenin kapısını kırıp içeri sığınması ve kapıyı parçalaması hangi hukuki durumdur?',
+  '{"options": ["Meşru Müdafaa", "Zaruret (Iztırar) Hali", "Kuvvet Kullanma", "Kasıtlı Mala Zarar Verme Suçu", "İyiniyet Kuralı"], "correctIndex": 1}'::jsonb,
+  'Kişinin kendisini veya yakınını ağır ve derhal gerçekleşecek bir tehlikeden korumak için üçüncü bir kişinin malına zarar vermesine ''Zaruret (Iztırar) Hali'' denir. Mehmet ceza almaz ancak kırdığı kapının zararını hakkaniyet gereği Ali''ye tazmin etmek zorundadır.',
+  'Saldırı ayıdan veya doğadan gelip üçüncü kişinin malına zarar verilmişse bu Meşru Müdafaa değil, ZARURET (IZTIRAR) HALİ''dir.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hukuk Kavramları',
+  'multiple_choice',
+  2,
+  'Türk Hukukunda tüzel kişilerin ''Fiil Ehliyeti''ni (bizzat işlem yapabilme ve borçlanabilme yetkisini) kazandıkları an aşağıdakilerden hangisidir?',
+  '{"options": ["Kuruldukları ve tescil edildikleri anda", "Kanuna ve kuruluş belgelerine göre gerekli ZORUNLU ORGANLARA sahip oldukları anda", "En az 50 üyeye ulaştıkları anda", "İlk genel kurul toplantısını yaptıkları anda", "Valilikten faaliyet izin belgesi aldıkları anda"], "correctIndex": 1}'::jsonb,
+  'Medeni Kanun m. 49 uyarınca tüzel kişiler ''Hak Ehliyetini'' kuruldukları anda; ''Fiil Ehliyetini'' ise kanuna ve kuruluş belgelerine göre gerekli organlara (yönetim kurulu vb.) sahip oldukları anda kazanırlar.',
+  'Tüzel kişiler kurulunca Hak ehliyetini; ZORUNLU ORGANLARINI tamamlayınca Fiil ehliyetini kazanır!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hukuk Kavramları',
+  'multiple_choice',
+  2,
+  'Ölümüne kesin gözle bakılacak bir halde kaybolan (örneğin infilak eden bir uçakta yolcu olan ancak cesedine ulaşılamayan) bir kişinin hukuki durumu hakkında ''Ölüm Karinesi'' gereğince kimin emriyle kütüğe ölü kaydı düşülür?',
+  '{"options": ["Sulh Hukuk Mahkemesi Hakiminin kararıyla", "Asliye Hukuk Mahkemesi Hakiminin kararıyla", "O yerin en büyük mülki amirinin (Vali veya Kaymakam) emriyle", "Cumhuriyet Başsavcısının kararıyla", "Nüfus Müdürünün re''sen tespitiyle"], "correctIndex": 2}'::jsonb,
+  'Ölüm karinesinde mahkeme kararı ARANMAZ! O yerin en büyük mülki amirinin (Vali veya Kaymakam) emriyle nüfus kütüğüne ölü kaydı düşülür. Evlilik kendiliğinden son bulur ve miras teminatsız intikal eder.',
+  'Gaiplikte mahkeme kararı şarttır; Ölüm karinesinde ise MAHKEME KARARI YOKTUR, doğrudan mülki amir emriyle ölü kaydı işlenir!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hukuk Kavramları',
+  'multiple_choice',
+  2,
+  'Hukuk kurallarının tarafların sözleşmede kullandıkları ancak ne anlama geldiğini açıkça belirtmedikleri terimleri veya süreleri açıklamaya yarayan türüne ne ad verilir?',
+  '{"options": ["Tamamlayıcı Hukuk Kuralları", "Yorumlayıcı Hukuk Kuralları", "Emredici Hukuk Kuralları", "Tanımlayıcı Hukuk Kuralları", "İstisnai Hukuk Kuralları"], "correctIndex": 1}'::jsonb,
+  'Tarafların sözleşmede yer verdikleri ama anlamını netleştirmedikleri hususları (örneğin ''ayın başı'' ifadesinin ayın 1''i, ''ayın ortası'' ifadesinin ayın 15''i sayılması gibi) aydınlatan kurallara ''YORUMLAYICI HUKUK KURALLARI'' denir.',
+  'Boşluk dolduran = Tamamlayıcı; Belirsiz ifadeyi açıklayan = Yorumlayıcı; Kavramın ne olduğunu belirten = Tanımlayıcı kuraldır.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hukuk Kavramları',
+  'multiple_choice',
+  2,
+  'Türk Medeni Kanunu''nda düzenlenen ehliyet sistemine göre ''Ayırt etme gücü bulunmayan'' (örneğin ağır akıl hastası) bir kişinin hukuki durumu ve ehliyet grubu hangisidir?',
+  '{"options": ["Tam Ehliyetli", "Sınırlı Ehliyetli", "Sınırlı Ehliyetsiz", "Tam Ehliyetsiz", "Yarı Ehliyetli"], "correctIndex": 3}'::jsonb,
+  'Ayırt etme gücü bulunmayan kişiler ''TAM EHLİYETSİZ'' grubundadır. Bu kişilerin yaptıkları tüm hukuki işlemler kural olarak kesin hükümsüzdür (mutlak butlan / yokluk hükmündedir); veli veya vasileri dahi bu işlemleri sonradan geçerli kılamaz.',
+  'Ayırt etme gücü olmayan = Tam Ehliyetsiz; Ayırt etme gücü olan ergin olmayan/kısıtlı = Sınırlı Ehliyetsiz.'
+);
+
 
 -- -------------------------------------------------------------
 -- KONU 2: 1982 ANAYASASI VE TEMEL İLKELER
@@ -1646,6 +1846,208 @@ insert into public.questions (
   '{"options": ["Olağan dönem Cumhurbaşkanlığı Kararnameleri", "Olağanüstü Hal (OHAL) Cumhurbaşkanlığı Kararnameleri", "TBMM İçtüzüğü", "Kanunlar", "Anayasa değişiklikleri (şekil bakımından)"], "correctIndex": 1}'::jsonb,
   'Anayasa m. 148 açık hükmüdür: ''Olağanüstü hallerde çıkarılan Cumhurbaşkanlığı kararnamelerinin şekil ve esas bakımından Anayasaya aykırılığı iddiasıyla, Anayasa Mahkemesinde dava açılamaz.'' Olağan CBK''lar ise AYM denetimine tabidir.',
   'Olağan CBK yargı denetimine açıktır; OHAL CBK ise Anayasa Mahkemesi denetimine KESİNLİKLE KAPALIDIR.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  '1982 Anayasası ve Temel İlkeler',
+  'multiple_choice',
+  2,
+  'Türk anayasa tarihinde yürürlüğe girmiş anayasalar içinde değiştirilme usulü olağan kanunlarla aynı olan TEK YUMUŞAK ve maddeleri en kısa olan TEK ÇERÇEVE ANAYASA aşağıdakilerden hangisidir?',
+  '{"options": ["1876 Kanun-i Esasi", "1921 Anayasası (Teşkilat-ı Esasiye)", "1924 Anayasası", "1961 Anayasası", "1982 Anayasası"], "correctIndex": 1}'::jsonb,
+  '1921 Teşkilat-ı Esasiye Kanunu 23 ana maddeden oluşur; olağanüstü savaş koşullarında hazırlandığı için anayasa değiştirme usulüne ayrı bir zorluk getirmemiş (yumuşak anayasa) ve ayrıntılı düzenlemeler yerine temel ilkelere yer vermiştir (çerçeve anayasa). Diğer tüm anayasalarımız sert ve kazuistiktir.',
+  'Türk anayasa tarihindeki TEK yumuşak ve TEK çerçeve anayasa 1921 Anayasası''dır!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  '1982 Anayasası ve Temel İlkeler',
+  'multiple_choice',
+  2,
+  '1876 Kanun-i Esasi''de yasama organı ''Meclis-i Umumi'' (Genel Meclis) adını taşımış ve iki kanatlı olarak kurulmuştur.
+
+Bu mecliste üyeleri doğrudan padişah tarafından ömür boyu (kayd-ı hayat şartıyla) atanan meclis kanadı aşağıdakilerden hangisidir?',
+  '{"options": ["Heyet-i Mebusan", "Heyet-i Ayan", "Meclis-i Vükela", "Şura-yı Devlet", "Encümen-i Daniş"], "correctIndex": 1}'::jsonb,
+  'Kanun-i Esasi''de Heyet-i Mebusan üyeleri halk tarafından (çift dereceli seçimle) 4 yıllığına seçilir; HEYET-İ AYAN üyeleri ise 40 yaşını doldurmuş devlet adamları arasından bizzat Padişah tarafından ömür boyu görev yapmak üzere atanırdı.',
+  'Halkın seçtiği = Heyet-i Mebusan; Padişahın ömür boyu atadığı = HEYET-İ AYAN''dır.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  '1982 Anayasası ve Temel İlkeler',
+  'multiple_choice',
+  2,
+  '1924 Teşkilat-ı Esasiye Kanunu''nda laikleşme ve demokratikleşme sürecinde yapılan anayasa değişikliklerinin kronolojik sırası aşağıdakilerden hangisinde doğru verilmiştir?',
+  '{"options": ["''Devletin dini İslam''dır'' ibaresinin çıkarılması (1928) — Kadınlara milletvekili seçme-seçilme hakkı (1934) — Atatürk İlkeleri ve Laikliğin anayasaya girmesi (1937)", "Laikliğin girmesi (1928) — Kadınlara haklar (1930) — Devletin dini ibaresinin kalkması (1937)", "Kadınlara haklar (1934) — Devletin dini ibaresinin kalkması (1928) — Laiklik (1938)", "Devletin dini ibaresinin kalkması (1924) — Laiklik (1928) — Kadınlara haklar (1934)", "Laiklik (1937) — Devletin dini ibaresinin kalkması (1934) — Kadınlara haklar (1930)"], "correctIndex": 0}'::jsonb,
+  '1924 Anayasası kronolojisi: 1) 1928''de ''Devletin dini İslam''dır'' maddesi ve yemin metnindeki dini ifadeler çıkarıldı. 2) 1934''te kadınlara milletvekili seçme-seçilme hakkı tanındı. 3) 1937''de 6 Atatürk ilkesi (ve Laiklik) anayasaya eklendi.',
+  'ÖSYM bu üç tarihi sıkça sorar: Dini hükümlerin kalkması 1928, vekillik hakkı 1934, Laiklik ilkesinin anayasaya girmesi 1937''dir.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  '1982 Anayasası ve Temel İlkeler',
+  'multiple_choice',
+  2,
+  'Türk anayasa tarihinde İLK KEZ Anayasa Mahkemesi''nin kurulması, kanunların anayasaya uygunluğunun yargısal denetime tabi tutulması ve Yüksek Seçim Kurulu''nun anayasal bir organ olarak düzenlenmesi hangi anayasa ile gerçekleşmiştir?',
+  '{"options": ["1921 Anayasası", "1924 Anayasası", "1961 Anayasası", "1982 Anayasası", "1876 Kanun-i Esasi"], "correctIndex": 2}'::jsonb,
+  'Anayasa Mahkemesi (AYM), Milli Güvenlik Kurulu (MGK), Devlet Planlama Teşkilatı (DPT) ve Yüksek Seçim Kurulu (YSK) ilk kez 1961 ANAYASASI ile anayasal statüye kavuşmuştur.',
+  'Anayasa Mahkemesi ve çoğulcu kurumlar 1982''de değil, 1961 Anayasası ile kurulmuştur.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  '1982 Anayasası ve Temel İlkeler',
+  'multiple_choice',
+  2,
+  '2022 yılında Milletvekili Seçimi Kanunu''nda yapılan değişiklikle, TBMM genel seçimlerinde bir siyasi partinin milletvekili çıkarabilmesi için ülke genelinde alması gereken SEÇİM BARAJI yüzde kaç olarak belirlenmiştir?',
+  '{"options": ["%10", "%8", "%7", "%5", "%3"], "correctIndex": 2}'::jsonb,
+  '1983''ten bu yana uygulanan yüzde 10''luk genel seçim barajı, 2022 yılında yapılan kanun değişikliği ile YÜZDE 7''ye (%7) indirilmiştir.',
+  'Eski baraj %10 idi; güncel kanuni seçim barajı YÜZDE 7''dir (%7)!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  '1982 Anayasası ve Temel İlkeler',
+  'multiple_choice',
+  2,
+  'Seçimlerin genel yönetim ve yargısal denetimini yürüten Yüksek Seçim Kurulu''nun (YSK) üye yapısı ve kararlarının hukuki niteliği hakkında aşağıdakilerden hangisi doğrudur?',
+  '{"options": ["YSK üyelerinin tamamını Cumhurbaşkanı atar.", "YSK kararlarına karşı Anayasa Mahkemesi''ne bireysel başvuru yapılabilir.", "YSK, 7 asıl ve 4 yedek (toplam 11) üyeden oluşur; 6 üyesi Yargıtay, 5 üyesi Danıştay tarafından seçilir ve kararları KESİNDİR, hiçbir yargı mercine başvurulamaz.", "YSK kararlarına karşı Danıştay''da iptal davası açılabilir.", "YSK üyeleri TBMM tarafından nitelikli çoğunlukla seçilir."], "correctIndex": 2}'::jsonb,
+  'Anayasa m. 79 uyarınca YSK 7 asıl, 4 yedek üyeden oluşur (6 üye Yargıtay, 5 üye Danıştay Genel Kurulunca gizli oyla seçilir). YSK kararları kesindir; Anayasa Mahkemesi dahil hiçbir yargı yerine itiraz edilemez.',
+  'YSK kararlarına karşı Anayasa Mahkemesi''ne veya Danıştay''a gidilemez; YSK kararları kesindir!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  '1982 Anayasası ve Temel İlkeler',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''na göre Anayasa Değişikliği teklifinin TBMM Genel Kurulu''nda kabul edilebilmesi için EN AZ kaç milletvekilinin kabul oyu vermesi şarttır?',
+  '{"options": ["200 (Üye tamsayısının 1/3''ü)", "301 (Üye tamsayısının salt çoğunluğu)", "360 (Üye tamsayısının 3/5''i)", "400 (Üye tamsayısının 2/3''ü)", "450 (Üye tamsayısının 3/4''ü)"], "correctIndex": 2}'::jsonb,
+  'Anayasa m. 175''e göre teklif için en az 200 milletvekili (1/3); kabul için ise en az 360 MİLLETVEKİLİ (3/5 çoğunluk) şarttır. 360''ın altında kalan anayasa değişikliği teklifi reddedilmiş sayılır.',
+  'Teklif için 200 (1/3); KABUL İÇİN ASGARİ ÇOĞUNLUK 360''tır (3/5)!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  '1982 Anayasası ve Temel İlkeler',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''nın 176. maddesine göre Anayasa''nın ''Başlangıç'' kısmının ve madde kenar başlıklarının hukuki değeri hakkında aşağıdakilerden hangisi doğrudur?',
+  '{"options": ["Başlangıç kısmı anayasa metnine dahil değildir, madde başlıkları dahildir.", "Başlangıç kısmı Anayasa metnine DAHİLDİR; madde kenar başlıkları ise sadece konuyu gösterir ve anayasa metninden SAYILMAZ.", "Hem başlangıç hem madde başlıkları anayasa metnine dahildir.", "Ne başlangıç ne de madde başlıkları anayasa metnine dahil değildir.", "Başlangıç kısmı sadece cumhurbaşkanı andında geçerlidir."], "correctIndex": 1}'::jsonb,
+  'Anayasa m. 176: ''Anayasanın dayandığı temel görüş ve ilkeleri belirten başlangıç kısmı, Anayasa metnine dahildir. Madde kenar başlıkları, sadece ilgili oldukları maddelerin konusunu ve sırasını gösterir; Anayasa metninden sayılmaz.''',
+  'Başlangıç = Metne DAHİL; Madde kenar başlıkları = Metne DAHİL DEĞİLDİR!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  '1982 Anayasası ve Temel İlkeler',
+  'multiple_choice',
+  2,
+  'Anayasa Mahkemesi bir Anayasa Değişikliği kanununu hangi açıdan ve hangi gerekçelerle denetleyebilir?',
+  '{"options": ["Hem şekil hem esas bakımından sınırsız denetler.", "Yalnızca ŞEKİL bakımından denetler; teklif ve oylama çoğunluğu ile ivedilikle görüşülememe şartına uyulup uyulmadığını inceler; ESAS (içerik) incelemesi yapamaz.", "Yalnızca esas bakımından inceler, şekle bakamaz.", "Anayasa değişiklikleri hiçbir şekilde Anayasa Mahkemesi denetimine tabi tutulamaz.", "Sadece Cumhurbaşkanının talebi üzerine esas yönünden inceler."], "correctIndex": 1}'::jsonb,
+  'Anayasa m. 148 açık kuralıdır: ''Anayasa değişiklikleri ise sadece teklif ve oylama çoğunluğu ve ivedilikle görüşülemeyeceği şartına uyulup uyulmadığı hususları ile sınırlı olarak (yani sadece ŞEKİL yönünden) denetlenebilir.'' AYM anayasa değişikliğinin içeriğine (esasına) ASLA giremez.',
+  'Kanunlar hem şekil hem esas denetlenir; Anayasa değişiklikleri ise YALNIZCA ŞEKİL yönünden denetlenebilir, esasına bakılamaz!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  '1982 Anayasası ve Temel İlkeler',
+  'multiple_choice',
+  2,
+  '2017 Anayasa Değişiklikleri ile Türk anayasa ve parlamento sisteminden tamamen KALDIRILAN kurum ve usuller arasında aşağıdakilerden hangisi YER ALMAZ?',
+  '{"options": ["Bakanlar Kurulu ve Başbakanlık makamı", "Tüzükler ve Kanun Hükmünde Kararnameler (KHK)", "Gensoru ve Hükümet Güvenoyu denetim mekanizmaları", "Askeri Yargıtay ve Askeri Yüksek İdare Mahkemesi (AYİM)", "Milletvekillerinin kanun teklifi verme yetkisi"], "correctIndex": 4}'::jsonb,
+  '2017 anayasa reformuyla Bakanlar Kurulu, Başbakanlık, Tasarı, Tüzük, KHK, Gensoru, Güvenoyu, Askeri Yargıtay ve AYİM kaldırılmıştır. Kanun TEKLİFİ verme yetkisi ise kaldırılmamış, tam aksine münhasıran yalnızca MİLLETVEKİLLERİNE bırakılmıştır (Cumhurbaşkanı sadece Bütçe kanun teklifi sunabilir).',
+  'Hükümet tasarısı kalktı ama milletvekillerinin kanun teklifi verme hakkı devam ediyor; yürütme artık yasa teklif edemez.'
 );
 
 
@@ -2474,6 +2876,206 @@ insert into public.questions (
   'Devletin sosyal hakları yerine getirmesindeki anayasal fren ''mali kaynaklarının yeterliliği''dir.'
 );
 
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  'Anayasa''da güvence altına alınan temel hak ve özgürlüklerinin kamu gücü tarafından ihlal edildiğini iddia eden bir kişinin, olağan kanun yollarını tükettikten sonra nihai kararın tebliğinden veya öğrenilmesinden itibaren Anayasa Mahkemesi''ne BİREYSEL BAŞVURU yapma süresi kaç gündür?',
+  '{"options": ["15 gün", "30 gün", "45 gün", "60 gün", "90 gün"], "correctIndex": 1}'::jsonb,
+  '6216 sayılı Anayasa Mahkemesinin Kuruluşu ve Yargılama Usulleri Hakkında Kanun m. 47/5 uyarınca bireysel başvuru süresi, başvuru yollarının tüketildiği tarihten itibaren 30 GÜNDÜR.',
+  'AYM''de norm denetimi iptal davası açma süresi 60 gündür; vatandaşın BİREYSEL BAŞVURU süresi ise 30 GÜNDÜR!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  'Avrupa İnsan Hakları Sözleşmesi''ne (AİHS) ek 15 No''lu Protokol''ün yürürlüğe girmesiyle birlikte, iç hukuk yollarının tüketilmesinden sonra Avrupa İnsan Hakları Mahkemesi''ne (AİHM) bireysel başvuru yapma süresi kaç aya indirilmiştir?',
+  '{"options": ["1 ay", "3 ay", "4 ay", "6 ay", "12 ay"], "correctIndex": 2}'::jsonb,
+  'Eski düzenlemede AİHM başvuru süresi 6 ay idi. 15 No''lu Protokol''ün yürürlüğe girmesiyle kesinleşmiş nihai iç hukuk kararından itibaren AİHM''e başvuru süresi 4 AYA indirilmiştir.',
+  'Eski 6 ay kuralı güncellenmiştir; güncel AİHM başvuru süresi 4 AYDIR!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  '2820 sayılı Siyasi Partiler Kanunu''na göre Türkiye''de bir siyasi partinin kurulabilmesi için önceden izin almaksızın EN AZ kaç Türk vatandaşının bir araya gelmesi zorunludur?',
+  '{"options": ["10", "20", "30", "50", "100"], "correctIndex": 2}'::jsonb,
+  'Siyasi partiler, önceden izin almadan en az 30 TÜRK VATANDAŞI tarafından İçişleri Bakanlığı''na bildirimde bulunarak kurulur. Siyasi parti ''grubu'' kurmak için ise en az 20 milletvekili gerekir.',
+  'Siyasi parti kurmak için en az 30 VATANDAŞ; TBMM''de parti grubu kurmak için en az 20 MİLLETVEKİLİ gerekir. 20 ve 30 sayıları ÖSYM''nin en popüler tuzak ikilisidir.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''na göre bir siyasi partinin kapatılmasına ilişkin davayı açmaya yetkili makam ve kapatma kararını vermeye yetkili yargı organı hangi seçenekte doğru verilmiştir?',
+  '{"options": ["Davayı Adalet Bakanı açar — Kararı Yargıtay verir.", "Davayı TBMM Başkanı açar — Kararı Danıştay verir.", "Davayı Yargıtay Cumhuriyet Başsavcısı açar — Kararı Anayasa Mahkemesi verir.", "Davayı Cumhurbaşkanı açar — Kararı Uyuşmazlık Mahkemesi verir.", "Davayı HSK açar — Kararı Yargıtay Ceza Genel Kurulu verir."], "correctIndex": 2}'::jsonb,
+  'Anayasa m. 69: Siyasi partilerin kapatılması, YARGITAY CUMHURİYET BAŞSAVCISININ açacağı dava üzerine ANAYASA MAHKEMESİ tarafından karara bağlanır (kapatma kararı için 15 üyeden 10 üyenin oyu = 2/3 çoğunluk şarttır).',
+  'Davayı açan = Yargıtay Cumhuriyet Başsavcısı; Kapatma kararını veren = Anayasa Mahkemesi''dir.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  'Siyasi Partiler Kanunu''na göre genel seçimlerde ülke genel barajını (%7) aşamamış olsa bile, genel seçimlere katılan ve toplam geçerli oyların EN AZ yüzde kaçını alan siyasi partilere devlet bütçesinden orantılı olarak hazine yardımı yapılır?',
+  '{"options": ["%1", "%2", "%3", "%5", "%7"], "correctIndex": 2}'::jsonb,
+  'Siyasi Partiler Kanunu Ek m. 1 uyarınca, genel seçimlerde geçerli oyların EN AZ YÜZDE ÜÇÜNÜ (%3) alan siyasi partilere devlet hazinesinden yardım yapılır.',
+  'Meclise girmek için seçim barajı %7''dir; hazine yardımı alabilmek için asgari oy oranı ise YÜZDE 3''tür (%3).'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  '3071 sayılı Dilekçe Hakkının Kullanılmasına Dair Kanun''a göre TBMM''ye veya yetkili idari makamlara verilen dilekçelere en geç kaç gün içinde gerekçeli olarak cevap verilmesi zorunludur?',
+  '{"options": ["15 gün", "30 gün", "60 gün", "90 gün", "120 gün"], "correctIndex": 1}'::jsonb,
+  'Dilekçe Kanunu m. 7 uyarınca yetkili makamlar dilekçe sahiplerine en geç 30 GÜN içinde cevap vermekle yükümlüdür. TBMM Dilekçe Komisyonu''nun inceleme ve karar süresi ise 60 gündür.',
+  'İdari makamların dilekçeye cevap süresi 30 gündür; Bilgi edinme başvurusunda ise bu süre 15 gündür.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''nın 74. maddesinde düzenlenen, idarenin her türlü eylem, işlem, tutum ve davranışını insan haklarına ve hukuka uygunluk yönünden inceleyen Kamu Denetçiliği Kurumu (Ombudsmanlık) nereye bağlı olarak kurulmuştur?',
+  '{"options": ["Cumhurbaşkanlığına", "TBMM Başkanlığına", "Adalet Bakanlığına", "Anayasa Mahkemesine", "Danıştay Başkanlığına"], "correctIndex": 1}'::jsonb,
+  'Anayasa m. 74 uyarınca TBMM BAŞKANLIĞINA BAĞLI olarak Kamu Denetçiliği Kurumu kurulmuştur. Kurumun başı olan Kamu Başdenetçisi TBMM tarafından gizli oyla 4 yıllığına seçilir.',
+  'Devlet Denetleme Kurulu (DDK) Cumhurbaşkanlığına bağlıdır; Kamu Denetçiliği Kurumu (Ombudsmanlık) ise TBMM BAŞKANLIĞINA bağlıdır!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''nın 30. maddesinde düzenlenen basın araçlarının korunması ilkesine göre aşağıdakilerden hangisi doğrudur?',
+  '{"options": ["Kanuna uygun kurulmuş basımevi ve matbaalar suç aleti olduğu gerekçesiyle zapt ve müsadere edilemez veya işletilmekten alıkonulamaz.", "Basımevleri her türlü suç iddiasında savcılık kararıyla doğrudan kapatılır.", "Basımevlerinin basacağı her gazete önceden mülki amirin sansür onayından geçmelidir.", "Basın araçları yalnızca olağanüstü hal döneminde müsadere edilebilir.", "Yabancı dilde yayın yapan matbaalar süresiz kapatılabilir."], "correctIndex": 0}'::jsonb,
+  'Anayasa m. 30 açık güvencesidir: ''Kanuna uygun şekilde basın işletmesi olarak kurulan basımevi ve eklentileri ile basın araçları, suç aleti olduğu gerekçesiyle zapt ve müsadere edilemez veya işletilmekten alıkonulamaz.''',
+  'Kanuna uygun basımevleri suç aleti olduğu iddiasıyla müsadere edilemez ve kapatılamaz; bu anayasal özel bir güvencedir.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  'Anayasa''nın 38. maddesinde güvence altına alınan ''Suç ve Cezalara İlişkin Esaslar'' arasında aşağıdakilerden hangisi YER ALMAZ?',
+  '{"options": ["Kimse, işlendiği zaman yürürlükte bulunan kanunun suç saymadığı bir fiilden dolayı cezalandırılamaz.", "Suçluluğu hükmen sabit oluncaya kadar, kimse suçlu sayılamaz (Masumiyet Karinesi).", "Hiç kimse, yalnızca sözleşmeden doğan bir yükümlülüğü yerine getirememesinden (borcunu ödeyememekten) dolayı özgürlüğünden alıkonulamaz.", "Ceza sorumluluğu şahsidir; kimse başkasının fiilinden dolayı sorumlu tutulamaz.", "Ağır kamu zararına yol açan ekonomik suçlarda suçlunun tüm malvarlığına genel müsadere cezası uygulanabilir."], "correctIndex": 4}'::jsonb,
+  'Anayasa m. 38 gereğince ''Genel müsadere cezası verilemez.'' 2004 anayasa değişikliği ile hem ölüm cezası hem de genel müsadere cezası kesin olarak yasaklanmıştır (yalnızca suça konu eşyanın özel müsaderesi mümkündür).',
+  'Türkiye''de GENEL MÜSADERE cezası kesinlikle yasaktır; hiçbir suç tipi için genel müsadere verilemez.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Temel Hak ve Ödevler',
+  'multiple_choice',
+  2,
+  'Anayasa''nın 51. maddesinde düzenlenen ''Sendika Kurma Hakkı'' ile ilgili olarak 2010 anayasa değişikliği ile yapılan önemli yenilik aşağıdakilerden hangisidir?',
+  '{"options": ["Aynı zamanda ve aynı işkolunda birden çok sendikaya üye olunamayacağı kuralı anayasadan çıkarılarak çoklu sendika üyeliği serbest bırakılmıştır.", "Memurlara grev hakkı tanınmıştır.", "Sendika kurmak için İçişleri Bakanlığı''ndan izin alma şartı getirilmiştir.", "Sendika kurma yaşı 25''e çıkarılmıştır.", "Sendika yöneticilerine milletvekili dokunulmazlığı verilmiştir."], "correctIndex": 0}'::jsonb,
+  '2010 anayasa değişikliğiyle ''Aynı zamanda ve aynı işkolunda birden çok sendikaya üye olunamaz'' sınırlaması anayasadan çıkarılmıştır. Böylece sendikal özgürlük genişletilmiştir.',
+  'Memurlara toplu sözleşme hakkı verilmiştir ancak GREV HAKKI MEMURA HALEN TANINMAMIŞTIR! Sendikada değişen kural çoklu sendika üyeliğidir.'
+);
+
 
 -- -------------------------------------------------------------
 -- KONU 4: YASAMA, YÜRÜTME VE YARGI
@@ -3281,6 +3883,206 @@ HSK''nın aşağıdaki kararlarından hangisine karşı Danıştay''a yargı yol
   '{"options": ["Hakimlerin görev yerlerinin değiştirilmesi (atama kararları)", "Meslekten çıkarma cezasına ilişkin nihai kararlar", "Uyarma ve kınama disiplin cezaları", "Derece yükselmesi kararları", "Kurul müfettişlerinin teftiş raporları"], "correctIndex": 1}'::jsonb,
   'Anayasa m. 159 son fıkrası gereğince HSK''nın ''meslekten çıkarma cezasına ilişkin olanlar dışındaki'' kararlarına karşı yargı mercilerine başvurulamaz. Yani MESLEKTEN ÇIKARMA kararlarına karşı Danıştay''a iptal davası açılabilir.',
   'HSK''nın sadece ve sadece ''meslekten çıkarma'' kararı yargı denetimine açıktır; atama, terfi veya kınama cezalarına karşı yargı yolu kesinlikle kapalıdır.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Yasama, Yürütme ve Yargı',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''na göre TBMM bir yasama yılında EN ÇOK kaç ay tatil yapabilir ve tatil sırasında Meclis üyelerinin en az kaçının yazılı istemi üzerine TBMM Başkanı meclisi toplantıya çağırmak zorundadır?',
+  '{"options": ["En çok 3 ay tatil yapabilir — Üye tamsayısının 1/5''i (120 milletvekili) istemiyle", "En çok 2 ay tatil yapabilir — Üye tamsayısının 1/3''ü (200 milletvekili) istemiyle", "En çok 1 ay tatil yapabilir — Üye tamsayısının salt çoğunluğu (301 vekil) istemiyle", "En çok 4 ay tatil yapabilir — 50 milletvekili istemiyle", "En çok 3 ay tatil yapabilir — Yalnızca Cumhurbaşkanı istemiyle"], "correctIndex": 0}'::jsonb,
+  'Anayasa m. 93 uyarınca TBMM bir yasama yılında en çok 3 ay tatil yapabilir. Ara verme ise 15 günü geçemez. Cumhurbaşkanı ve TBMM Başkanı doğrudan; milletvekillerinin en az 1/5''i (120 vekil) yazılı talepte bulunursa TBMM Başkanı zorunlu olarak meclisi olağanüstü toplantıya çağırır.',
+  'Meclis tatili en çok 3 aydır; meclisi toplantıya çağırma istemi için 1/5 (120 milletvekili) imzası gerekir.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Yasama, Yürütme ve Yargı',
+  'multiple_choice',
+  2,
+  'TBMM Genel Kurulu tarafından yasama dokunulmazlığı kaldırılan veya milletvekilliği düşürülen bir milletvekili, bu kararın iptali istemiyle kaç gün içinde Anayasa Mahkemesi''ne başvurabilir ve AYM bu başvuruyu en geç kaç gün içinde karara bağlar?',
+  '{"options": ["7 gün içinde başvurur — Anayasa Mahkemesi 15 gün içinde kesin karara bağlar.", "15 gün içinde başvurur — Anayasa Mahkemesi 30 gün içinde karara bağlar.", "10 gün içinde başvurur — Anayasa Mahkemesi 10 gün içinde karara bağlar.", "30 gün içinde başvurur — Anayasa Mahkemesi 60 gün içinde karara bağlar.", "Yargı yolu kapalıdır, mahkemeye başvurulamaz."], "correctIndex": 0}'::jsonb,
+  'Anayasa m. 85 uyarınca dokunulmazlığın kaldırılması veya vekilliğin düşürülmesi tarihinden itibaren 7 GÜN içinde milletvekilinin kendisi veya başka bir vekil AYM''ye iptal başvurusu yapabilir. Anayasa Mahkemesi başvuruyu 15 GÜN içinde kesin karara bağlamak zorundadır.',
+  'ÖSYM''nin meşhur 7 - 15 gün kuralıdır: Başvuru süresi 7 GÜN, AYM''nin karar süresi 15 GÜNDÜR!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Yasama, Yürütme ve Yargı',
+  'multiple_choice',
+  2,
+  'Anayasa''nın 94. maddesine göre TBMM Başkanlığı seçimi gizli oyla en çok kaç turda tamamlanır ve 3. tur oylamada seçilebilmek için aranan asgari çoğunluk nedir?',
+  '{"options": ["En çok 4 turda tamamlanır — 3. turda üye tamsayısının salt çoğunluğu (301 oy) aranır.", "En çok 3 turda tamamlanır — 3. turda en çok oy alan seçilir.", "En çok 4 turda tamamlanır — 3. turda 2/3 çoğunluk (400 oy) aranır.", "En çok 2 turda tamamlanır — 2. turda salt çoğunluk aranır.", "En çok 5 turda tamamlanır — 3. turda 360 oy aranır."], "correctIndex": 0}'::jsonb,
+  'TBMM Başkanlık seçimi en çok 4 turda biter: 1. Turda 400 (2/3), 2. Turda 400 (2/3), 3. Turda 301 (Salt çoğunluk) aranır. 3. turda da seçilemezse en çok oy alan iki aday 4. tura kalır ve en çok oy alan (basit çoğunluk) başkan seçilir.',
+  '1 ve 2. turlarda 400; 3. turda 301; 4. turda en çok oyu alan kazanır. Süreç en çok 4 tur sürer.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Yasama, Yürütme ve Yargı',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''nın 101. maddesine göre Cumhurbaşkanlığına aday gösterilme usulü değerlendirildiğinde aşağıdakilerden hangisi doğrudan Cumhurbaşkanlığına aday gösteremez?',
+  '{"options": ["TBMM''de grubu bulunan (en az 20 milletvekili olan) siyasi partiler", "En son yapılan genel seçimlerde tek başına veya birlikte geçerli oyların en az yüzde beşini (%5) almış olan siyasi partiler", "En az 100.000 seçmen", "Türkiye Barolar Birliği ve TOBB ortak imzası", "Birden fazla partinin ittifak yaparak oylarının toplamının %5''i bulması"], "correctIndex": 3}'::jsonb,
+  'Anayasa m. 101 uyarınca CB adaylığı için üç meşru yol vardır: 1) Meclis grubu (20 vekil), 2) Son genel seçimde en az %5 oy almış partiler, 3) 100 bin seçmenin imzası. Meslek kuruluşları veya sendikalar aday gösteremez.',
+  'CB adaylığı için oy oranı barajı %5''tir (seçim barajı olan %7 ile karıştırılmamalıdır); imza sayısı ise 100 bindir.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Yasama, Yürütme ve Yargı',
+  'multiple_choice',
+  2,
+  'Cumhurbaşkanlığı makamının herhangi bir nedenle boşalması (ölüm, istifa vb.) halinde yenisi seçilene kadar Cumhurbaşkanlığına kim vekalet eder ve yetkilerini kullanır?',
+  '{"options": ["TBMM Başkanı", "Cumhurbaşkanı Yardımcısı", "Anayasa Mahkemesi Başkanı", "Adalet Bakanı", "En yaşlı milletvekili"], "correctIndex": 1}'::jsonb,
+  '2017 değişikliği öncesinde TBMM Başkanı vekalet etmekteydi. 2017 anayasa reformuyla bu kural değişmiş olup makamın boşalması veya yurt dışına çıkış hallerinde vekalet yetkisi CUMHURBAŞKANI YARDIMCISINA verilmiştir.',
+  'Eski anayasada vekil TBMM Başkanı idi; 2017 sonrasında vekil CUMHURBAŞKANI YARDIMCISIDIR!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Yasama, Yürütme ve Yargı',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''nın 108. maddesinde düzenlenen ve doğrudan Cumhurbaşkanlığına bağlı olan Devlet Denetleme Kurulu''nun (DDK) inceleme ve denetleme yetkisi DIŞINDA bırakılan TEK ALAN aşağıdakilerden hangisidir?',
+  '{"options": ["Türk Silahlı Kuvvetleri", "Kamu İktisadi Teşebbüsleri (KİT)", "Yargı Organları", "Meslek Kuruluşları ve Odalar", "Sendikalar ve Kamu Yararına Dernekler"], "correctIndex": 2}'::jsonb,
+  'Anayasa m. 108 açık hükmüdür: ''Yargı organları, Devlet Denetleme Kurulunun görev alanı dışındadır.'' TSK, KİT''ler, vakıf ve dernekler ise DDK denetimine tabidir (2017''de TSK da DDK kapsamına alınmıştır).',
+  '2017''den önce TSK denetlenemiyordu; 2017 ile TSK da DDK denetimine açıldı. DDK''nın denetleyemediği TEK ALAN YARGI ORGANLARIDIR!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Yasama, Yürütme ve Yargı',
+  'multiple_choice',
+  2,
+  'Adli ve idari yargı kolları arasındaki görev ve hüküm uyuşmazlıklarını kesin olarak çözmekle görevli olan Uyuşmazlık Mahkemesi''nin Başkanı aşağıdakilerden hangisi tarafından seçilir?',
+  '{"options": ["Anayasa Mahkemesi kendi üyeleri arasından seçer.", "Yargıtay Büyük Genel Kurulu seçer.", "Danıştay Genel Kurulu seçer.", "Hakimler ve Savcılar Kurulu seçer.", "Cumhurbaşkanı doğrudan atar."], "correctIndex": 0}'::jsonb,
+  'Anayasa m. 158 uyarınca: ''Uyuşmazlık Mahkemesinin Başkanlığını Anayasa Mahkemesince kendi üyeleri arasından görevlendirilen üye yapar.''',
+  'Uyuşmazlık Mahkemesi Başkanı AYM üyeleri arasından Anayasa Mahkemesi tarafından seçilir!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Yasama, Yürütme ve Yargı',
+  'multiple_choice',
+  2,
+  'Anayasa''nın 160. maddesinde düzenlenen Sayıştay ile Danıştay''ın vergi, benzeri mali yükümlülükler ve ödevler konusundaki kesinleşmiş kararları arasında bir uyuşmazlık çıkarsa hangisinin kararı esas alınır?',
+  '{"options": ["Danıştay kararları esas alınır.", "Sayıştay kararları esas alınır.", "Uyuşmazlık Mahkemesi''ne başvurulur.", "Anayasa Mahkemesi son sözü söyler.", "Hazine ve Maliye Bakanlığı''nın görüşü uygulanır."], "correctIndex": 0}'::jsonb,
+  'Anayasa m. 160 son fıkrası gereğince: ''Vergi, benzeri mali yükümlülükler ve ödevler hakkında Danıştay ile Sayıştay kararları arasındaki uyuşmazlıklarda DANIŞTAY KARARLARI ESAS ALINIR.''',
+  'Sayıştay hesap mahkemesidir ancak vergi konusunda uyuşmazlık çıkarsa yüksek idare mahkemesi olan DANIŞTAY''ın kararı üstündür.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Yasama, Yürütme ve Yargı',
+  'multiple_choice',
+  2,
+  'Cumhurbaşkanının tek başına imzaladığı veya anayasada özel olarak yargı denetimi dışına çıkarılan işlemler düşünüldüğünde aşağıdakilerden hangisine karşı YARGI YOLU AÇIKTIR?',
+  '{"options": ["Olağan dönem Cumhurbaşkanlığı Kararnameleri", "Yüksek Seçim Kurulu (YSK) kararları", "Kamu Görevlileri Hakem Kurulu kararları", "Yüksek Askeri Şura''nın (YAŞ) terfi işlemleri ile kadrosuzluk nedeniyle emekliye ayırma kararları", "Hakimler ve Savcılar Kurulu''nun (HSK) kınama ve yer değiştirme kararları"], "correctIndex": 0}'::jsonb,
+  'Olağan dönem Cumhurbaşkanlığı Kararnamelerine karşı Anayasa Mahkemesi''nde iptal davası açılabilir (yargı yolu açıktır). YSK, Hakem Kurulu ve YAŞ''ın terfi kararlarına karşı ise anayasal olarak yargı yolu kapalıdır.',
+  'Olağan CBK''lar yargı denetimine (AYM) açıktır; OHAL CBK''lar ve YSK kararları ise yargıya kapalıdır.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Yasama, Yürütme ve Yargı',
+  'multiple_choice',
+  2,
+  'Anayasa Mahkemesi''nin Yüce Divan sıfatıyla verdiği mahkumiyet veya aklama kararlarına karşı anayasal olarak başvurulabilecek kanun yolu aşağıdakilerden hangisidir?',
+  '{"options": ["Kararın tebliğinden itibaren 15 gün içinde Yüce Divan''da ''Yeniden İnceleme'' (itiraz) talep edilebilir; Genel Kurulun inceleme kararı kesindir.", "Yargıtay Ceza Genel Kurulu''na temyize gidilir.", "Danıştay İdari Dava Daireleri Kurulu''na itiraz edilir.", "Yüce Divan kararlarına karşı hiçbir itiraz veya kanun yolu yoktur, ilk karar kesindir.", "Doğrudan AİHM''e başvurulur."], "correctIndex": 0}'::jsonb,
+  '2010 anayasa değişikliği ile Yüce Divan kararlarına karşı ''Yeniden İnceleme'' (itiraz) yolu getirilmiştir. Tebliğden itibaren 15 gün içinde itiraz edilir ve Anayasa Mahkemesi Genel Kurulu''nun itiraz üzerine verdiği karar kesindir.',
+  'Eskiden Yüce Divan kararlarına itiraz edilemiyordu; 2010 değişikliği ile AYM Genel Kurulu''na 15 gün içinde ''Yeniden İnceleme'' başvurusu hakkı tanınmıştır.'
 );
 
 
@@ -4100,6 +4902,206 @@ insert into public.questions (
   'İl İdare Kurulu''nda Belediye Başkanı veya Garnizon Komutanı KESİNLİKLE YOKTUR! Tamamen merkezi idarenin il müdürlerinden oluşur.'
 );
 
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '657 sayılı Devlet Memurları Kanunu''na göre ilk defa veya naklen bir göreve atanan memurların göreve başlama süreleri değerlendirildiğinde; aynı belediye ve il sınırları içindeki bir göreve atananlar ile başka bir yerdeki göreve atananların işe başlama süreleri hangi seçenekte doğru verilmiştir?',
+  '{"options": ["Aynı yerdeki göreve tebliğ gününü izleyen iş günü — Başka yerdeki göreve tebliğden itibaren 15 gün içinde", "Aynı yerdeki göreve 3 gün içinde — Başka yerdeki göreve 30 gün içinde", "Her iki göreve de derhal aynı gün", "Aynı yerdeki göreve 7 gün — Başka yerdeki göreve 1 ay içinde", "Aynı yerdeki göreve 15 gün — Başka yerdeki göreve 45 gün içinde"], "correctIndex": 0}'::jsonb,
+  '657 sayılı DMK m. 62 uyarınca: Aynı yerdeki göreve atananlar atama emrinin kendilerine tebliğ gününü İZLEYEN İŞ GÜNÜ içinde; başka yerdeki göreve atananlar ise tebliğ tarihinden itibaren 15 GÜN İÇERİSİNDE o yere hareket ederek işe başlamak zorundadır.',
+  'ÖSYM''nin en klasik memurluk süresi sorusudur: Aynı yer = Ertesi iş günü; Başka yer = 15 GÜN!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '657 sayılı Devlet Memurları Kanunu''na göre bir devlet memuru mazeretsiz ve kesintisiz olarak EN AZ kaç gün görevini terk ederse çekilme (istifa) isteğinde bulunmuş sayılır (müstafi sayılır)?',
+  '{"options": ["3 gün", "5 gün", "7 gün", "10 gün", "20 gün"], "correctIndex": 3}'::jsonb,
+  '657 sayılı DMK m. 94 uyarınca: Mezuniyetsiz veya kurumunca kabul edilen mazereti olmaksızın görevin terk edilmesi ve bu terkin KESİNTİSİZ 10 GÜN devam etmesi halinde, yazılı müracaat şartı aranmaksızın memur çekilmiş (müstafi) sayılır.',
+  'Kesintisiz 10 gün işe gelmeyen memur müstafi sayılır ve 1 yıl süreyle memurluğa geri dönemez.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '657 sayılı Devlet Memurları Kanunu''na göre devlet memurluğuna yeni giren bir kişinin ''Aday Memurluk'' süresi en az ve en çok kaç yıl olabilir?',
+  '{"options": ["En az 6 ay — En çok 1 yıl", "En az 1 yıl — En çok 2 yıl", "En az 1 yıl — En çok 3 yıl", "En az 2 yıl — En çok 4 yıl", "Sabit 1 yıldır, uzatılamaz."], "correctIndex": 1}'::jsonb,
+  '657 sayılı DMK m. 54 uyarınca: Adaylık süresi EN AZ 1 YIL, EN ÇOK 2 YILDIR ve bu süre içinde aday memurun başka kurumlara nakli yapılamaz.',
+  'Aday memurluk süresi EN AZ 1 YIL, EN ÇOK 2 YILDIR! 6 ay veya 3 yıl şıkları çeldiricidir.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '657 sayılı Devlet Memurları Kanunu''nda düzenlenen disiplin cezalarından ''Devlet Memurluğundan Çıkarma'' cezasını vermeye yetkili makam aşağıdakilerden hangisidir?',
+  '{"options": ["Disiplin Amiri", "Atamaya Yetkili Amir", "Yüksek Disiplin Kurulu", "Vali", "Cumhuriyet Başsavcısı"], "correctIndex": 2}'::jsonb,
+  'Uyarma, kınama ve aylıktan kesme cezalarını disiplin amirleri; kademe ilerlemesinin durdurulmasını il disiplin kurulu kararıyla atamaya yetkili amir; MEMURLUKTAN ÇIKARMA cezasını ise amirin teklifi üzerine amirin bağlı olduğu kurumun YÜKSEK DİSİPLİN KURULU verir.',
+  'Disiplin amiri tek başına memurluktan ihraç kararı veremez; çıkarma cezasını sadece YÜKSEK DİSİPLİN KURULU verebilir.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  'Türkiye''de bir yerleşim yerinde Köy İdaresi''nin kurulabilmesi için nüfusun hangi aralıkta olması gerekir ve köy tüzel kişiliği hangi makamın kararı ile kurulur?',
+  '{"options": ["Nüfusu 150 ile 2.000 arasında olmalı — İçişleri Bakanlığı kararı ile kurulur.", "Nüfusu 500 ile 5.000 arasında olmalı — Çevre ve Şehircilik Bakanlığı kararı ile kurulur.", "Nüfusu 1.000 ile 2.000 arasında olmalı — Vali kararı ile kurulur.", "Nüfusu 2.000 ile 10.000 arasında olmalı — Kanunla kurulur.", "Nüfusu en az 5.000 olmalı — Cumhurbaşkanı kararı ile kurulur."], "correctIndex": 0}'::jsonb,
+  'Köy Kanunu m. 1: Nüfusu 2.000''den aşağı olan yerlere köy denir (en alt sınır teamülen 150''dir). Köy tüzel kişiliği İÇİŞLERİ BAKANLIĞI kararı ile kurulur.',
+  'Belediye Cumhurbaşkanı kararıyla (en az 5.000 nüfus); Köy ise İÇİŞLERİ BAKANLIĞI kararıyla (150 - 2.000 nüfus) kurulur.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  'Köy İdaresi''nin zorunlu organlarından olan ''Köy İhtiyar Meclisi''nin doğal (tabii) üyeleri hangi seçenekte doğru verilmiştir?',
+  '{"options": ["Köy İmamı ve Köy Öğretmeni", "Köy Korucusu ve Ziraat Mühendisi", "Köy Muhtarı ve En yaşlı köylü", "Köy Çobanı ve Sağlık Memuru", "Karakol Komutanı ve Bakkal"], "correctIndex": 0}'::jsonb,
+  'Köy İhtiyar Meclisi seçimle gelen üyelerin yanında iki daimi ve doğal (tabii) üyeye sahiptir: KÖY İMAMI ve KÖY ÖĞRETMENİ (varsa). Bu kişiler seçime girmeden mecliste yer alır.',
+  'Köy ihtiyar heyetinin doğal üyeleri İMAM ve ÖĞRETMENDİR.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '5393 sayılı Belediye Kanunu''na göre bir yerleşim yerinde Belediye kurulabilmesi için nüfusun EN AZ kaç olması gerekir ve belediye hangi idari işlemle kurulur?',
+  '{"options": ["Nüfusu en az 5.000 olmalı — Cumhurbaşkanı Kararı ile kurulur.", "Nüfusu en az 2.000 olmalı — İçişleri Bakanlığı kararı ile kurulur.", "Nüfusu en az 10.000 olmalı — Kanunla kurulur.", "Nüfusu en az 50.000 olmalı — Vali onayı ile kurulur.", "Nüfusu en az 750.000 olmalı — Cumhurbaşkanlığı Kararnamesi ile kurulur."], "correctIndex": 0}'::jsonb,
+  'Belediye kurulması için nüfusun en az 5.000 olması şarttır ve belediye CUMHURBAŞKANI KARARI ile kurulur. (İl ve ilçe merkezlerinde nüfus şartı aranmaksızın belediye kurulur).',
+  'Belediye CUMHURBAŞKANI KARARIYLA (en az 5 bin nüfus); Büyükşehir belediyesi ise KANUNLA (en az 750 bin nüfus) kurulur!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '5216 sayılı Büyükşehir Belediyesi Kanunu''na göre bir ilde Büyükşehir Belediyesi kurulabilmesi için toplam nüfusun en az kaç olması gerekir ve ne ile kurulur?',
+  '{"options": ["Toplam il nüfusu en az 750.000 olmalı — KANUNLA kurulur.", "Toplam il nüfusu en az 500.000 olmalı — Cumhurbaşkanı Kararı ile kurulur.", "Toplam il nüfusu en az 1.000.000 olmalı — İçişleri Bakanlığı kararı ile kurulur.", "Toplam il nüfusu en az 250.000 olmalı — Kanunla kurulur.", "Nüfus şartı yoktur, TBMM kararıyla kurulur."], "correctIndex": 0}'::jsonb,
+  'Büyükşehir belediyesi kurulması için toplam nüfusun EN AZ 750.000 olması ve münhasıran KANUNLA kurulması anayasal ve yasal zorunluluktur. Türkiye''de 30 büyükşehir belediyesi mevcuttur.',
+  'Büyükşehir belediyesi Cumhurbaşkanı kararıyla KURULAMAZ; mutlaka TBMM tarafından çıkarılan KANUNLA kurulur!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  'Anayasa''nın 127. maddesine göre mahalli idare organlarından olan ''Belediye Meclisi'' veya ''İl Genel Meclisi''nin görevini yapamaz hale gelmesi durumunda feshine karar vermeye yetkili organ hangisidir?',
+  '{"options": ["Vali", "İçişleri Bakanı", "Danıştay", "Anayasa Mahkemesi", "Bölge İdare Mahkemesi"], "correctIndex": 2}'::jsonb,
+  'Yerel meclislerin (Belediye Meclisi veya İl Genel Meclisi) süresinden önce feshine ancak yüksek idare mahkemesi olan DANIŞTAY karar verebilir. İçişleri Bakanı sadece geçici olarak görevden uzaklaştırabilir.',
+  'FESİH yetkisi yargısaldır ve DANIŞTAY''a aittir; İçişleri Bakanı feshedemez, sadece geçici uzaklaştırabilir.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  'Merkezi idarenin yerel yönetimler üzerindeki denetim aracı olan ''İdari Vesayet'' yetkisinin kapsamı ve sınırları değerlendirildiğinde aşağıdakilerden hangisi doğrudur?',
+  '{"options": ["Vesayet makamı, vesayete tabi yerel idare organının yerine geçerek doğrudan onun adına karar alabilir.", "Vesayet makamı kural olarak yerel idarenin kararını yerindelik yönünden değiştiremez; kanunda açık yetki yoksa kararı ya onar, ya bozar (veya iptali için idari yargıya başvurur).", "Vesayet yetkisi hiyerarşik amirlik yetkisiyle tamamen aynıdır.", "Vesayet makamı belediye başkanına disiplin cezası olarak memurluktan çıkarma cezası verebilir.", "İdari vesayet Anayasa''da yer almayan teamüli bir yetkidir."], "correctIndex": 1}'::jsonb,
+  'İdari vesayet istisnai bir yetkidir ve kanunla sınırlıdır. Vesayet makamı hiyerarşik amir gibi emir veremez veya belediye meclisinin kararını kafasına göre DEĞİŞTİREMEZ. Ya onaylar, ya reddeder ya da iptali için İdare Mahkemesine dava açar.',
+  'Hiyerarşide değiştirme ve emir yetkisi vardır; İdari vesayette değiştirme yetkisi KURAL OLARAK YOKTUR!'
+);
+
 
 -- -------------------------------------------------------------
 -- KONU 6: ULUSLARARASI KURULUŞLAR
@@ -4916,6 +5918,206 @@ insert into public.questions (
   '{"options": ["1975 Helsinki Nihai Senedi", "Yalta Konferansı Bildirisi", "Potsdam Anlaşması", "Paris Şartı", "Cenevre Sözleşmesi"], "correctIndex": 0}'::jsonb,
   '1975 Helsinki Nihai Senedi ile temeli atılan Avrupa Güvenlik ve İşbirliği Konferansı (AGİK), 1994 Budapeşte Zirvesi''nde kurumsallaşarak AGİT (OSCE) adını almıştır. Merkezi Viyana''dadır.',
   'AGİT''in temeli 1975 Helsinki Nihai Senedi''dir; merkezi Avusturya Viyana''dır.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''nın 90. maddesine göre usulüne göre yürürlüğe konulmuş milletlerarası antlaşmalar hakkında anayasaya aykırılık iddiasıyla nereye başvurulabilir?',
+  '{"options": ["Anayasa Mahkemesine iptal davası açılabilir.", "Danıştay''a başvurulabilir.", "Uyuşmazlık Mahkemesine gidilebilir.", "Bunlar hakkında anayasaya aykırılık iddiası ile Anayasa Mahkemesine BAŞVURULAMAZ (yargı yolu kapalıdır).", "Sayıştay inceleme yapar."], "correctIndex": 3}'::jsonb,
+  'Anayasa m. 90/son amir hükmüdür: ''Usulüne göre yürürlüğe konulmuş milletlerarası andlaşmalar kanun hükmündedir. Bunlar hakkında Anayasaya aykırılık iddiası ile Anayasa Mahkemesine başvurulamaz.''',
+  'Milletlerarası andlaşmalar kanun gücündedir ama KANUNLARDAN FARKI: Anayasa Mahkemesi''ne iptal davası AÇILAMAZ!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  'Anayasa''nın 90. maddesinin son fıkrasına 2004 yılında eklenen kurala göre; usulüne göre yürürlüğe konulmuş temel hak ve özgürlüklere ilişkin milletlerarası antlaşmalarla iç hukuk kanunlarının aynı konuda farklı hükümler içermesi (çatışması) durumunda hangisi esas alınır?',
+  '{"options": ["TBMM''nin çıkaracağı yeni kanun esas alınır.", "Milletlerarası antlaşma hükümleri esas alınır.", "Cumhurbaşkanlığı Kararnamesi esas alınır.", "Her iki metin de geçersiz sayılarak genel ahlaka göre hüküm verilir.", "Hakim takdir yetkisini kullanır."], "correctIndex": 1}'::jsonb,
+  'Anayasa m. 90: ''Usulüne göre yürürlüğe konulmuş temel hak ve özgürlüklere ilişkin milletlerarası andlaşmalarla kanunların aynı konuda farklı hükümler içermesi nedeniyle çıkabilecek uyuşmazlıklarda MİLLETLERARASI ANDLAŞMA HÜKÜMLERİ ESAS ALINIR.''',
+  'Temel haklarda kanun ile andlaşma çatışırsa MİLLETLERARASI ANDLAŞMA kanundan üstündür ve esas alınır!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  'Birleşmiş Milletler''in ana yargı organı olan ve Hollanda''nın Lahey kentindeki Barış Sarayı''nda görev yapan Uluslararası Adalet Divanı''na (UAD) ilişkin aşağıdakilerden hangisi doğrudur?',
+  '{"options": ["Sadece gerçek kişilerin ceza davalarına bakar.", "Yalnızca DEVLETLER arasındaki hukuki uyuşmazlıkları karara bağlar ve BM organlarına istişari görüş bildirir.", "Yargıç sayısı 27''dir ve 3 yıllığına seçilirler.", "Kararları temyizen İsviçre Federal Mahkemesi''ne götürülebilir.", "Türkiye divanın zorunlu yargı yetkisini şartsız kabul etmiştir."], "correctIndex": 1}'::jsonb,
+  'UAD (ICJ), BM''nin ana yargı organıdır. 15 yargıçtan oluşur (görev süreleri 9 yıldır). UAD önüne gerçek kişiler dava açamaz; yalnızca DEVLETLER taraf olabilir.',
+  'UAD''de kişiler değil DEVLETLER yargılanır; gerçek kişilerin savaş ve soykırım suçlarını ise Uluslararası Ceza Mahkemesi (UCM) yargılar.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  '3 Ekim 2009 tarihinde Türkiye, Azerbaycan, Kazakistan ve Kırgızistan tarafından imzalanan Nahçıvan Anlaşması ile kurulan ve genel sekreterliği İstanbul''da bulunan teşkilat hangisidir?',
+  '{"options": ["Türk Devletleri Teşkilatı (TDT)", "Ekonomik İşbirliği Teşkilatı (EİT)", "Karadeniz Ekonomik İşbirliği (KEİ)", "D-8 Teşkilatı", "TÜRKSOY"], "correctIndex": 0}'::jsonb,
+  'TDT (eski adıyla Türk Keneşi / Türk Konseyi), 3 Ekim 2009 Nahçıvan Anlaşması ile kurulmuştur ve merkezi İSTANBUL''dadır. Bu nedenle 3 Ekim günü ''Türk Dünyası İşbirliği Günü'' olarak kutlanır.',
+  'TÜRKSOY''un merkezi Ankara''dadır; Türk Devletleri Teşkilatı''nın (TDT) genel sekreterliği ise İSTANBUL''dadır.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  '1992 yılında İstanbul Zirvesi Bildirisi ile Türkiye''nin öncülüğünde kurulan ve daimi genel sekreterliği İstanbul Boğazı kıyısında yer alan bölgesel ekonomik kuruluş hangisidir?',
+  '{"options": ["Karadeniz Ekonomik İşbirliği Teşkilatı (KEİ)", "Akdeniz İçin Birlik", "Avrupa Serbest Ticaret Birliği (EFTA)", "D-8 Teşkilatı", "Orta Avrupa Girişimi"], "correctIndex": 0}'::jsonb,
+  'Karadeniz havzasındaki barış ve ekonomik entegrasyonu hedefleyen KEİ (BSEC), 1992 İstanbul Zirvesi ile kurulmuş ve daimi sekretaryası İSTANBUL''dadır.',
+  'KEİ''nin kurucusu ve ev sahibi Türkiye''dir; merkezi İSTANBUL''dadır.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  'Türkiye, İran ve Pakistan tarafından 1985 yılında kurulan ve daha sonra Orta Asya Türk cumhuriyetleri ile Afganistan ve Azerbaycan''ın katıldığı, genel merkezi TAHRAN''da bulunan ekonomik örgüt hangisidir?',
+  '{"options": ["Ekonomik İşbirliği Teşkilatı (EİT / ECO)", "D-8 Teşkilatı", "Arap Birliği", "Şanghay İşbirliği Örgütü", "Körfez İşbirliği Konseyi"], "correctIndex": 0}'::jsonb,
+  '1985''te kurulan Ekonomik İşbirliği Teşkilatı''nın (EİT) genel sekreterliği İran''ın başkenti TAHRAN''dadır. 10 üyesi vardır.',
+  'D-8 İstanbul''dadır; EİT (ECO) ise TAHRAN''dadır.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  '1995 yılında GATT''ın yerine kurulan, küresel ticaretin kurallarını belirleyen ve ticaret anlaşmazlıklarını çözen Dünya Ticaret Örgütü''nün (DTÖ / WTO) genel merkezi hangi şehirdedir?',
+  '{"options": ["Cenevre (İsviçre)", "Brüksel (Belçika)", "New York (ABD)", "Viyana (Avusturya)", "Londra (İngiltere)"], "correctIndex": 0}'::jsonb,
+  'Dünya Ticaret Örgütü (WTO), 1 Ocak 1995''te faaliyete geçmiş olup genel merkezi İsviçre''nin CENEVRE kentindedir.',
+  'DTÖ (WTO) merkezi CENEVRE''dedir. Dünya Bankası ve IMF ise Washington''dadır.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  '1949 yılında kurulan, Türkiye''nin kurucu üyesi olduğu, genel merkezi Fransa''nın Strazburg kentinde yer alan ve 2022''de Rusya''nın üyelikten çıkarıldığı insan hakları kuruluşu hangisidir?',
+  '{"options": ["Avrupa Konseyi", "Avrupa Birliği", "Avrupa Güvenlik ve İşbirliği Teşkilatı (AGİT)", "Kuzey Atlantik İttifakı (NATO)", "Batı Avrupa Birliği"], "correctIndex": 0}'::jsonb,
+  'Avrupa Konseyi (Council of Europe - Strazburg), AİHM''nin de bağlı olduğu örgüttür. Rusya''nın ihracından sonra üye sayısı 46''dır. Türkiye kurucu üyesidir.',
+  'Avrupa Konseyi ile Avrupa Birliği ayrı örgütlerdir! Türkiye AB üyesi değildir ama AVRUPA KONSEYİ''NİN KURUCUSUDUR.'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  'Şanghay İşbirliği Örgütü''nün (ŞİÖ) kurumsal yapısı ve Türkiye''nin bu örgütle olan hukuki ilişkisi hakkında aşağıdakilerden hangisi doğrudur?',
+  '{"options": ["Türkiye ŞİÖ''nün tam üyesidir.", "Türkiye ŞİÖ''de ''Gözlemci Üye'' statüsündedir.", "Türkiye ŞİÖ''de 2012 yılından bu yana ''DİYALOG ORTAĞI'' statüsündedir.", "Türkiye''nin ŞİÖ ile hiçbir resmi bağı yoktur.", "ŞİÖ genel sekreterliği Moskova''dadır."], "correctIndex": 2}'::jsonb,
+  'Türkiye Şanghay İşbirliği Örgütü''ne tam üye veya gözlemci üye DEĞİLDİR; 2012 Pekin Zirvesi''nde onaylanan kararla ''DİYALOG ORTAĞI'' (Dialogue Partner) statüsündedir.',
+  'ÖSYM''nin favori sorusudur: Türkiye ŞİÖ''de tam üye veya gözlemci DEĞİL, ''DİYALOG ORTAĞI''dır!'
+);
+
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  'Arap dünyasında dayanışmayı sağlamak amacıyla 1945 yılında kurulan ve 22 Arap ülkesinin üye olduğu Arap Devletleri Ligi''nin (Arap Birliği) genel merkezi hangi başkenttedir?',
+  '{"options": ["Kahire (Mısır)", "Riyad (Suudi Arabistan)", "Doha (Katar)", "Bağdat (Irak)", "Amman (Ürdün)"], "correctIndex": 0}'::jsonb,
+  'Arap Birliği''nin genel merkezi Mısır''ın başkenti KAHİRE''dedir.',
+  'İslam İşbirliği Teşkilatı CIDDE''dedir; Arap Birliği ise KAHİRE''dedir.'
 );
 
 COMMIT;

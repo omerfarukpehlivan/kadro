@@ -663,5 +663,169 @@ questions = [
         "correctIndex": 1,
         "explanation": "Anayasa m. 148 açık hükmüdür: 'Olağanüstü hallerde çıkarılan Cumhurbaşkanlığı kararnamelerinin şekil ve esas bakımından Anayasaya aykırılığı iddiasıyla, Anayasa Mahkemesinde dava açılamaz.' Olağan CBK'lar ise AYM denetimine tabidir.",
         "distractor_trap": "Olağan CBK yargı denetimine açıktır; OHAL CBK ise Anayasa Mahkemesi denetimine KESİNLİKLE KAPALIDIR."
+    },
+
+    # -------------------------------------------------------------
+    # TEST 5: HAP BİLGİ & CHECK-UP TESTİ (Zorluk: 2) - Sorular 41-50
+    # -------------------------------------------------------------
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "1982 Anayasası ve Temel İlkeler",
+        "difficulty": 2,
+        "prompt_text": "Türk anayasa tarihinde yürürlüğe girmiş anayasalar içinde değiştirilme usulü olağan kanunlarla aynı olan TEK YUMUŞAK ve maddeleri en kısa olan TEK ÇERÇEVE ANAYASA aşağıdakilerden hangisidir?",
+        "options": [
+            "1876 Kanun-i Esasi",
+            "1921 Anayasası (Teşkilat-ı Esasiye)",
+            "1924 Anayasası",
+            "1961 Anayasası",
+            "1982 Anayasası"
+        ],
+        "correctIndex": 1,
+        "explanation": "1921 Teşkilat-ı Esasiye Kanunu 23 ana maddeden oluşur; olağanüstü savaş koşullarında hazırlandığı için anayasa değiştirme usulüne ayrı bir zorluk getirmemiş (yumuşak anayasa) ve ayrıntılı düzenlemeler yerine temel ilkelere yer vermiştir (çerçeve anayasa). Diğer tüm anayasalarımız sert ve kazuistiktir.",
+        "distractor_trap": "Türk anayasa tarihindeki TEK yumuşak ve TEK çerçeve anayasa 1921 Anayasası'dır!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "1982 Anayasası ve Temel İlkeler",
+        "difficulty": 2,
+        "prompt_text": "1876 Kanun-i Esasi'de yasama organı 'Meclis-i Umumi' (Genel Meclis) adını taşımış ve iki kanatlı olarak kurulmuştur.\n\nBu mecliste üyeleri doğrudan padişah tarafından ömür boyu (kayd-ı hayat şartıyla) atanan meclis kanadı aşağıdakilerden hangisidir?",
+        "options": [
+            "Heyet-i Mebusan",
+            "Heyet-i Ayan",
+            "Meclis-i Vükela",
+            "Şura-yı Devlet",
+            "Encümen-i Daniş"
+        ],
+        "correctIndex": 1,
+        "explanation": "Kanun-i Esasi'de Heyet-i Mebusan üyeleri halk tarafından (çift dereceli seçimle) 4 yıllığına seçilir; HEYET-İ AYAN üyeleri ise 40 yaşını doldurmuş devlet adamları arasından bizzat Padişah tarafından ömür boyu görev yapmak üzere atanırdı.",
+        "distractor_trap": "Halkın seçtiği = Heyet-i Mebusan; Padişahın ömür boyu atadığı = HEYET-İ AYAN'dır."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "1982 Anayasası ve Temel İlkeler",
+        "difficulty": 2,
+        "prompt_text": "1924 Teşkilat-ı Esasiye Kanunu'nda laikleşme ve demokratikleşme sürecinde yapılan anayasa değişikliklerinin kronolojik sırası aşağıdakilerden hangisinde doğru verilmiştir?",
+        "options": [
+            "'Devletin dini İslam'dır' ibaresinin çıkarılması (1928) — Kadınlara milletvekili seçme-seçilme hakkı (1934) — Atatürk İlkeleri ve Laikliğin anayasaya girmesi (1937)",
+            "Laikliğin girmesi (1928) — Kadınlara haklar (1930) — Devletin dini ibaresinin kalkması (1937)",
+            "Kadınlara haklar (1934) — Devletin dini ibaresinin kalkması (1928) — Laiklik (1938)",
+            "Devletin dini ibaresinin kalkması (1924) — Laiklik (1928) — Kadınlara haklar (1934)",
+            "Laiklik (1937) — Devletin dini ibaresinin kalkması (1934) — Kadınlara haklar (1930)"
+        ],
+        "correctIndex": 0,
+        "explanation": "1924 Anayasası kronolojisi: 1) 1928'de 'Devletin dini İslam'dır' maddesi ve yemin metnindeki dini ifadeler çıkarıldı. 2) 1934'te kadınlara milletvekili seçme-seçilme hakkı tanındı. 3) 1937'de 6 Atatürk ilkesi (ve Laiklik) anayasaya eklendi.",
+        "distractor_trap": "ÖSYM bu üç tarihi sıkça sorar: Dini hükümlerin kalkması 1928, vekillik hakkı 1934, Laiklik ilkesinin anayasaya girmesi 1937'dir."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "1982 Anayasası ve Temel İlkeler",
+        "difficulty": 2,
+        "prompt_text": "Türk anayasa tarihinde İLK KEZ Anayasa Mahkemesi'nin kurulması, kanunların anayasaya uygunluğunun yargısal denetime tabi tutulması ve Yüksek Seçim Kurulu'nun anayasal bir organ olarak düzenlenmesi hangi anayasa ile gerçekleşmiştir?",
+        "options": [
+            "1921 Anayasası",
+            "1924 Anayasası",
+            "1961 Anayasası",
+            "1982 Anayasası",
+            "1876 Kanun-i Esasi"
+        ],
+        "correctIndex": 2,
+        "explanation": "Anayasa Mahkemesi (AYM), Milli Güvenlik Kurulu (MGK), Devlet Planlama Teşkilatı (DPT) ve Yüksek Seçim Kurulu (YSK) ilk kez 1961 ANAYASASI ile anayasal statüye kavuşmuştur.",
+        "distractor_trap": "Anayasa Mahkemesi ve çoğulcu kurumlar 1982'de değil, 1961 Anayasası ile kurulmuştur."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "1982 Anayasası ve Temel İlkeler",
+        "difficulty": 2,
+        "prompt_text": "2022 yılında Milletvekili Seçimi Kanunu'nda yapılan değişiklikle, TBMM genel seçimlerinde bir siyasi partinin milletvekili çıkarabilmesi için ülke genelinde alması gereken SEÇİM BARAJI yüzde kaç olarak belirlenmiştir?",
+        "options": [
+            "%10",
+            "%8",
+            "%7",
+            "%5",
+            "%3"
+        ],
+        "correctIndex": 2,
+        "explanation": "1983'ten bu yana uygulanan yüzde 10'luk genel seçim barajı, 2022 yılında yapılan kanun değişikliği ile YÜZDE 7'ye (%7) indirilmiştir.",
+        "distractor_trap": "Eski baraj %10 idi; güncel kanuni seçim barajı YÜZDE 7'dir (%7)!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "1982 Anayasası ve Temel İlkeler",
+        "difficulty": 2,
+        "prompt_text": "Seçimlerin genel yönetim ve yargısal denetimini yürüten Yüksek Seçim Kurulu'nun (YSK) üye yapısı ve kararlarının hukuki niteliği hakkında aşağıdakilerden hangisi doğrudur?",
+        "options": [
+            "YSK üyelerinin tamamını Cumhurbaşkanı atar.",
+            "YSK kararlarına karşı Anayasa Mahkemesi'ne bireysel başvuru yapılabilir.",
+            "YSK, 7 asıl ve 4 yedek (toplam 11) üyeden oluşur; 6 üyesi Yargıtay, 5 üyesi Danıştay tarafından seçilir ve kararları KESİNDİR, hiçbir yargı mercine başvurulamaz.",
+            "YSK kararlarına karşı Danıştay'da iptal davası açılabilir.",
+            "YSK üyeleri TBMM tarafından nitelikli çoğunlukla seçilir."
+        ],
+        "correctIndex": 2,
+        "explanation": "Anayasa m. 79 uyarınca YSK 7 asıl, 4 yedek üyeden oluşur (6 üye Yargıtay, 5 üye Danıştay Genel Kurulunca gizli oyla seçilir). YSK kararları kesindir; Anayasa Mahkemesi dahil hiçbir yargı yerine itiraz edilemez.",
+        "distractor_trap": "YSK kararlarına karşı Anayasa Mahkemesi'ne veya Danıştay'a gidilemez; YSK kararları kesindir!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "1982 Anayasası ve Temel İlkeler",
+        "difficulty": 2,
+        "prompt_text": "1982 Anayasası'na göre Anayasa Değişikliği teklifinin TBMM Genel Kurulu'nda kabul edilebilmesi için EN AZ kaç milletvekilinin kabul oyu vermesi şarttır?",
+        "options": [
+            "200 (Üye tamsayısının 1/3'ü)",
+            "301 (Üye tamsayısının salt çoğunluğu)",
+            "360 (Üye tamsayısının 3/5'i)",
+            "400 (Üye tamsayısının 2/3'ü)",
+            "450 (Üye tamsayısının 3/4'ü)"
+        ],
+        "correctIndex": 2,
+        "explanation": "Anayasa m. 175'e göre teklif için en az 200 milletvekili (1/3); kabul için ise en az 360 MİLLETVEKİLİ (3/5 çoğunluk) şarttır. 360'ın altında kalan anayasa değişikliği teklifi reddedilmiş sayılır.",
+        "distractor_trap": "Teklif için 200 (1/3); KABUL İÇİN ASGARİ ÇOĞUNLUK 360'tır (3/5)!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "1982 Anayasası ve Temel İlkeler",
+        "difficulty": 2,
+        "prompt_text": "1982 Anayasası'nın 176. maddesine göre Anayasa'nın 'Başlangıç' kısmının ve madde kenar başlıklarının hukuki değeri hakkında aşağıdakilerden hangisi doğrudur?",
+        "options": [
+            "Başlangıç kısmı anayasa metnine dahil değildir, madde başlıkları dahildir.",
+            "Başlangıç kısmı Anayasa metnine DAHİLDİR; madde kenar başlıkları ise sadece konuyu gösterir ve anayasa metninden SAYILMAZ.",
+            "Hem başlangıç hem madde başlıkları anayasa metnine dahildir.",
+            "Ne başlangıç ne de madde başlıkları anayasa metnine dahil değildir.",
+            "Başlangıç kısmı sadece cumhurbaşkanı andında geçerlidir."
+        ],
+        "correctIndex": 1,
+        "explanation": "Anayasa m. 176: 'Anayasanın dayandığı temel görüş ve ilkeleri belirten başlangıç kısmı, Anayasa metnine dahildir. Madde kenar başlıkları, sadece ilgili oldukları maddelerin konusunu ve sırasını gösterir; Anayasa metninden sayılmaz.'",
+        "distractor_trap": "Başlangıç = Metne DAHİL; Madde kenar başlıkları = Metne DAHİL DEĞİLDİR!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "1982 Anayasası ve Temel İlkeler",
+        "difficulty": 2,
+        "prompt_text": "Anayasa Mahkemesi bir Anayasa Değişikliği kanununu hangi açıdan ve hangi gerekçelerle denetleyebilir?",
+        "options": [
+            "Hem şekil hem esas bakımından sınırsız denetler.",
+            "Yalnızca ŞEKİL bakımından denetler; teklif ve oylama çoğunluğu ile ivedilikle görüşülememe şartına uyulup uyulmadığını inceler; ESAS (içerik) incelemesi yapamaz.",
+            "Yalnızca esas bakımından inceler, şekle bakamaz.",
+            "Anayasa değişiklikleri hiçbir şekilde Anayasa Mahkemesi denetimine tabi tutulamaz.",
+            "Sadece Cumhurbaşkanının talebi üzerine esas yönünden inceler."
+        ],
+        "correctIndex": 1,
+        "explanation": "Anayasa m. 148 açık kuralıdır: 'Anayasa değişiklikleri ise sadece teklif ve oylama çoğunluğu ve ivedilikle görüşülemeyeceği şartına uyulup uyulmadığı hususları ile sınırlı olarak (yani sadece ŞEKİL yönünden) denetlenebilir.' AYM anayasa değişikliğinin içeriğine (esasına) ASLA giremez.",
+        "distractor_trap": "Kanunlar hem şekil hem esas denetlenir; Anayasa değişiklikleri ise YALNIZCA ŞEKİL yönünden denetlenebilir, esasına bakılamaz!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "1982 Anayasası ve Temel İlkeler",
+        "difficulty": 2,
+        "prompt_text": "2017 Anayasa Değişiklikleri ile Türk anayasa ve parlamento sisteminden tamamen KALDIRILAN kurum ve usuller arasında aşağıdakilerden hangisi YER ALMAZ?",
+        "options": [
+            "Bakanlar Kurulu ve Başbakanlık makamı",
+            "Tüzükler ve Kanun Hükmünde Kararnameler (KHK)",
+            "Gensoru ve Hükümet Güvenoyu denetim mekanizmaları",
+            "Askeri Yargıtay ve Askeri Yüksek İdare Mahkemesi (AYİM)",
+            "Milletvekillerinin kanun teklifi verme yetkisi"
+        ],
+        "correctIndex": 4,
+        "explanation": "2017 anayasa reformuyla Bakanlar Kurulu, Başbakanlık, Tasarı, Tüzük, KHK, Gensoru, Güvenoyu, Askeri Yargıtay ve AYİM kaldırılmıştır. Kanun TEKLİFİ verme yetkisi ise kaldırılmamış, tam aksine münhasıran yalnızca MİLLETVEKİLLERİNE bırakılmıştır (Cumhurbaşkanı sadece Bütçe kanun teklifi sunabilir).",
+        "distractor_trap": "Hükümet tasarısı kalktı ama milletvekillerinin kanun teklifi verme hakkı devam ediyor; yürütme artık yasa teklif edemez."
     }
 ]

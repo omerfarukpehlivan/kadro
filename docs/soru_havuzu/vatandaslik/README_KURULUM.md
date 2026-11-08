@@ -1,6 +1,6 @@
 # ⚖️ Kadro KPSS Vatandaşlık Soru Havuzu — Supabase SQL Kurulum Rehberi
 
-Bu klasör, **Kadro: KPSS Lisans Genel Kültür** uygulaması için hazırlanan **240 adet %100 özgün, pedagojik açıklamalı ve 'ÖSYM Çeldirici Tuzağı' (UWorld modeli)** içeren Vatandaşlık sorularının Supabase veritabanına aktarılması için hazırlanmış SQL dosyalarını içerir.
+Bu klasör, **Kadro: KPSS Lisans Genel Kültür** uygulaması için hazırlanan **300 adet %100 özgün, pedagojik açıklamalı ve 'ÖSYM Çeldirici Tuzağı' (UWorld modeli)** içeren Vatandaşlık sorularının Supabase veritabanına aktarılması için hazırlanmış SQL dosyalarını içerir.
 
 ---
 
@@ -14,7 +14,7 @@ Bu klasör, **Kadro: KPSS Lisans Genel Kültür** uygulaması için hazırlanan 
 | `04_yasama_yurutme_ve_yargi.sql` | Yasama, Yürütme ve Yargı | 10 | 20 | 10 | **40** |
 | `05_idare_hukuku.sql` | İdare Hukuku | 10 | 20 | 10 | **40** |
 | `06_uluslararasi_kuruluslar.sql` | Uluslararası Kuruluşlar | 10 | 20 | 10 | **40** |
-| **00_tum_vatandaslik_sorulari_tek_dosya.sql** | **TÜM VATANDAŞLIK (BİRLEŞİK)** | **60** | **120** | **60** | **240** |
+| **00_tum_vatandaslik_sorulari_tek_dosya.sql** | **TÜM VATANDAŞLIK (BİRLEŞİK)** | **60** | **120** | **60** | **300** |
 
 ---
 

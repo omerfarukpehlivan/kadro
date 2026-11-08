@@ -1,6 +1,6 @@
 -- =============================================================
 -- KPSS VATANDAŞLIK — KONU 6: ULUSLARARASI KURULUŞLAR
--- Toplam Soru: 40 (Zorluk: 10 Kolay, 20 Orta, 10 Zor)
+-- Toplam Soru: 50 (Zorluk: 10 Kolay, 20 Orta, 10 Zor)
 -- Standart: Özgün İçerik + Açıklama + ÖSYM Çeldirici Tuzağı
 -- =============================================================
 BEGIN;
@@ -856,6 +856,216 @@ insert into public.questions (
   '{"options": ["1975 Helsinki Nihai Senedi", "Yalta Konferansı Bildirisi", "Potsdam Anlaşması", "Paris Şartı", "Cenevre Sözleşmesi"], "correctIndex": 0}'::jsonb,
   '1975 Helsinki Nihai Senedi ile temeli atılan Avrupa Güvenlik ve İşbirliği Konferansı (AGİK), 1994 Budapeşte Zirvesi''nde kurumsallaşarak AGİT (OSCE) adını almıştır. Merkezi Viyana''dadır.',
   'AGİT''in temeli 1975 Helsinki Nihai Senedi''dir; merkezi Avusturya Viyana''dır.'
+);
+
+-- Soru #41 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  '1982 Anayasası''nın 90. maddesine göre usulüne göre yürürlüğe konulmuş milletlerarası antlaşmalar hakkında anayasaya aykırılık iddiasıyla nereye başvurulabilir?',
+  '{"options": ["Anayasa Mahkemesine iptal davası açılabilir.", "Danıştay''a başvurulabilir.", "Uyuşmazlık Mahkemesine gidilebilir.", "Bunlar hakkında anayasaya aykırılık iddiası ile Anayasa Mahkemesine BAŞVURULAMAZ (yargı yolu kapalıdır).", "Sayıştay inceleme yapar."], "correctIndex": 3}'::jsonb,
+  'Anayasa m. 90/son amir hükmüdür: ''Usulüne göre yürürlüğe konulmuş milletlerarası andlaşmalar kanun hükmündedir. Bunlar hakkında Anayasaya aykırılık iddiası ile Anayasa Mahkemesine başvurulamaz.''',
+  'Milletlerarası andlaşmalar kanun gücündedir ama KANUNLARDAN FARKI: Anayasa Mahkemesi''ne iptal davası AÇILAMAZ!'
+);
+
+-- Soru #42 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  'Anayasa''nın 90. maddesinin son fıkrasına 2004 yılında eklenen kurala göre; usulüne göre yürürlüğe konulmuş temel hak ve özgürlüklere ilişkin milletlerarası antlaşmalarla iç hukuk kanunlarının aynı konuda farklı hükümler içermesi (çatışması) durumunda hangisi esas alınır?',
+  '{"options": ["TBMM''nin çıkaracağı yeni kanun esas alınır.", "Milletlerarası antlaşma hükümleri esas alınır.", "Cumhurbaşkanlığı Kararnamesi esas alınır.", "Her iki metin de geçersiz sayılarak genel ahlaka göre hüküm verilir.", "Hakim takdir yetkisini kullanır."], "correctIndex": 1}'::jsonb,
+  'Anayasa m. 90: ''Usulüne göre yürürlüğe konulmuş temel hak ve özgürlüklere ilişkin milletlerarası andlaşmalarla kanunların aynı konuda farklı hükümler içermesi nedeniyle çıkabilecek uyuşmazlıklarda MİLLETLERARASI ANDLAŞMA HÜKÜMLERİ ESAS ALINIR.''',
+  'Temel haklarda kanun ile andlaşma çatışırsa MİLLETLERARASI ANDLAŞMA kanundan üstündür ve esas alınır!'
+);
+
+-- Soru #43 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  'Birleşmiş Milletler''in ana yargı organı olan ve Hollanda''nın Lahey kentindeki Barış Sarayı''nda görev yapan Uluslararası Adalet Divanı''na (UAD) ilişkin aşağıdakilerden hangisi doğrudur?',
+  '{"options": ["Sadece gerçek kişilerin ceza davalarına bakar.", "Yalnızca DEVLETLER arasındaki hukuki uyuşmazlıkları karara bağlar ve BM organlarına istişari görüş bildirir.", "Yargıç sayısı 27''dir ve 3 yıllığına seçilirler.", "Kararları temyizen İsviçre Federal Mahkemesi''ne götürülebilir.", "Türkiye divanın zorunlu yargı yetkisini şartsız kabul etmiştir."], "correctIndex": 1}'::jsonb,
+  'UAD (ICJ), BM''nin ana yargı organıdır. 15 yargıçtan oluşur (görev süreleri 9 yıldır). UAD önüne gerçek kişiler dava açamaz; yalnızca DEVLETLER taraf olabilir.',
+  'UAD''de kişiler değil DEVLETLER yargılanır; gerçek kişilerin savaş ve soykırım suçlarını ise Uluslararası Ceza Mahkemesi (UCM) yargılar.'
+);
+
+-- Soru #44 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  '3 Ekim 2009 tarihinde Türkiye, Azerbaycan, Kazakistan ve Kırgızistan tarafından imzalanan Nahçıvan Anlaşması ile kurulan ve genel sekreterliği İstanbul''da bulunan teşkilat hangisidir?',
+  '{"options": ["Türk Devletleri Teşkilatı (TDT)", "Ekonomik İşbirliği Teşkilatı (EİT)", "Karadeniz Ekonomik İşbirliği (KEİ)", "D-8 Teşkilatı", "TÜRKSOY"], "correctIndex": 0}'::jsonb,
+  'TDT (eski adıyla Türk Keneşi / Türk Konseyi), 3 Ekim 2009 Nahçıvan Anlaşması ile kurulmuştur ve merkezi İSTANBUL''dadır. Bu nedenle 3 Ekim günü ''Türk Dünyası İşbirliği Günü'' olarak kutlanır.',
+  'TÜRKSOY''un merkezi Ankara''dadır; Türk Devletleri Teşkilatı''nın (TDT) genel sekreterliği ise İSTANBUL''dadır.'
+);
+
+-- Soru #45 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  '1992 yılında İstanbul Zirvesi Bildirisi ile Türkiye''nin öncülüğünde kurulan ve daimi genel sekreterliği İstanbul Boğazı kıyısında yer alan bölgesel ekonomik kuruluş hangisidir?',
+  '{"options": ["Karadeniz Ekonomik İşbirliği Teşkilatı (KEİ)", "Akdeniz İçin Birlik", "Avrupa Serbest Ticaret Birliği (EFTA)", "D-8 Teşkilatı", "Orta Avrupa Girişimi"], "correctIndex": 0}'::jsonb,
+  'Karadeniz havzasındaki barış ve ekonomik entegrasyonu hedefleyen KEİ (BSEC), 1992 İstanbul Zirvesi ile kurulmuş ve daimi sekretaryası İSTANBUL''dadır.',
+  'KEİ''nin kurucusu ve ev sahibi Türkiye''dir; merkezi İSTANBUL''dadır.'
+);
+
+-- Soru #46 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  'Türkiye, İran ve Pakistan tarafından 1985 yılında kurulan ve daha sonra Orta Asya Türk cumhuriyetleri ile Afganistan ve Azerbaycan''ın katıldığı, genel merkezi TAHRAN''da bulunan ekonomik örgüt hangisidir?',
+  '{"options": ["Ekonomik İşbirliği Teşkilatı (EİT / ECO)", "D-8 Teşkilatı", "Arap Birliği", "Şanghay İşbirliği Örgütü", "Körfez İşbirliği Konseyi"], "correctIndex": 0}'::jsonb,
+  '1985''te kurulan Ekonomik İşbirliği Teşkilatı''nın (EİT) genel sekreterliği İran''ın başkenti TAHRAN''dadır. 10 üyesi vardır.',
+  'D-8 İstanbul''dadır; EİT (ECO) ise TAHRAN''dadır.'
+);
+
+-- Soru #47 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  '1995 yılında GATT''ın yerine kurulan, küresel ticaretin kurallarını belirleyen ve ticaret anlaşmazlıklarını çözen Dünya Ticaret Örgütü''nün (DTÖ / WTO) genel merkezi hangi şehirdedir?',
+  '{"options": ["Cenevre (İsviçre)", "Brüksel (Belçika)", "New York (ABD)", "Viyana (Avusturya)", "Londra (İngiltere)"], "correctIndex": 0}'::jsonb,
+  'Dünya Ticaret Örgütü (WTO), 1 Ocak 1995''te faaliyete geçmiş olup genel merkezi İsviçre''nin CENEVRE kentindedir.',
+  'DTÖ (WTO) merkezi CENEVRE''dedir. Dünya Bankası ve IMF ise Washington''dadır.'
+);
+
+-- Soru #48 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  '1949 yılında kurulan, Türkiye''nin kurucu üyesi olduğu, genel merkezi Fransa''nın Strazburg kentinde yer alan ve 2022''de Rusya''nın üyelikten çıkarıldığı insan hakları kuruluşu hangisidir?',
+  '{"options": ["Avrupa Konseyi", "Avrupa Birliği", "Avrupa Güvenlik ve İşbirliği Teşkilatı (AGİT)", "Kuzey Atlantik İttifakı (NATO)", "Batı Avrupa Birliği"], "correctIndex": 0}'::jsonb,
+  'Avrupa Konseyi (Council of Europe - Strazburg), AİHM''nin de bağlı olduğu örgüttür. Rusya''nın ihracından sonra üye sayısı 46''dır. Türkiye kurucu üyesidir.',
+  'Avrupa Konseyi ile Avrupa Birliği ayrı örgütlerdir! Türkiye AB üyesi değildir ama AVRUPA KONSEYİ''NİN KURUCUSUDUR.'
+);
+
+-- Soru #49 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  'Şanghay İşbirliği Örgütü''nün (ŞİÖ) kurumsal yapısı ve Türkiye''nin bu örgütle olan hukuki ilişkisi hakkında aşağıdakilerden hangisi doğrudur?',
+  '{"options": ["Türkiye ŞİÖ''nün tam üyesidir.", "Türkiye ŞİÖ''de ''Gözlemci Üye'' statüsündedir.", "Türkiye ŞİÖ''de 2012 yılından bu yana ''DİYALOG ORTAĞI'' statüsündedir.", "Türkiye''nin ŞİÖ ile hiçbir resmi bağı yoktur.", "ŞİÖ genel sekreterliği Moskova''dadır."], "correctIndex": 2}'::jsonb,
+  'Türkiye Şanghay İşbirliği Örgütü''ne tam üye veya gözlemci üye DEĞİLDİR; 2012 Pekin Zirvesi''nde onaylanan kararla ''DİYALOG ORTAĞI'' (Dialogue Partner) statüsündedir.',
+  'ÖSYM''nin favori sorusudur: Türkiye ŞİÖ''de tam üye veya gözlemci DEĞİL, ''DİYALOG ORTAĞI''dır!'
+);
+
+-- Soru #50 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'Uluslararası Kuruluşlar',
+  'multiple_choice',
+  2,
+  'Arap dünyasında dayanışmayı sağlamak amacıyla 1945 yılında kurulan ve 22 Arap ülkesinin üye olduğu Arap Devletleri Ligi''nin (Arap Birliği) genel merkezi hangi başkenttedir?',
+  '{"options": ["Kahire (Mısır)", "Riyad (Suudi Arabistan)", "Doha (Katar)", "Bağdat (Irak)", "Amman (Ürdün)"], "correctIndex": 0}'::jsonb,
+  'Arap Birliği''nin genel merkezi Mısır''ın başkenti KAHİRE''dedir.',
+  'İslam İşbirliği Teşkilatı CIDDE''dedir; Arap Birliği ise KAHİRE''dedir.'
 );
 
 COMMIT;

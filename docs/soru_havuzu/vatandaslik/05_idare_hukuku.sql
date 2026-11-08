@@ -1,6 +1,6 @@
 -- =============================================================
 -- KPSS VATANDAŞLIK — KONU 5: İDARE HUKUKU
--- Toplam Soru: 40 (Zorluk: 10 Kolay, 20 Orta, 10 Zor)
+-- Toplam Soru: 50 (Zorluk: 10 Kolay, 20 Orta, 10 Zor)
 -- Standart: Özgün İçerik + Açıklama + ÖSYM Çeldirici Tuzağı
 -- =============================================================
 BEGIN;
@@ -855,6 +855,216 @@ insert into public.questions (
   '{"options": ["Vali başkanlığında; Hukuk İşleri Müdürü, Defterdar, İl Milli Eğitim, İl Sağlık, İl Tarım ve Orman müdürleri", "Vali, Belediye Başkanı ve Garnizon Komutanı", "Kaymakamlar ve Muhtarlar", "Yalnızca İl Genel Meclisi üyeleri", "İl Emniyet Müdürü ve Cumhuriyet Başsavcısı"], "correctIndex": 0}'::jsonb,
   'İl İdare Kurulu; Valinin başkanlığında Hukuk İşleri Müdürü, Defterdar, İl Milli Eğitim Müdürü, İl Sağlık Müdürü, İl Tarım ve Orman Müdürü ile Çevre ve Şehircilik Müdüründen oluşur. Belediye başkanı veya askerler bu kurulda yer almaz.',
   'İl İdare Kurulu''nda Belediye Başkanı veya Garnizon Komutanı KESİNLİKLE YOKTUR! Tamamen merkezi idarenin il müdürlerinden oluşur.'
+);
+
+-- Soru #41 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '657 sayılı Devlet Memurları Kanunu''na göre ilk defa veya naklen bir göreve atanan memurların göreve başlama süreleri değerlendirildiğinde; aynı belediye ve il sınırları içindeki bir göreve atananlar ile başka bir yerdeki göreve atananların işe başlama süreleri hangi seçenekte doğru verilmiştir?',
+  '{"options": ["Aynı yerdeki göreve tebliğ gününü izleyen iş günü — Başka yerdeki göreve tebliğden itibaren 15 gün içinde", "Aynı yerdeki göreve 3 gün içinde — Başka yerdeki göreve 30 gün içinde", "Her iki göreve de derhal aynı gün", "Aynı yerdeki göreve 7 gün — Başka yerdeki göreve 1 ay içinde", "Aynı yerdeki göreve 15 gün — Başka yerdeki göreve 45 gün içinde"], "correctIndex": 0}'::jsonb,
+  '657 sayılı DMK m. 62 uyarınca: Aynı yerdeki göreve atananlar atama emrinin kendilerine tebliğ gününü İZLEYEN İŞ GÜNÜ içinde; başka yerdeki göreve atananlar ise tebliğ tarihinden itibaren 15 GÜN İÇERİSİNDE o yere hareket ederek işe başlamak zorundadır.',
+  'ÖSYM''nin en klasik memurluk süresi sorusudur: Aynı yer = Ertesi iş günü; Başka yer = 15 GÜN!'
+);
+
+-- Soru #42 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '657 sayılı Devlet Memurları Kanunu''na göre bir devlet memuru mazeretsiz ve kesintisiz olarak EN AZ kaç gün görevini terk ederse çekilme (istifa) isteğinde bulunmuş sayılır (müstafi sayılır)?',
+  '{"options": ["3 gün", "5 gün", "7 gün", "10 gün", "20 gün"], "correctIndex": 3}'::jsonb,
+  '657 sayılı DMK m. 94 uyarınca: Mezuniyetsiz veya kurumunca kabul edilen mazereti olmaksızın görevin terk edilmesi ve bu terkin KESİNTİSİZ 10 GÜN devam etmesi halinde, yazılı müracaat şartı aranmaksızın memur çekilmiş (müstafi) sayılır.',
+  'Kesintisiz 10 gün işe gelmeyen memur müstafi sayılır ve 1 yıl süreyle memurluğa geri dönemez.'
+);
+
+-- Soru #43 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '657 sayılı Devlet Memurları Kanunu''na göre devlet memurluğuna yeni giren bir kişinin ''Aday Memurluk'' süresi en az ve en çok kaç yıl olabilir?',
+  '{"options": ["En az 6 ay — En çok 1 yıl", "En az 1 yıl — En çok 2 yıl", "En az 1 yıl — En çok 3 yıl", "En az 2 yıl — En çok 4 yıl", "Sabit 1 yıldır, uzatılamaz."], "correctIndex": 1}'::jsonb,
+  '657 sayılı DMK m. 54 uyarınca: Adaylık süresi EN AZ 1 YIL, EN ÇOK 2 YILDIR ve bu süre içinde aday memurun başka kurumlara nakli yapılamaz.',
+  'Aday memurluk süresi EN AZ 1 YIL, EN ÇOK 2 YILDIR! 6 ay veya 3 yıl şıkları çeldiricidir.'
+);
+
+-- Soru #44 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '657 sayılı Devlet Memurları Kanunu''nda düzenlenen disiplin cezalarından ''Devlet Memurluğundan Çıkarma'' cezasını vermeye yetkili makam aşağıdakilerden hangisidir?',
+  '{"options": ["Disiplin Amiri", "Atamaya Yetkili Amir", "Yüksek Disiplin Kurulu", "Vali", "Cumhuriyet Başsavcısı"], "correctIndex": 2}'::jsonb,
+  'Uyarma, kınama ve aylıktan kesme cezalarını disiplin amirleri; kademe ilerlemesinin durdurulmasını il disiplin kurulu kararıyla atamaya yetkili amir; MEMURLUKTAN ÇIKARMA cezasını ise amirin teklifi üzerine amirin bağlı olduğu kurumun YÜKSEK DİSİPLİN KURULU verir.',
+  'Disiplin amiri tek başına memurluktan ihraç kararı veremez; çıkarma cezasını sadece YÜKSEK DİSİPLİN KURULU verebilir.'
+);
+
+-- Soru #45 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  'Türkiye''de bir yerleşim yerinde Köy İdaresi''nin kurulabilmesi için nüfusun hangi aralıkta olması gerekir ve köy tüzel kişiliği hangi makamın kararı ile kurulur?',
+  '{"options": ["Nüfusu 150 ile 2.000 arasında olmalı — İçişleri Bakanlığı kararı ile kurulur.", "Nüfusu 500 ile 5.000 arasında olmalı — Çevre ve Şehircilik Bakanlığı kararı ile kurulur.", "Nüfusu 1.000 ile 2.000 arasında olmalı — Vali kararı ile kurulur.", "Nüfusu 2.000 ile 10.000 arasında olmalı — Kanunla kurulur.", "Nüfusu en az 5.000 olmalı — Cumhurbaşkanı kararı ile kurulur."], "correctIndex": 0}'::jsonb,
+  'Köy Kanunu m. 1: Nüfusu 2.000''den aşağı olan yerlere köy denir (en alt sınır teamülen 150''dir). Köy tüzel kişiliği İÇİŞLERİ BAKANLIĞI kararı ile kurulur.',
+  'Belediye Cumhurbaşkanı kararıyla (en az 5.000 nüfus); Köy ise İÇİŞLERİ BAKANLIĞI kararıyla (150 - 2.000 nüfus) kurulur.'
+);
+
+-- Soru #46 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  'Köy İdaresi''nin zorunlu organlarından olan ''Köy İhtiyar Meclisi''nin doğal (tabii) üyeleri hangi seçenekte doğru verilmiştir?',
+  '{"options": ["Köy İmamı ve Köy Öğretmeni", "Köy Korucusu ve Ziraat Mühendisi", "Köy Muhtarı ve En yaşlı köylü", "Köy Çobanı ve Sağlık Memuru", "Karakol Komutanı ve Bakkal"], "correctIndex": 0}'::jsonb,
+  'Köy İhtiyar Meclisi seçimle gelen üyelerin yanında iki daimi ve doğal (tabii) üyeye sahiptir: KÖY İMAMI ve KÖY ÖĞRETMENİ (varsa). Bu kişiler seçime girmeden mecliste yer alır.',
+  'Köy ihtiyar heyetinin doğal üyeleri İMAM ve ÖĞRETMENDİR.'
+);
+
+-- Soru #47 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '5393 sayılı Belediye Kanunu''na göre bir yerleşim yerinde Belediye kurulabilmesi için nüfusun EN AZ kaç olması gerekir ve belediye hangi idari işlemle kurulur?',
+  '{"options": ["Nüfusu en az 5.000 olmalı — Cumhurbaşkanı Kararı ile kurulur.", "Nüfusu en az 2.000 olmalı — İçişleri Bakanlığı kararı ile kurulur.", "Nüfusu en az 10.000 olmalı — Kanunla kurulur.", "Nüfusu en az 50.000 olmalı — Vali onayı ile kurulur.", "Nüfusu en az 750.000 olmalı — Cumhurbaşkanlığı Kararnamesi ile kurulur."], "correctIndex": 0}'::jsonb,
+  'Belediye kurulması için nüfusun en az 5.000 olması şarttır ve belediye CUMHURBAŞKANI KARARI ile kurulur. (İl ve ilçe merkezlerinde nüfus şartı aranmaksızın belediye kurulur).',
+  'Belediye CUMHURBAŞKANI KARARIYLA (en az 5 bin nüfus); Büyükşehir belediyesi ise KANUNLA (en az 750 bin nüfus) kurulur!'
+);
+
+-- Soru #48 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  '5216 sayılı Büyükşehir Belediyesi Kanunu''na göre bir ilde Büyükşehir Belediyesi kurulabilmesi için toplam nüfusun en az kaç olması gerekir ve ne ile kurulur?',
+  '{"options": ["Toplam il nüfusu en az 750.000 olmalı — KANUNLA kurulur.", "Toplam il nüfusu en az 500.000 olmalı — Cumhurbaşkanı Kararı ile kurulur.", "Toplam il nüfusu en az 1.000.000 olmalı — İçişleri Bakanlığı kararı ile kurulur.", "Toplam il nüfusu en az 250.000 olmalı — Kanunla kurulur.", "Nüfus şartı yoktur, TBMM kararıyla kurulur."], "correctIndex": 0}'::jsonb,
+  'Büyükşehir belediyesi kurulması için toplam nüfusun EN AZ 750.000 olması ve münhasıran KANUNLA kurulması anayasal ve yasal zorunluluktur. Türkiye''de 30 büyükşehir belediyesi mevcuttur.',
+  'Büyükşehir belediyesi Cumhurbaşkanı kararıyla KURULAMAZ; mutlaka TBMM tarafından çıkarılan KANUNLA kurulur!'
+);
+
+-- Soru #49 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  'Anayasa''nın 127. maddesine göre mahalli idare organlarından olan ''Belediye Meclisi'' veya ''İl Genel Meclisi''nin görevini yapamaz hale gelmesi durumunda feshine karar vermeye yetkili organ hangisidir?',
+  '{"options": ["Vali", "İçişleri Bakanı", "Danıştay", "Anayasa Mahkemesi", "Bölge İdare Mahkemesi"], "correctIndex": 2}'::jsonb,
+  'Yerel meclislerin (Belediye Meclisi veya İl Genel Meclisi) süresinden önce feshine ancak yüksek idare mahkemesi olan DANIŞTAY karar verebilir. İçişleri Bakanı sadece geçici olarak görevden uzaklaştırabilir.',
+  'FESİH yetkisi yargısaldır ve DANIŞTAY''a aittir; İçişleri Bakanı feshedemez, sadece geçici uzaklaştırabilir.'
+);
+
+-- Soru #50 (Zorluk: 2)
+insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap
+) values (
+  'Vatandaşlık',
+  'İdare Hukuku',
+  'multiple_choice',
+  2,
+  'Merkezi idarenin yerel yönetimler üzerindeki denetim aracı olan ''İdari Vesayet'' yetkisinin kapsamı ve sınırları değerlendirildiğinde aşağıdakilerden hangisi doğrudur?',
+  '{"options": ["Vesayet makamı, vesayete tabi yerel idare organının yerine geçerek doğrudan onun adına karar alabilir.", "Vesayet makamı kural olarak yerel idarenin kararını yerindelik yönünden değiştiremez; kanunda açık yetki yoksa kararı ya onar, ya bozar (veya iptali için idari yargıya başvurur).", "Vesayet yetkisi hiyerarşik amirlik yetkisiyle tamamen aynıdır.", "Vesayet makamı belediye başkanına disiplin cezası olarak memurluktan çıkarma cezası verebilir.", "İdari vesayet Anayasa''da yer almayan teamüli bir yetkidir."], "correctIndex": 1}'::jsonb,
+  'İdari vesayet istisnai bir yetkidir ve kanunla sınırlıdır. Vesayet makamı hiyerarşik amir gibi emir veremez veya belediye meclisinin kararını kafasına göre DEĞİŞTİREMEZ. Ya onaylar, ya reddeder ya da iptali için İdare Mahkemesine dava açar.',
+  'Hiyerarşide değiştirme ve emir yetkisi vardır; İdari vesayette değiştirme yetkisi KURAL OLARAK YOKTUR!'
 );
 
 COMMIT;

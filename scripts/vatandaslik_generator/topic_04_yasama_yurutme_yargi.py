@@ -663,5 +663,169 @@ questions = [
         "correctIndex": 1,
         "explanation": "Anayasa m. 159 son fıkrası gereğince HSK'nın 'meslekten çıkarma cezasına ilişkin olanlar dışındaki' kararlarına karşı yargı mercilerine başvurulamaz. Yani MESLEKTEN ÇIKARMA kararlarına karşı Danıştay'a iptal davası açılabilir.",
         "distractor_trap": "HSK'nın sadece ve sadece 'meslekten çıkarma' kararı yargı denetimine açıktır; atama, terfi veya kınama cezalarına karşı yargı yolu kesinlikle kapalıdır."
+    },
+
+    # -------------------------------------------------------------
+    # TEST 5: HAP BİLGİ & CHECK-UP TESTİ (Zorluk: 2) - Sorular 41-50
+    # -------------------------------------------------------------
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Yasama, Yürütme ve Yargı",
+        "difficulty": 2,
+        "prompt_text": "1982 Anayasası'na göre TBMM bir yasama yılında EN ÇOK kaç ay tatil yapabilir ve tatil sırasında Meclis üyelerinin en az kaçının yazılı istemi üzerine TBMM Başkanı meclisi toplantıya çağırmak zorundadır?",
+        "options": [
+            "En çok 3 ay tatil yapabilir — Üye tamsayısının 1/5'i (120 milletvekili) istemiyle",
+            "En çok 2 ay tatil yapabilir — Üye tamsayısının 1/3'ü (200 milletvekili) istemiyle",
+            "En çok 1 ay tatil yapabilir — Üye tamsayısının salt çoğunluğu (301 vekil) istemiyle",
+            "En çok 4 ay tatil yapabilir — 50 milletvekili istemiyle",
+            "En çok 3 ay tatil yapabilir — Yalnızca Cumhurbaşkanı istemiyle"
+        ],
+        "correctIndex": 0,
+        "explanation": "Anayasa m. 93 uyarınca TBMM bir yasama yılında en çok 3 ay tatil yapabilir. Ara verme ise 15 günü geçemez. Cumhurbaşkanı ve TBMM Başkanı doğrudan; milletvekillerinin en az 1/5'i (120 vekil) yazılı talepte bulunursa TBMM Başkanı zorunlu olarak meclisi olağanüstü toplantıya çağırır.",
+        "distractor_trap": "Meclis tatili en çok 3 aydır; meclisi toplantıya çağırma istemi için 1/5 (120 milletvekili) imzası gerekir."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Yasama, Yürütme ve Yargı",
+        "difficulty": 2,
+        "prompt_text": "TBMM Genel Kurulu tarafından yasama dokunulmazlığı kaldırılan veya milletvekilliği düşürülen bir milletvekili, bu kararın iptali istemiyle kaç gün içinde Anayasa Mahkemesi'ne başvurabilir ve AYM bu başvuruyu en geç kaç gün içinde karara bağlar?",
+        "options": [
+            "7 gün içinde başvurur — Anayasa Mahkemesi 15 gün içinde kesin karara bağlar.",
+            "15 gün içinde başvurur — Anayasa Mahkemesi 30 gün içinde karara bağlar.",
+            "10 gün içinde başvurur — Anayasa Mahkemesi 10 gün içinde karara bağlar.",
+            "30 gün içinde başvurur — Anayasa Mahkemesi 60 gün içinde karara bağlar.",
+            "Yargı yolu kapalıdır, mahkemeye başvurulamaz."
+        ],
+        "correctIndex": 0,
+        "explanation": "Anayasa m. 85 uyarınca dokunulmazlığın kaldırılması veya vekilliğin düşürülmesi tarihinden itibaren 7 GÜN içinde milletvekilinin kendisi veya başka bir vekil AYM'ye iptal başvurusu yapabilir. Anayasa Mahkemesi başvuruyu 15 GÜN içinde kesin karara bağlamak zorundadır.",
+        "distractor_trap": "ÖSYM'nin meşhur 7 - 15 gün kuralıdır: Başvuru süresi 7 GÜN, AYM'nin karar süresi 15 GÜNDÜR!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Yasama, Yürütme ve Yargı",
+        "difficulty": 2,
+        "prompt_text": "Anayasa'nın 94. maddesine göre TBMM Başkanlığı seçimi gizli oyla en çok kaç turda tamamlanır ve 3. tur oylamada seçilebilmek için aranan asgari çoğunluk nedir?",
+        "options": [
+            "En çok 4 turda tamamlanır — 3. turda üye tamsayısının salt çoğunluğu (301 oy) aranır.",
+            "En çok 3 turda tamamlanır — 3. turda en çok oy alan seçilir.",
+            "En çok 4 turda tamamlanır — 3. turda 2/3 çoğunluk (400 oy) aranır.",
+            "En çok 2 turda tamamlanır — 2. turda salt çoğunluk aranır.",
+            "En çok 5 turda tamamlanır — 3. turda 360 oy aranır."
+        ],
+        "correctIndex": 0,
+        "explanation": "TBMM Başkanlık seçimi en çok 4 turda biter: 1. Turda 400 (2/3), 2. Turda 400 (2/3), 3. Turda 301 (Salt çoğunluk) aranır. 3. turda da seçilemezse en çok oy alan iki aday 4. tura kalır ve en çok oy alan (basit çoğunluk) başkan seçilir.",
+        "distractor_trap": "1 ve 2. turlarda 400; 3. turda 301; 4. turda en çok oyu alan kazanır. Süreç en çok 4 tur sürer."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Yasama, Yürütme ve Yargı",
+        "difficulty": 2,
+        "prompt_text": "1982 Anayasası'nın 101. maddesine göre Cumhurbaşkanlığına aday gösterilme usulü değerlendirildiğinde aşağıdakilerden hangisi doğrudan Cumhurbaşkanlığına aday gösteremez?",
+        "options": [
+            "TBMM'de grubu bulunan (en az 20 milletvekili olan) siyasi partiler",
+            "En son yapılan genel seçimlerde tek başına veya birlikte geçerli oyların en az yüzde beşini (%5) almış olan siyasi partiler",
+            "En az 100.000 seçmen",
+            "Türkiye Barolar Birliği ve TOBB ortak imzası",
+            "Birden fazla partinin ittifak yaparak oylarının toplamının %5'i bulması"
+        ],
+        "correctIndex": 3,
+        "explanation": "Anayasa m. 101 uyarınca CB adaylığı için üç meşru yol vardır: 1) Meclis grubu (20 vekil), 2) Son genel seçimde en az %5 oy almış partiler, 3) 100 bin seçmenin imzası. Meslek kuruluşları veya sendikalar aday gösteremez.",
+        "distractor_trap": "CB adaylığı için oy oranı barajı %5'tir (seçim barajı olan %7 ile karıştırılmamalıdır); imza sayısı ise 100 bindir."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Yasama, Yürütme ve Yargı",
+        "difficulty": 2,
+        "prompt_text": "Cumhurbaşkanlığı makamının herhangi bir nedenle boşalması (ölüm, istifa vb.) halinde yenisi seçilene kadar Cumhurbaşkanlığına kim vekalet eder ve yetkilerini kullanır?",
+        "options": [
+            "TBMM Başkanı",
+            "Cumhurbaşkanı Yardımcısı",
+            "Anayasa Mahkemesi Başkanı",
+            "Adalet Bakanı",
+            "En yaşlı milletvekili"
+        ],
+        "correctIndex": 1,
+        "explanation": "2017 değişikliği öncesinde TBMM Başkanı vekalet etmekteydi. 2017 anayasa reformuyla bu kural değişmiş olup makamın boşalması veya yurt dışına çıkış hallerinde vekalet yetkisi CUMHURBAŞKANI YARDIMCISINA verilmiştir.",
+        "distractor_trap": "Eski anayasada vekil TBMM Başkanı idi; 2017 sonrasında vekil CUMHURBAŞKANI YARDIMCISIDIR!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Yasama, Yürütme ve Yargı",
+        "difficulty": 2,
+        "prompt_text": "1982 Anayasası'nın 108. maddesinde düzenlenen ve doğrudan Cumhurbaşkanlığına bağlı olan Devlet Denetleme Kurulu'nun (DDK) inceleme ve denetleme yetkisi DIŞINDA bırakılan TEK ALAN aşağıdakilerden hangisidir?",
+        "options": [
+            "Türk Silahlı Kuvvetleri",
+            "Kamu İktisadi Teşebbüsleri (KİT)",
+            "Yargı Organları",
+            "Meslek Kuruluşları ve Odalar",
+            "Sendikalar ve Kamu Yararına Dernekler"
+        ],
+        "correctIndex": 2,
+        "explanation": "Anayasa m. 108 açık hükmüdür: 'Yargı organları, Devlet Denetleme Kurulunun görev alanı dışındadır.' TSK, KİT'ler, vakıf ve dernekler ise DDK denetimine tabidir (2017'de TSK da DDK kapsamına alınmıştır).",
+        "distractor_trap": "2017'den önce TSK denetlenemiyordu; 2017 ile TSK da DDK denetimine açıldı. DDK'nın denetleyemediği TEK ALAN YARGI ORGANLARIDIR!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Yasama, Yürütme ve Yargı",
+        "difficulty": 2,
+        "prompt_text": "Adli ve idari yargı kolları arasındaki görev ve hüküm uyuşmazlıklarını kesin olarak çözmekle görevli olan Uyuşmazlık Mahkemesi'nin Başkanı aşağıdakilerden hangisi tarafından seçilir?",
+        "options": [
+            "Anayasa Mahkemesi kendi üyeleri arasından seçer.",
+            "Yargıtay Büyük Genel Kurulu seçer.",
+            "Danıştay Genel Kurulu seçer.",
+            "Hakimler ve Savcılar Kurulu seçer.",
+            "Cumhurbaşkanı doğrudan atar."
+        ],
+        "correctIndex": 0,
+        "explanation": "Anayasa m. 158 uyarınca: 'Uyuşmazlık Mahkemesinin Başkanlığını Anayasa Mahkemesince kendi üyeleri arasından görevlendirilen üye yapar.'",
+        "distractor_trap": "Uyuşmazlık Mahkemesi Başkanı AYM üyeleri arasından Anayasa Mahkemesi tarafından seçilir!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Yasama, Yürütme ve Yargı",
+        "difficulty": 2,
+        "prompt_text": "Anayasa'nın 160. maddesinde düzenlenen Sayıştay ile Danıştay'ın vergi, benzeri mali yükümlülükler ve ödevler konusundaki kesinleşmiş kararları arasında bir uyuşmazlık çıkarsa hangisinin kararı esas alınır?",
+        "options": [
+            "Danıştay kararları esas alınır.",
+            "Sayıştay kararları esas alınır.",
+            "Uyuşmazlık Mahkemesi'ne başvurulur.",
+            "Anayasa Mahkemesi son sözü söyler.",
+            "Hazine ve Maliye Bakanlığı'nın görüşü uygulanır."
+        ],
+        "correctIndex": 0,
+        "explanation": "Anayasa m. 160 son fıkrası gereğince: 'Vergi, benzeri mali yükümlülükler ve ödevler hakkında Danıştay ile Sayıştay kararları arasındaki uyuşmazlıklarda DANIŞTAY KARARLARI ESAS ALINIR.'",
+        "distractor_trap": "Sayıştay hesap mahkemesidir ancak vergi konusunda uyuşmazlık çıkarsa yüksek idare mahkemesi olan DANIŞTAY'ın kararı üstündür."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Yasama, Yürütme ve Yargı",
+        "difficulty": 2,
+        "prompt_text": "Cumhurbaşkanının tek başına imzaladığı veya anayasada özel olarak yargı denetimi dışına çıkarılan işlemler düşünüldüğünde aşağıdakilerden hangisine karşı YARGI YOLU AÇIKTIR?",
+        "options": [
+            "Olağan dönem Cumhurbaşkanlığı Kararnameleri",
+            "Yüksek Seçim Kurulu (YSK) kararları",
+            "Kamu Görevlileri Hakem Kurulu kararları",
+            "Yüksek Askeri Şura'nın (YAŞ) terfi işlemleri ile kadrosuzluk nedeniyle emekliye ayırma kararları",
+            "Hakimler ve Savcılar Kurulu'nun (HSK) kınama ve yer değiştirme kararları"
+        ],
+        "correctIndex": 0,
+        "explanation": "Olağan dönem Cumhurbaşkanlığı Kararnamelerine karşı Anayasa Mahkemesi'nde iptal davası açılabilir (yargı yolu açıktır). YSK, Hakem Kurulu ve YAŞ'ın terfi kararlarına karşı ise anayasal olarak yargı yolu kapalıdır.",
+        "distractor_trap": "Olağan CBK'lar yargı denetimine (AYM) açıktır; OHAL CBK'lar ve YSK kararları ise yargıya kapalıdır."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Yasama, Yürütme ve Yargı",
+        "difficulty": 2,
+        "prompt_text": "Anayasa Mahkemesi'nin Yüce Divan sıfatıyla verdiği mahkumiyet veya aklama kararlarına karşı anayasal olarak başvurulabilecek kanun yolu aşağıdakilerden hangisidir?",
+        "options": [
+            "Kararın tebliğinden itibaren 15 gün içinde Yüce Divan'da 'Yeniden İnceleme' (itiraz) talep edilebilir; Genel Kurulun inceleme kararı kesindir.",
+            "Yargıtay Ceza Genel Kurulu'na temyize gidilir.",
+            "Danıştay İdari Dava Daireleri Kurulu'na itiraz edilir.",
+            "Yüce Divan kararlarına karşı hiçbir itiraz veya kanun yolu yoktur, ilk karar kesindir.",
+            "Doğrudan AİHM'e başvurulur."
+        ],
+        "correctIndex": 0,
+        "explanation": "2010 anayasa değişikliği ile Yüce Divan kararlarına karşı 'Yeniden İnceleme' (itiraz) yolu getirilmiştir. Tebliğden itibaren 15 gün içinde itiraz edilir ve Anayasa Mahkemesi Genel Kurulu'nun itiraz üzerine verdiği karar kesindir.",
+        "distractor_trap": "Eskiden Yüce Divan kararlarına itiraz edilemiyordu; 2010 değişikliği ile AYM Genel Kurulu'na 15 gün içinde 'Yeniden İnceleme' başvurusu hakkı tanınmıştır."
     }
 ]

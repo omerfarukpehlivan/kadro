@@ -663,5 +663,169 @@ questions = [
         "correctIndex": 1,
         "explanation": "Zeynep ile kardeşi Burak 2. derece yansoy kan hısımıdır. Eşlerden biri için kan hısımı olan kişi, diğer eş için aynı tür ve dereceden kayın (sıhri) hısımı olur. Dolayısıyla Murat ile kayınbiraderi Burak '2. derece yansoy kayın hısımı'dır.",
         "distractor_trap": "Eşin kardeşi (kayınbirader/baldız/görümce) eş için 2. derece yansoy kan hısımıdır; diğer eş için ise 2. DERECE YANSOY KAYIN HISIMIDIR."
+    },
+
+    # -------------------------------------------------------------
+    # TEST 5: HAP BİLGİ & CHECK-UP TESTİ (Zorluk: 2) - Sorular 41-50
+    # -------------------------------------------------------------
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Temel Hukuk Kavramları",
+        "difficulty": 2,
+        "prompt_text": "Borçlar Hukukunda borcun zamanaşımına (müruruzaman) uğraması durumunda borç ilişkisinin ve alacak hakkının hukuki akıbeti aşağıdakilerden hangisidir?",
+        "options": [
+            "Borç kendiliğinden tamamen sona erer ve hukuk düzeninde yok sayılır.",
+            "Borç sona ermez; yalnızca dava edilebilirlik niteliğini kaybederek 'Eksik Borç' haline gelir ve borçlu zamanaşımı def'i ileri sürebilir.",
+            "Borçlu hakkında zorunlu cebri icra takibi başlatılır.",
+            "Borç devlet hazinesine intikal eder.",
+            "Alacaklı hakimden borcun yenilenmesini (tecdit) talep edebilir."
+        ],
+        "correctIndex": 1,
+        "explanation": "Zamanaşımı borcu ortadan kaldıran bir sebep DEĞİLDİR; borcu 'eksik borç' (tabii borç) haline getirir. Borçlu ödemek zorunda değildir, mahkemede 'zamanaşımı def'i' ileri sürebilir. Ancak borçlu kendi rızasıyla öderse yaptığı ödeme geçerlidir, geri isteyemez.",
+        "distractor_trap": "ÖSYM'nin en temel tuzağı: İfa, ibra, tecdit ve kusursuz imkansızlık borcu BİTİRİR; Zamanaşımı ise borcu BİTİRMEZ, sadece EKSİK BORÇ haline getirir!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Temel Hukuk Kavramları",
+        "difficulty": 2,
+        "prompt_text": "Ayırt etme gücüne sahip 17 yaşındaki lise öğrencisi Can'ın, yasal temsilcisi olan anne ve babasının izni veya onayı olmaksızın bir mağazadan vadeli bilgisayar satın alması durumunda bu hukuki işlemin geçerlilik durumu nedir?",
+        "options": [
+            "İşlem kurucu unsuru eksik olduğu için yoklukla maluldür.",
+            "İşlem baştan itibaren mutlak butlanla kesin olarak geçersizdir.",
+            "İşlem 'Tek Taraflı Bağlamazlık' (Askıda Hükümsüzlük) durumundadır; yasal temsilci onay verirse geçerli hale gelir, vermezse baştan itibaren geçersiz olur.",
+            "İşlem tamamen geçerlidir, velinin onayına gerek yoktur.",
+            "İşlem nisbi butlanla geçerlidir, ancak Can 18 yaşına girince iptal davası açabilir."
+        ],
+        "correctIndex": 2,
+        "explanation": "Ayırt etme gücü olan ergin olmayanlar (sınırlı ehliyetsizler), kendilerini borç altına sokan işlemleri yasal temsilcilerinin izni olmadan tek başlarına yapamazlar. Bu işlem 'Tek Taraflı Bağlamazlık' hükmündedir; veli onay verirse sözleşme baştan itibaren geçerli olur.",
+        "distractor_trap": "Sınırlı ehliyetsizin borçlandırıcı işlemleri yokluk veya mutlak butlan DEĞİLDİR; askıda hükümsüzdür (tek taraflı bağlamazlık)."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Temel Hukuk Kavramları",
+        "difficulty": 2,
+        "prompt_text": "Borçlar Kanunu'na göre aşağıdakilerden hangisi bir 'Haksız Fiil'in varlığı ve bundan dolayı tazminat sorumluluğunun doğması için aranan kurucu unsurlardan biri DEĞİLDİR?",
+        "options": [
+            "Hukuka aykırı bir fiil",
+            "Maddi veya manevi bir zararın doğması",
+            "Fiil ile zarar arasında illiyet (nedensellik) bağının bulunması",
+            "Failin kusurlu (kast veya ihmal) olması",
+            "Taraflar arasında önceden yapılmış yazılı bir sözleşmenin bulunması"
+        ],
+        "correctIndex": 4,
+        "explanation": "Haksız fiilin dört temel unsuru vardır: Hukuka aykırı fiil, zarar, illiyet bağı ve kusur. Taraflar arasında önceden sözleşme olması haksız fiil için şart değildir; tam tersine sözleşme ihlali 'sözleşmeye aykırılık' sorumluluğunu doğurur.",
+        "distractor_trap": "Haksız fiil sözleşme dışı sorumluluktur; önceden sözleşme bulunması şartı kesinlikle aranmaz."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Temel Hukuk Kavramları",
+        "difficulty": 2,
+        "prompt_text": "Borçlar Hukukunda mevcut bir borcun tarafların anlaşmasıyla sona erdirilip yerine yepyeni bir borcun ikame edilmesine (borcun yenilenmesine) ne ad verilir?",
+        "options": [
+            "İbra",
+            "Tecdit (Yenileme)",
+            "Takas",
+            "Kusursuz İmkânsızlık",
+            "Alacaklı ve borçlu sıfatının birleşmesi"
+        ],
+        "correctIndex": 1,
+        "explanation": "Mevcut eski borcun sona erdirilerek yerine yeni bir borç ilişkisinin kurulmasına 'Tecdit' (Yenileme) denir. İbra ise alacaklının borçluyu borcundan tamamen ibra edip alacağını bağışlamasıdır.",
+        "distractor_trap": "Alacaktan vazgeçme = İbra; Eski borcu yeni borçla değiştirme = Tecdit (Yenileme)."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Temel Hukuk Kavramları",
+        "difficulty": 2,
+        "prompt_text": "Hakkın bizzat sahibi tarafından korunması yolları değerlendirildiğinde; bir kişinin kendisinin veya başkasının hayatını veya malını derhal gerçekleşecek haksız bir saldırıdan korumak için saldırgana karşı ölçülü güç kullanmasına ne ad verilir?",
+        "options": [
+            "Zaruret Hali (Iztırar)",
+            "Meşru Müdafaa (Haklı Savunma)",
+            "Kuvvet Kullanma",
+            "İhkak-ı Hak",
+            "Hakkın Kötüye Kullanılması"
+        ],
+        "correctIndex": 1,
+        "explanation": "Haksız ve devam eden bir saldırıyı defetmek için saldırgana karşı orantılı güç kullanmaya 'Meşru Müdafaa' denir. Meşru müdafaa hukuka uygunluk sebebidir; kişi ceza almaz ve tazminat ödemez.",
+        "distractor_trap": "Saldırgana zarar verilirse = Meşru Müdafaa (tazminat yok); Tehlikeden kaçmak için masum üçüncü kişinin malına zarar verilirse = Zaruret Hali (ıztırar - hakkaniyet tazminatı ödenir)."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Temel Hukuk Kavramları",
+        "difficulty": 2,
+        "prompt_text": "Dağda yürüyüş yaparken aniden ortaya çıkan ayı saldırısından canını kurtarmak için dağcı Mehmet'in, yol kenarında gördüğü Ali'ye ait kulübenin kapısını kırıp içeri sığınması ve kapıyı parçalaması hangi hukuki durumdur?",
+        "options": [
+            "Meşru Müdafaa",
+            "Zaruret (Iztırar) Hali",
+            "Kuvvet Kullanma",
+            "Kasıtlı Mala Zarar Verme Suçu",
+            "İyiniyet Kuralı"
+        ],
+        "correctIndex": 1,
+        "explanation": "Kişinin kendisini veya yakınını ağır ve derhal gerçekleşecek bir tehlikeden korumak için üçüncü bir kişinin malına zarar vermesine 'Zaruret (Iztırar) Hali' denir. Mehmet ceza almaz ancak kırdığı kapının zararını hakkaniyet gereği Ali'ye tazmin etmek zorundadır.",
+        "distractor_trap": "Saldırı ayıdan veya doğadan gelip üçüncü kişinin malına zarar verilmişse bu Meşru Müdafaa değil, ZARURET (IZTIRAR) HALİ'dir."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Temel Hukuk Kavramları",
+        "difficulty": 2,
+        "prompt_text": "Türk Hukukunda tüzel kişilerin 'Fiil Ehliyeti'ni (bizzat işlem yapabilme ve borçlanabilme yetkisini) kazandıkları an aşağıdakilerden hangisidir?",
+        "options": [
+            "Kuruldukları ve tescil edildikleri anda",
+            "Kanuna ve kuruluş belgelerine göre gerekli ZORUNLU ORGANLARA sahip oldukları anda",
+            "En az 50 üyeye ulaştıkları anda",
+            "İlk genel kurul toplantısını yaptıkları anda",
+            "Valilikten faaliyet izin belgesi aldıkları anda"
+        ],
+        "correctIndex": 1,
+        "explanation": "Medeni Kanun m. 49 uyarınca tüzel kişiler 'Hak Ehliyetini' kuruldukları anda; 'Fiil Ehliyetini' ise kanuna ve kuruluş belgelerine göre gerekli organlara (yönetim kurulu vb.) sahip oldukları anda kazanırlar.",
+        "distractor_trap": "Tüzel kişiler kurulunca Hak ehliyetini; ZORUNLU ORGANLARINI tamamlayınca Fiil ehliyetini kazanır!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Temel Hukuk Kavramları",
+        "difficulty": 2,
+        "prompt_text": "Ölümüne kesin gözle bakılacak bir halde kaybolan (örneğin infilak eden bir uçakta yolcu olan ancak cesedine ulaşılamayan) bir kişinin hukuki durumu hakkında 'Ölüm Karinesi' gereğince kimin emriyle kütüğe ölü kaydı düşülür?",
+        "options": [
+            "Sulh Hukuk Mahkemesi Hakiminin kararıyla",
+            "Asliye Hukuk Mahkemesi Hakiminin kararıyla",
+            "O yerin en büyük mülki amirinin (Vali veya Kaymakam) emriyle",
+            "Cumhuriyet Başsavcısının kararıyla",
+            "Nüfus Müdürünün re'sen tespitiyle"
+        ],
+        "correctIndex": 2,
+        "explanation": "Ölüm karinesinde mahkeme kararı ARANMAZ! O yerin en büyük mülki amirinin (Vali veya Kaymakam) emriyle nüfus kütüğüne ölü kaydı düşülür. Evlilik kendiliğinden son bulur ve miras teminatsız intikal eder.",
+        "distractor_trap": "Gaiplikte mahkeme kararı şarttır; Ölüm karinesinde ise MAHKEME KARARI YOKTUR, doğrudan mülki amir emriyle ölü kaydı işlenir!"
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Temel Hukuk Kavramları",
+        "difficulty": 2,
+        "prompt_text": "Hukuk kurallarının tarafların sözleşmede kullandıkları ancak ne anlama geldiğini açıkça belirtmedikleri terimleri veya süreleri açıklamaya yarayan türüne ne ad verilir?",
+        "options": [
+            "Tamamlayıcı Hukuk Kuralları",
+            "Yorumlayıcı Hukuk Kuralları",
+            "Emredici Hukuk Kuralları",
+            "Tanımlayıcı Hukuk Kuralları",
+            "İstisnai Hukuk Kuralları"
+        ],
+        "correctIndex": 1,
+        "explanation": "Tarafların sözleşmede yer verdikleri ama anlamını netleştirmedikleri hususları (örneğin 'ayın başı' ifadesinin ayın 1'i, 'ayın ortası' ifadesinin ayın 15'i sayılması gibi) aydınlatan kurallara 'YORUMLAYICI HUKUK KURALLARI' denir.",
+        "distractor_trap": "Boşluk dolduran = Tamamlayıcı; Belirsiz ifadeyi açıklayan = Yorumlayıcı; Kavramın ne olduğunu belirten = Tanımlayıcı kuraldır."
+    },
+    {
+        "lesson": "Vatandaşlık",
+        "topic": "Temel Hukuk Kavramları",
+        "difficulty": 2,
+        "prompt_text": "Türk Medeni Kanunu'nda düzenlenen ehliyet sistemine göre 'Ayırt etme gücü bulunmayan' (örneğin ağır akıl hastası) bir kişinin hukuki durumu ve ehliyet grubu hangisidir?",
+        "options": [
+            "Tam Ehliyetli",
+            "Sınırlı Ehliyetli",
+            "Sınırlı Ehliyetsiz",
+            "Tam Ehliyetsiz",
+            "Yarı Ehliyetli"
+        ],
+        "correctIndex": 3,
+        "explanation": "Ayırt etme gücü bulunmayan kişiler 'TAM EHLİYETSİZ' grubundadır. Bu kişilerin yaptıkları tüm hukuki işlemler kural olarak kesin hükümsüzdür (mutlak butlan / yokluk hükmündedir); veli veya vasileri dahi bu işlemleri sonradan geçerli kılamaz.",
+        "distractor_trap": "Ayırt etme gücü olmayan = Tam Ehliyetsiz; Ayırt etme gücü olan ergin olmayan/kısıtlı = Sınırlı Ehliyetsiz."
     }
 ]

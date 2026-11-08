@@ -29,7 +29,7 @@ void main() {
       final vatandaslikQuestions = await repository.getQuestionsByLesson(
         'Vatandaşlık',
       );
-      expect(vatandaslikQuestions.length, 240);
+      expect(vatandaslikQuestions.length, 300);
       expect(vatandaslikQuestions.first.lesson, 'Vatandaşlık');
       expect(vatandaslikQuestions.first.id, 'vat_001');
 
