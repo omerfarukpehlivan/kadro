@@ -3,7 +3,9 @@ import 'dart:async' show StreamSubscription, unawaited;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/config/supabase_config.dart';
+import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -65,6 +67,23 @@ class AuthUserState {
 class AuthNotifier extends Notifier<AuthUserState> {
   StreamSubscription<AuthState>? _authSubscription;
 
+  /// Yeni cihazda veya ilk oturum açılışında tüm bulut verilerini (XP, seri, oturumlar,
+  /// tercihler, hedef sınav, çalışma planı ve yanlış defteri) yerel state ile birleştirir.
+  Future<void> _hydrateAllFromCloud() async {
+    try {
+      await ref.read(studyStatsProvider.notifier).loadFromCloud();
+    } catch (_) {}
+    try {
+      await ref.read(userPreferencesProvider.notifier).loadFromCloud();
+    } catch (_) {}
+    try {
+      await ref.read(studyPlannerProvider.notifier).loadTasksFromCloud();
+    } catch (_) {}
+    try {
+      await const MistakeRepository().hydrateFromCloud();
+    } catch (_) {}
+  }
+
   @override
   AuthUserState build() {
     final client = SupabaseConfig.clientOrNull;
@@ -84,12 +103,13 @@ class AuthNotifier extends Notifier<AuthUserState> {
             isLoading: false,
             errorMessage: null,
           );
-          ref.read(studyStatsProvider.notifier).loadFromCloud();
-          unawaited(
-            ref.read(studyPlannerProvider.notifier).loadTasksFromCloud(),
-          );
+          unawaited(_hydrateAllFromCloud());
         } else if (data.event == AuthChangeEvent.signedOut) {
           state = const AuthUserState();
+          ref.read(studyStatsProvider.notifier).reset();
+          ref.read(userPreferencesProvider.notifier).reset();
+          ref.read(studyPlannerProvider.notifier).reset();
+          const MistakeRepository().clearLocal();
         }
       });
 
@@ -101,10 +121,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
 
     final user = client?.auth.currentUser;
     if (user != null) {
-      Future.microtask(() {
-        ref.read(studyStatsProvider.notifier).loadFromCloud();
-        ref.read(studyPlannerProvider.notifier).loadTasksFromCloud();
-      });
+      Future.microtask(() => _hydrateAllFromCloud());
       return AuthUserState(
         isAuthenticated: true,
         userId: user.id,
@@ -147,8 +164,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
           displayName: displayName,
           isLoading: false,
         );
-        ref.read(studyStatsProvider.notifier).loadFromCloud();
-        unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
+        unawaited(_hydrateAllFromCloud());
         return true;
       } else {
         state = state.copyWith(
@@ -176,8 +192,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
               (user.email?.split('@').first ?? 'Memur Adayı'),
           isLoading: false,
         );
-        ref.read(studyStatsProvider.notifier).loadFromCloud();
-        unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
+        unawaited(_hydrateAllFromCloud());
         return true;
       }
       state = state.copyWith(
@@ -222,8 +237,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
                   : rawIdentifier),
         isLoading: false,
       );
-      ref.read(studyStatsProvider.notifier).loadFromCloud();
-      unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
+      unawaited(_hydrateAllFromCloud());
       return true;
     }
 
@@ -242,8 +256,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
           displayName: displayName.trim(),
           isLoading: false,
         );
-        ref.read(studyStatsProvider.notifier).loadFromCloud();
-        unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
+        unawaited(_hydrateAllFromCloud());
         return true;
       }
       state = state.copyWith(
@@ -276,8 +289,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
         displayName: 'Google ile Giriş Yapan Aday',
         isLoading: false,
       );
-      ref.read(studyStatsProvider.notifier).loadFromCloud();
-      unawaited(ref.read(studyPlannerProvider.notifier).loadTasksFromCloud());
+      unawaited(_hydrateAllFromCloud());
       return true;
     }
     try {
@@ -322,12 +334,16 @@ class AuthNotifier extends Notifier<AuthUserState> {
     }
   }
 
-  /// Oturumu kapatır.
+  /// Oturumu kapatır ve yerel state ile kullanıcı cache'ini temizler.
   Future<void> signOut() async {
     try {
       await SupabaseConfig.clientOrNull?.auth.signOut();
     } catch (_) {}
     state = const AuthUserState();
+    ref.read(studyStatsProvider.notifier).reset();
+    ref.read(userPreferencesProvider.notifier).reset();
+    ref.read(studyPlannerProvider.notifier).reset();
+    const MistakeRepository().clearLocal();
   }
 
   /// Varsa hata mesajını temizler.

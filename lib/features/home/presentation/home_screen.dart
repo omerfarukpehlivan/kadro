@@ -11,9 +11,11 @@ import 'package:kadro/features/pomodoro/data/pomodoro_notifier.dart';
 import 'package:kadro/features/pomodoro/presentation/pomodoro_studio_screen.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/target_exam_selector_bottom_sheet.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Ana sayfa: Kadro Koçu konuşma balonu, günlük hedef, akıllı hatırlatıcılar ve çalışma planı.
@@ -485,16 +487,21 @@ class _WeakLessonHomeBanner extends StatelessWidget {
   }
 }
 
-/// Ana sayfada KPSS'ye kalan süreyi ve seçili Pomodoro odak modunu gösteren kompakt komuta şeridi.
+/// Ana sayfada KPSS hedef sınavına kalan süreyi Yıl / Ay / Gün olarak
+/// canlı gösteren, sınav değiştirme modalı ve Pomodoro odak entegrasyonu sunan komuta kartı.
 class _ExamAndPomodoroBanner extends ConsumerWidget {
   const _ExamAndPomodoroBanner();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final prefs = ref.watch(userPreferencesProvider);
     final pomodoro = ref.watch(pomodoroProvider);
-    final remainingDays = pomodoro.examTarget.remainingDays();
+    final target = prefs.targetExam;
+    final remaining = target.detailedRemaining();
 
     return TactileCard(
       onTap: () {
@@ -504,75 +511,261 @@ class _ExamAndPomodoroBanner extends ConsumerWidget {
       },
       backgroundColor: colorScheme.surface,
       borderColor: colorScheme.primary.withAlpha(70),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-      child: Row(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            padding: const EdgeInsets.all(7),
-            decoration: BoxDecoration(
-              color: colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: PhosphorIcon(
-              PhosphorIconsDuotone.timer,
-              size: 20,
-              color: colorScheme.onPrimaryContainer,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+          // 1. Üst Başlık & Sınav Seçici Buton
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: PhosphorIcon(
+                  PhosphorIconsDuotone.timer,
+                  size: 20,
+                  color: colorScheme.onPrimaryContainer,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Flexible(
-                      child: Text(
-                        '⏳ KPSS 2027: $remainingDays Gün Kaldı',
-                        style: textTheme.labelLarge?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      target == KpssExamTarget.lisans
+                          ? '⏳ KPSS 2027: ${target.shortTitle}'
+                          : '⏳ ${target.title}',
+                      style: textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      target.subtitle,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: 11,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  '${pomodoro.formattedTime} Odak · ${pomodoro.selectedLesson}',
+              ),
+              const SizedBox(width: 8),
+              // Sınavı Değiştir Butonu
+              InkWell(
+                onTap: () => TargetExamSelectorBottomSheet.show(context),
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer.withAlpha(120),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: colorScheme.primary.withAlpha(80),
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Değiştir',
+                        style: textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 3),
+                      PhosphorIcon(
+                        PhosphorIconsBold.caretDown,
+                        size: 11,
+                        color: colorScheme.primary,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // 2. Yıl - Ay - Gün Tactile Sayaç Kutuları
+          Row(
+            children: [
+              Expanded(
+                child: _CountdownMetricBox(
+                  value: remaining.years.toString(),
+                  label: 'YIL',
+                  colorScheme: colorScheme,
+                  textTheme: textTheme,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _CountdownMetricBox(
+                  value: remaining.months.toString(),
+                  label: 'AY',
+                  colorScheme: colorScheme,
+                  textTheme: textTheme,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _CountdownMetricBox(
+                  value: remaining.days.toString(),
+                  label: 'GÜN',
+                  colorScheme: colorScheme,
+                  textTheme: textTheme,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // 3. Alt Özet Bilgi ve Pomodoro Sayaç Butonu
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '⏳ Toplam ${remaining.totalDays} Gün Kaldı · ${pomodoro.formattedTime} Odak',
                   style: textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
+                    fontSize: 11.5,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const PomodoroStudioScreen(),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primary,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      PhosphorIcon(
+                        PhosphorIconsBold.play,
+                        size: 13,
+                        color: colorScheme.onPrimary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Sayaç',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Divider(height: 1),
+          const SizedBox(height: 8),
+
+          // 4. ÖSYM Tahmini Takvim Bilgilendirme Notu
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              PhosphorIcon(
+                PhosphorIconsDuotone.info,
+                size: 14,
+                color: colorScheme.outline,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  KpssExamTarget.osymDisclaimer,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.outline,
+                    fontSize: 10.5,
+                    height: 1.3,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Geri sayım sayacında Yıl, Ay ve Gün değerlerini gösteren 3D dokunsal kutu.
+class _CountdownMetricBox extends StatelessWidget {
+  final String value;
+  final String label;
+  final ColorScheme colorScheme;
+  final TextTheme textTheme;
+
+  const _CountdownMetricBox({
+    required this.value,
+    required this.label,
+    required this.colorScheme,
+    required this.textTheme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withAlpha(120),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withAlpha(90),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value,
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w900,
+              color: colorScheme.primary,
+              height: 1.1,
             ),
           ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: colorScheme.primary,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                PhosphorIcon(
-                  PhosphorIconsBold.play,
-                  size: 13,
-                  color: colorScheme.onPrimary,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'Sayaç',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: textTheme.labelSmall?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: colorScheme.onSurfaceVariant,
+              fontSize: 10.5,
+              letterSpacing: 0.6,
             ),
           ),
         ],

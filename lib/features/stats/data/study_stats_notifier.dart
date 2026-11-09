@@ -336,6 +336,7 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       totalXp: state.totalXp,
       leagueTier: state.leagueTier,
       dailyGoalQuestions: state.dailyGoal,
+      currentStreakDays: state.streakDays,
     );
     _cloudSync.upsertTopicMastery(
       lesson: lesson,
@@ -361,6 +362,7 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       totalXp: state.totalXp,
       leagueTier: state.leagueTier,
       dailyGoalQuestions: state.dailyGoal,
+      currentStreakDays: state.streakDays,
     );
   }
 
@@ -371,15 +373,111 @@ class StudyStatsNotifier extends Notifier<StudyStatsState> {
       totalXp: state.totalXp,
       leagueTier: state.leagueTier,
       dailyGoalQuestions: newGoal,
+      currentStreakDays: state.streakDays,
     );
   }
 
-  /// Supabase bulut veritabanından kullanıcının geçmiş oturumlarını yükler.
+  /// Supabase bulut veritabanından kullanıcının profil, XP, seri ve oturumlarını yükler.
+  ///
+  /// Çoklu Cihaz Akıllı Birleştirme (Smart Merge):
+  /// Cihaz B'de yerel XP daha düşükse bulut verisiyle eşitlenir; asla buluttaki yüksek XP ezilmez.
   Future<void> loadFromCloud() async {
-    final cloudSessions = await _cloudSync.fetchSessionHistory();
-    if (cloudSessions.isNotEmpty) {
-      state = state.copyWith(sessionHistory: cloudSessions);
+    // 1. Profil tablosundan XP, seri, lig seviyesi ve günlük hedefi çek
+    final profile = await _cloudSync.fetchUserProfile();
+    int mergedXp = state.totalXp;
+    int mergedStreak = state.streakDays;
+    int mergedDailyGoal = state.dailyGoal;
+    DateTime? mergedLastStudyDate = state.lastStudyDate;
+
+    if (profile != null) {
+      final cloudXp = (profile['total_xp'] as num?)?.toInt() ?? 0;
+      if (cloudXp > mergedXp) {
+        mergedXp = cloudXp;
+      }
+      final cloudStreak =
+          (profile['current_streak_days'] as num?)?.toInt() ?? 0;
+      if (cloudStreak > mergedStreak) {
+        mergedStreak = cloudStreak;
+      }
+      final cloudGoal = (profile['daily_goal_questions'] as num?)?.toInt() ?? 0;
+      if (cloudGoal > 0) {
+        mergedDailyGoal = cloudGoal;
+      }
+      final cloudLastDateStr = profile['last_study_date'] as String?;
+      if (cloudLastDateStr != null) {
+        try {
+          final parsed = DateTime.parse(cloudLastDateStr);
+          if (mergedLastStudyDate == null ||
+              parsed.isAfter(mergedLastStudyDate)) {
+            mergedLastStudyDate = parsed;
+          }
+        } catch (_) {}
+      }
     }
+
+    // 2. Geçmiş oturumları çek
+    final cloudSessions = await _cloudSync.fetchSessionHistory();
+
+    // 3. Konu ustalıklarını çekip ders bazlı çözülen/doğru sayılarını hesapla
+    final topicMasteries = await _cloudSync.fetchTopicMastery();
+    final solvedMap = Map<String, int>.from(state.solvedByLesson);
+    final correctMap = Map<String, int>.from(state.correctByLesson);
+    final wrongMap = Map<String, int>.from(state.wrongByLesson);
+
+    for (final item in topicMasteries) {
+      final lesson = item['lesson'] as String? ?? '';
+      final solved = (item['total_solved'] as num?)?.toInt() ?? 0;
+      final correct = (item['total_correct'] as num?)?.toInt() ?? 0;
+      if (lesson.isNotEmpty) {
+        if (solved > (solvedMap[lesson] ?? 0)) {
+          solvedMap[lesson] = solved;
+        }
+        if (correct > (correctMap[lesson] ?? 0)) {
+          correctMap[lesson] = correct;
+        }
+        final wrong = (solved - correct).clamp(0, 99999);
+        if (wrong > (wrongMap[lesson] ?? 0)) {
+          wrongMap[lesson] = wrong;
+        }
+      }
+    }
+
+    int totalSolvedCount = state.totalSolved;
+    int totalCorrectCount = state.totalCorrect;
+    int totalWrongCount = state.totalWrong;
+
+    final calcSolved = solvedMap.values.fold<int>(0, (sum, val) => sum + val);
+    final calcCorrect = correctMap.values.fold<int>(0, (sum, val) => sum + val);
+    final calcWrong = wrongMap.values.fold<int>(0, (sum, val) => sum + val);
+
+    if (calcSolved > totalSolvedCount) totalSolvedCount = calcSolved;
+    if (calcCorrect > totalCorrectCount) totalCorrectCount = calcCorrect;
+    if (calcWrong > totalWrongCount) totalWrongCount = calcWrong;
+
+    state = state.copyWith(
+      totalXp: mergedXp,
+      streakDays: mergedStreak,
+      dailyGoal: mergedDailyGoal,
+      lastStudyDate: mergedLastStudyDate,
+      sessionHistory: cloudSessions.isNotEmpty
+          ? cloudSessions
+          : state.sessionHistory,
+      solvedByLesson: solvedMap,
+      correctByLesson: correctMap,
+      wrongByLesson: wrongMap,
+      totalSolved: totalSolvedCount,
+      totalCorrect: totalCorrectCount,
+      totalWrong: totalWrongCount,
+    );
+
+    // Yerel belleğe kaydet (Cihaz B'nin yerel hafızasını güncelle)
+    unawaited(_storage.saveStudyStats(state));
+  }
+
+  /// Oturum kapatıldığında veya misafir moduna geçildiğinde istatistikleri sıfırlar.
+  void reset() {
+    state = const StudyStatsState();
+    unawaited(_storage.saveStudyStats(state));
   }
 }
 

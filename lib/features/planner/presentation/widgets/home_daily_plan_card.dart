@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
+import 'package:kadro/features/planner/presentation/widgets/auto_study_program_modal.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -18,6 +20,7 @@ class HomeDailyPlanCard extends ConsumerWidget {
 
     final planner = ref.watch(studyPlannerProvider);
     final notifier = ref.read(studyPlannerProvider.notifier);
+    final prefs = ref.watch(userPreferencesProvider);
 
     return TactileCard(
       backgroundColor: colorScheme.surface,
@@ -25,7 +28,7 @@ class HomeDailyPlanCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 1. Üst Satır
+          // 1. Üst Satır: Başlık, Sayaç ve Tümünü Gör
           Row(
             children: [
               PhosphorIcon(
@@ -74,7 +77,54 @@ class HomeDailyPlanCard extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
+
+          // 1.5. Otomatik Çalışma Programı Bilgi & Hızlı Ayar Şeridi
+          InkWell(
+            onTap: () => AutoStudyProgramModal.show(context),
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest.withAlpha(90),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: colorScheme.outlineVariant.withAlpha(70),
+                ),
+              ),
+              child: Row(
+                children: [
+                  PhosphorIcon(
+                    PhosphorIconsDuotone.sparkle,
+                    size: 15,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      prefs.hasActiveStudyProgram
+                          ? '${prefs.studyProgramPace.label} (${prefs.studyProgramPace.badgeText})'
+                          : 'Sınavına Özel Otomatik Program Kur',
+                      style: textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurface,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    'Ayarla ▾',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
 
           // 2. Orta: İlk 3 Görevin Kompakt Listesi
           if (planner.tasks.isEmpty)

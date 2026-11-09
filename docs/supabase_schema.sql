@@ -13,10 +13,22 @@ create table if not exists public.profiles (
   total_xp int not null default 0,
   league_tier text not null default 'Bronz Kadro',
   is_pro boolean not null default false,
+  target_exam text not null default 'lisans',
+  study_pace text not null default 'orta',
+  target_kpss_score int not null default 85,
+  focus_lesson text not null default 'Tarih',
+  has_active_study_program boolean not null default false,
   last_study_date date default current_date,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+-- Var olan tablolar için kolon güncellemesi (Geriye dönük uyumluluk)
+alter table public.profiles add column if not exists target_exam text default 'lisans';
+alter table public.profiles add column if not exists study_pace text default 'orta';
+alter table public.profiles add column if not exists target_kpss_score int default 85;
+alter table public.profiles add column if not exists focus_lesson text default 'Tarih';
+alter table public.profiles add column if not exists has_active_study_program boolean default false;
 
 -- YENİ KAYIT OLAN KULLANICI İÇİN OTOMATİK PROFİL OLUŞTURMA TRIGGER'I
 create or replace function public.handle_new_user()

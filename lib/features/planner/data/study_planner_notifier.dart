@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/local_storage_service.dart';
+import 'package:kadro/features/planner/data/models/study_program_pace.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
+import 'package:kadro/features/planner/data/services/auto_study_program_generator.dart';
+import 'package:kadro/features/pomodoro/data/pomodoro_notifier.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 
 /// Çalışma planlayıcı durum sınıfı (Immutable State).
@@ -120,6 +123,28 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     unawaited(_cloudSync.insertStudyTask(newTask));
   }
 
+  /// Seçili KPSS hedef sınavı ve tempoya göre otomatik çalışma programı kurar.
+  void setupAutoProgram({
+    required KpssExamTarget examTarget,
+    required StudyProgramPace pace,
+    String? focusLesson,
+    int cycleDay = 1,
+  }) {
+    final generatedTasks = AutoStudyProgramGenerator.generateDailyTasks(
+      examTarget: examTarget,
+      pace: pace,
+      focusLesson: focusLesson,
+      cycleDay: cycleDay,
+    );
+
+    state = state.copyWith(tasks: generatedTasks);
+    unawaited(_storage.saveStudyTasks(generatedTasks));
+
+    for (final task in generatedTasks) {
+      unawaited(_cloudSync.insertStudyTask(task));
+    }
+  }
+
   /// Görevi listeden siler.
   void removeTask(String id) {
     StudyTask? removedTask;
@@ -162,6 +187,36 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       state = state.copyWith(tasks: remoteTasks);
       unawaited(_storage.saveStudyTasks(state.tasks));
     }
+  }
+
+  /// Oturum kapatıldığında veya kullanıcı değiştiğinde varsayılan görevlere sıfırlar.
+  void reset() {
+    state = const StudyPlannerState(
+      tasks: [
+        StudyTask(
+          id: 'task_1',
+          title: 'İslamiyet Öncesi Türk Tarihi 15 Soru Çöz',
+          lessonTag: 'Tarih',
+          estimatedMinutes: 20,
+          actionType: StudyTaskActionType.quiz,
+        ),
+        StudyTask(
+          id: 'task_2',
+          title: 'Türkiye Coğrafi Konumu Hap Kart Tekrarı',
+          lessonTag: 'Coğrafya',
+          estimatedMinutes: 15,
+          actionType: StudyTaskActionType.flashcards,
+        ),
+        StudyTask(
+          id: 'task_3',
+          title: 'Yanlış Defterindeki Soruları Temizle',
+          lessonTag: 'Genel',
+          estimatedMinutes: 15,
+          actionType: StudyTaskActionType.mistakes,
+        ),
+      ],
+    );
+    unawaited(_storage.saveStudyTasks(state.tasks));
   }
 }
 

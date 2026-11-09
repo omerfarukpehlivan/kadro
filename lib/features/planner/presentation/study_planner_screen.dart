@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/exams/presentation/exams_screen.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
+import 'package:kadro/features/games/presentation/concept_match_screen.dart';
+import 'package:kadro/features/map_practice/presentation/map_practice_hub_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
+import 'package:kadro/features/planner/presentation/widgets/auto_study_program_modal.dart';
+import 'package:kadro/features/pomodoro/data/pomodoro_notifier.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
@@ -64,6 +70,13 @@ class StudyPlannerScreen extends ConsumerWidget {
 
             // 2. Plan İlerleme & Süre Özeti Kartı
             _PlannerSummaryCard(planner: planner),
+            AppSpacing.gapMd,
+
+            // 2.5. Otomatik Çalışma Programı Komuta Kartı
+            _AutoStudyProgramBanner(
+              prefs: ref.watch(userPreferencesProvider),
+              target: ref.watch(userPreferencesProvider).targetExam,
+            ),
             AppSpacing.gapMd,
 
             // 3. Tek Tıkla Hazır KPSS Görev Şablonları
@@ -313,6 +326,20 @@ class _PlannerTaskTile extends StatelessWidget {
       case StudyTaskActionType.mistakes:
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (_) => const MistakesScreen()));
+        break;
+      case StudyTaskActionType.exam:
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (_) => const ExamsScreen()));
+        break;
+      case StudyTaskActionType.map:
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const MapPracticeHubScreen()));
+        break;
+      case StudyTaskActionType.game:
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const ConceptMatchScreen()));
         break;
       case StudyTaskActionType.custom:
         ScaffoldMessenger.of(context)
@@ -578,6 +605,113 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
             onPressed: _submit,
             icon: const PhosphorIcon(PhosphorIconsBold.calendarPlus),
             label: const Text('Plana Ekle'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Otomatik Çalışma Programı Özet Kartı.
+class _AutoStudyProgramBanner extends StatelessWidget {
+  final UserPreferencesState prefs;
+  final KpssExamTarget target;
+
+  const _AutoStudyProgramBanner({required this.prefs, required this.target});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final pace = prefs.studyProgramPace;
+    final remaining = target.detailedRemaining();
+
+    return TactileCard(
+      onTap: () => AutoStudyProgramModal.show(context),
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.primary.withAlpha(100),
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: PhosphorIcon(
+                  PhosphorIconsDuotone.sparkle,
+                  size: 20,
+                  color: colorScheme.onPrimaryContainer,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            prefs.hasActiveStudyProgram
+                                ? '${pace.label} (${pace.badgeText})'
+                                : 'Otomatik KPSS Programı',
+                            style: textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              color: colorScheme.primary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 1),
+                    Text(
+                      '🎯 ${target.shortTitle} · ⏳ ${remaining.formattedRemaining}',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: 11,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => AutoStudyProgramModal.show(context),
+                style: OutlinedButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                ),
+                icon: const PhosphorIcon(
+                  PhosphorIconsBold.slidersHorizontal,
+                  size: 13,
+                ),
+                label: Text(
+                  prefs.hasActiveStudyProgram ? 'Düzenle' : 'Program Kur',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            pace.calculatePacingSummary(target),
+            style: textTheme.bodySmall?.copyWith(
+              color: colorScheme.outline,
+              fontSize: 11,
+              height: 1.3,
+            ),
           ),
         ],
       ),

@@ -3,10 +3,11 @@ import 'package:kadro/core/config/supabase_config.dart';
 import 'package:kadro/core/network/client_rate_limiter.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show UserAttributes;
 
 /// Kullanıcının çözdüğü test oturumlarını, soru loglarını, profil istatistiklerini,
 /// konu ustalık matrisini ve çalışma planlayıcı görevlerini
-/// Supabase PostgreSQL veritabanı ile senkronize eden veri erişim katmanı (TASK-91 Batching & Rate-Limiting).
+/// Supabase PostgreSQL veritabanı ile senkronize eden veri erişim katmanı.
 ///
 /// Web/Angular Karşılığı: `CloudSyncService` / Repository Katmanı.
 /// Ağ kesintilerinde veya misafir (offline) modunda sessiz ve güvenli şekilde çalışır.
@@ -60,19 +61,27 @@ class CloudSyncRepository {
     required bool isCorrect,
     required int timeSpentSeconds,
     bool flushImmediately = false,
+    String? questionId,
+    String? selectedAnswer,
+    String? correctAnswer,
   }) async {
     final client = SupabaseConfig.clientOrNull;
     final userId = client?.auth.currentUser?.id;
     if (client == null || userId == null) return;
 
-    _attemptQueue.add({
+    final entry = <String, dynamic>{
       'user_id': userId,
       'question_text': questionText,
       'lesson': lesson,
       'topic': topic,
       'is_correct': isCorrect,
       'time_spent_seconds': timeSpentSeconds,
-    });
+    };
+    if (questionId != null) entry['question_id'] = questionId;
+    if (selectedAnswer != null) entry['selected_answer'] = selectedAnswer;
+    if (correctAnswer != null) entry['correct_answer'] = correctAnswer;
+
+    _attemptQueue.add(entry);
 
     if (flushImmediately || _attemptQueue.length >= 10) {
       await flushQuestionAttempts();
@@ -101,7 +110,7 @@ class CloudSyncRepository {
     }
   }
 
-  /// Kullanıcının toplam XP, lig seviyesi ve günlük hedefini `public.profiles` tablosuna senkronize eder.
+  /// Kullanıcının toplam XP, lig seviyesi, seri ve günlük hedefini `public.profiles` tablosuna senkronize eder.
   ///
   /// Seri soru çözümü esnasında gereksiz sunucu bombardımanını önlemek için [ClientRateLimiter]
   /// ile en fazla 5 saniyede bir istek atacak şekilde kısıtlanmıştır ([force] = true hariç).
@@ -109,6 +118,7 @@ class CloudSyncRepository {
     required int totalXp,
     required String leagueTier,
     required int dailyGoalQuestions,
+    int? currentStreakDays,
     bool force = false,
   }) async {
     if (!force) {
@@ -127,19 +137,17 @@ class CloudSyncRepository {
     if (client == null || userId == null) return;
 
     try {
-      await client
-          .from('profiles')
-          .update({
-            'total_xp': totalXp,
-            'league_tier': leagueTier,
-            'daily_goal_questions': dailyGoalQuestions,
-            'last_study_date': DateTime.now().toIso8601String().substring(
-              0,
-              10,
-            ),
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', userId);
+      final payload = <String, dynamic>{
+        'total_xp': totalXp,
+        'league_tier': leagueTier,
+        'daily_goal_questions': dailyGoalQuestions,
+        'last_study_date': DateTime.now().toIso8601String().substring(0, 10),
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      if (currentStreakDays != null && currentStreakDays > 0) {
+        payload['current_streak_days'] = currentStreakDays;
+      }
+      await client.from('profiles').update(payload).eq('id', userId);
     } catch (e) {
       debugPrint('Supabase syncProfileStats hatası: $e');
     }
@@ -167,7 +175,25 @@ class CloudSyncRepository {
   /// Testler için kuyruğu ve hız sınırlarını temizler.
   static void clearQueueForTest() {
     _attemptQueue.clear();
-    ClientRateLimiter.instance.reset('sync_profile_stats');
+  }
+
+  /// Giriş yapmış kullanıcının profil, XP, seri ve PRO durumunu çeker.
+  Future<Map<String, dynamic>?> fetchUserProfile() async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return null;
+
+    try {
+      final response = await client
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+      return response;
+    } catch (e) {
+      debugPrint('Supabase fetchUserProfile hatası: $e');
+      return null;
+    }
   }
 
   /// Giriş yapmış kullanıcının buluttaki geçmiş test oturumlarını çeker.
@@ -313,6 +339,138 @@ class CloudSyncRepository {
     } catch (e) {
       debugPrint('Supabase markMistakeResolved hatası: $e');
     }
+  }
+
+  /// Giriş yapmış kullanıcının konu bazlı ustalık matrisini çeker.
+  Future<List<Map<String, dynamic>>> fetchTopicMastery() async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return const [];
+
+    try {
+      final List<dynamic> response = await client
+          .from('user_topic_mastery')
+          .select()
+          .eq('user_id', userId);
+      return response.cast<Map<String, dynamic>>();
+    } catch (e) {
+      debugPrint('Supabase fetchTopicMastery hatası: $e');
+      return const [];
+    }
+  }
+
+  /// Giriş yapmış kullanıcının çözülmemiş yanlış soru kayıtlarını çeker.
+  Future<List<Map<String, dynamic>>> fetchUnresolvedMistakes() async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return const [];
+
+    try {
+      final List<dynamic> response = await client
+          .from('question_attempt_logs')
+          .select('question_id, question_text, lesson, topic')
+          .eq('user_id', userId)
+          .eq('is_correct', false)
+          .eq('is_resolved_in_mistakes', false)
+          .order('attempted_at', ascending: false)
+          .limit(100);
+
+      return response.cast<Map<String, dynamic>>();
+    } catch (e) {
+      debugPrint('Supabase fetchUnresolvedMistakes hatası: $e');
+      return const [];
+    }
+  }
+
+  /// Kullanıcının hedef sınavını, çalışma temposunu ve tercihlerini buluta senkronize eder.
+  Future<void> syncUserPreferences({
+    String? targetExam,
+    String? studyPace,
+    int? targetKpssScore,
+    String? focusLesson,
+    bool? hasActiveStudyProgram,
+    bool? hasCompletedOnboarding,
+  }) async {
+    final client = SupabaseConfig.clientOrNull;
+    final user = client?.auth.currentUser;
+    if (client == null || user == null) return;
+
+    final prefMap = <String, dynamic>{};
+    if (targetExam != null) prefMap['target_exam'] = targetExam;
+    if (studyPace != null) prefMap['study_pace'] = studyPace;
+    if (targetKpssScore != null) prefMap['target_kpss_score'] = targetKpssScore;
+    if (focusLesson != null) prefMap['focus_lesson'] = focusLesson;
+    if (hasActiveStudyProgram != null) {
+      prefMap['has_active_study_program'] = hasActiveStudyProgram;
+    }
+    if (hasCompletedOnboarding != null) {
+      prefMap['has_completed_onboarding'] = hasCompletedOnboarding;
+    }
+
+    if (prefMap.isEmpty) return;
+
+    // 1. Supabase Auth user_metadata'ya yaz (her zaman garantili ve anında erişilebilir)
+    try {
+      await client.auth.updateUser(UserAttributes(data: prefMap));
+    } catch (e) {
+      debugPrint('Supabase updateUser metadata hatası: $e');
+    }
+
+    // 2. profiles tablosuna güncelleme dene (var olan kolonlar için)
+    try {
+      final profilePayload = Map<String, dynamic>.from(prefMap)
+        ..remove('has_completed_onboarding');
+      if (profilePayload.isNotEmpty) {
+        await client.from('profiles').update(profilePayload).eq('id', user.id);
+      }
+    } catch (e) {
+      debugPrint('Supabase syncUserPreferences profiles hatası: $e');
+    }
+  }
+
+  /// Kullanıcının buluttaki tercihlerini okur.
+  Future<Map<String, dynamic>?> fetchUserPreferences() async {
+    final client = SupabaseConfig.clientOrNull;
+    final user = client?.auth.currentUser;
+    if (client == null || user == null) return null;
+
+    final result = <String, dynamic>{};
+
+    // 1. Önce user_metadata'dan al
+    if (user.userMetadata != null && user.userMetadata!.isNotEmpty) {
+      result.addAll(user.userMetadata!);
+    }
+
+    // 2. profiles tablosundan da al
+    try {
+      final profile = await fetchUserProfile();
+      if (profile != null) {
+        if (profile['target_exam'] != null) {
+          result['target_exam'] = profile['target_exam'];
+        }
+        if (profile['study_pace'] != null) {
+          result['study_pace'] = profile['study_pace'];
+        }
+        if (profile['target_kpss_score'] != null) {
+          result['target_kpss_score'] = profile['target_kpss_score'];
+        }
+        if (profile['focus_lesson'] != null) {
+          result['focus_lesson'] = profile['focus_lesson'];
+        }
+        if (profile['has_active_study_program'] != null) {
+          result['has_active_study_program'] =
+              profile['has_active_study_program'];
+        }
+        if (profile['is_pro'] != null) {
+          result['is_pro'] = profile['is_pro'];
+        }
+        if (profile['daily_goal_questions'] != null) {
+          result['daily_goal_questions'] = profile['daily_goal_questions'];
+        }
+      }
+    } catch (_) {}
+
+    return result.isEmpty ? null : result;
   }
 
   /// Haftalık liderlik tablosunu Supabase `get_weekly_leaderboard` RPC fonksiyonu üzerinden çeker.

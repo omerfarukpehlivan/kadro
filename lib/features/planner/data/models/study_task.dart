@@ -1,7 +1,7 @@
 /// Görevin tetikleyeceği uygulama içi çalışma ekranı türü.
 ///
 /// Web/Angular benzetmesi: Router link veya action dispatcher türü.
-enum StudyTaskActionType { quiz, flashcards, mistakes, custom }
+enum StudyTaskActionType { quiz, flashcards, mistakes, custom, exam, map, game }
 
 /// KPSS çalışma planı görevi veri modeli.
 ///

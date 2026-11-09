@@ -136,7 +136,7 @@ void main() {
 
       // Aşağı kaydırarak akıllı hatırlatıcıları görüntüle
       await tester.scrollUntilVisible(
-        find.text('Görev & Durum Hatırlatıcıları'),
+        find.text('Çalışma Planı'),
         150,
         scrollable: find.byType(Scrollable).first,
       );
