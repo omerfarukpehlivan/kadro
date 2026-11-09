@@ -195,7 +195,7 @@ insert into public.questions (
   'multiple_choice',
   2,
   'Mustafa Kemal Paşa''nın I. Dünya Savaşı boyunca mücadele ettiği üç cephe kronolojik sırasıyla aşağıdakilerin hangisinde doğru verilmiştir?',
-  '{"options": ["Kafkasya $\ → $ Çanakkale $\ → $ Suriye-Filistin", "Çanakkale $\ → $ Kafkasya $\ → $ Suriye-Filistin", "Çanakkale $\ → $ Irak $\ → $ Hicaz", "Kanal $\ → $ Çanakkale $\ → $ Kafkasya", "Suriye-Filistin $\ → $ Çanakkale $\ → $ Kafkasya"], "correctIndex": 1}'::jsonb,
+  '{"options": ["Kafkasya $ → $ Çanakkale $ → $ Suriye-Filistin", "Çanakkale $ → $ Kafkasya $ → $ Suriye-Filistin", "Çanakkale $ → $ Irak $ → $ Hicaz", "Kanal $ → $ Çanakkale $ → $ Kafkasya", "Suriye-Filistin $ → $ Çanakkale $ → $ Kafkasya"], "correctIndex": 1}'::jsonb,
   'Mustafa Kemal I. Dünya Savaşı''nda sırasıyla: 1. Çanakkale Cephesi (Tekirdağ 19. Tümen / Anafartalar), 2. Kafkasya Cephesi (16. Kolordu / Muş ve Bitlis fethi), 3. Suriye-Filistin Cephesi (Yıldırım Orduları Grup Komutanlığı) olmak üzere üç cephede savaşmıştır [Şifre: ÇIKIŞ / Ç-K-S].',
   'ÖSYM cephelerin kronolojik sırasını ve Mustafa Kemal''in savaştığı yerleri çok sever. Mustafa Kemal Irak veya Kanal cephelerinde bulunmamıştır.'
 );
@@ -304,7 +304,7 @@ insert into public.questions (
   'multiple_choice',
   2,
   'Mondros Ateşkes Antlaşması''ndan sonra başlayan işgallere karşı Türk milletinin gösterdiği ilk tepkilerle ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["Mondros''tan sonra ilk işgal edilen Osmanlı toprağı $\ → $ Musul (İngiltere)", "Mondros''tan sonra Anadolu sınırları içinde ilk işgal edilen yer $\ → $ Hatay-Dörtyol (Fransa)", "İşgallere karşı ilk silahlı halk direnişinin başladığı yer $\ → $ Hatay-Dörtyol (Kara Hasan Paşa)", "İzmir''in işgaline karşı ilk kurşunu atan gazeteci $\ → $ Hasan Tahsin (Osman Nevres)", "İzmir''in işgalinin ilk protesto edildiği miting $\ → $ Sultanahmet Mitingi"], "correctIndex": 4}'::jsonb,
+  '{"options": ["Mondros''tan sonra ilk işgal edilen Osmanlı toprağı $ → $ Musul (İngiltere)", "Mondros''tan sonra Anadolu sınırları içinde ilk işgal edilen yer $ → $ Hatay-Dörtyol (Fransa)", "İşgallere karşı ilk silahlı halk direnişinin başladığı yer $ → $ Hatay-Dörtyol (Kara Hasan Paşa)", "İzmir''in işgaline karşı ilk kurşunu atan gazeteci $ → $ Hasan Tahsin (Osman Nevres)", "İzmir''in işgalinin ilk protesto edildiği miting $ → $ Sultanahmet Mitingi"], "correctIndex": 4}'::jsonb,
   'İzmir''in işgalinin ilk protesto edildiği yer İstanbul değil; Mustafa Kemal''in talimatıyla düzenlenen Havza Mitingidir (Havza Genelgesi sonrası). Sultanahmet ve Kadıköy mitingleri (Halide Edip''in konuştuğu) Havza''dan sonra yapılmıştır.',
   'Ramazan Yetgin notlarında kalın altı çizili uyarı: "İzmir''in işgalinin ilk protesto edildiği yer Havza''dır!" Sultanahmet en kalabalık olanıdır ama ilk değildir.'
 );
@@ -733,7 +733,7 @@ insert into public.questions (
   'multiple_choice',
   2,
   'Milli Mücadele Dönemi''nde düzenli ordunun bulunmadığı, tamamen yerel sivil direniş ve Kuvay-ı Milliye birlikleriyle Fransız ve Ermeni işgaline karşı destansı mücadeleler verilen Güney Cephesi kahramanları ile ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["Maraş $\ → $ Sütçü İmam ve Rıdvan Hoca", "Antep $\ → $ Şahin Bey ve Şehit Kamil", "Urfa $\ → $ Ali Saip Bey (Ursavaş)", "Adana $\ → $ Tufan Bey (Yüzbaşı Osman)", "Dörtyol $\ → $ Kazım Karabekir"], "correctIndex": 4}'::jsonb,
+  '{"options": ["Maraş $ → $ Sütçü İmam ve Rıdvan Hoca", "Antep $ → $ Şahin Bey ve Şehit Kamil", "Urfa $ → $ Ali Saip Bey (Ursavaş)", "Adana $ → $ Tufan Bey (Yüzbaşı Osman)", "Dörtyol $ → $ Kazım Karabekir"], "correctIndex": 4}'::jsonb,
   'Kazım Karabekir Doğu Cephesi komutanıdır; Güney Cephesi''nde bulunmamıştır. Dörtyol''da ilk kurşunu atan Kara Hasan Paşa''dır.',
   'ÖSYM Güney Cephesi''ndeki kahramanların takma isimlerini ve şehirlerini sorar: Adana = Tufan Bey; Antep = Şahin Bey; Maraş = Sütçü İmam; Urfa = Ali Saip Bey.'
 );

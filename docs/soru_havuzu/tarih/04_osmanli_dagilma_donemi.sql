@@ -373,7 +373,7 @@ insert into public.questions (
   'multiple_choice',
   3,
   '17. yüzyıl Osmanlı siyasi tarihi ve antlaşmaları ile ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["1590 Ferhat Paşa Antlaşması $\ → $ Osmanlı Devleti Doğu''da en geniş sınırlarına ulaşmıştır.", "1639 Kasr-ı Şirin Antlaşması $\ → $ Zağros Dağları sınır kabul edilmiş, günümüz Türkiye-İran sınırı büyük ölçüde çizilmiştir.", "1669 Girit''in Fethi $\ → $ 24 yıllık zorlu bir kuşatmanın ardından Venedik''ten alınmıştır.", "1672 Bucaş Antlaşması $\ → $ Lehistan''dan Podolya ve Kamaniçe alınarak Osmanlı Devleti Batı''da en geniş sınırlarına ulaşmıştır.", "1664 Vasvar Antlaşması $\ → $ Osmanlı Devleti ilk kez Batı''da büyük çapta toprak kaybetmiştir."], "correctIndex": 4}'::jsonb,
+  '{"options": ["1590 Ferhat Paşa Antlaşması $ → $ Osmanlı Devleti Doğu''da en geniş sınırlarına ulaşmıştır.", "1639 Kasr-ı Şirin Antlaşması $ → $ Zağros Dağları sınır kabul edilmiş, günümüz Türkiye-İran sınırı büyük ölçüde çizilmiştir.", "1669 Girit''in Fethi $ → $ 24 yıllık zorlu bir kuşatmanın ardından Venedik''ten alınmıştır.", "1672 Bucaş Antlaşması $ → $ Lehistan''dan Podolya ve Kamaniçe alınarak Osmanlı Devleti Batı''da en geniş sınırlarına ulaşmıştır.", "1664 Vasvar Antlaşması $ → $ Osmanlı Devleti ilk kez Batı''da büyük çapta toprak kaybetmiştir."], "correctIndex": 4}'::jsonb,
   '1664 Vasvar Antlaşması Osmanlı''nın 17. yüzyılda Avusturya''ya karşı kazandığı son kazançlı antlaşmadır (Uyvar ve Neograd kaleleri alınmıştır). Osmanlı''nın Batı''da ilk kez büyük çapta toprak kaybettiği antlaşma ise 1699 Karlofça Antlaşmasıdır.',
   'Adaylar Vasvar ile Karlofça''yı karıştırabilir. Vasvar 17. yüzyılda Avusturya''ya karşı son karlı antlaşmadır; Karlofça ise büyük felaket ve gerilemenin başlangıcıdır.'
 );
@@ -782,7 +782,7 @@ insert into public.questions (
   'multiple_choice',
   3,
   '1853-1856 Kırım Savaşı''nın Türk ve Osmanlı tarihi açısından taşıdığı ilkler ve önemli gelişmelerle ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["İlk Dış Borç $\ → $ 1854 yılında İngiltere''den alınmıştır.", "İlk Telgraf Hattı $\ → $ İstanbul, Edirne ve Şumnu arasına çekilmiştir.", "Modern Hemşirelik $\ → $ Florance Nightingale (Lambalı Kadın) Selimiye Kışlası''nda görev yapmıştır.", "Mülteci Meselesi $\ → $ Avusturya ve Rusya''dan kaçan Macar ve Leh mülteciler Osmanlı''ya sığınmıştır.", "Savaşın Başlaması $\ → $ Osmanlı donanmasının Navarin''de yakılmasıyla patlak vermiştir."], "correctIndex": 4}'::jsonb,
+  '{"options": ["İlk Dış Borç $ → $ 1854 yılında İngiltere''den alınmıştır.", "İlk Telgraf Hattı $ → $ İstanbul, Edirne ve Şumnu arasına çekilmiştir.", "Modern Hemşirelik $ → $ Florance Nightingale (Lambalı Kadın) Selimiye Kışlası''nda görev yapmıştır.", "Mülteci Meselesi $ → $ Avusturya ve Rusya''dan kaçan Macar ve Leh mülteciler Osmanlı''ya sığınmıştır.", "Savaşın Başlaması $ → $ Osmanlı donanmasının Navarin''de yakılmasıyla patlak vermiştir."], "correctIndex": 4}'::jsonb,
   'Kırım Savaşı''nda Osmanlı donanması Navarin''de değil, 1853 yılında Ruslar tarafından Sinop Baskını ile yakılmıştır (Navarin 1827''de Yunan isyanı sırasındadır).',
   'ÖSYM donanmanın yakıldığı yerleri (Sinop - Kırım Savaşı; Navarin - Yunan İsyanı) olaylarla eşleştirerek sorar.'
 );

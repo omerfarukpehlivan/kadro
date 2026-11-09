@@ -722,7 +722,7 @@ insert into public.questions (
   'Eski Türk devletlerinde kurultay meclisleri devletlerin siyasi ve kültürel yapılarına göre farklı isimlerle anılmıştır.
 
 Aşağıdaki Türk devleti ve kullandığı meclis ismi eşleştirmelerinden hangisi yanlıştır?',
-  '{"options": ["Peçenekler $\ → $ Komenton", "Tuna Bulgarları $\ → $ Millet Meclisi", "Avrupa Hunları $\ → $ Seçkinler Meclisi", "Hazarlar $\ → $ İhtiyarlar Meclisi", "Tabgaçlar $\ → $ Toy Meclisi"], "correctIndex": 4}'::jsonb,
+  '{"options": ["Peçenekler $ → $ Komenton", "Tuna Bulgarları $ → $ Millet Meclisi", "Avrupa Hunları $ → $ Seçkinler Meclisi", "Hazarlar $ → $ İhtiyarlar Meclisi", "Tabgaçlar $ → $ Toy Meclisi"], "correctIndex": 4}'::jsonb,
   'Kuzey Çin''de 200 yıl egemen olan Türk devleti Tabgaçlar''ın meclisine "Nazırlar Meclisi" adı verilirdi. Toy Meclisi genel Türk kurultayıdır.
 - Peçenekler: Komenton
 - Tuna Bulgarları: Millet Meclisi
@@ -769,7 +769,7 @@ insert into public.questions (
   'multiple_choice',
   2,
   'İslamiyet öncesi Türk devlet teşkilatında yer alan görevliler ve yürüttükleri hizmetlerle ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["Ayukı $\ → $ Hükümet", "Aygucı (Üge) $\ → $ Başbakan (Vezir)", "Tudun $\ → $ Vergi memuru / Mali denetçi", "Tutuk $\ → $ Askeri vali", "Tamgacı (Bitikçi) $\ → $ Hükümdarın özel doktoru ve hekimi"], "correctIndex": 4}'::jsonb,
+  '{"options": ["Ayukı $ → $ Hükümet", "Aygucı (Üge) $ → $ Başbakan (Vezir)", "Tudun $ → $ Vergi memuru / Mali denetçi", "Tutuk $ → $ Askeri vali", "Tamgacı (Bitikçi) $ → $ Hükümdarın özel doktoru ve hekimi"], "correctIndex": 4}'::jsonb,
   'Tamgacı (veya Bitikçi), devletin iç ve dış yazışmalarını yürüten, belgelere hükümdarın damgasını/mührünü basan kâtip ve yazıcıdır. Hükümdarın ve halkın sağlık işlerine bakan doktora/hekime ise eski Türklerde "Otacı" veya "Emçi" adı verilirdi.',
   'ÖSYM "Tudun" (vergi memuru) ile "Tutuk" (askeri vali) kelimelerini ya da "Bitikçi" ile "Otacı"yı birbirinin yerine yazarak adayı kavram kargaşasına düşürür.'
 );
@@ -818,7 +818,7 @@ insert into public.questions (
   'İslamiyet öncesi Türk toplumsal yapısı kan bağına dayalı hiyerarşik bir piramit şeklinde örgütlenmiştir.
 
 Bu toplumsal yapının en küçük yapı taşı olan "Aile"den en üst örgütlenme olan "Devlet"e doğru küçükten büyüğe sıralanışı aşağıdakilerin hangisinde doğru verilmiştir?',
-  '{"options": ["Oğuş $\ → $ Urug $\ → $ Boy $\ → $ Bodun $\ → $ İl", "Urug $\ → $ Oğuş $\ → $ Bodun $\ → $ Boy $\ → $ İl", "Oğuş $\ → $ Boy $\ → $ Urug $\ → $ İl $\ → $ Bodun", "Boy $\ → $ Bodun $\ → $ Oğuş $\ → $ Urug $\ → $ İl", "Oğuş $\ → $ Urug $\ → $ Bodun $\ → $ Boy $\ → $ İl"], "correctIndex": 0}'::jsonb,
+  '{"options": ["Oğuş $ → $ Urug $ → $ Boy $ → $ Bodun $ → $ İl", "Urug $ → $ Oğuş $ → $ Bodun $ → $ Boy $ → $ İl", "Oğuş $ → $ Boy $ → $ Urug $ → $ İl $ → $ Bodun", "Boy $ → $ Bodun $ → $ Oğuş $ → $ Urug $ → $ İl", "Oğuş $ → $ Urug $ → $ Bodun $ → $ Boy $ → $ İl"], "correctIndex": 0}'::jsonb,
   'Eski Türk toplum yapısının çekirdeği ailedir. Sıralama şöyledir:
 1. Oğuş: Aile
 2. Urug: Sülale (Aileler birliği)
@@ -889,7 +889,7 @@ insert into public.questions (
   'İslamiyet öncesi Türk edebiyatında sözlü gelenek destanlar, koşuklar ve sagular etrafında şekillenmiştir.
 
 Aşağıdaki destan ve ait olduğu Türk devleti/boyu eşleştirmelerinden hangisi yanlıştır?',
-  '{"options": ["Alp Er Tunga ve Şu Destanları $\ → $ İskitler (Sakalar)", "Oğuz Kağan Destanı $\ → $ Asya Hun Devleti", "Bozkurt ve Ergenekon Destanları $\ → $ Göktürkler", "Türeyiş ve Göç Destanları $\ → $ Kırgızlar", "Şan Kızı Destanı $\ → $ Bulgarlar"], "correctIndex": 3}'::jsonb,
+  '{"options": ["Alp Er Tunga ve Şu Destanları $ → $ İskitler (Sakalar)", "Oğuz Kağan Destanı $ → $ Asya Hun Devleti", "Bozkurt ve Ergenekon Destanları $ → $ Göktürkler", "Türeyiş ve Göç Destanları $ → $ Kırgızlar", "Şan Kızı Destanı $ → $ Bulgarlar"], "correctIndex": 3}'::jsonb,
   'Türeyiş ve Göç destanları Kırgızlara değil, Uygurlara aittir. Kırgızlara ait dünyaca ünlü destan ise Manas Destanıdır.',
   'Adaylar Uygurların "Türeyiş ve Göç" destanları ile Göktürklerin "Bozkurt ve Ergenekon" destanlarını birbirine karıştırabilmektedir. Her ikisinde de kurt motifi yer alsa da Göç ve Türeyiş Uygurlara aittir.'
 );

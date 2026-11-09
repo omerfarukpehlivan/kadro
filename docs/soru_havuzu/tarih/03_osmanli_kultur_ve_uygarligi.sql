@@ -90,7 +90,7 @@ insert into public.questions (
   'Osmanlı Devleti''nde taht kavgalarını önlemek ve merkezi otoriteyi en üst seviyede tutmak amacıyla kuruluş ve yükselme dönemlerinde veraset sisteminde köklü değişiklikler yapılmıştır.
 
 Buna göre, Osmanlı veraset sistemiyle ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["Osman Bey $\ → $ Ülke hükümdar ve ailesinin ortak malıdır.", "I. Murat $\ → $ Ülke padişah ve oğullarınındır anlayışı getirilmiştir.", "Fatih Sultan Mehmet $\ → $ ''Ülke padişahındır'' ilkesi benimsenmiş ve kardeş katli yasalaşmıştır.", "I. Ahmet $\ → $ Hanedanın en yaşlı ve en olgun erkeğinin tahta geçmesini öngören ''Ekber ve Erşed'' sistemi getirilmiştir.", "II. Mahmut $\ → $ Padişahın halk oyuyla seçilmesini sağlayan meşruti seçim sistemine geçilmiştir."], "correctIndex": 4}'::jsonb,
+  '{"options": ["Osman Bey $ → $ Ülke hükümdar ve ailesinin ortak malıdır.", "I. Murat $ → $ Ülke padişah ve oğullarınındır anlayışı getirilmiştir.", "Fatih Sultan Mehmet $ → $ ''Ülke padişahındır'' ilkesi benimsenmiş ve kardeş katli yasalaşmıştır.", "I. Ahmet $ → $ Hanedanın en yaşlı ve en olgun erkeğinin tahta geçmesini öngören ''Ekber ve Erşed'' sistemi getirilmiştir.", "II. Mahmut $ → $ Padişahın halk oyuyla seçilmesini sağlayan meşruti seçim sistemine geçilmiştir."], "correctIndex": 4}'::jsonb,
   'II. Mahmut döneminde padişahın seçimle belirlenmesi gibi bir uygulama asla olmamıştır; monarşik veraset devam etmiştir. Osmanlı tarihinde verasetteki son kurumsal değişiklik I. Ahmet döneminde getirilen "Ekber ve Erşed" (en yaşlı ve aklı başında üye) sistemidir.',
   'ÖSYM I. Murat (padişah ve oğulları) ile Fatih (sadece padişahındır) ayrımını sıkça sorar. Her iki değişiklik de merkezi otoriteyi kademeli olarak tek elde toplamak için yapılmıştır.'
 );
@@ -358,7 +358,7 @@ insert into public.questions (
   'multiple_choice',
   3,
   'Osmanlı Devleti''nde Saliyaneli eyaletlerde ve mukataa arazilerde uygulanan İltizam Sistemi ile ilgili kavramlar hakkında aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["İhaleyi kazanan vergi mültezimi $\ → $ Mültezim", "İltizam hakkının mültezime ömür boyu verilmesi usulü $\ → $ Malikhane", "İhaleye giriş bedeli veya peşin ödenen teminat bedeli $\ → $ Muaccele", "Tanzimat sonrasında iltizam kaldırılınca vergileri toplamakla görevlendirilen memur $\ → $ Muhassıl", "Vergi ihalesini kazanan kişinin devlete verdiği yıllık faizli borç $\ → $ Düyun"], "correctIndex": 4}'::jsonb,
+  '{"options": ["İhaleyi kazanan vergi mültezimi $ → $ Mültezim", "İltizam hakkının mültezime ömür boyu verilmesi usulü $ → $ Malikhane", "İhaleye giriş bedeli veya peşin ödenen teminat bedeli $ → $ Muaccele", "Tanzimat sonrasında iltizam kaldırılınca vergileri toplamakla görevlendirilen memur $ → $ Muhassıl", "Vergi ihalesini kazanan kişinin devlete verdiği yıllık faizli borç $ → $ Düyun"], "correctIndex": 4}'::jsonb,
   'İltizam sisteminde devlete verilen peşin paraya borç veya faiz denmez; açık artırma bedelidir. Ömür boyu iltizama "Malikhane", peşinata "Muaccele", vergi toplayan kişiye "Mültezim", iltizam kaldırıldıktan sonra kurulan vergi memurluğuna ise "Muhassıl" denir.',
   'Ramazan Yetgin notlarında özel uyarıyla geçen "KPSS Kesin Çıkar" konusudur: Muaccele (peşinat), Malikhane (ömür boyu iltizam), Muhassıl (sistem kalkınca vergiyi toplayan memur).'
 );
@@ -888,7 +888,7 @@ insert into public.questions (
   'multiple_choice',
   3,
   'Osmanlı sanat ve musiki hayatı ile ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["Şeyh Hamdullah $\ → $ Hat sanatında çığır açmış, ''Hattatların Kıblesi'' (Kıbletü''l-Hattatîn) lakabıyla anılmıştır.", "Levni $\ → $ Lale Devri''nin ünlü nakkaşı olup minyatür sanatının en büyük ustalarındandır.", "Itrî (Buhurizade Mustafa) $\ → $ Klasik Türk musikisinin dehası olup Segâh Tekbiri ve Salât-ı Ümmiye''nin bestecisidir.", "Osman Hamdi Bey $\ → $ Sanayi-i Nefise Mektebi''ni kurmuş ve ünlü ''Kaplumbağa Terbiyecisi'' tablosunu yapmıştır.", "Ahmet Karahisari $\ → $ Osmanlı Devleti''nde heykelini yaptıran ilk ve tek Osmanlı padişahıdır."], "correctIndex": 4}'::jsonb,
+  '{"options": ["Şeyh Hamdullah $ → $ Hat sanatında çığır açmış, ''Hattatların Kıblesi'' (Kıbletü''l-Hattatîn) lakabıyla anılmıştır.", "Levni $ → $ Lale Devri''nin ünlü nakkaşı olup minyatür sanatının en büyük ustalarındandır.", "Itrî (Buhurizade Mustafa) $ → $ Klasik Türk musikisinin dehası olup Segâh Tekbiri ve Salât-ı Ümmiye''nin bestecisidir.", "Osman Hamdi Bey $ → $ Sanayi-i Nefise Mektebi''ni kurmuş ve ünlü ''Kaplumbağa Terbiyecisi'' tablosunu yapmıştır.", "Ahmet Karahisari $ → $ Osmanlı Devleti''nde heykelini yaptıran ilk ve tek Osmanlı padişahıdır."], "correctIndex": 4}'::jsonb,
   'Ahmet Karahisari bir padişah değil, Süleymaniye Camii''nin yazılarını yazan ünlü bir hattattır. Osmanlı Devleti''nde kendi heykelini yaptıran ilk ve tek padişah ise Sultan Abdülaziz''dir.',
   'ÖSYM sanatçıların alanlarını ve lakaplarını sorar: Şeyh Hamdullah = Hattatların Kıblesi; Itrî = Segâh Tekbiri / 100 TL arkası; Sultan Abdülaziz = Heykel yaptıran tek padişah.'
 );

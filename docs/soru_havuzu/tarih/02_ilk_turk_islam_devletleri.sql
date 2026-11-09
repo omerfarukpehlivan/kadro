@@ -584,7 +584,7 @@ insert into public.questions (
   'multiple_choice',
   2,
   '1071 Malazgirt Zaferi''nden sonra Anadolu''da kurulan I. Dönem Türk Beylikleri ve mimari eserleri eşleştirmelerinden hangisi yanlıştır?',
-  '{"options": ["Danişmentliler $\ → $ Niksar Yağıbasan Medresesi (Anadolu''nun ilk Türk medresesi)", "Mengücekliler $\ → $ Divriği Ulu Camii ve Darüşşifası (UNESCO Mirası)", "Artuklular $\ → $ Diyarbakır Malabadi Köprüsü ve Cezeri''nin çalışmaları", "Saltuklular $\ → $ Erzurum Mama Hatun Kümbeti ve Kale Camii", "Çaka Beyliği $\ → $ Kayseri Gevher Nesibe Darüşşifası"], "correctIndex": 4}'::jsonb,
+  '{"options": ["Danişmentliler $ → $ Niksar Yağıbasan Medresesi (Anadolu''nun ilk Türk medresesi)", "Mengücekliler $ → $ Divriği Ulu Camii ve Darüşşifası (UNESCO Mirası)", "Artuklular $ → $ Diyarbakır Malabadi Köprüsü ve Cezeri''nin çalışmaları", "Saltuklular $ → $ Erzurum Mama Hatun Kümbeti ve Kale Camii", "Çaka Beyliği $ → $ Kayseri Gevher Nesibe Darüşşifası"], "correctIndex": 4}'::jsonb,
   'Kayseri Gevher Nesibe Darüşşifası ve Külliyesi, I. Gıyaseddin Keyhüsrev döneminde inşa edilmiş bir Anadolu Selçuklu Devleti eseridir; Çaka Beyliği''ne ait değildir. Çaka Beyliği İzmir ve çevresinde ilk denizci beyliktir.',
   'ÖSYM I. Beylikler ile eserlerini her yıl mutlaka sorar: Yağıbasan = Danişmentliler; Divriği = Mengücekliler; Malabadi/Cezeri = Artuklular; Mama Hatun = Saltuklular. Gevher Nesibe ise Anadolu Selçukluları''na aittir.'
 );
@@ -726,7 +726,7 @@ insert into public.questions (
   'Büyük Selçuklu Devleti''nde devlet işlerinin karara bağlandığı en yüksek yürütme ve danışma organı Divan-ı Saltanat''tır. Bu divana bağlı alt divanlar bulunmaktadır.
 
 Aşağıdaki alt divan ve yürüttüğü temel görev eşleştirmelerinden hangisi yanlıştır?',
-  '{"options": ["Divan-ı İstifa $\ → $ Mali işlerden sorumlu olup başkanı Müstevfi''dir.", "Divan-ı Arz (Ceysü''l-Arz) $\ → $ Askeri işlerden ve ordunun ihtiyaçlarından sorumlu olup başkanı Emir-i Arz''dır.", "Divan-ı Tuğra (İnşa) $\ → $ Devletin iç ve dış yazışmalarını yürütüp fermanlara tuğra çeker; başkanı Tuğrai''dir.", "Divan-ı İşraf $\ → $ Askeri ve adli davaları temyiz eden mahkemedir; başkanı Kadıasker''dir.", "Niyabet-i Saltanat $\ → $ Sultan başkentte bulunmadığı zamanlarda devlet işlerini yürütür; başkanı Naib''dir."], "correctIndex": 3}'::jsonb,
+  '{"options": ["Divan-ı İstifa $ → $ Mali işlerden sorumlu olup başkanı Müstevfi''dir.", "Divan-ı Arz (Ceysü''l-Arz) $ → $ Askeri işlerden ve ordunun ihtiyaçlarından sorumlu olup başkanı Emir-i Arz''dır.", "Divan-ı Tuğra (İnşa) $ → $ Devletin iç ve dış yazışmalarını yürütüp fermanlara tuğra çeker; başkanı Tuğrai''dir.", "Divan-ı İşraf $ → $ Askeri ve adli davaları temyiz eden mahkemedir; başkanı Kadıasker''dir.", "Niyabet-i Saltanat $ → $ Sultan başkentte bulunmadığı zamanlarda devlet işlerini yürütür; başkanı Naib''dir."], "correctIndex": 3}'::jsonb,
   'Divan-ı İşraf bir mahkeme değildir; devletin mali ve idari işlerinin işleyişini, teşkilatın nizamını hükümdar adına teftiş eden genel denetim kuruludur ve başındaki görevliye Müşrif-i Memalik denir. Adli ve siyasi davalara Divan-ı Mezalim bakar.',
   'Adaylar Divan-ı İşraf (denetim) ile Divan-ı Mezalim (yargı) kavramlarını birbirine karıştırabilir. İşraf teftiş ve denetim organıdır.'
 );
@@ -791,7 +791,7 @@ insert into public.questions (
   'İlk Türk-İslam devletlerinde hukuk sistemi şer''i ve örfi olmak üzere iki ana kola ayrılmıştır.
 
 Buna göre, Türk-İslam hukuk yapısıyla ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["Şer''i Mahkemelerin Başkanı $\ → $ Kadıü''l-Kudat", "Örfi Mahkemelerin Başkanı $\ → $ Emir-i Dad", "Askeri Davalara Bakan Hâkim $\ → $ Kadıasker (Kadıleşker)", "Şer''i Mahkemelerin Baktığı Davalar $\ → $ Miras, evlenme, boşanma, vakıf ve ticaret işleri", "Örfi Hukuk Kurallarının Kaynağı $\ → $ Yalnızca Kur''an-ı Kerim ve hadis hükümleri"], "correctIndex": 4}'::jsonb,
+  '{"options": ["Şer''i Mahkemelerin Başkanı $ → $ Kadıü''l-Kudat", "Örfi Mahkemelerin Başkanı $ → $ Emir-i Dad", "Askeri Davalara Bakan Hâkim $ → $ Kadıasker (Kadıleşker)", "Şer''i Mahkemelerin Baktığı Davalar $ → $ Miras, evlenme, boşanma, vakıf ve ticaret işleri", "Örfi Hukuk Kurallarının Kaynağı $ → $ Yalnızca Kur''an-ı Kerim ve hadis hükümleri"], "correctIndex": 4}'::jsonb,
   'Örfi hukukun kaynağı Kur''an ve hadis değil; eski Türk töresi, kurultay kararları ve sultanların buyruklarıdır (Kur''an ve hadis şer''i hukukun kaynağıdır). Ancak örfi hukuk kuralları İslam dininin temel esaslarına aykırı olamaz.',
   'ÖSYM Emir-i Dad (örfi adalet başkanı) ile Kadıü''l-Kudat (şer''i adalet başkanı) ayrımını sıkça yoklar. Kadıasker ise ordudaki askerlerin davalarına bakar.'
 );
@@ -921,7 +921,7 @@ insert into public.questions (
   'multiple_choice',
   2,
   'Karahanlılar döneminde yazılan ilk Türk-İslam yazılı edebi eserleri ile ilgili aşağıdaki eşleştirmelerden hangisi yanlıştır?',
-  '{"options": ["Yusuf Has Hacip $\ → $ Kutadgu Bilig (İlk siyasetname, Tamgaç Buğra Han''a sunulmuştur)", "Kaşgarlı Mahmut $\ → $ Divan-ı Lügati''t-Türk (İlk Türkçe sözlük, Halife el-Muktedi Billah''a sunulmuştur)", "Edip Ahmet Yükneki $\ → $ Atabetü''l-Hakayık (Hakikatlerin eşiği, ahlak ve tasavvuf kitabı)", "Ahmet Yesevi $\ → $ Divan-ı Hikmet (İlk Türk mutasavvıfı, Piri Türkistan)", "Ali Şir Nevai $\ → $ Şehname (Türk-İran mücadelelerini anlatan ilk Türkçe destan)"], "correctIndex": 4}'::jsonb,
+  '{"options": ["Yusuf Has Hacip $ → $ Kutadgu Bilig (İlk siyasetname, Tamgaç Buğra Han''a sunulmuştur)", "Kaşgarlı Mahmut $ → $ Divan-ı Lügati''t-Türk (İlk Türkçe sözlük, Halife el-Muktedi Billah''a sunulmuştur)", "Edip Ahmet Yükneki $ → $ Atabetü''l-Hakayık (Hakikatlerin eşiği, ahlak ve tasavvuf kitabı)", "Ahmet Yesevi $ → $ Divan-ı Hikmet (İlk Türk mutasavvıfı, Piri Türkistan)", "Ali Şir Nevai $ → $ Şehname (Türk-İran mücadelelerini anlatan ilk Türkçe destan)"], "correctIndex": 4}'::jsonb,
   'Şehname, İranlı şair Firdevsi tarafından Gazneli Mahmut''a Farsça olarak sunulan bir eserdir (eserde Alp Er Tunga ''Afrasiyap'' olarak geçer). Ali Şir Nevai ise Timur döneminde Çağatay Türkçesiyle Türkçe''nin Farsça''dan üstün olduğunu savunan "Muhakemetü''l-Lügateyn"i yazmıştır.',
   'ÖSYM Ali Şir Nevai (Muhakemetü''l-Lügateyn) ile Kaşgarlı Mahmut''un (Divan-ı Lügati''t-Türk) amaçlarını birbirine karıştırarak sorar: Her ikisi de Türkçenin zenginliğini savunmuştur; Kaşgarlı Arapça''ya karşı, Ali Şir Nevai ise Farsça''ya karşı savunmuştur.'
 );
