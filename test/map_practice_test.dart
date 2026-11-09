@@ -86,8 +86,18 @@ void main() {
       final dynamicProvinces = await repo.getDynamicProvinceChallenges(count: 8);
       expect(dynamicProvinces.length, 8);
 
+      final hisChallenges = await repo.getChallengesByCategory(
+        MapPracticeCategory.history,
+        count: 5,
+      );
+      expect(hisChallenges.length, 5);
+      expect(hisChallenges.every((c) => c.category == MapPracticeCategory.history), isTrue);
+
       final marathon = await repo.getDailyMarathonChallenges(count: 6);
       expect(marathon.length, greaterThanOrEqualTo(5));
+
+      // 50 uzman sorunun eksiksiz yüklendiğini doğrula
+      expect(MapPracticeData.predefinedChallenges.length, 50);
     });
   });
 
@@ -113,6 +123,7 @@ void main() {
       expect(find.text('Madenler & Enerji'), findsOneWidget);
       expect(find.text('Plato, Dağ & Göller'), findsOneWidget);
       expect(find.text('Sanayi & Limanlar'), findsOneWidget);
+      expect(find.text('Tarih: Millî Mücadele Haritası'), findsOneWidget);
       expect(find.text('Genel Harita Maratonu'), findsOneWidget);
     });
 

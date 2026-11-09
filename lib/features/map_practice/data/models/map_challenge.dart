@@ -51,6 +51,15 @@ enum MapPracticeCategory {
     badgeText: 'Ticaret & Ulaşım',
   ),
 
+  /// Tarih Haritası (Kurtuluş Savaşı Cepheleri, Kongreler, İlk Başkentler)
+  history(
+    id: 'history',
+    title: 'Tarih Haritası',
+    subtitle: 'Kurtuluş Savaşı cepheleri, kongre rotası ve kilit merkezler',
+    iconName: 'scroll',
+    badgeText: 'Millî Mücadele',
+  ),
+
   /// Karışık KPSS Harita Maratonu
   marathon(
     id: 'marathon',

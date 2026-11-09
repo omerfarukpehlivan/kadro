@@ -382,9 +382,93 @@ class MapPracticeHubScreen extends ConsumerWidget {
               ),
             ),
 
+            AppSpacing.gapSm,
+
+            // 4. Tarih Haritası (Kurtuluş Savaşı & Kongreler)
+            TactileCard(
+              onTap:
+                  () => _startPractice(
+                    context,
+                    ref,
+                    MapPracticeCategory.history,
+                  ),
+              padding: const EdgeInsets.all(14),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDC2626).withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(
+                      PhosphorIconsDuotone.scroll,
+                      size: 24,
+                      color: Color(0xFFDC2626),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                'Tarih: Millî Mücadele Haritası',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFFDC2626,
+                                ).withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: const Text(
+                                'Kurtuluş Savaşı',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFFDC2626),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Doğu/Güney/Batı cepheleri, genelgeler, kongre rotası ve ilk kurşun.',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    LucideIcons.chevronRight,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    size: 18,
+                  ),
+                ],
+              ),
+            ),
+
             AppSpacing.gapMd,
 
-            // 4. Genel Harita Maratonu
+            // 5. Genel Harita Maratonu
             const SectionTitle('Sınav Düzeni'),
             TactileCard(
               onTap:

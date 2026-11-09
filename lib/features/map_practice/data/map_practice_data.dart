@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:kadro/shared/widgets/turkey_map/turkey_map_data.dart';
 import 'models/map_challenge.dart';
 
-/// KPSS Coğrafya Harita Atölyesi Statik ve Dinamik Soru Havuzu
+/// KPSS Coğrafya ve Tarih Harita Atölyesi Statik ve Dinamik Soru Havuzu
 ///
 /// Angular/Web benzetmesi: Bu sınıf, hem önceden hazırlanmış uzman KPSS sorularını
 /// sunan hem de 81 il üzerinden sonsuz pratik üreten bir `MapPracticeDataService` sağlayıcısıdır.
 class MapPracticeData {
   MapPracticeData._();
 
-  /// 1. Konu Bazlı Uzman KPSS Harita Soruları
+  /// 1. Konu Bazlı Uzman KPSS Harita Soruları (Toplam 50 Uzman Soru)
   static const List<MapChallenge> predefinedChallenges = [
-    // -------------------------------------------------------------------------
-    // TARIM VE HAYVANCILIK
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // 1. TARIM VE HAYVANCILIK (10 Soru)
+    // =========================================================================
     MapChallenge(
       id: 'map_agr_01',
       category: MapPracticeCategory.agriculture,
@@ -67,7 +67,6 @@ class MapPracticeData {
       questionText:
           'Türkiye ve dünya fındık üretiminde en yüksek rekolteye sahip olan Doğu Karadeniz ilimize haritada dokunun.',
       targetProvinceId: 'ordu',
-      validProvinceIds: ['ordu'],
       hint: 'Samsun ile Giresun arasında yer alan Karadeniz kıyı ilimiz.',
       explanation:
           'Ordu, yıllık fındık üretiminde Giresun ve Trabzon\'u geride bırakarak Türkiye\'nin açık ara 1. fındık üreticisi ilidir.',
@@ -89,10 +88,112 @@ class MapPracticeData {
           'Rize, her mevsim yağışlı ve nemli iklimi ile kireçsiz toprakları sayesinde Türkiye çay tarımının kalbidir.',
       tag: 'Çay',
     ),
+    MapChallenge(
+      id: 'map_agr_05',
+      category: MapPracticeCategory.agriculture,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Ayçiçeği Üretiminin Kalbi (Ergene Havzası)',
+      questionText:
+          'Türkiye ayçiçeği üretiminin yaklaşık yarısını karşılayan, karasal iklim ve düz arazi avantajına sahip Trakya ilimize dokunun.',
+      targetProvinceId: 'tekirdag',
+      validProvinceIds: ['tekirdag', 'edirne'],
+      hint: 'Marmara Denizi kıyısında, İstanbul\'un batı komşusu olan ilimiz.',
+      explanation:
+          'Ergene Havzası (Tekirdağ ve Edirne), Türkiye ayçiçeği üretiminde 1. sıradadır. Üretilen çekirdekler sıvı yağ sanayisinde kullanılır.',
+      tag: 'Ayçiçeği',
+    ),
+    MapChallenge(
+      id: 'map_agr_06',
+      category: MapPracticeCategory.agriculture,
+      interactionType: MapInteractionType.identifyHighlighted,
+      difficulty: 2,
+      title: 'İncir ve Zeytin Cenneti Ege',
+      questionText:
+          'Haritada işaretlenen Büyük Menderes grabeninde yer alan ve dünyada kuru incir üretiminde 1. sırada bulunan ilimiz hangisidir?',
+      targetProvinceId: 'aydin',
+      highlightedProvinceIds: ['aydin'],
+      highlightColor: Color(0xFF10B981),
+      options: ['Aydın', 'Manisa', 'Denizli', 'Uşak'],
+      correctOptionIndex: 0,
+      hint: 'Kuşadası ve Didim gibi turistik ilçelere sahip olan Ege ilimiz.',
+      explanation:
+          'Aydın, Büyük Menderes Ovası\'nın verimli toprakları ve kış ılıklığı sayesinde Türkiye ve dünya kuru incir üretiminde liderdir.',
+      tag: 'İncir & Zeytin',
+    ),
+    MapChallenge(
+      id: 'map_agr_07',
+      category: MapPracticeCategory.agriculture,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Mısır Üretiminde Şaşırtıcı Lider',
+      questionText:
+          'Geleneksel olarak Karadeniz ile özdeşleşen ancak modern sulama (KOP) imkanlarıyla Türkiye mısır üretiminde 1. sıraya yerleşen İç Anadolu ilimize dokunun.',
+      targetProvinceId: 'konya',
+      hint: 'Türkiye\'nin tahıl ambarı olarak bilinen en geniş yüz ölçümlü ilimiz.',
+      explanation:
+          'Mısır doğal olarak Karadeniz\'de yetişse de üretilen mısır bölge halkı tarafından un olarak tüketildiğinden ticarete girmez. Ticari mısır üretiminde sulama avantajıyla Konya açık ara liderdir.',
+      distractorTrap:
+          '⚠️ ÖSYM Çeldirici Tuzağı: Mısır diyince akla Karadeniz gelse de rekolte ve pazar lideri Konya ve Adana\'dır.',
+      tag: 'Mısır & KOP',
+    ),
+    MapChallenge(
+      id: 'map_agr_08',
+      category: MapPracticeCategory.agriculture,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Turunçgil ve Muz Mikrokliması',
+      questionText:
+          'Yıllık ortalama kış sıcaklıklarının yüksek olması ve don olayının görülmemesi sayesinde Türkiye muz ve turunçgil üretiminin merkez üssü olan Akdeniz ilimize dokunun.',
+      targetProvinceId: 'antalya',
+      validProvinceIds: ['antalya', 'mersin'],
+      hint: 'Alanya ve Gazipaşa ilçelerinde tropikal tarım yapılan turizm başkentimiz.',
+      explanation:
+          'Antalya ve Mersin kıyı şeridi (özellikle Anamur, Alanya, Gazipaşa), kış ılıklığı sayesinde mikroklima özelliği göstererek Türkiye muz ve narenciye üretimini sırtlar.',
+      tag: 'Turunçgil & Muz',
+    ),
+    MapChallenge(
+      id: 'map_agr_09',
+      category: MapPracticeCategory.agriculture,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Tiftik Keçisi (Angora) Yetiştiriciliği',
+      questionText:
+          'İpeksi ve değerli yünü (moher) ile dünyaca tanınan Tiftik Keçisi yetiştiriciliğinin anavatanı olan başkentimize haritada dokunun.',
+      targetProvinceId: 'ankara',
+      hint: 'İç Anadolu\'da, adını da bu keçiye veren başkentimiz.',
+      explanation:
+          'Tiftik Keçisi (Angora keçisi), bozkır iklimine uyumlu olup başta Ankara olmak üzere çevre İç Anadolu illerinde yetiştirilir.',
+      tag: 'Tiftik Keçisi',
+    ),
+    MapChallenge(
+      id: 'map_agr_10',
+      category: MapPracticeCategory.agriculture,
+      interactionType: MapInteractionType.identifyHighlighted,
+      difficulty: 2,
+      title: 'Yaz Yağışları ve Büyükbaş Mera Hayvancılığı',
+      questionText:
+          'Haritada işaretlenen Erzurum-Kars Platosu\'nda yaz yağışlarına bağlı olarak gelişen gür çayırlar hangi hayvancılık türünün yaygınlaşmasını sağlamıştır?',
+      targetProvinceId: 'erzurum',
+      validProvinceIds: ['erzurum', 'kars', 'ardahan'],
+      highlightedProvinceIds: ['erzurum', 'kars', 'ardahan'],
+      highlightColor: Color(0xFF0284C7),
+      options: [
+        'Büyükbaş Mera Besiciliği (Sığır)',
+        'Küçükbaş Koyun Yetiştiriciliği',
+        'İpek Böcekçiliği',
+        'Kıl Keçisi Yetiştiriciliği',
+      ],
+      correctOptionIndex: 0,
+      hint: 'Gür otlaklarda otlayan iri cüsseli hayvan türü.',
+      explanation:
+          'Sert karasal iklimin yaz yağışları çayır bitki örtüsünü oluşturur; bu da Erzurum, Kars ve Ardahan\'da büyükbaş mera sığırcılığının temel nedenidir.',
+      tag: 'Büyükbaş Besicilik',
+    ),
 
-    // -------------------------------------------------------------------------
-    // MADENLER VE ENERJİ KAYNAKLARI
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // 2. MADENLER VE ENERJİ KAYNAKLARI (10 Soru)
+    // =========================================================================
     MapChallenge(
       id: 'map_min_01',
       category: MapPracticeCategory.mines,
@@ -159,10 +260,99 @@ class MapPracticeData {
           'Boksit, alüminyumun hammaddesidir. Türkiye\'nin en önemli boksit çıkarma ve işleme merkezi Konya-Seydişehir ve Antalya-Akseki çevresidir.',
       tag: 'Boksit',
     ),
+    MapChallenge(
+      id: 'map_min_05',
+      category: MapPracticeCategory.mines,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Bakır Madeninin Karadeniz Havzası (Murgul)',
+      questionText:
+          'Türkiye\'nin en zengin bakır rezervlerinden biri olan Murgul maden yatağının bulunduğu Doğu Karadeniz ilimize dokunun.',
+      targetProvinceId: 'artvin',
+      hint: 'Gürcistan sınırında, Çoruh Nehri\'nin aktığı en doğudaki sahil ilimiz.',
+      explanation:
+          'Artvin (Murgul), Kastamonu (Küre) ve Elazığ (Maden) Türkiye\'nin başlıca bakır çıkarım alanlarıdır.',
+      tag: 'Bakır',
+    ),
+    MapChallenge(
+      id: 'map_min_06',
+      category: MapPracticeCategory.mines,
+      interactionType: MapInteractionType.identifyHighlighted,
+      difficulty: 2,
+      title: 'Paslanmaz Çelik ve Krom Yatakları (Guleman)',
+      questionText:
+          'Haritada işaretlenen Elazığ (Guleman) ve Muğla (Fethiye) havzalarında çıkarılan, paslanmaz çelik üretiminin ana maddesi olan maden hangisidir?',
+      targetProvinceId: 'elazig',
+      highlightedProvinceIds: ['elazig', 'mugla'],
+      highlightColor: Color(0xFFDC2626),
+      options: ['Krom', 'Kurşun-Çinko', 'Volfram', 'Barit'],
+      correctOptionIndex: 0,
+      hint: 'Metale sertlik ve paslanmazlık katan parlak maden.',
+      explanation:
+          'Krom, Elazığ Guleman ve Muğla Fethiye-Köyceğiz çevresinde yoğunlaşır. Antalya ve Elazığ\'da kurulu Ferrokrom tesislerinde işlenir.',
+      tag: 'Krom',
+    ),
+    MapChallenge(
+      id: 'map_min_07',
+      category: MapPracticeCategory.mines,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Demir Madeninin En Zengin Havzası (Divriği)',
+      questionText:
+          'Türkiye\'nin en büyük ve en kaliteli yer altı demir rezervine (Divriği yatakları) sahip olan İç Anadolu ilimize dokunun.',
+      targetProvinceId: 'sivas',
+      hint: 'Kangal köpekleriyle ünlü, yüz ölçümü en büyük ikinci ilimiz.',
+      explanation:
+          'Sivas (Divriği) ve Malatya (Hekimhan, Hasançelebi), Türkiye demir cevherinin ana merkezleridir. Buradan çıkarılan demir Karabük, Ereğli ve İskenderun\'a taşınır.',
+      tag: 'Demir',
+    ),
+    MapChallenge(
+      id: 'map_min_08',
+      category: MapPracticeCategory.mines,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Jeotermal Enerjinin Öncüsü (Sarayköy)',
+      questionText:
+          'Fay hatları boyunca yükselen yüksek sıcaklıktaki buharla Türkiye\'nin ilk jeotermal elektrik santralinin (Sarayköy) kurulduğu Ege ilimize dokunun.',
+      targetProvinceId: 'denizli',
+      validProvinceIds: ['denizli', 'aydin'],
+      hint: 'Pamukkale travertenlerine ev sahipliği yapan tekstil ilimiz.',
+      explanation:
+          'Denizli (Sarayköy) ve Aydın (Germencik), graben fay hatları üzerindeki yüksek jeotermal potansiyelle elektrik üreten başlıca santrallerdir.',
+      tag: 'Jeotermal Enerji',
+    ),
+    MapChallenge(
+      id: 'map_min_09',
+      category: MapPracticeCategory.mines,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Linyit Kömürü ve Termik Enerji (Soma)',
+      questionText:
+          'Türkiye\'nin en büyük linyit rezervlerinden ve devasa termik santrallerinden birine sahip olan Soma ilçesinin bulunduğu Ege ilimize dokunun.',
+      targetProvinceId: 'manisa',
+      hint: 'İzmir\'in doğu komşusu, Spil Dağı ve mesir macunuyla ünlü ilimiz.',
+      explanation:
+          'Manisa (Soma), Kütahya (Tunçbilek, Seyitömer) ve Kahramanmaraş (Afşin-Elbistan) Türkiye\'nin en büyük linyit maden havzalarıdır.',
+      tag: 'Linyit & Termik',
+    ),
+    MapChallenge(
+      id: 'map_min_10',
+      category: MapPracticeCategory.mines,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Doğal Gaz ve Hamitabat Termik Santrali',
+      questionText:
+          'Türkiye\'de yerli doğal gazın çıkarıldığı ve doğal gaz çevrim santralinin (Hamitabat) bulunduğu Trakya ilimize dokunun.',
+      targetProvinceId: 'kirklareli',
+      hint: 'Bulgaristan sınırında, Yıldız Dağları\'nı sınırlarında barındıran ilimiz.',
+      explanation:
+          'Kırklareli (Hamitabat) ve Tekirdağ (Hayrabolu), Türkiye\'de doğal gaz çıkarılan ve termik enerjiye dönüştürülen ilk yerlerdendir.',
+      tag: 'Doğal Gaz',
+    ),
 
-    // -------------------------------------------------------------------------
-    // FİZİKİ COĞRAFYA (PLATOLAR, DAĞLAR VE GÖLLER)
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // 3. FİZİKİ COĞRAFYA (PLATOLAR, DAĞLAR VE GÖLLER) (10 Soru)
+    // =========================================================================
     MapChallenge(
       id: 'map_phy_01',
       category: MapPracticeCategory.physical,
@@ -214,10 +404,123 @@ class MapPracticeData {
           'Ege Bölgesi arazisi sert tabakalardan oluştuğu için kıvrılamamış ve kırılmıştır. Yükselen kısımlar Horst (dağ), çöken kısımlar Graben (Gediz, Büyük Menderes vadileri) olmuştur.',
       tag: 'Horst-Graben',
     ),
+    MapChallenge(
+      id: 'map_phy_04',
+      category: MapPracticeCategory.physical,
+      interactionType: MapInteractionType.identifyHighlighted,
+      difficulty: 2,
+      title: 'Göller Yöresi Karstik Çanakları',
+      questionText:
+          'Haritada işaretlenen Burdur ve Isparta çevresinde yer alan Salda, Eğirdir ve Kovada göllerinin oluşumundaki temel jeolojik etken nedir?',
+      targetProvinceId: 'burdur',
+      validProvinceIds: ['burdur', 'isparta'],
+      highlightedProvinceIds: ['burdur', 'isparta'],
+      highlightColor: Color(0xFF0D9488),
+      options: [
+        'Kalker ve Jips Arazinin Çözünmesi (Karstik)',
+        'Volkanik Krater Patlaması',
+        'Buzul Aşındırması (Sirk)',
+        'Kıyı Kordonu Tıkanması (Lagün)',
+      ],
+      correctOptionIndex: 0,
+      hint: 'Kireçtaşı gibi eriyebilen kayaçların suyla erimesi.',
+      explanation:
+          'Akdeniz Göller Yöresi (Burdur, Isparta) kalkerli (kireçtaşı) karstik yapısıyla polyelerin suyla dolması sonucu karstik göllere ev sahipliği yapar.',
+      tag: 'Karstik Göller',
+    ),
+    MapChallenge(
+      id: 'map_phy_05',
+      category: MapPracticeCategory.physical,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Karadeniz\'in Dev Deltaları (Bafra ve Çarşamba)',
+      questionText:
+          'Kızılırmak ve Yeşilırmak nehirlerinin denize döküldüğü yerde Karadeniz\'in en verimli delta ovalarını (Bafra ve Çarşamba) oluşturan ilimize dokunun.',
+      targetProvinceId: 'samsun',
+      hint: 'Orta Karadeniz\'in ticaret ve liman merkezi olan ilimiz.',
+      explanation:
+          'Samsun kıyılarında Kızılırmak Bafra Deltası\'nı, Yeşilırmak ise Çarşamba Deltası\'nı oluşturarak bölgenin dev tarım merkezini meydana getirmiştir.',
+      tag: 'Delta Ovaları',
+    ),
+    MapChallenge(
+      id: 'map_phy_06',
+      category: MapPracticeCategory.physical,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Türkiye\'nin En Büyük Deltası (Çukurova)',
+      questionText:
+          'Seyhan ve Ceyhan nehirlerinin binlerce yılda taşıdığı alüvyonlarla Türkiye\'nin en geniş delta ovasını oluşturan Akdeniz ilimize dokunun.',
+      targetProvinceId: 'adana',
+      hint: 'Toros Dağları\'nın güneyinde, pamuk ve narenciye deposu ilimiz.',
+      explanation:
+          'Çukurova, Seyhan ve Ceyhan nehirlerinin oluşturduğu Türkiye\'nin en büyük delta ovasıdır ve yılda birden fazla ürün alınabilen verimli alüvyal topraklara sahiptir.',
+      tag: 'Çukurova',
+    ),
+    MapChallenge(
+      id: 'map_phy_07',
+      category: MapPracticeCategory.physical,
+      interactionType: MapInteractionType.identifyHighlighted,
+      difficulty: 2,
+      title: 'Dalga Biriktirmesi ve Tombolo (Saplı Ada)',
+      questionText:
+          'Haritada vurgulanan Balıkesir Kapıdağ Yarımadası ve Sinop İnceburun, bir adanın kıyı oku ile karaya bağlanması sonucu oluşmuştur. Bu jeomorfolojik yer şeklinin adı nedir?',
+      targetProvinceId: 'balikesir',
+      validProvinceIds: ['balikesir', 'sinop'],
+      highlightedProvinceIds: ['balikesir', 'sinop'],
+      highlightColor: Color(0xFF6366F1),
+      options: ['Tombolo (Saplı Ada)', 'Lagün (Deniz Kulağı)', 'Haliç', 'Falez (Yalıyar)'],
+      correctOptionIndex: 0,
+      hint: 'Açıkta duran bir adanın kıyı birikimiyle karaya bağlanarak yarımada olması.',
+      explanation:
+          'Dalgaların taşıdığı kumların adayla kara arasını doldurmasıyla Tombolo (Saplı Ada) oluşur. En güzel örnekleri Kapıdağ Yarımadası ve Sinop Boztepe\'dir.',
+      tag: 'Tombolo',
+    ),
+    MapChallenge(
+      id: 'map_phy_08',
+      category: MapPracticeCategory.physical,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'İç Anadolu\'nun En Yüksek Volkanı (Erciyes)',
+      questionText:
+          'İç Anadolu tektonik fay hattı boyunca uzanan genç volkanlar kuşağının en heybetli zirvesi olan Erciyes Dağı\'na (3917 m) ev sahipliği yapan ilimize dokunun.',
+      targetProvinceId: 'kayseri',
+      hint: 'Pastırma, sucuk ve kayak turizmiyle ünlü Orta Anadolu ilimiz.',
+      explanation:
+          'Erciyes Dağı (Kayseri), Hasan Dağı ve Melendiz ile birlikte İç Anadolu\'nun sönmüş stratovolkanlarındandır. Çıkardığı tüfler Kapadokya peri bacalarını oluşturmuştur.',
+      tag: 'Erciyes Volkanı',
+    ),
+    MapChallenge(
+      id: 'map_phy_09',
+      category: MapPracticeCategory.physical,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Karstik Taşeli Platosu',
+      questionText:
+          'Akdeniz\'de kireçtaşı arazisi üzerinde derin vadilerle yarılmış, su tutmayan kalkerli yapısı nedeniyle Türkiye\'nin en seyrek nüfuslu alanlarından biri olan Taşeli Platosu\'na dokunun.',
+      targetProvinceId: 'mersin',
+      hint: 'Kilikya kıyısında, Anamur ve Silifke ilçelerine sahip olan ilimiz.',
+      explanation:
+          'Taşeli Platosu (Mersin-Karaman sınırında), kalker arazisi, kireçli çatlaklı toprak yapısı ve suyun yer altına sızması sebebiyle yerleşmenin çok az olduğu karstik bir platodur.',
+      tag: 'Taşeli Platosu',
+    ),
+    MapChallenge(
+      id: 'map_phy_10',
+      category: MapPracticeCategory.physical,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Fırat Nehri ve Keban Baraj Gölü',
+      questionText:
+          'Türkiye sınırlarında debisi ve hidroelektrik potansiyeli en yüksek nehir olan Fırat üzerinde kurulan ilk dev barajımız Keban Barajı\'nın bulunduğu ilimize dokunun.',
+      targetProvinceId: 'elazig',
+      hint: 'Doğu Anadolu\'da, Hazar Gölü ve Harput Kalesi\'ne sahip olan ilimiz.',
+      explanation:
+          'Keban Barajı (Elazığ), Karasu ve Murat nehirlerinin birleştiği noktada Fırat üzerine kurulmuş devasa bir enerji ve yapay göl tesisidir.',
+      tag: 'Fırat & Keban',
+    ),
 
-    // -------------------------------------------------------------------------
-    // SANAYİ, ULAŞIM VE LİMANLAR
-    // -------------------------------------------------------------------------
+    // =========================================================================
+    // 4. SANAYİ, ULAŞIM VE LİMANLAR (10 Soru)
+    // =========================================================================
     MapChallenge(
       id: 'map_ind_01',
       category: MapPracticeCategory.industry,
@@ -247,6 +550,276 @@ class MapPracticeData {
       explanation:
           'Karabük Demir-Çelik Fabrikası hammaddeye değil, taş kömürüne (enerji kaynağına) yakınlık prensibiyle kurulmuştur. Demir cevheri buraya Sivas ve Malatya\'dan taşınır.',
       tag: 'Demir-Çelik',
+    ),
+    MapChallenge(
+      id: 'map_ind_03',
+      category: MapPracticeCategory.industry,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Karadeniz\'in En Gelişmiş Ticaret Limanı',
+      questionText:
+          'Arkasındaki Canik Dağları\'nın yükseltisinin az olması ve iç kesimlerle demiryolu bağlantısının bulunması sayesinde Karadeniz\'in en işlek ticaret limanına sahip ilimize dokunun.',
+      targetProvinceId: 'samsun',
+      hint: 'Bafra ve Çarşamba ovalarının ortasında yer alan Karadeniz metropolü.',
+      explanation:
+          'Samsun Limanı yapay bir limandır ancak geniş bir art bölgeye (hinterland) sahip olması ve demiryoluyla Anadolu içlerine bağlanması sayesinde bölgenin en büyük limanıdır.',
+      tag: 'Samsun Limanı',
+    ),
+    MapChallenge(
+      id: 'map_ind_04',
+      category: MapPracticeCategory.industry,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Ulaşım Avantajıyla Kurulan Demir-Çelik (İSDEMİR)',
+      questionText:
+          'Ne demir madeni ne de taş kömürü havzası bulunduğu halde, derin su limanı ve deniz aşırı pazarlara kolay ihracat (ulaşım) avantajıyla İSDEMİR fabrikasının kurulduğu ilimize dokunun.',
+      targetProvinceId: 'hatay',
+      hint: 'İskenderun Körfezi\'ne ev sahipliği yapan güney sınır ilimiz.',
+      explanation:
+          'İskenderun Demir-Çelik Fabrikası (Hatay), hammadde veya enerjiye değil; tamamen deniz ulaşımı ve liman hinterlandı kolaylığı sebebiyle kıyıda kurulmuştur.',
+      tag: 'İskenderun İSDEMİR',
+    ),
+    MapChallenge(
+      id: 'map_ind_05',
+      category: MapPracticeCategory.industry,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Türkiye Sanayisinin ve Rafinerisinin Devi',
+      questionText:
+          'Otomotiv, petrokimya (TÜPRAŞ) ve liman tesislerinin yoğunlaştığı, Türkiye sanayi üretiminin en büyük payına sahip Marmara Körfez ilimize dokunun.',
+      targetProvinceId: 'kocaeli',
+      hint: 'İzmit Körfezi etrafında kurulu olan sanayi şehri.',
+      explanation:
+          'Kocaeli (İzmit), sermaye, hammaddeye ve tüketim pazarına yakınlık, devasa ithalat limanları ve kara/demiryolu kavşağı olmasıyla Türkiye ağır sanayisinin kalbidir.',
+      tag: 'Kocaeli & TÜPRAŞ',
+    ),
+    MapChallenge(
+      id: 'map_ind_06',
+      category: MapPracticeCategory.industry,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Akdeniz\'in En Büyük Konteyner Limanı ve Serbest Bölge',
+      questionText:
+          'Türkiye\'nin ilk serbest bölgesine (1987) ve Akdeniz\'in en modern Ro-Ro ve konteyner ihracat limanına sahip güney sahil ilimize dokunun.',
+      targetProvinceId: 'mersin',
+      hint: 'Çukurova\'nın batısında yer alan narenciye ve liman şehrimiz.',
+      explanation:
+          'Mersin Limanı, demiryolu bağlantısı, geniş hinterlandı ve Serbest Bölge imkanlarıyla Türkiye\'nin dış ticaretinde hayati bir kapıdır.',
+      tag: 'Mersin Limanı',
+    ),
+    MapChallenge(
+      id: 'map_ind_07',
+      category: MapPracticeCategory.industry,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Otomotiv ve Tekstil Sanayisinin Başkenti',
+      questionText:
+          'Türkiye\'nin ilk organize sanayi bölgesinin (OSB) kurulduğu, otomotiv montaj fabrikaları ve ipekli tekstiliyle meşhur Güney Marmara ilimize dokunun.',
+      targetProvinceId: 'bursa',
+      hint: 'Uludağ\'ın eteklerinde yer alan tarihi Osmanlı başkenti.',
+      explanation:
+          'Bursa, kalifiye iş gücü, tüketici pazarına yakınlık ve liman bağlantıları (Gemlik) ile Türkiye\'nin otomotiv ve dokuma sanayisi merkezidir.',
+      tag: 'Bursa Sanayi',
+    ),
+    MapChallenge(
+      id: 'map_ind_08',
+      category: MapPracticeCategory.industry,
+      interactionType: MapInteractionType.identifyHighlighted,
+      difficulty: 2,
+      title: 'Hammadde Olmadan Kıyıda Kurulan Bakır İşletmesi',
+      questionText:
+          'Kastamonu Küre ve Artvin Murgul\'dan çıkarılan bakır cevherlerinin deniz yoluyla getirilerek işlendiği Samsun Bakır İzabe Tesisleri hangi kuruluş faktörüne dayanır?',
+      targetProvinceId: 'samsun',
+      highlightedProvinceIds: ['samsun'],
+      highlightColor: Color(0xFF2563EB),
+      options: [
+        'Ulaşım ve Liman Kolaylığı',
+        'Zengin Yer Altı Bakır Yatakları',
+        'Ucuz Su ve Jeotermal Enerji',
+        'Bölgedeki Yoğun Nüfus Tüketimi',
+      ],
+      correctOptionIndex: 0,
+      hint: 'Madenin kendi ilinde değil, deniz ulaşımı olan liman şehrine taşınması.',
+      explanation:
+          'Samsun\'da bakır madeni çıkarılmaz. Ancak liman şehri olması ve demiryolu bağlantısı sebebiyle Küre ve Murgul bakırları işlenmek üzere Samsun\'a getirilir (Ulaşım faktörü).',
+      tag: 'Samsun Bakır Tesisleri',
+    ),
+    MapChallenge(
+      id: 'map_ind_09',
+      category: MapPracticeCategory.industry,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Tarihi İpek Yolu ve Zigana Tüneli',
+      questionText:
+          'Doğu Karadeniz Dağları\'nı aşan Zigana Geçidi/Tüneli ile Erzurum ve İran transit ticaretine açılan Karadeniz liman ilimize dokunun.',
+      targetProvinceId: 'trabzon',
+      hint: 'Sümela Manastırı\'na ev sahipliği yapan Doğu Karadeniz metropolü.',
+      explanation:
+          'Trabzon Limanı, Zigana ve Kop geçitleri üzerinden Doğu Anadolu\'ya ve İran\'a bağlanan en eski transit ticaret limanlarımızdandır.',
+      tag: 'Zigana & Trabzon',
+    ),
+    MapChallenge(
+      id: 'map_ind_10',
+      category: MapPracticeCategory.industry,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Akdeniz\'i İç Anadolu\'ya Bağlayan Gülek Boğazı',
+      questionText:
+          'Toros Dağları üzerinde yer alan, demiryolu ve otoyol ile Çukurova\'yı İç Anadolu\'ya bağlayan tarihî Gülek Boğazı\'nın açıldığı ilimize dokunun.',
+      targetProvinceId: 'adana',
+      hint: 'Seyhan Nehri\'nin kıyısındaki güney ilimiz.',
+      explanation:
+          'Gülek Boğazı (Adana-Mersin-Niğde bağlantısı), Akdeniz bölgesini İç Anadolu\'ya bağlayan en stratejik doğal geçittir.',
+      tag: 'Gülek Boğazı',
+    ),
+
+    // =========================================================================
+    // 5. TARİH HARİTASI (KURTULUŞ SAVAŞI, CEPHELER VE KONGRELER) (10 Soru)
+    // =========================================================================
+    MapChallenge(
+      id: 'map_his_01',
+      category: MapPracticeCategory.history,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Doğu Cephesi ve Gümrü Zaferi',
+      questionText:
+          'Kazım Karabekir komutasındaki 15. Kolordu\'nun Ermeni güçlerini mağlup ederek TBMM\'nin tarihteki ilk askerî ve siyasî antlaşmasını (Gümrü) imzalattığı Doğu Cephesi sınır ilimize dokunun.',
+      targetProvinceId: 'kars',
+      validProvinceIds: ['kars', 'erzurum'],
+      hint: 'Sarıkamış ve Ani Harabeleri\'ne ev sahipliği yapan serhat ilimiz.',
+      explanation:
+          'Doğu Cephesi\'nde Kars ve çevresi kurtarılmış; 3 Aralık 1920 Gümrü Antlaşması ile TBMM uluslararası alanda ilk zaferini kazanmıştır.',
+      tag: 'Doğu Cephesi',
+    ),
+    MapChallenge(
+      id: 'map_his_02',
+      category: MapPracticeCategory.history,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Güney Cephesi ve Sütçü İmam Direnişi',
+      questionText:
+          'Fransız ve Ermeni işgaline karşı Sütçü İmam\'ın ilk kurşunuyla başlayan, düzenli ordu olmadan halkın Kuvayımilliye direnişiyle 12 Şubat 1920\'de kurtarılan ve "Kahraman" unvanı alan ilimize dokunun.',
+      targetProvinceId: 'kahramanmaras',
+      hint: 'Dondurması ve tarhanasıyla ünlü Akdeniz-Güneydoğu geçiş ilimiz.',
+      explanation:
+          'Maraş halkı kendi direnişiyle şehri Fransız işgalinden temizlemiş; bu destansı direniş sebebiyle TBMM tarafından Kırmızı Şeritli İstiklal Madalyası ve "Kahraman" unvanı verilmiştir.',
+      tag: 'Maraş Savunması',
+    ),
+    MapChallenge(
+      id: 'map_his_03',
+      category: MapPracticeCategory.history,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Şahin Bey ve 11 Aylık Destansı Savunma',
+      questionText:
+          'Şahin Bey ve Karayılan önderliğinde Fransız işgal kuvvetlerine karşı 11 ay boyunca tek başına direnen ve TBMM tarafından "Gazi" unvanı ile ödüllendirilen ilimize dokunun.',
+      targetProvinceId: 'gaziantep',
+      hint: 'Güneydoğu Anadolu\'nun sanayi ve gastronomi merkezi olan ilimiz.',
+      explanation:
+          'Antep Savunması, Millî Mücadele\'nin en çetin şehir direnişlerinden biridir. TBMM, 8 Şubat 1921\'de kente "Gazi" unvanını vermiştir.',
+      tag: 'Antep Savunması',
+    ),
+    MapChallenge(
+      id: 'map_his_04',
+      category: MapPracticeCategory.history,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Ali Saip Bey ve Onikiler Hareketi',
+      questionText:
+          'Jandarma Komutanı Ali Saip Bey (Ursavaş) ve "Onikiler" adı verilen vatanseverlerin örgütlediği halk direnişiyle 11 Nisan 1920\'de Fransızları şehirden çıkaran ve "Şanlı" unvanı alan ilimize dokunun.',
+      targetProvinceId: 'sanliurfa',
+      hint: 'Balıklıgöl\'ün bulunduğu kadim Güneydoğu ilimiz.',
+      explanation:
+          'Urfa halkı Fransız işgalini kendi çabasıyla püskürtmüştür. 1984 yılında kente TBMM tarafından "Şanlı" unvanı verilmiştir.',
+      tag: 'Urfa Savunması',
+    ),
+    MapChallenge(
+      id: 'map_his_05',
+      category: MapPracticeCategory.history,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Batı Cephesi ve Metristepe Zaferi',
+      questionText:
+          'Mustafa Kemal\'in İsmet İnönü\'ye "Siz orada yalnız düşmanı değil, milletin makus talihini de yendiniz" telgrafını çektiği II. İnönü Zaferi\'nin kazanıldığı ilimize dokunun.',
+      targetProvinceId: 'bilecik',
+      validProvinceIds: ['bilecik', 'eskisehir'],
+      hint: 'Şeyh Edebali Türbesi ve Söğüt ilçesine ev sahipliği yapan ilimiz.',
+      explanation:
+          'I. ve II. İnönü Muharebeleri Bilecik-Eskişehir hattında cereyan etmiştir. Metristepe Anıtı Bilecik sınırlarında yer alır.',
+      tag: 'İnönü Savaşları',
+    ),
+    MapChallenge(
+      id: 'map_his_06',
+      category: MapPracticeCategory.history,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Sakarya Meydan Muharebesi (Polatlı Hattı)',
+      questionText:
+          'Mustafa Kemal\'in "Hattı müdafaa yoktur, sathı müdafaa vardır. O satıh bütün vatandır" tarihi emrini verdiği, 22 gün 22 gece süren ölüm kalım savaşının gerçekleştiği ilimize dokunun.',
+      targetProvinceId: 'ankara',
+      hint: 'Polatlı ve Haymana cephe hatlarını barındıran başkentimiz.',
+      explanation:
+          'Sakarya Meydan Muharebesi (1921), Ankara Polatlı yakınlarında yapılmış ve Türk ordusunun 1683 Viyana bozgunundan beri süren geri çekilişini durduran büyük zafer olmuştur.',
+      tag: 'Sakarya Meydan',
+    ),
+    MapChallenge(
+      id: 'map_his_07',
+      category: MapPracticeCategory.history,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Büyük Taarruz ve Başkomutanlık Meydan Muharebesi',
+      questionText:
+          '26 Ağustos 1922 sabahı Kocatepe\'den top atışlarıyla başlayan ve Dumlupınar\'da düşman ordusunu imha eden Büyük Taarruz\'un başladığı ilimize dokunun.',
+      targetProvinceId: 'afyonkarahisar',
+      validProvinceIds: ['afyonkarahisar', 'kutahya'],
+      hint: 'Kocatepe Anıtı ve termal kaynaklarıyla ünlü kavşak ilimiz.',
+      explanation:
+          'Afyon Kocatepe\'den başlayan taarruz, 30 Ağustos\'ta Kütahya Dumlupınar\'da Başkomutanlık Meydan Muharebesi ile taçlanmış ve ardından İzmir\'e doğru takip başlamıştır.',
+      tag: 'Büyük Taarruz',
+    ),
+    MapChallenge(
+      id: 'map_his_08',
+      category: MapPracticeCategory.history,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 2,
+      title: 'Millî Mücadele\'de İlk Kurşun (Dörtyol)',
+      questionText:
+          '19 Aralık 1918\'de Fransız işgalcilere karşı Millî Mücadele\'nin Türk tarihindeki ilk silahlı kurşununun Mehmet Çavuş tarafından atıldığı güney sahil ilimize dokunun.',
+      targetProvinceId: 'hatay',
+      hint: 'İskenderun Körfezi kıyısında, Dörtyol ilçesinin bulunduğu ilimiz.',
+      explanation:
+          'Millî Mücadele\'de ilk kurşun İzmir\'den önce, 19 Aralık 1918\'de Hatay Dörtyol\'da Fransızlara karşı Karamehmet (Mehmet Çavuş) tarafından sıkılmıştır.',
+      distractorTrap:
+          '⚠️ ÖSYM Çeldirici Tuzağı: Batı Cephesi\'nde ilk kurşunu İzmir\'de Hasan Tahsin sıkmıştır; ancak tüm Kurtuluş Savaşı genelinde ilk kurşun Hatay Dörtyol\'da atılmıştır.',
+      tag: 'İlk Kurşun',
+    ),
+    MapChallenge(
+      id: 'map_his_09',
+      category: MapPracticeCategory.history,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Amasya Genelgesi ve İhtilal Çağrısı',
+      questionText:
+          '"Milletin bağımsızlığını yine milletin azim ve kararı kurtaracaktır" maddesiyle Millî Mücadele\'nin amaç, gerekçe ve yönteminin ilk kez yazılı olarak ilan edildiği ilimize dokunun.',
+      targetProvinceId: 'amasya',
+      hint: 'Yeşilırmak kıyısında, Şehzadeler şehri ve elmasıyla ünlü ilimiz.',
+      explanation:
+          '22 Haziran 1919 Amasya Genelgesi, üstü kapalı olarak millî egemenliğe ve bir halk ihtilaline dayanan Kurtuluş Savaşı\'nın ilk manifestosudur.',
+      tag: 'Amasya Genelgesi',
+    ),
+    MapChallenge(
+      id: 'map_his_10',
+      category: MapPracticeCategory.history,
+      interactionType: MapInteractionType.tapProvince,
+      difficulty: 1,
+      title: 'Sivas Kongresi ve Topyekûn Birlik',
+      questionText:
+          'Manda ve himayenin kesin olarak reddedildiği, tüm millî direniş cemiyetlerinin "Anadolu ve Rumeli Müdafaa-i Hukuk Cemiyeti" altında tek çatı yapıldığı ilimize dokunun.',
+      targetProvinceId: 'sivas',
+      hint: 'İrade-i Milliye gazetesinin çıkarıldığı tarihi kongre lisemizin bulunduğu ilimiz.',
+      explanation:
+          '4-11 Eylül 1919 Sivas Kongresi, temsil gücü bakımından tüm yurdu kucaklayan ulusal bir kongredir. Burada alınan kararlarla Millî Mücadele tek elden yönetilmiştir.',
+      tag: 'Sivas Kongresi',
     ),
   ];
 
