@@ -123,6 +123,7 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-96** | **Soru Havuzu Güvenliği & Telif / Kazıma (Scraping) Kalkanı** | Maksimum soru sorgu limiti kuralı (`limit(60)`) ve soru çözüm ekranlarında ekran kaydı/görüntüsü almayı engelleyen güvenlik kalkanı | ✅ **Tamamlandı** |
 | **TASK-97** | **Akıllı Yerel Hatırlatıcılar & Alışkanlık Döngüsü (Daily Habit & Streak Notifications)** | İnternetsiz çalışan akşam 20:30 seri koruma ve Pazar 10:00 genel deneme yerel bildirimleri | ✅ **Tamamlandı** |
 | **TASK-98** | **Dopamin Anında 5 Yıldız Puan Toplama Motoru (In-App Review Engine)** | Rekor net, 7 günlük streak veya 10'da 10 yapıldığında uygulama içinden Google Play yıldız penceresini açma | ✅ **Tamamlandı** |
+| **TASK-99** | **Freemium & Kadro PRO Dengesi: Cömert Temel Deneyim + Güçlü 4 PRO Ayrıcalığı** | Tüm soru/kart/harita/açıklamaların ücretsiz sunulması + Sınırsız Soru, Deneme Arşivi, Çevrimdışı İndirme ve Yanlışlardan Test Üretici kapıları | ✅ **Tamamlandı** (`efcf808`) |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
