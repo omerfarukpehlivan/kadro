@@ -1,19 +1,29 @@
 import 'package:flutter/foundation.dart';
 import 'package:kadro/core/config/supabase_config.dart';
+import 'package:kadro/core/network/client_rate_limiter.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 
 /// Kullanıcının çözdüğü test oturumlarını, soru loglarını, profil istatistiklerini,
 /// konu ustalık matrisini ve çalışma planlayıcı görevlerini
-/// Supabase PostgreSQL veritabanı ile senkronize eden veri erişim katmanı.
+/// Supabase PostgreSQL veritabanı ile senkronize eden veri erişim katmanı (TASK-91 Batching & Rate-Limiting).
 ///
 /// Web/Angular Karşılığı: `CloudSyncService` / Repository Katmanı.
 /// Ağ kesintilerinde veya misafir (offline) modunda sessiz ve güvenli şekilde çalışır.
 class CloudSyncRepository {
+  /// Soru bazlı analitiklerin tekil HTTP istekleri atmak yerine toplu (bulk) olarak
+  /// gönderilmesi için hafızada tutulan kuyruk.
+  static final List<Map<String, dynamic>> _attemptQueue = [];
+
   const CloudSyncRepository();
 
   /// Tamamlanan test oturumunu Supabase `public.quiz_sessions` tablosuna kaydeder.
+  /// Ayrıca oturum boyunca biriken soru deneme loglarını otomatik olarak tek bir
+  /// toplu (bulk) INSERT ile veritabanına iletir.
   Future<void> saveQuizSession(QuizSessionRecord session) async {
+    // 1. Önce biriken soru loglarını topluca gönder
+    await flushQuestionAttempts();
+
     final client = SupabaseConfig.clientOrNull;
     final userId = client?.auth.currentUser?.id;
     if (client == null || userId == null) return;
@@ -38,38 +48,80 @@ class CloudSyncRepository {
     }
   }
 
-  /// Her çözülen sorunun mikro analitiğini Supabase `public.question_attempt_logs` tablosuna kaydeder.
+  /// Her çözülen sorunun mikro analitiğini toplu kuyruğa (`_attemptQueue`) ekler.
+  ///
+  /// Her soru için tekil HTTP isteği göndermek yerine kuyruk 10 adede ulaştığında
+  /// veya [flushImmediately] istendiğinde tek bir toplu INSERT yapar.
+  /// Bu sayede sunucu trafiği ve maliyeti %90+ oranında korunur.
   Future<void> saveQuestionAttempt({
     required String questionText,
     required String lesson,
     required String topic,
     required bool isCorrect,
     required int timeSpentSeconds,
+    bool flushImmediately = false,
   }) async {
     final client = SupabaseConfig.clientOrNull;
     final userId = client?.auth.currentUser?.id;
     if (client == null || userId == null) return;
 
+    _attemptQueue.add({
+      'user_id': userId,
+      'question_text': questionText,
+      'lesson': lesson,
+      'topic': topic,
+      'is_correct': isCorrect,
+      'time_spent_seconds': timeSpentSeconds,
+    });
+
+    if (flushImmediately || _attemptQueue.length >= 10) {
+      await flushQuestionAttempts();
+    }
+  }
+
+  /// Kuyrukta bekleyen soru loglarını tek bir toplu istekte Supabase'e gönderir.
+  Future<void> flushQuestionAttempts() async {
+    if (_attemptQueue.isEmpty) return;
+    final client = SupabaseConfig.clientOrNull;
+    if (client == null) {
+      _attemptQueue.clear();
+      return;
+    }
+
+    final batch = List<Map<String, dynamic>>.from(_attemptQueue);
+    _attemptQueue.clear();
+
     try {
-      await client.from('question_attempt_logs').insert({
-        'user_id': userId,
-        'question_text': questionText,
-        'lesson': lesson,
-        'topic': topic,
-        'is_correct': isCorrect,
-        'time_spent_seconds': timeSpentSeconds,
-      });
+      await client.from('question_attempt_logs').insert(batch);
+      debugPrint(
+        '[CloudSyncRepository] ${batch.length} soru analitiği tek bir toplu (bulk) istek ile gönderildi.',
+      );
     } catch (e) {
-      debugPrint('Supabase saveQuestionAttempt hatası: $e');
+      debugPrint('Supabase flushQuestionAttempts hatası: $e');
     }
   }
 
   /// Kullanıcının toplam XP, lig seviyesi ve günlük hedefini `public.profiles` tablosuna senkronize eder.
+  ///
+  /// Seri soru çözümü esnasında gereksiz sunucu bombardımanını önlemek için [ClientRateLimiter]
+  /// ile en fazla 5 saniyede bir istek atacak şekilde kısıtlanmıştır ([force] = true hariç).
   Future<void> syncProfileStats({
     required int totalXp,
     required String leagueTier,
     required int dailyGoalQuestions,
+    bool force = false,
   }) async {
+    if (!force) {
+      final allowed = ClientRateLimiter.instance.checkAndRecord(
+        'sync_profile_stats',
+        maxRequests: 1,
+        window: const Duration(seconds: 5),
+      );
+      if (!allowed) {
+        return; // Hızlı tekrarlanan güncellemeyi atla
+      }
+    }
+
     final client = SupabaseConfig.clientOrNull;
     final userId = client?.auth.currentUser?.id;
     if (client == null || userId == null) return;
@@ -91,6 +143,12 @@ class CloudSyncRepository {
     } catch (e) {
       debugPrint('Supabase syncProfileStats hatası: $e');
     }
+  }
+
+  /// Testler için kuyruğu ve hız sınırlarını temizler.
+  static void clearQueueForTest() {
+    _attemptQueue.clear();
+    ClientRateLimiter.instance.reset('sync_profile_stats');
   }
 
   /// Giriş yapmış kullanıcının buluttaki geçmiş test oturumlarını çeker.

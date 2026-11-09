@@ -42,6 +42,7 @@ class FakeQuestionRepository extends QuestionRepository {
   Future<List<Question>> fetchQuestions({
     String? lesson,
     String? topic,
+    bool forceRefresh = false,
   }) async => testQuestions;
 
   @override

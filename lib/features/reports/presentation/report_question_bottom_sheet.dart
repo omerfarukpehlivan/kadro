@@ -71,16 +71,20 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
       createdAt: DateTime.now(),
     );
 
-    await _repository.submitReport(report);
+    final success = await _repository.submitReport(report);
 
     if (!mounted) return;
 
     Navigator.of(context).pop();
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Bildirimin için teşekkürler! Soru incelemeye alındı.'),
-        duration: Duration(seconds: 3),
+      SnackBar(
+        content: Text(
+          success
+              ? 'Bildirimin için teşekkürler! Soru incelemeye alındı.'
+              : 'Çok hızlı bildirim gönderiyorsunuz. Lütfen biraz bekleyin.',
+        ),
+        duration: const Duration(seconds: 3),
       ),
     );
   }

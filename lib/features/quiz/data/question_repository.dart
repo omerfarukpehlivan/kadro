@@ -15,6 +15,16 @@ import 'package:kadro/features/quiz/data/models/question.dart';
 class QuestionRepository {
   final String assetPath;
 
+  /// Bellek içi (In-Memory) TTL önbellek deposu (TASK-92).
+  /// Ağ isteklerini ve Supabase çıkış bant genişliğini (egress) en aza indirir.
+  static final Map<String, (DateTime, List<Question>)> _cachedQuestions = {};
+  static final Map<String, (DateTime, List<TrueFalseItem>)> _cachedTrueFalse =
+      {};
+  static (DateTime, List<ConceptMatchSet>)? _cachedConceptMatchSets;
+
+  /// Önbellek geçerlilik süresi (varsayılan: 2 saat).
+  static const Duration cacheTtl = Duration(hours: 2);
+
   const QuestionRepository({
     this.assetPath = 'assets/data/questions/sample_questions.json',
   });
@@ -162,7 +172,23 @@ class QuestionRepository {
 
   /// Supabase `public.questions` tablosundan ders ve konu bazında soruları çeker.
   /// Bulut bağlantısı yoksa veya hata alınırsa güvenli şekilde yerel JSON yedeğine düşer (Offline Fallback).
-  Future<List<Question>> fetchQuestions({String? lesson, String? topic}) async {
+  ///
+  /// Performans & Maliyet: [cacheTtl] süresi boyunca veriyi bellekten (0ms gecikme) döner.
+  Future<List<Question>> fetchQuestions({
+    String? lesson,
+    String? topic,
+    bool forceRefresh = false,
+  }) async {
+    final cacheKey = '${lesson ?? 'all'}:${topic ?? 'all'}';
+    if (!forceRefresh && _cachedQuestions.containsKey(cacheKey)) {
+      final cached = _cachedQuestions[cacheKey]!;
+      if (DateTime.now().difference(cached.$1) < cacheTtl &&
+          cached.$2.isNotEmpty) {
+        return cached.$2;
+      }
+    }
+
+    List<Question>? resolved;
     final client = SupabaseConfig.clientOrNull;
     if (client != null) {
       try {
@@ -192,7 +218,7 @@ class QuestionRepository {
               .toList();
 
           if (cloudQuestions.isNotEmpty) {
-            return cloudQuestions;
+            resolved = cloudQuestions;
           }
         }
       } catch (_) {
@@ -201,35 +227,54 @@ class QuestionRepository {
     }
 
     // Yerel JSON fallback mekanizması
-    try {
-      final localQuestions = await loadSampleQuestions();
-      if (lesson != null && lesson.isNotEmpty) {
-        final lessonQuestions = localQuestions
-            .where((q) => q.lesson == lesson)
-            .toList();
-
-        if (topic != null && topic.isNotEmpty) {
-          final topicQuestions = lessonQuestions
-              .where((q) => q.topic == topic)
+    if (resolved == null) {
+      try {
+        final localQuestions = await loadSampleQuestions();
+        if (lesson != null && lesson.isNotEmpty) {
+          final lessonQuestions = localQuestions
+              .where((q) => q.lesson == lesson)
               .toList();
-          if (topicQuestions.isNotEmpty) {
-            return topicQuestions;
-          }
-        }
 
-        if (lessonQuestions.isNotEmpty) {
-          return lessonQuestions;
+          if (topic != null && topic.isNotEmpty) {
+            final topicQuestions = lessonQuestions
+                .where((q) => q.topic == topic)
+                .toList();
+            if (topicQuestions.isNotEmpty) {
+              resolved = topicQuestions;
+            }
+          }
+
+          resolved ??= (lessonQuestions.isNotEmpty
+              ? lessonQuestions
+              : localQuestions);
+        } else {
+          resolved = localQuestions;
         }
+      } catch (_) {
+        resolved = defaultSampleQuestions;
       }
-      return localQuestions;
-    } catch (_) {
-      return defaultSampleQuestions;
     }
+
+    _cachedQuestions[cacheKey] = (DateTime.now(), resolved);
+    return resolved;
   }
 
   /// Supabase `public.questions` tablosundan doğru/yanlış önermelerini çeker.
   /// Çevrimdışı veya hata durumunda yerel `sampleTrueFalseItems` havuzuna düşer.
-  Future<List<TrueFalseItem>> fetchTrueFalseItems({String? lesson}) async {
+  Future<List<TrueFalseItem>> fetchTrueFalseItems({
+    String? lesson,
+    bool forceRefresh = false,
+  }) async {
+    final cacheKey = lesson ?? 'all';
+    if (!forceRefresh && _cachedTrueFalse.containsKey(cacheKey)) {
+      final cached = _cachedTrueFalse[cacheKey]!;
+      if (DateTime.now().difference(cached.$1) < cacheTtl &&
+          cached.$2.isNotEmpty) {
+        return cached.$2;
+      }
+    }
+
+    List<TrueFalseItem>? result;
     final client = SupabaseConfig.clientOrNull;
     if (client != null) {
       try {
@@ -269,7 +314,7 @@ class QuestionRepository {
               ...cloudItems,
               ...sampleTrueFalseItems.where((e) => !existingIds.contains(e.id)),
             ];
-            return lesson != null && lesson.isNotEmpty
+            result = lesson != null && lesson.isNotEmpty
                 ? merged.where((e) => e.lesson == lesson).toList()
                 : merged;
           }
@@ -279,18 +324,35 @@ class QuestionRepository {
       }
     }
 
-    if (lesson != null && lesson.isNotEmpty) {
-      final filtered = sampleTrueFalseItems
-          .where((e) => e.lesson == lesson)
-          .toList();
-      return filtered.isNotEmpty ? filtered : sampleTrueFalseItems;
+    if (result == null) {
+      if (lesson != null && lesson.isNotEmpty) {
+        final filtered = sampleTrueFalseItems
+            .where((e) => e.lesson == lesson)
+            .toList();
+        result = filtered.isNotEmpty ? filtered : sampleTrueFalseItems;
+      } else {
+        result = sampleTrueFalseItems;
+      }
     }
-    return sampleTrueFalseItems;
+
+    _cachedTrueFalse[cacheKey] = (DateTime.now(), result);
+    return result;
   }
 
   /// Supabase `public.questions` tablosundan kavram eşleştirme setlerini çeker.
   /// Çevrimdışı veya hata durumunda yerel `sampleConceptMatchSets` havuzuna düşer.
-  Future<List<ConceptMatchSet>> fetchConceptMatchSets() async {
+  Future<List<ConceptMatchSet>> fetchConceptMatchSets({
+    bool forceRefresh = false,
+  }) async {
+    if (!forceRefresh && _cachedConceptMatchSets != null) {
+      final cached = _cachedConceptMatchSets!;
+      if (DateTime.now().difference(cached.$1) < cacheTtl &&
+          cached.$2.isNotEmpty) {
+        return cached.$2;
+      }
+    }
+
+    List<ConceptMatchSet>? result;
     final client = SupabaseConfig.clientOrNull;
     if (client != null) {
       try {
@@ -333,7 +395,7 @@ class QuestionRepository {
 
           if (cloudSets.isNotEmpty) {
             final seenTitles = cloudSets.map((s) => s.title).toSet();
-            return [
+            result = [
               ...cloudSets,
               ...sampleConceptMatchSets.where(
                 (s) => !seenTitles.contains(s.title),
@@ -346,7 +408,16 @@ class QuestionRepository {
       }
     }
 
-    return sampleConceptMatchSets;
+    result ??= sampleConceptMatchSets;
+    _cachedConceptMatchSets = (DateTime.now(), result);
+    return result;
+  }
+
+  /// Testler için bellek içi önbelleği sıfırlar.
+  static void clearCacheForTest() {
+    _cachedQuestions.clear();
+    _cachedTrueFalse.clear();
+    _cachedConceptMatchSets = null;
   }
 
   /// Belirli bir derse ait soruları çekip her konudaki mevcut test sayısını

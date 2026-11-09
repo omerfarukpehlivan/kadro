@@ -17,6 +17,7 @@ class MockQuestionRepository extends QuestionRepository {
   Future<List<Question>> fetchQuestions({
     String? lesson,
     String? topic,
+    bool forceRefresh = false,
   }) async => mockQuestions;
 }
 

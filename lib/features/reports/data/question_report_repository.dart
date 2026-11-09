@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:kadro/core/config/supabase_config.dart';
+import 'package:kadro/core/network/client_rate_limiter.dart';
 import 'package:kadro/features/reports/data/models/question_report.dart';
 
 /// Hatalı soru raporlarını Supabase bulut veritabanına ve çevrimdışı yerel
-/// belleğe ileten repository katmanı (TASK-47).
+/// belleğe ileten repository katmanı (TASK-47 & TASK-90).
 ///
 /// Angular'daki `@Injectable({ providedIn: 'root' })` servis mimarisine benzer.
 class QuestionReportRepository {
@@ -13,8 +14,22 @@ class QuestionReportRepository {
 
   /// Soru bildirimini Supabase `question_reports` tablosuna ekler.
   ///
-  /// Ağ kesintisinde veya çevrimdışıyken sessizce yakalar ve in-memory listeye kaydeder.
+  /// İstemci seviyesinde [ClientRateLimiter] anti-spam koruması devrededir:
+  /// 1 dakikada en fazla 3 rapor kabul edilir. Limit aşıldığında `false` döner.
   Future<bool> submitReport(QuestionReport report) async {
+    final isAllowed = ClientRateLimiter.instance.checkAndRecord(
+      'submit_question_report',
+      maxRequests: 3,
+      window: const Duration(minutes: 1),
+    );
+
+    if (!isAllowed) {
+      debugPrint(
+        '[QuestionReportRepository] İstemci hız limiti (Rate limit) aşıldı. İstek engellendi.',
+      );
+      return false;
+    }
+
     _inMemoryReports.add(report);
     final client = SupabaseConfig.clientOrNull;
     if (client == null) {
@@ -62,8 +77,9 @@ class QuestionReportRepository {
     return List.unmodifiable(_inMemoryReports.reversed);
   }
 
-  /// Testler için bellekteki raporları temizler.
+  /// Testler için bellekteki raporları ve rate limit geçmişini temizler.
   void clearForTest() {
     _inMemoryReports.clear();
+    ClientRateLimiter.instance.reset('submit_question_report');
   }
 }
