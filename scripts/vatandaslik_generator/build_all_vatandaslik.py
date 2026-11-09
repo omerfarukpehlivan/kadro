@@ -68,12 +68,10 @@ TOPICS = [
 
 DEST_DIRS = [
     Path(r"C:\Users\omere\Desktop\kpss-vatandaslik-sql"),
-    Path(r"d:\projelerim\gunisigi\docs\soru_havuzu\vatandaslik"),
     Path(r"C:\projelerim\gunisigi\docs\soru_havuzu\vatandaslik"),
 ]
 
 SAMPLE_QUESTIONS_PATHS = [
-    Path(r"d:\projelerim\gunisigi\assets\data\questions\sample_questions.json"),
     Path(r"C:\projelerim\gunisigi\assets\data\questions\sample_questions.json"),
 ]
 
@@ -113,15 +111,15 @@ def build():
         sql_lines = [
             f"-- =============================================================",
             f"-- KPSS VATANDAŞLIK — {topic['title'].upper()}",
-            f"-- Toplam Soru: {q_count} (Zorluk: 10 Kolay, 20 Orta, 10 Zor)",
-            f"-- Standart: Özgün İçerik + Açıklama + ÖSYM Çeldirici Tuzağı",
+            f"-- Toplam Soru: {q_count}",
+            f"-- Standart: Özgün İçerik + Açıklama + ÖSYM Çeldirici Tuzağı + order_index",
             f"-- =============================================================",
             f"BEGIN;\n"
         ]
 
         for idx, q in enumerate(qs, 1):
             sql_lines.append(f"-- Soru #{idx:02d} (Zorluk: {q['difficulty']})")
-            sql_lines.append(sh.question_to_sql_insert(q))
+            sql_lines.append(sh.question_to_sql_insert(q, order_index=idx))
             sql_lines.append("")
 
         sql_lines.append("COMMIT;\n")
@@ -143,9 +141,9 @@ def build():
     master_sql_lines = [
         "-- =============================================================",
         "-- KADRO KPSS LİSANS GENEL KÜLTÜR — TÜM VATANDAŞLIK SORULARI (MASTER)",
-        f"-- Toplam: 6 Konu x 40 Soru = {total_questions} Özgün Soru",
+        f"-- Toplam: 6 Konu x 50 Soru = {total_questions} Özgün Soru",
         "-- Hedef Tablo: public.questions (Supabase)",
-        "-- UWorld Modeli: prompt_text, options, correctIndex, explanation, distractor_trap",
+        "-- UWorld Modeli: prompt_text, options, correctIndex, explanation, distractor_trap, order_index",
         "-- =============================================================",
         "BEGIN;\n"
     ]
@@ -155,7 +153,7 @@ def build():
         master_sql_lines.append(f"-- {topic['title'].upper()}")
         master_sql_lines.append(f"-- -------------------------------------------------------------\n")
         for idx, q in enumerate(topic["questions"], 1):
-            master_sql_lines.append(sh.question_to_sql_insert(q))
+            master_sql_lines.append(sh.question_to_sql_insert(q, order_index=idx))
             master_sql_lines.append("")
 
     master_sql_lines.append("COMMIT;\n")
@@ -234,21 +232,30 @@ Bu klasör, **Kadro: KPSS Lisans Genel Kültür** uygulaması için hazırlanan 
         non_vatandaslik = [x for x in existing_data if x.get("lesson") != "Vatandaşlık"]
         print(f"  -> Mevcut Vatandaşlık dışı sorular korundu: {len(non_vatandaslik)} adet")
 
-        # Yeni 240 Vatandaşlık sorusunu ekle
+        # Yeni 300 Vatandaşlık sorusunu ekle
         new_vatandaslik_json = []
-        for i, q in enumerate(all_questions_list, 1):
-            item = {
-                "id": f"vat_{i:03d}",
-                "lesson": q["lesson"],
-                "topic": q["topic"],
-                "text": q["prompt_text"],
-                "options": q["options"],
-                "correctIndex": q["correctIndex"],
-                "explanation": q["explanation"],
-                "difficulty": map_difficulty_to_str(q["difficulty"]),
-                "distractor_trap": q["distractor_trap"]
-            }
-            new_vatandaslik_json.append(item)
+        global_idx = 1
+        for topic in TOPICS:
+            for idx, q in enumerate(topic["questions"], 1):
+                item = {
+                    "id": f"vat_{global_idx:03d}",
+                    "lesson": q["lesson"],
+                    "topic": q["topic"],
+                    "text": q["prompt_text"],
+                    "prompt_text": q["prompt_text"],
+                    "prompt": q["prompt_text"],
+                    "options": q["options"],
+                    "correctIndex": q["correctIndex"],
+                    "explanation": q["explanation"],
+                    "difficulty": map_difficulty_to_str(q["difficulty"]),
+                    "difficultyLevel": q["difficulty"],
+                    "distractor_trap": q["distractor_trap"],
+                    "distractorTrap": q["distractor_trap"],
+                    "order_index": idx,
+                    "orderIndex": idx,
+                }
+                new_vatandaslik_json.append(item)
+                global_idx += 1
 
         combined_data = non_vatandaslik + new_vatandaslik_json
         with open(json_path, "w", encoding="utf-8") as f:
