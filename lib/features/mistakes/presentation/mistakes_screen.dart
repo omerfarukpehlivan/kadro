@@ -1,19 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
+import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Kullanıcının testlerde yanlış çözdüğü soruları gösteren Yanlış Defteri ekranı.
 ///
 /// Angular'daki `MistakesComponent` karşılığıdır.
-/// Yanlış sorular ders bazında filtrelenebilir, silinebilir veya seçilen ders
-/// özelinde toplu olarak yeniden çözülebilir.
-class MistakesScreen extends StatefulWidget {
+/// Yanlış sorular ders bazında filtrelenebilir, incelenebilir, silinebilir.
+/// Kadro PRO üyeleri yanlışlarından tek tıkla akıllı tekrar testleri üretebilir.
+class MistakesScreen extends ConsumerStatefulWidget {
   final MistakeRepository mistakeRepository;
 
   const MistakesScreen({
@@ -22,14 +25,43 @@ class MistakesScreen extends StatefulWidget {
   });
 
   @override
-  State<MistakesScreen> createState() => _MistakesScreenState();
+  ConsumerState<MistakesScreen> createState() => _MistakesScreenState();
 }
 
-class _MistakesScreenState extends State<MistakesScreen> {
+class _MistakesScreenState extends ConsumerState<MistakesScreen> {
   String _selectedLesson = 'Tümü';
 
   Future<void> _solveMistakes(List<Question> mistakes) async {
     if (mistakes.isEmpty) return;
+
+    bool isPro = false;
+    try {
+      isPro = ref.read(userPreferencesProvider).isPro;
+    } catch (_) {
+      // ProviderScope bulunmayan izole test fallback
+    }
+
+    // Kadro PRO Kapısı: Yanlışlardan özel test üretici PRO özelliğidir.
+    if (!isPro) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            '🎯 Kadro PRO ile yanlış yaptığın sorulardan dilediğin an özel testler üretebilir ve eksiklerini pekiştirebilirsin.',
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const PaywallScreen(
+            reasonMessage: 'Akıllı Yanlış Defteri Test Üretici: Yanlış yaptığın sorulardan özel akıllı testler üretip çözmek Kadro PRO üyelerine özeldir.',
+          ),
+        ),
+      );
+      if (mounted) setState(() {});
+      return;
+    }
+
     await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => QuizScreen(
@@ -78,6 +110,13 @@ class _MistakesScreenState extends State<MistakesScreen> {
     final filteredMistakes = _selectedLesson == 'Tümü'
         ? mistakes
         : mistakes.where((q) => q.lesson == _selectedLesson).toList();
+
+    bool isPro = false;
+    try {
+      isPro = ref.watch(userPreferencesProvider).isPro;
+    } catch (_) {
+      // ProviderScope bulunmayan izole test fallback
+    }
 
     final lessonChips = [
       {'id': 'Tümü', 'label': 'Tümü (${mistakes.length})'},
@@ -128,6 +167,7 @@ class _MistakesScreenState extends State<MistakesScreen> {
                 lessonName: _selectedLesson,
                 totalMistakes: mistakes.length,
                 onSolveAll: () => _solveMistakes(filteredMistakes),
+                isPro: isPro,
               ),
               AppSpacing.gapMd,
 
@@ -259,12 +299,14 @@ class _MistakeHeaderCard extends StatelessWidget {
   final String lessonName;
   final int totalMistakes;
   final VoidCallback onSolveAll;
+  final bool isPro;
 
   const _MistakeHeaderCard({
     required this.mistakeCount,
     required this.onSolveAll,
     this.lessonName = 'Tümü',
     this.totalMistakes = 0,
+    this.isPro = false,
   });
 
   @override
@@ -276,9 +318,17 @@ class _MistakeHeaderCard extends StatelessWidget {
         ? '$mistakeCount Yanlış Soru'
         : '$lessonName: $mistakeCount Yanlış';
 
-    final buttonText = lessonName == 'Tümü'
-        ? 'Tüm Yanlışları Tekrar Çöz'
-        : '$lessonName Yanlışlarını Çöz ($mistakeCount)';
+    final buttonText = isPro
+        ? (lessonName == 'Tümü'
+              ? 'Tüm Yanlışları Tekrar Çöz'
+              : '$lessonName Yanlışlarını Çöz ($mistakeCount)')
+        : (lessonName == 'Tümü'
+              ? 'Yanlışlarımdan Özel Test Üret (PRO)'
+              : '$lessonName Yanlışlarından Test Üret (PRO)');
+
+    final subtitleText = isPro
+        ? 'Tekrar çözerek doğrula, defterden otomatik çıksın.'
+        : '👑 Kadro PRO: Yanlışlarından tek tıkla özel tekrar testleri üret.';
 
     return TactileCard(
       backgroundColor: colorScheme.errorContainer.withAlpha(80),
@@ -323,7 +373,7 @@ class _MistakeHeaderCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Tekrar çözerek doğrula, defterden otomatik çıksın.',
+                      subtitleText,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -338,7 +388,10 @@ class _MistakeHeaderCard extends StatelessWidget {
             width: double.infinity,
             child: FilledButton.icon(
               onPressed: mistakeCount > 0 ? onSolveAll : null,
-              icon: const Icon(Icons.quiz_outlined),
+              icon: PhosphorIcon(
+                isPro ? PhosphorIconsBold.play : PhosphorIconsFill.crown,
+                size: 18,
+              ),
               label: Text(buttonText),
             ),
           ),
@@ -448,6 +501,50 @@ class _MistakeQuestionCard extends StatelessWidget {
                       question.explanation,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onTertiaryContainer,
+                      ),
+                    ),
+                  ],
+                  if (question.distractorTrap != null &&
+                      question.distractorTrap!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface.withAlpha(220),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                          color: colorScheme.tertiary.withAlpha(140),
+                        ),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              PhosphorIcon(
+                                PhosphorIconsFill.warning,
+                                color: colorScheme.tertiary,
+                                size: 14,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '⚠️ ÖSYM Çeldirici Tuzağı:',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.tertiary,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            question.distractorTrap!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

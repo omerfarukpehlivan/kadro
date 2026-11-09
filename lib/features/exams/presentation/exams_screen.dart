@@ -144,14 +144,46 @@ class ExamsScreen extends ConsumerWidget {
           const SectionTitle('Hazır Deneme Paketleri'),
           _ExamPackCard(
             packageId: 'exam_gk_prova_1',
+            mockExamNumber: 1,
+            isProOnly: false,
             title: 'Türkiye Geneli GK Provası #1',
             subtitle: '65 Dakika · 60 Soru',
             description: 'Gerçek sınav simülasyonu. Tarih, Coğrafya, Vatandaşlık ve Güncel Bilgiler.',
-            badgeText: 'ÖSYM Standardı',
+            badgeText: 'ÖSYM Standardı (Ücretsiz)',
             icon: PhosphorIconsDuotone.trophy,
             accentColor: colorScheme.primary,
             accentContainerColor: colorScheme.primaryContainer,
             onAccentContainerColor: colorScheme.onPrimaryContainer,
+            duration: const Duration(minutes: 65),
+          ),
+          AppSpacing.gapSm,
+          _ExamPackCard(
+            packageId: 'exam_gk_prova_2',
+            mockExamNumber: 2,
+            isProOnly: true,
+            title: 'Türkiye Geneli GK Provası #2',
+            subtitle: '65 Dakika · 60 Soru',
+            description: 'Kadro PRO özel simülasyonu. Özgün soru dağılımı ve çeldirici analizleri.',
+            badgeText: 'ÖSYM Prova #2',
+            icon: PhosphorIconsDuotone.crown,
+            accentColor: colorScheme.tertiary,
+            accentContainerColor: colorScheme.tertiaryContainer,
+            onAccentContainerColor: colorScheme.onTertiaryContainer,
+            duration: const Duration(minutes: 65),
+          ),
+          AppSpacing.gapSm,
+          _ExamPackCard(
+            packageId: 'exam_gk_prova_3',
+            mockExamNumber: 3,
+            isProOnly: true,
+            title: 'Türkiye Geneli GK Provası #3',
+            subtitle: '65 Dakika · 60 Soru',
+            description: 'Kadro PRO özel simülasyonu. İleri seviye çeldiriciler ve gerçek sınav provası.',
+            badgeText: 'ÖSYM Prova #3',
+            icon: PhosphorIconsDuotone.crown,
+            accentColor: colorScheme.tertiary,
+            accentContainerColor: colorScheme.tertiaryContainer,
+            onAccentContainerColor: colorScheme.onTertiaryContainer,
             duration: const Duration(minutes: 65),
           ),
           AppSpacing.gapSm,
@@ -162,9 +194,9 @@ class ExamsScreen extends ConsumerWidget {
             description: 'Ağırlıklı derslere özel maraton kamp denemesi ile netlerini artır.',
             badgeText: 'Lokomotif Kamp',
             icon: PhosphorIconsDuotone.fire,
-            accentColor: colorScheme.tertiary,
-            accentContainerColor: colorScheme.tertiaryContainer,
-            onAccentContainerColor: colorScheme.onTertiaryContainer,
+            accentColor: colorScheme.secondary,
+            accentContainerColor: colorScheme.secondaryContainer,
+            onAccentContainerColor: colorScheme.onSecondaryContainer,
             duration: const Duration(minutes: 40),
           ),
           AppSpacing.gapSm,
@@ -176,9 +208,9 @@ class ExamsScreen extends ConsumerWidget {
                 'Çay veya kahve molasında hızlı pratik yap, tempoyu koru.',
             badgeText: 'Hızlı Mola',
             icon: PhosphorIconsDuotone.lightning,
-            accentColor: colorScheme.secondary,
-            accentContainerColor: colorScheme.secondaryContainer,
-            onAccentContainerColor: colorScheme.onSecondaryContainer,
+            accentColor: colorScheme.primary,
+            accentContainerColor: colorScheme.primaryContainer,
+            onAccentContainerColor: colorScheme.onPrimaryContainer,
             duration: const Duration(minutes: 15),
           ),
         ],
@@ -199,6 +231,8 @@ class _ExamPackCard extends ConsumerWidget {
   final Color accentContainerColor;
   final Color onAccentContainerColor;
   final Duration duration;
+  final bool isProOnly;
+  final int? mockExamNumber;
 
   const _ExamPackCard({
     required this.packageId,
@@ -211,13 +245,20 @@ class _ExamPackCard extends ConsumerWidget {
     required this.accentContainerColor,
     required this.onAccentContainerColor,
     required this.duration,
+    this.isProOnly = false,
+    this.mockExamNumber,
   });
 
   Future<void> _handleDownload(BuildContext context, WidgetRef ref) async {
     final isPro = ref.read(userPreferencesProvider).isPro;
     if (!isPro) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const PaywallScreen(
+            reasonMessage: 'Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
+          ),
+        ),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -231,7 +272,9 @@ class _ExamPackCard extends ConsumerWidget {
     try {
       final questionRepo = ref.read(questionRepositoryProvider);
       final questions = packageId.contains('gk_prova')
-          ? await questionRepo.generateGeneralCultureMockExam(examNumber: 1)
+          ? await questionRepo.generateGeneralCultureMockExam(
+              examNumber: mockExamNumber ?? 1,
+            )
           : await questionRepo.loadAllQuestions();
       await ref
           .read(downloadedPackagesProvider.notifier)
@@ -255,6 +298,29 @@ class _ExamPackCard extends ConsumerWidget {
   }
 
   Future<void> _startExam(BuildContext context, WidgetRef ref) async {
+    final isPro = ref.read(userPreferencesProvider).isPro;
+
+    // Kadro PRO Kapısı: Deneme 2+ sınavlar yalnızca PRO abonelere açıktır.
+    if (isProOnly && !isPro) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '🔒 $title Kadro PRO üyelerine özeldir. PRO\'ya geçerek tüm deneme sınavlarına sınırsız erişebilirsin.',
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => PaywallScreen(
+            reasonMessage:
+                '$title ve tüm Türkiye Geneli KPSS Deneme Sınavları Kadro PRO üyelerine özeldir.',
+          ),
+        ),
+      );
+      return;
+    }
+
     final isOnline = ref.read(isOnlineProvider);
     final downloadedPackages = ref.read(downloadedPackagesProvider);
     final isDownloaded = downloadedPackages.contains(packageId);
@@ -297,7 +363,11 @@ class _ExamPackCard extends ConsumerWidget {
                 onPressed: () {
                   Navigator.of(dialogCtx).pop();
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PaywallScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const PaywallScreen(
+                        reasonMessage: 'Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
+                      ),
+                    ),
                   );
                 },
                 child: const Text("Kadro PRO'ya Geç"),
@@ -310,7 +380,8 @@ class _ExamPackCard extends ConsumerWidget {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => QuizScreen(
-            mockExamNumber: packageId.contains('gk_prova') ? 1 : null,
+            mockExamNumber:
+                mockExamNumber ?? (packageId.contains('gk_prova') ? 1 : null),
             examDuration: duration,
             customTitle: title,
             mode: QuizMode.exam,
@@ -325,6 +396,7 @@ class _ExamPackCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final isUserPro = ref.watch(userPreferencesProvider).isPro;
     final downloadedPackages = ref.watch(downloadedPackagesProvider);
     final isDownloaded = downloadedPackages.contains(packageId);
 
@@ -410,6 +482,45 @@ class _ExamPackCard extends ConsumerWidget {
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: colorScheme.onSecondaryContainer,
                               fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                  ],
+                  if (isProOnly) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isUserPro
+                            ? colorScheme.secondaryContainer
+                            : colorScheme.tertiaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          PhosphorIcon(
+                            isUserPro
+                                ? PhosphorIconsFill.checkCircle
+                                : PhosphorIconsFill.crown,
+                            size: 13,
+                            color: isUserPro
+                                ? colorScheme.onSecondaryContainer
+                                : colorScheme.onTertiaryContainer,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            isUserPro ? 'Kadro PRO Açık' : 'Kadro PRO',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: isUserPro
+                                  ? colorScheme.onSecondaryContainer
+                                  : colorScheme.onTertiaryContainer,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                         ],
@@ -531,7 +642,9 @@ class _ExamPackCard extends ConsumerWidget {
               Row(
                 children: [
                   Text(
-                    'Denemeyi Başlat',
+                    isProOnly && !isUserPro
+                        ? 'PRO ile Başlat'
+                        : 'Denemeyi Başlat',
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: accentColor,
                       fontWeight: FontWeight.w800,
@@ -539,7 +652,9 @@ class _ExamPackCard extends ConsumerWidget {
                   ),
                   const SizedBox(width: 4),
                   PhosphorIcon(
-                    PhosphorIconsBold.arrowRight,
+                    isProOnly && !isUserPro
+                        ? PhosphorIconsFill.crown
+                        : PhosphorIconsBold.arrowRight,
                     size: 16,
                     color: accentColor,
                   ),

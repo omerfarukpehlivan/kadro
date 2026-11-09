@@ -4970,6 +4970,26 @@ ADIM 4: Test ve Doğrulama (`test/pomodoro_studio_test.dart`)
 
 ---
 
+### 📦 TASK-99: Freemium & Kadro PRO Dengesi: Cömert Temel Deneyim + Güçlü 4 PRO Ayrıcalığı
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Kullanıcı İlkesi:** Her şey için para isteyen açgözlü paywall uygulaması olmak yerine cömert temel içerik sunup kullanıcıyı gerçek değer üreten 4 PRO özelliğiyle ikna etme modeli hayata geçirildi.
+  - **Cömert Ücretsiz Deneyim (Herkes İçin Tamamen Ücretsiz):**
+    - Tüm 1.240 soru havuzuna erişim (günlük 30 soru limiti + ödüllü reklamla +20 soru hakkı).
+    - Tüm "ÖSYM Çeldirici Tuzağı" (UWorld Modeli) ve detaylı soru açıklamaları.
+    - Tüm 200 KPSS Şifreli Bilgi Kartı (Flashcards), 50 Harita İncelemesi, 100 Doğru/Yanlış ve 20 Kavram Eşleştirme seti.
+    - Pomodoro Odaklanma Stüdyosu (Flip Clock) ve Deneme #1 (Türkiye Geneli GK Provası #1).
+    - Yanlış Defteri'ndeki tüm yanlışları, doğruları ve çeldirici tuzaklarını sınırsız inceleme/okuma.
+  - **Kadro PRO (Güçlü 4 Ayrıcalık Kapısı):**
+    - **Kapı 1 — Sınırsız Soru Çözümü & Sıfır Reklam:** Günlük 30 soru sınırına ve bekleme sürelerine takılmadan kesintisiz çalışma.
+    - **Kapı 2 — Tüm Türkiye Geneli Deneme Arşivi:** Deneme #2, #3, #4... ve periyodik eklenen tüm 60 soruluk tam kapsamlı sınav simülasyonları ve net karneleri (`ExamsScreen._ExamPackCard` üzerinde `isProOnly` kapısı).
+    - **Kapı 3 — Çevrimdışı Mod (Offline Download):** İnternetsiz ortamlarda, metroda veya otobüste soru ve deneme çözebilmek için cihaza indirme motoru.
+    - **Kapı 4 — Akıllı Yanlış Defteri Test Üretici:** Kullanıcının geçmiş yanlışlarından tek tıkla 10 veya 20 soruluk akıllı tekrar testleri üretip çözme motoru (`MistakesScreen._solveMistakes` PRO kapısı).
+  - **PaywallScreen Revizyonu:** Paywall tetiklenme nedenini açıklayan dinamik `reasonMessage` başlığı eklendi, PRO avantajları bu 4 ana sütuna göre şeffaf ve ikna edici şekilde güncellendi.
+  - **Test & Doğrulama:** `test/pro_freemium_gates_test.dart` ve `test/mistakes_screen_test.dart` testleri yazılarak tüm kapılar doğrulandı; projedeki 267/267 test 0 hata ile geçti.
+
+---
+
 ### 🔮 [GELECEK FAZ] "Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)
 
 - **Sıra No:** *Sıra No'suz (İleri Faz)*

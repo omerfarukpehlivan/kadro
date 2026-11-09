@@ -14,7 +14,10 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 /// Kullanıcı günlük soru limitine ulaştığında veya Profil sekmesinden açılır.
 /// Aylık (89 ₺), Yıllık (499 ₺) ve Sınava Kadar (349 ₺) paket seçeneklerini sunar.
 class PaywallScreen extends ConsumerStatefulWidget {
-  const PaywallScreen({super.key});
+  /// Paywall'un tetiklenme nedenini açıklayan dinamik mesaj (Örn: 'Deneme Sınavı #2 Kadro PRO üyelerine özeldir.')
+  final String? reasonMessage;
+
+  const PaywallScreen({super.key, this.reasonMessage});
 
   @override
   ConsumerState<PaywallScreen> createState() => _PaywallScreenState();
@@ -149,6 +152,36 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   ],
                 ),
               ),
+              if (widget.reasonMessage != null) ...[
+                AppSpacing.gapSm,
+                TactileCard(
+                  backgroundColor: colorScheme.tertiaryContainer.withAlpha(120),
+                  borderColor: colorScheme.tertiary.withAlpha(160),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 14,
+                  ),
+                  child: Row(
+                    children: [
+                      PhosphorIcon(
+                        PhosphorIconsFill.crown,
+                        color: colorScheme.onTertiaryContainer,
+                        size: 22,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          widget.reasonMessage!,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: colorScheme.onTertiaryContainer,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               AppSpacing.gapMd,
 
               // 2. Paket Seçenekleri Başlığı
@@ -262,7 +295,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               }),
               const SizedBox(height: 8),
 
-              // 4. PRO Avantajları Listesi
+              // 4. PRO Avantajları Listesi (Cömert Temel Deneyim + Güçlü 4 PRO Ayrıcalığı)
               TactileCard(
                 padding: const EdgeInsets.all(16),
                 backgroundColor: colorScheme.surface,
@@ -278,23 +311,20 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                     ),
                     const SizedBox(height: 10),
                     const _ProFeatureRow(
-                      title: 'Sınırsız Soru & Deneme Çözümü',
-                      description:
-                          '60 Genel Kültür sorusunda hiçbir limite takılma.',
+                      title: 'Sınırsız Soru Çözümü & Sıfır Reklam',
+                      description: 'Günlük 30 soru limitine ve bekleme sürelerine takılmadan kesintisiz çalış.',
                     ),
                     const _ProFeatureRow(
-                      title: 'Akıllı Yanlış Defteri',
-                      description: 'Tüm yanlışlarını hafızada tut ve tam öğrenene kadar çöz.',
+                      title: 'Tüm Türkiye Geneli Deneme Arşivi',
+                      description: 'Deneme #2, #3, #4 ve periyodik eklenen tüm 60 soruluk sınav simülasyonları.',
                     ),
                     const _ProFeatureRow(
-                      title: 'Haftalık Güncel Bilgiler Kartları',
-                      description:
-                          '2025 müfredatına uygun yeni hap bilgi kartları.',
+                      title: 'Çevrimdışı Soru & Deneme İndirme',
+                      description: 'Metroda, otobüste veya internet olmayan her yerde ders çalış.',
                     ),
                     const _ProFeatureRow(
-                      title: 'Reklamsız Kesintisiz Odaklanma',
-                      description:
-                          'Sıfır bekleme süresiyle kesintisiz KPSS maratonu.',
+                      title: 'Akıllı Yanlış Defteri Test Üretici',
+                      description: 'Yaptığın yanlışlardan tek tıkla 10 veya 20 soruluk akıllı tekrar testleri üret.',
                     ),
                   ],
                 ),
