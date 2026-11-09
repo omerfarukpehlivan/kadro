@@ -2,11 +2,65 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/app/theme.dart';
+import 'package:kadro/features/games/data/models/true_false_item.dart';
 import 'package:kadro/features/games/presentation/concept_match_screen.dart';
 import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
 import 'package:kadro/main.dart';
 
 void main() {
+  group('TASK-82: 100 Maddelik Doğru / Yanlış Refleks Havuzu Testleri', () {
+    test('sampleTrueFalseItems tam olarak 100 adet olmalı ve 4 derse eşit dağılmalı (25-25-25-25)', () {
+      expect(sampleTrueFalseItems.length, equals(100));
+
+      final tarihItems = sampleTrueFalseItems
+          .where((i) => i.lesson == 'Tarih')
+          .toList();
+      final cografyaItems = sampleTrueFalseItems
+          .where((i) => i.lesson == 'Coğrafya')
+          .toList();
+      final vatandaslikItems = sampleTrueFalseItems
+          .where((i) => i.lesson == 'Vatandaşlık')
+          .toList();
+      final guncelItems = sampleTrueFalseItems
+          .where((i) => i.lesson == 'Güncel Bilgiler')
+          .toList();
+
+      expect(tarihItems.length, equals(25));
+      expect(cografyaItems.length, equals(25));
+      expect(vatandaslikItems.length, equals(25));
+      expect(guncelItems.length, equals(25));
+
+      final idSet = <String>{};
+      for (final item in sampleTrueFalseItems) {
+        expect(item.id.trim(), isNotEmpty);
+        expect(
+          idSet.contains(item.id),
+          isFalse,
+          reason: 'Mükerrer önerme ID: ${item.id}',
+        );
+        idSet.add(item.id);
+
+        expect(item.topic.trim(), isNotEmpty);
+        expect(item.statement.trim(), isNotEmpty);
+        expect(item.explanation.trim(), isNotEmpty);
+      }
+    });
+
+    test('ÖSYM Çeldirici Tuzağı deşifreleri yanlış önermelerde yer almalı', () {
+      final falseItems = sampleTrueFalseItems
+          .where((item) => !item.isTrue)
+          .toList();
+      expect(falseItems.isNotEmpty, isTrue);
+
+      final trapExplanations = falseItems
+          .where((item) => item.explanation.contains('ÖSYM Çeldirici Tuzağı'))
+          .toList();
+
+      // Yanlış önermelerin neredeyse tamamı UWorld tarzı tuzak deşifresi içerir
+      expect(trapExplanations.length, greaterThanOrEqualTo(35));
+    });
+  });
+
   group('TrueFalseBlitzScreen Widget Testleri', () {
     testWidgets(
       'Doğru ve Yanlış butonları kombo, XP ve anlık açıklama kartını tetikler',
@@ -43,7 +97,7 @@ void main() {
         await tester.tap(find.text('Sonraki İfade'));
         await tester.pump();
 
-        expect(find.text('2 / 8'), findsOneWidget);
+        expect(find.text('2 / 100'), findsOneWidget);
         expect(find.text('DOĞRU'), findsOneWidget);
         expect(find.text('YANLIŞ'), findsOneWidget);
 
