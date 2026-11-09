@@ -178,8 +178,9 @@ class QuestionRepository {
     String? lesson,
     String? topic,
     bool forceRefresh = false,
+    int limit = 60,
   }) async {
-    final cacheKey = '${lesson ?? 'all'}:${topic ?? 'all'}';
+    final cacheKey = '${lesson ?? 'all'}:${topic ?? 'all'}:$limit';
     if (!forceRefresh && _cachedQuestions.containsKey(cacheKey)) {
       final cached = _cachedQuestions[cacheKey]!;
       if (DateTime.now().difference(cached.$1) < cacheTtl &&
@@ -205,12 +206,10 @@ class QuestionRepository {
         }
 
         // Deterministik ve sabit sıralama: Önce order_index'e göre artan,
-        // order_index tanımlı olmayan eski kayıtlar en sona düşer.
-        final List<dynamic> response = await filterQuery.order(
-          'order_index',
-          ascending: true,
-          nullsFirst: false,
-        );
+        // Anti-Scraping: Tek seferde en fazla [limit] (varsayılan: 60) soru çekilebilir.
+        final List<dynamic> response = await filterQuery
+            .order('order_index', ascending: true, nullsFirst: false)
+            .limit(limit);
         if (response.isNotEmpty) {
           final cloudQuestions = response
               .map((row) => Question.fromSupabase(row as Map<String, dynamic>))

@@ -49,6 +49,8 @@ class NotificationService {
 
       // Akşam 20:00 günlük hatırlatmasını planla
       await scheduleDailyStudyReminder();
+      // Pazar 10:00 haftalık deneme hatırlatmasını planla
+      await scheduleWeeklyExamReminder();
     } catch (e) {
       debugPrint(
         'NotificationService initialize hatası (Mock moda geçiliyor): $e',
@@ -126,6 +128,48 @@ class NotificationService {
     } catch (e) {
       debugPrint('showNotification hatası: $e');
     }
+  }
+
+  /// Pazar günleri haftalık 60 soruluk Genel Kültür Denemesi hatırlatıcısı planlar (TASK-97).
+  static Future<void> scheduleWeeklyExamReminder() async {
+    if (_mockMode || !_isInitialized) return;
+
+    try {
+      const AndroidNotificationDetails androidDetails =
+          AndroidNotificationDetails(
+            'weekly_exam_channel',
+            'Haftalık Deneme Hatırlatıcı',
+            channelDescription:
+                'Pazar günü KPSS Genel Kültür deneme sınavı davetleri',
+            importance: Importance.high,
+            priority: Priority.high,
+          );
+
+      const NotificationDetails platformDetails = NotificationDetails(
+        android: androidDetails,
+        iOS: DarwinNotificationDetails(),
+      );
+
+      await _notificationsPlugin.periodicallyShow(
+        id: 1002,
+        title: 'Pazar KPSS Deneme Saati ☕',
+        body: 'Bugün 60 soruluk gerçek KPSS GK deneme günü! Netlerini ölçmek için hemen başla.',
+        repeatInterval: RepeatInterval.weekly,
+        notificationDetails: platformDetails,
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      );
+    } catch (e) {
+      debugPrint('scheduleWeeklyExamReminder hatası: $e');
+    }
+  }
+
+  /// Kullanıcının çalışma serisi (streak) tehlikeye girdiğinde anlık motivasyon uyarısı gönderir (TASK-97).
+  static Future<void> triggerStreakProtectionAlert(int streakDays) async {
+    await showNotification(
+      id: 1003,
+      title: '🔥 $streakDays Günlük Serin Tehlikede!',
+      body: 'Günü kapatmadan birkaç soru çöz, serini koru ve Altın Kadro yarışında öne geç!',
+    );
   }
 
   /// Planlanan tüm bildirimleri iptal eder.

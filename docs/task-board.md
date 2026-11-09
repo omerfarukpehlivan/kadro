@@ -118,6 +118,11 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-91** | **Mikro-Analitik Soru Denemelerinin Toplu Gönderimi (`CloudSyncRepository` Batching Queue)** | Her soruda tekil HTTP POST isteği atmak yerine `_attemptQueue` içinde toplanması ve sınav bitiminde tek 1 toplu (bulk) INSERT ile gönderilmesi; ağ trafiği ve istek adedinin %98 azaltılması | ✅ **Tamamlandı** |
 | **TASK-92** | **Akıllı Çevrimdışı TTL Veri Önbelleği (`QuestionRepository` 2 Saatlik In-Memory Caching)** | Sorular, doğru/yanlış ve kavram eşleştirme verilerinin her ekran açılışında yeniden Supabase'ten çekilmeyip 2 saatlik TTL ile bellekten (0ms) sunulması; Egress maliyetinin %95 düşürülmesi | ✅ **Tamamlandı** |
 | **TASK-93** | **Supabase Dashboard & Kong API Gateway Güvenlik Rehberi (`02_security_ratelimit_hardening.sql`)** | Supabase SQL Editor için tek tıkla çalıştırılabilir rate limit migrasyonu, Kong IP rate limit ve Auth brute-force koruma kılavuzunun hazırlanması | ✅ **Tamamlandı** |
+| **TASK-94** | **Sürüm Kontrolü & Dinamik Bakım Modu (Remote Config & Force Update)** | Supabase `public.app_config` tablosu, `AppConfigService`, eski sürümleri Google Play'e yönlendiren `ForceUpdateDialog` ve bakım modu ekranı | ✅ **Tamamlandı** |
+| **TASK-95** | **Veritabanı Otomatik Temizlik & Boyut Koruma (Data Retention & Auto-Purge Trigger)** | 30 günden eski mikro soru loglarını otomatik arşivleyen/temizleyen PostgreSQL `purge_expired_attempt_logs()` motoru | ✅ **Tamamlandı** |
+| **TASK-96** | **Soru Havuzu Güvenliği & Telif / Kazıma (Scraping) Kalkanı** | Maksimum soru sorgu limiti kuralı (`limit(60)`) ve soru çözüm ekranlarında ekran kaydı/görüntüsü almayı engelleyen güvenlik kalkanı | ✅ **Tamamlandı** |
+| **TASK-97** | **Akıllı Yerel Hatırlatıcılar & Alışkanlık Döngüsü (Daily Habit & Streak Notifications)** | İnternetsiz çalışan akşam 20:30 seri koruma ve Pazar 10:00 genel deneme yerel bildirimleri | ✅ **Tamamlandı** |
+| **TASK-98** | **Dopamin Anında 5 Yıldız Puan Toplama Motoru (In-App Review Engine)** | Rekor net, 7 günlük streak veya 10'da 10 yapıldığında uygulama içinden Google Play yıldız penceresini açma | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4915,6 +4920,53 @@ ADIM 4: Test ve Doğrulama (`test/pomodoro_studio_test.dart`)
   - `docs/supabase_migrations/02_security_ratelimit_hardening.sql` ve `02_README_SECURITY_GUIDE.md` dosyaları oluşturuldu.
   - Masaüstündeki `C:\Users\omere\Desktop\kpss-supabase-sql\` klasörüne kopyalanarak kullanıcıya tek tıkla kurulum sağlandı.
   - Kong API Gateway IP rate-limit ve Auth brute-force koruma adımları dokümante edildi.
+
+---
+
+### 📦 TASK-94: Sürüm Kontrolü & Dinamik Bakım Modu (Remote Config & Force Update)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - Supabase `public.app_config` tablosu (`min_supported_version`, `latest_version`, `is_maintenance_mode`, `maintenance_message`, `store_url`).
+  - `AppConfigService` & `AppConfigNotifier`: Uygulama açılışında sürüm ve bakım kontrolü yapar.
+  - Sürüm eskiyse zarif ve modern bir zorunlu güncelleme diyaloğu (`ForceUpdateDialog`) ile Google Play Store'a yönlendirir.
+  - Bakım modu aktifse kullanıcıya şık bir bakım ekranı (`MaintenanceScreen`) gösterir.
+  - Çevrimdışı iken sessizce yerel modda devam eder.
+
+---
+
+### 📦 TASK-95: Veritabanı Otomatik Temizlik & Boyut Koruma (Data Retention & Auto-Purge Trigger)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - `question_attempt_logs` tablosunda 30 günden eski veya çözülmüş logları temizleyen `public.purge_expired_attempt_logs()` PL/pgSQL fonksiyonu.
+  - `quiz_sessions` kaydedildiğinde arka planda tetiklenen hafif temizlik mekanizması.
+  - Supabase disk kotasını (500MB free / compute limits) yıllarca sabit ve düşük tutma.
+
+---
+
+### 📦 TASK-96: Soru Havuzu Güvenliği & Telif / Kazıma (Scraping) Kalkanı
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - `QuestionRepository.fetchQuestions`: Tek bir istekte sınırsız soru çekilmesini engellemek için sunucu ve istemci tarafında maksimum sorgu limit kuralı (`limit(60)`).
+  - Soru çözüm ve deneme sınavı ekranlarında ekran kaydı/görüntüsü almayı engelleyen koruma mekanizması.
+
+---
+
+### 📦 TASK-97: Akıllı Yerel Hatırlatıcılar & Alışkanlık Döngüsü (Daily Habit & Streak Notifications)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - `NotificationService`: İnternet gerektirmeyen yerel bildirim motoru geliştirilmesi.
+  - Akşam 20:30 "Seri & Hedef Hatırlatıcısı" (Kullanıcı günlük hedefini tamamlamadıysa *"🔥 5 günlük serin bozulmak üzere! 10 soru çöz serini koru"*).
+  - Pazar 10:00 "Haftalık KPSS Genel Kültür Denemesi" daveti.
+  - Profil ayarlarından bildirimleri açıp kapatabilme (`UserPreferencesNotifier`).
+
+---
+
+### 📦 TASK-98: Dopamin Anında 5 Yıldız Puan Toplama Motoru (In-App Review Engine)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - `InAppReviewService`: `in_app_review` entegrasyonu ile Google Play Store yıldız penceresini uygulama içinden açma.
+  - Tetikleyiciler: Rekor net, 7 günlük streak veya 10'da 10 tam puan.
+  - Boğucu olmaması için 30 günde en fazla 1 kez tetiklenme kuralı.
 
 ---
 

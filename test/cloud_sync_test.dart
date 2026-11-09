@@ -234,5 +234,11 @@ void main() {
         expect(leaderboard.first.leagueTier, 'Altın Kadro');
       },
     );
+    test('TASK-95: purgeExpiredAttemptLogs offline modda 0 dönmeli ve hata fırlatmamalı', () async {
+      final purged = await repository.purgeExpiredAttemptLogs(
+        retentionDays: 30,
+      );
+      expect(purged, equals(0));
+    });
   });
 }

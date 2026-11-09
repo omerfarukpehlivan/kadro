@@ -145,6 +145,25 @@ class CloudSyncRepository {
     }
   }
 
+  /// 30 günden eski veya Yanlış Defteri'nde çözülmüş mikro-analitik kayıtlarını temizler (TASK-95).
+  ///
+  /// Veritabanı disk kotasını korur ve sorgu performansını artırır.
+  Future<int> purgeExpiredAttemptLogs({int retentionDays = 30}) async {
+    final client = SupabaseConfig.clientOrNull;
+    if (client == null) return 0;
+
+    try {
+      final response = await client.rpc(
+        'purge_expired_attempt_logs',
+        params: {'p_retention_days': retentionDays},
+      );
+      return (response as num?)?.toInt() ?? 0;
+    } catch (e) {
+      debugPrint('[CloudSyncRepository] purgeExpiredAttemptLogs hatası: $e');
+      return 0;
+    }
+  }
+
   /// Testler için kuyruğu ve hız sınırlarını temizler.
   static void clearQueueForTest() {
     _attemptQueue.clear();
