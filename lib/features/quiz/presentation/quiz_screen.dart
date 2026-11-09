@@ -93,6 +93,7 @@ class QuizScreen extends ConsumerStatefulWidget {
   final Duration? examDuration;
   final String? customTitle;
   final bool fetchAllFromPool;
+  final int? mockExamNumber;
   final QuizMode? mode;
   final int? limit;
 
@@ -106,6 +107,7 @@ class QuizScreen extends ConsumerStatefulWidget {
     this.examDuration,
     this.customTitle,
     this.fetchAllFromPool = false,
+    this.mockExamNumber,
     this.mode,
     this.limit,
   });
@@ -183,7 +185,10 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       _questions = widget.limit != null
           ? defaultSampleQuestions.take(widget.limit!).toList()
           : defaultSampleQuestions;
-      if (widget.fetchAllFromPool ||
+      if (widget.mockExamNumber != null) {
+        _isLoading = true;
+        _fetchMockExam();
+      } else if (widget.fetchAllFromPool ||
           widget.lessonFilter != null ||
           widget.topicFilter != null) {
         _isLoading = true;
@@ -211,6 +216,20 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
         }
       });
     }
+  }
+
+  Future<void> _fetchMockExam() async {
+    final fetched = await widget.questionRepository
+        .generateGeneralCultureMockExam(examNumber: widget.mockExamNumber ?? 1);
+    if (!mounted) return;
+    setState(() {
+      if (fetched.isNotEmpty) {
+        _questions = widget.limit != null
+            ? fetched.take(widget.limit!).toList()
+            : fetched;
+      }
+      _isLoading = false;
+    });
   }
 
   Future<void> _fetchFilteredQuestions() async {
@@ -262,13 +281,20 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   void _onOptionTap(int index) {
-    // Öğrenme modunda onaylanan soru kilitlenir; sınav modunda geri dönülüp şık değiştirilebilir
+    // Öğrenme modunda onaylanan soru kilitlenir; sınav modunda geri dönülüp şık değiştirilebilir veya boş bırakılabilir
     if (!_isExamMode && _isAnswered) return;
 
     setState(() {
-      _selectedOptionIndex = index;
-      _userAnswers[_currentIndex] = index;
-      _answeredStatus[_currentIndex] = true;
+      if (_isExamMode && _selectedOptionIndex == index) {
+        // Tekrar basıldığında seçimi temizle (boş bırakma desteği)
+        _selectedOptionIndex = null;
+        _userAnswers.remove(_currentIndex);
+        _answeredStatus[_currentIndex] = false;
+      } else {
+        _selectedOptionIndex = index;
+        _userAnswers[_currentIndex] = index;
+        _answeredStatus[_currentIndex] = true;
+      }
     });
   }
 
@@ -323,13 +349,191 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   void _goToNextQuestion() {
-    if (_currentIndex >= _maxReachedIndex) return;
+    final maxAllowed = _isExamMode ? _questions.length - 1 : _maxReachedIndex;
+    if (_currentIndex >= maxAllowed) return;
     setState(() {
       _currentIndex++;
       _selectedOptionIndex = _userAnswers[_currentIndex];
       _isAnswered = _answeredStatus[_currentIndex] ?? false;
       _showMistakeNotice = false;
     });
+  }
+
+  void _goToQuestion(int index) {
+    if (index < 0 || index >= _questions.length) return;
+    setState(() {
+      _currentIndex = index;
+      if (_currentIndex > _maxReachedIndex) {
+        _maxReachedIndex = _currentIndex;
+      }
+      _selectedOptionIndex = _userAnswers[_currentIndex];
+      _isAnswered = _answeredStatus[_currentIndex] ?? false;
+      _showMistakeNotice = false;
+    });
+  }
+
+  void _showQuestionPaletteBottomSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      clipBehavior: Clip.antiAlias,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        final colorScheme = theme.colorScheme;
+        final answeredCount = _userAnswers.values
+            .where((v) => v != null)
+            .length;
+        final emptyCount = _questions.length - answeredCount;
+        const optionLetters = ['A', 'B', 'C', 'D', 'E'];
+
+        return DraggableScrollableSheet(
+          initialChildSize: 0.55,
+          minChildSize: 0.35,
+          maxChildSize: 0.85,
+          expand: false,
+          builder: (sheetContext, scrollController) {
+            return Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(top: 12, bottom: 8),
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: colorScheme.outlineVariant,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Soru Gezinti Paleti',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '$answeredCount Dolu · $emptyCount Boş',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          _finishQuiz();
+                        },
+                        icon: const PhosphorIcon(
+                          PhosphorIconsBold.checkCircle,
+                          size: 16,
+                        ),
+                        label: const Text('Sınavı Bitir'),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                Expanded(
+                  child: GridView.builder(
+                    controller: scrollController,
+                    padding: const EdgeInsets.all(16),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 6,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          childAspectRatio: 1,
+                        ),
+                    itemCount: _questions.length,
+                    itemBuilder: (context, idx) {
+                      final isCurrent = idx == _currentIndex;
+                      final ansIndex = _userAnswers[idx];
+                      final isAnswered = ansIndex != null;
+                      final letter =
+                          isAnswered &&
+                              ansIndex >= 0 &&
+                              ansIndex < optionLetters.length
+                          ? optionLetters[ansIndex]
+                          : '';
+
+                      return InkWell(
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _goToQuestion(idx);
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: isCurrent
+                                ? colorScheme.primaryContainer
+                                : isAnswered
+                                ? colorScheme.primary
+                                : colorScheme.surfaceContainerHighest
+                                      .withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isCurrent
+                                  ? colorScheme.primary
+                                  : isAnswered
+                                  ? Colors.transparent
+                                  : colorScheme.outlineVariant,
+                              width: isCurrent ? 2 : 1,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                '${idx + 1}',
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: isAnswered
+                                      ? colorScheme.onPrimary
+                                      : isCurrent
+                                      ? colorScheme.onPrimaryContainer
+                                      : colorScheme.onSurface,
+                                ),
+                              ),
+                              if (isAnswered)
+                                Text(
+                                  letter,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    color: colorScheme.onPrimary.withValues(
+                                      alpha: 0.9,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   void _nextQuestion() {
@@ -393,12 +597,42 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       }
     }
 
+    // Ders bazında net ve performans dökümünü hesapla
+    final lessonGrouped = <String, List<int>>{};
+    for (var i = 0; i < _questions.length; i++) {
+      final q = _questions[i];
+      lessonGrouped.putIfAbsent(q.lesson, () => [0, 0, 0]);
+      final ans = _userAnswers[i];
+      if (ans == null) {
+        lessonGrouped[q.lesson]![2]++;
+      } else if (q.isCorrect(ans)) {
+        lessonGrouped[q.lesson]![0]++;
+      } else {
+        lessonGrouped[q.lesson]![1]++;
+      }
+    }
+
+    final lessonBreakdown = <String, LessonResult>{};
+    lessonGrouped.forEach((lesson, stats) {
+      final c = stats[0];
+      final w = stats[1];
+      final e = stats[2];
+      lessonBreakdown[lesson] = LessonResult(
+        lesson: lesson,
+        totalQuestions: c + w + e,
+        correctCount: c,
+        wrongCount: w,
+        emptyCount: e,
+      );
+    });
+
     final emptyCount = _questions.length - (_correctCount + _wrongCount);
     final result = QuizResult(
       totalQuestions: _questions.length,
       correctCount: _correctCount,
       wrongCount: _wrongCount,
       emptyCount: emptyCount,
+      lessonBreakdown: lessonBreakdown,
     );
 
     try {
@@ -514,6 +748,11 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           _QuizModeBadge(mode: _effectiveMode, onToggle: _toggleQuizMode),
           if (widget.examDuration != null)
             _ExamTimerBadge(remainingSeconds: _remainingSeconds),
+          IconButton(
+            icon: const PhosphorIcon(PhosphorIconsBold.squaresFour, size: 20),
+            tooltip: 'Soru Gezinti Paleti',
+            onPressed: _showQuestionPaletteBottomSheet,
+          ),
           IconButton(
             icon: const PhosphorIcon(PhosphorIconsBold.flag, size: 20),
             tooltip: 'Hatalı Soru Bildir',

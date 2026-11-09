@@ -6,6 +6,7 @@ import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
+import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
@@ -127,9 +128,10 @@ class ExamsScreen extends ConsumerWidget {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => const QuizScreen(
+                      mockExamNumber: 1,
                       examDuration: Duration(minutes: 65),
-                      customTitle: 'Genel Kültür Denemesi',
-                      fetchAllFromPool: true,
+                      customTitle: 'Genel Kültür Denemesi #1',
+                      mode: QuizMode.exam,
                     ),
                   ),
                 );
@@ -228,7 +230,9 @@ class _ExamPackCard extends ConsumerWidget {
 
     try {
       final questionRepo = ref.read(questionRepositoryProvider);
-      final questions = await questionRepo.loadAllQuestions();
+      final questions = packageId.contains('gk_prova')
+          ? await questionRepo.generateGeneralCultureMockExam(examNumber: 1)
+          : await questionRepo.loadAllQuestions();
       await ref
           .read(downloadedPackagesProvider.notifier)
           .downloadPackage(
@@ -306,9 +310,11 @@ class _ExamPackCard extends ConsumerWidget {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => QuizScreen(
+            mockExamNumber: packageId.contains('gk_prova') ? 1 : null,
             examDuration: duration,
             customTitle: title,
-            fetchAllFromPool: true,
+            mode: QuizMode.exam,
+            fetchAllFromPool: !packageId.contains('gk_prova'),
           ),
         ),
       );

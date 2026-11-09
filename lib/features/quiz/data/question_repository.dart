@@ -45,6 +45,113 @@ class QuestionRepository {
   /// Havuzdaki tüm soruları (varsa Supabase, yoksa yerel JSON) yükler.
   Future<List<Question>> fetchAllFromPool() => fetchQuestions();
 
+  /// 60 Soruluk Resmi KPSS Lisans Genel Kültür Deneme Sınavı Motoru (TASK-87).
+  ///
+  /// ÖSYM standart soru dağılımı:
+  /// - Tarih: 27 Soru (1..27)
+  /// - Coğrafya: 18 Soru (28..45)
+  /// - Vatandaşlık: 9 Soru (46..54)
+  /// - Güncel Bilgiler: 6 Soru (55..60)
+  /// Toplam: 60 Soru, 65 Dakika.
+  ///
+  /// [examNumber] (1, 2, 3...) parametresiyle her deneme paketi için
+  /// tekrara düşmeyen, dengeli konu dağılımlı deterministik soru seti üretir.
+  Future<List<Question>> generateGeneralCultureMockExam({
+    int examNumber = 1,
+  }) async {
+    final allQuestions = await loadAllQuestions();
+
+    List<Question> pickTopicQuestions(
+      String lesson,
+      String topic,
+      int count,
+      int examIdx,
+    ) {
+      final matching = allQuestions
+          .where((q) => q.lesson == lesson && q.topic == topic)
+          .toList();
+      if (matching.isEmpty) return [];
+
+      final startIndex = ((examIdx - 1) * count) % matching.length;
+      final selected = <Question>[];
+      for (var i = 0; i < count; i++) {
+        selected.add(matching[(startIndex + i) % matching.length]);
+      }
+      return selected;
+    }
+
+    final examQuestions = <Question>[];
+
+    // 1. Tarih (27 Soru)
+    final tarihSpecs = [
+      ('İslamiyet Öncesi Türk Tarihi', 4),
+      ('İlk Türk-İslam Devletleri', 4),
+      ('Osmanlı Kültür ve Uygarlığı', 6),
+      ('Osmanlı Dağılma Dönemi', 4),
+      ('Kurtuluş Savaşı Hazırlık ve Cepheler', 3),
+      ('Atatürk İlke ve İnkılapları', 3),
+      ('Çağdaş Türk ve Dünya Tarihi', 3),
+    ];
+    for (final spec in tarihSpecs) {
+      examQuestions.addAll(
+        pickTopicQuestions('Tarih', spec.$1, spec.$2, examNumber),
+      );
+    }
+
+    // 2. Coğrafya (18 Soru)
+    final cografyaSpecs = [
+      ("Türkiye'nin Coğrafi Konumu", 3),
+      ("Türkiye'nin Yer Şekilleri ve İklimi", 3),
+      ("Türkiye'de Nüfus ve Yerleşme", 3),
+      ("Türkiye'de Tarım ve Hayvancılık", 3),
+      ('Madenler ve Enerji Kaynakları', 3),
+      ('Sanayi, Ticaret ve Ulaşım', 3),
+    ];
+    for (final spec in cografyaSpecs) {
+      examQuestions.addAll(
+        pickTopicQuestions('Coğrafya', spec.$1, spec.$2, examNumber),
+      );
+    }
+
+    // 3. Vatandaşlık (9 Soru)
+    final vatandaslikSpecs = [
+      ('Temel Hukuk Kavramları', 2),
+      ('1982 Anayasası ve Temel İlkeler', 2),
+      ('Temel Hak ve Ödevler', 1),
+      ('Yasama, Yürütme ve Yargı', 2),
+      ('İdare Hukuku', 1),
+      ('Uluslararası Kuruluşlar', 1),
+    ];
+    for (final spec in vatandaslikSpecs) {
+      examQuestions.addAll(
+        pickTopicQuestions('Vatandaşlık', spec.$1, spec.$2, examNumber),
+      );
+    }
+
+    // 4. Güncel Bilgiler (6 Soru)
+    final guncelSpecs = [
+      ('Türkiye ve Dünya Gündemi', 1),
+      ('Kültür, Sanat ve Edebiyat', 1),
+      ('Bilim ve Teknoloji Gelişmeleri', 1),
+      ('Spor ve Olimpiyatlar', 1),
+      ('UNESCO Miras Listesi', 1),
+      ('Önemli Günler ve Zirveler', 1),
+    ];
+    for (final spec in guncelSpecs) {
+      examQuestions.addAll(
+        pickTopicQuestions('Güncel Bilgiler', spec.$1, spec.$2, examNumber),
+      );
+    }
+
+    // Sınav içindeki sıra numarasını 1..60 olarak kopyala
+    final indexedExam = <Question>[];
+    for (var i = 0; i < examQuestions.length; i++) {
+      indexedExam.add(examQuestions[i].copyWith(orderIndex: i + 1));
+    }
+
+    return indexedExam;
+  }
+
   /// Belirli bir derse (`lessonName`) ait soruları yerel dosyadan filtreleyerek döner.
   Future<List<Question>> getQuestionsByLesson(String lessonName) async {
     final allQuestions = await loadAllQuestions();

@@ -145,6 +145,14 @@ class QuizResultScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
+              // Ders bazında detaylı karne (TASK-87)
+              if (result.hasLessonBreakdown) ...[
+                _LessonBreakdownReportCard(
+                  lessonBreakdown: result.lessonBreakdown!,
+                ),
+                const SizedBox(height: 8),
+              ],
+
               // Zafer Karnesi Paylaşım Butonu (TASK-52 & TASK-70)
               FilledButton.tonalIcon(
                 onPressed: () => _showShareModal(context),
@@ -348,5 +356,141 @@ class _ResultStatItem extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+/// 4 Genel Kültür dersinin net ve doğruluk dökümünü gösteren resmi karne kartı (TASK-87).
+class _LessonBreakdownReportCard extends StatelessWidget {
+  final Map<String, LessonResult> lessonBreakdown;
+
+  const _LessonBreakdownReportCard({required this.lessonBreakdown});
+
+  IconData _getLessonIcon(String lesson) {
+    if (lesson == 'Tarih') return PhosphorIconsDuotone.scroll;
+    if (lesson == 'Coğrafya') return PhosphorIconsDuotone.compass;
+    if (lesson == 'Vatandaşlık') return PhosphorIconsDuotone.scales;
+    return PhosphorIconsDuotone.newspaperClipping;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return TactileCard(
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              PhosphorIcon(
+                PhosphorIconsBold.chartBar,
+                size: 20,
+                color: colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Ders Bazlı Net Karnesi',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  'ÖSYM Standardı',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          const SizedBox(height: 8),
+          ...lessonBreakdown.values.map((item) {
+            final netFormatted = item.net.toStringAsFixed(2);
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      PhosphorIcon(
+                        _getLessonIcon(item.lesson),
+                        size: 16,
+                        color: colorScheme.primary,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '${item.lesson} (${item.totalQuestions} Soru)',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '$netFormatted Net',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: item.net >= (item.totalQuestions * 0.7)
+                              ? colorScheme.tertiary
+                              : item.net >= (item.totalQuestions * 0.4)
+                              ? colorScheme.primary
+                              : colorScheme.error,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: item.totalQuestions > 0
+                                ? (item.correctCount / item.totalQuestions)
+                                      .clamp(0.0, 1.0)
+                                : 0.0,
+                            minHeight: 6,
+                            backgroundColor:
+                                colorScheme.surfaceContainerHighest,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              item.net >= (item.totalQuestions * 0.7)
+                                  ? colorScheme.tertiary
+                                  : colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        '${item.correctCount}D  ${item.wrongCount}Y  ${item.emptyCount}B',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    ).animate().fadeIn(duration: 250.ms);
   }
 }

@@ -182,8 +182,8 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // 1/9 Test rozeti görünmeli (ve henüz hepsi bitmediği için PhosphorIconsBold.chartPieSlice bulunmalı)
-        expect(find.text('1/9 Test'), findsOneWidget);
+        // 1/8 Test rozeti görünmeli (ve henüz hepsi bitmediği için PhosphorIconsBold.chartPieSlice bulunmalı)
+        expect(find.text('1/8 Test'), findsOneWidget);
         expect(find.byIcon(PhosphorIconsBold.chartPieSlice), findsOneWidget);
 
         // Sol yuvarlak düğümde tik OLMAMALI (findsNothing)
@@ -267,8 +267,8 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // İlk konu hiç çözülmediğinde 0/9 Test görünmeli
-      expect(find.text('0/9 Test'), findsWidgets);
+      // İlk konu hiç çözülmediğinde 0/8 Test görünmeli
+      expect(find.text('0/8 Test'), findsWidgets);
     });
   });
 }
