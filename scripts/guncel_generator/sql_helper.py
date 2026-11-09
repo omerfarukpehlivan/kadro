@@ -8,7 +8,7 @@ def escape_sql_str(text: str) -> str:
     # Replace single quote with two single quotes
     return text.replace("'", "''")
 
-def question_to_sql_insert(q: dict) -> str:
+def question_to_sql_insert(q: dict, order_index: int = None) -> str:
     """Converts a question dictionary to an INSERT statement for public.questions."""
     lesson = escape_sql_str(q['lesson'])
     topic = escape_sql_str(q['topic'])
@@ -26,7 +26,30 @@ def question_to_sql_insert(q: dict) -> str:
     explanation = escape_sql_str(q['explanation'].strip())
     distractor_trap = escape_sql_str(q['distractor_trap'].strip())
     
-    sql = f"""insert into public.questions (
+    if order_index is not None:
+        sql = f"""insert into public.questions (
+  lesson,
+  topic,
+  question_type,
+  difficulty,
+  prompt_text,
+  interaction_data,
+  explanation,
+  distractor_trap,
+  order_index
+) values (
+  '{lesson}',
+  '{topic}',
+  '{q_type}',
+  {diff},
+  '{prompt}',
+  '{interaction_json}'::jsonb,
+  '{explanation}',
+  '{distractor_trap}',
+  {order_index}
+);"""
+    else:
+        sql = f"""insert into public.questions (
   lesson,
   topic,
   question_type,
