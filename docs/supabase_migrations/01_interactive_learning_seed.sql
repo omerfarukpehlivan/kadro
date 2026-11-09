@@ -1,6 +1,6 @@
 -- =============================================================================
 -- KADRO KPSS LİSANS GENEL KÜLTÜR — İNTERAKTİF ÖĞRENME & OYUNLAR SUPABASE MİGRASYONU
--- Oluşturulma: 2026-11-09T19:39:07.588618
+-- Oluşturulma: 2026-11-09T19:42:49.291018
 -- İçerik:
 --   1. public.flashcards (200 Adet KPSS Şifre & Hap Bilgi Kartı)
 --   2. public.questions - true_false (100 Adet 60 Saniyede Pençe Şimşek Önermesi)
@@ -66,6 +66,7 @@ create index if not exists idx_map_challenges_category on public.map_challenges 
 
 -- Questions tablosu indeks ve order_index güncellemesi
 alter table public.questions add column if not exists order_index integer;
+alter table public.questions alter column explanation drop not null;
 create index if not exists idx_questions_type_lesson_topic on public.questions (question_type, lesson, topic);
 create index if not exists idx_questions_order_index on public.questions (order_index);
 
@@ -2918,6 +2919,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Tarih',
@@ -2926,6 +2928,7 @@ insert into public.questions (
   2,
   'Tarih: Antlaşmalar & Önemi',
   '{"pairs":[{"id":"h1_1","leftTerm":"Lozan Antlaşması","rightMatch":"Kapitülasyonların Kaldırılması"},{"id":"h1_2","leftTerm":"Mondros Ateşkesi","rightMatch":"7. ve 24. Maddelerle İşgal Zeminini Hazırlama"},{"id":"h1_3","leftTerm":"Mudanya Ateşkesi","rightMatch":"Doğu Trakya''nın Savaşsız Kurtarılması"},{"id":"h1_4","leftTerm":"Gümrü Antlaşması","rightMatch":"TBMM''nin Uluslararası İlk Siyasi Zaferi"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Lozan Antlaşması ➔ Kapitülasyonların Kaldırılması; Mondros Ateşkesi ➔ 7. ve 24. Maddelerle İşgal Zeminini Hazırlama; Mudanya Ateşkesi ➔ Doğu Trakya''nın Savaşsız Kurtarılması; Gümrü Antlaşması ➔ TBMM''nin Uluslararası İlk Siyasi Zaferi',
   1
 );
 insert into public.questions (
@@ -2935,6 +2938,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Tarih',
@@ -2943,6 +2947,7 @@ insert into public.questions (
   2,
   'Tarih: Padişahlar & Islahatlar',
   '{"pairs":[{"id":"h2_1","leftTerm":"Orhan Bey","rightMatch":"İlk Divan Teşkilatı ve İznik Medresesi"},{"id":"h2_2","leftTerm":"I. Murat","rightMatch":"Yeniçeri Ocağı (Kapıkulu) ve Tımar Sistemi"},{"id":"h2_3","leftTerm":"II. Mahmut","rightMatch":"Yeniçeri Ocağının Kaldırılması (Vaka-i Hayriye)"},{"id":"h2_4","leftTerm":"III. Selim","rightMatch":"Nizam-ı Cedit Ordusu ve İrad-ı Cedit Hazinesi"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Orhan Bey ➔ İlk Divan Teşkilatı ve İznik Medresesi; I. Murat ➔ Yeniçeri Ocağı (Kapıkulu) ve Tımar Sistemi; II. Mahmut ➔ Yeniçeri Ocağının Kaldırılması (Vaka-i Hayriye); III. Selim ➔ Nizam-ı Cedit Ordusu ve İrad-ı Cedit Hazinesi',
   2
 );
 insert into public.questions (
@@ -2952,6 +2957,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Tarih',
@@ -2960,6 +2966,7 @@ insert into public.questions (
   2,
   'Tarih: Muharebeler & Sonuçları',
   '{"pairs":[{"id":"h3_1","leftTerm":"I. İnönü Muharebesi","rightMatch":"Teşkilat-ı Esasiye ve İstiklal Marşı''nın Kabulü"},{"id":"h3_2","leftTerm":"Sakarya Meydan Muharebesi","rightMatch":"1683 Viyana Kuşatması''ndan Beri Geri Çekilişin Sonu"},{"id":"h3_3","leftTerm":"Kütahya-Eskişehir Muharebeleri","rightMatch":"Mustafa Kemal''e 3 Aylık Başkomutanlık Verilmesi"},{"id":"h3_4","leftTerm":"Büyük Taarruz","rightMatch":"Mudanya Ateşkesine ve Kurtuluşa Zemin Hazırlama"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: I. İnönü Muharebesi ➔ Teşkilat-ı Esasiye ve İstiklal Marşı''nın Kabulü; Sakarya Meydan Muharebesi ➔ 1683 Viyana Kuşatması''ndan Beri Geri Çekilişin Sonu; Kütahya-Eskişehir Muharebeleri ➔ Mustafa Kemal''e 3 Aylık Başkomutanlık Verilmesi; Büyük Taarruz ➔ Mudanya Ateşkesine ve Kurtuluşa Zemin Hazırlama',
   3
 );
 insert into public.questions (
@@ -2969,6 +2976,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Tarih',
@@ -2977,6 +2985,7 @@ insert into public.questions (
   2,
   'Tarih: Genelgeler & Kongreler',
   '{"pairs":[{"id":"h4_1","leftTerm":"Havza Genelgesi","rightMatch":"İşgallere Karşı İlk Resmî Protesto ve Miting Çağrısı"},{"id":"h4_2","leftTerm":"Amasya Genelgesi","rightMatch":"Millî Mücadele''nin Amacı, Gerekçesi ve Yöntemi"},{"id":"h4_3","leftTerm":"Erzurum Kongresi","rightMatch":"İlk Kez Misak-ı Millî Sınırları ve Temsil Heyeti"},{"id":"h4_4","leftTerm":"Sivas Kongresi","rightMatch":"Tüm Millî Cemiyetlerin Tek Çatı Altında Birleşmesi"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Havza Genelgesi ➔ İşgallere Karşı İlk Resmî Protesto ve Miting Çağrısı; Amasya Genelgesi ➔ Millî Mücadele''nin Amacı, Gerekçesi ve Yöntemi; Erzurum Kongresi ➔ İlk Kez Misak-ı Millî Sınırları ve Temsil Heyeti; Sivas Kongresi ➔ Tüm Millî Cemiyetlerin Tek Çatı Altında Birleşmesi',
   4
 );
 insert into public.questions (
@@ -2986,6 +2995,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Tarih',
@@ -2994,6 +3004,7 @@ insert into public.questions (
   2,
   'Tarih: Türk-İslam Eserleri & Yazarları',
   '{"pairs":[{"id":"h5_1","leftTerm":"Kutadgu Bilig","rightMatch":"Yusuf Has Hacib (İlk Türk-İslam Siyasetnamesi)"},{"id":"h5_2","leftTerm":"Divanü Lugati''t-Türk","rightMatch":"Kaşgarlı Mahmud (İlk Türkçe Sözlük ve Harita)"},{"id":"h5_3","leftTerm":"Atabetü''l-Hakayık","rightMatch":"Edip Ahmet Yükneki (Ahlak ve Hakikatler Eşiği)"},{"id":"h5_4","leftTerm":"Divan-ı Hikmet","rightMatch":"Hoca Ahmet Yesevi (İlk Tasavvuf Eseri)"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Kutadgu Bilig ➔ Yusuf Has Hacib (İlk Türk-İslam Siyasetnamesi); Divanü Lugati''t-Türk ➔ Kaşgarlı Mahmud (İlk Türkçe Sözlük ve Harita); Atabetü''l-Hakayık ➔ Edip Ahmet Yükneki (Ahlak ve Hakikatler Eşiği); Divan-ı Hikmet ➔ Hoca Ahmet Yesevi (İlk Tasavvuf Eseri)',
   5
 );
 insert into public.questions (
@@ -3003,6 +3014,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Tarih',
@@ -3011,6 +3023,7 @@ insert into public.questions (
   2,
   'Tarih: Atatürk İnkılapları & Alanları',
   '{"pairs":[{"id":"h6_1","leftTerm":"Tevhid-i Tedrisat Kanunu","rightMatch":"Eğitim ve Öğretimin Tek Çatı Altında Birleşmesi"},{"id":"h6_2","leftTerm":"Medeni Kanun''un Kabulü","rightMatch":"Patrikhanenin Dünyevi Yetkilerinin Sona Ermesi"},{"id":"h6_3","leftTerm":"Kabotaj Kanunu","rightMatch":"Türk Karasularında Deniz Ticareti Bağımsızlığı"},{"id":"h6_4","leftTerm":"Teşvik-i Sanayi Kanunu","rightMatch":"Özel Sektörü Destekleme ve Sanayileşme Hamlesi"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Tevhid-i Tedrisat Kanunu ➔ Eğitim ve Öğretimin Tek Çatı Altında Birleşmesi; Medeni Kanun''un Kabulü ➔ Patrikhanenin Dünyevi Yetkilerinin Sona Ermesi; Kabotaj Kanunu ➔ Türk Karasularında Deniz Ticareti Bağımsızlığı; Teşvik-i Sanayi Kanunu ➔ Özel Sektörü Destekleme ve Sanayileşme Hamlesi',
   6
 );
 insert into public.questions (
@@ -3020,6 +3033,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Coğrafya',
@@ -3028,6 +3042,7 @@ insert into public.questions (
   2,
   'Coğrafya: Madenler & Merkezler',
   '{"pairs":[{"id":"g1_1","leftTerm":"Divriği & Hekimhan","rightMatch":"Demir Çıkarım Alanı"},{"id":"g1_2","leftTerm":"Murgul & Küre","rightMatch":"Bakır Çıkarım Alanı"},{"id":"g1_3","leftTerm":"Seydişehir & Akseki","rightMatch":"Boksit (Alüminyum) Alanı"},{"id":"g1_4","leftTerm":"Kırka & Emet","rightMatch":"Bor Mineralleri Alanı"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Divriği & Hekimhan ➔ Demir Çıkarım Alanı; Murgul & Küre ➔ Bakır Çıkarım Alanı; Seydişehir & Akseki ➔ Boksit (Alüminyum) Alanı; Kırka & Emet ➔ Bor Mineralleri Alanı',
   7
 );
 insert into public.questions (
@@ -3037,6 +3052,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Coğrafya',
@@ -3045,6 +3061,7 @@ insert into public.questions (
   2,
   'Coğrafya: Ovalar & Oluşum Kökenleri',
   '{"pairs":[{"id":"g2_1","leftTerm":"Çukurova & Bafra","rightMatch":"Akarsu Birikimi (Delta Ovası)"},{"id":"g2_2","leftTerm":"Elmalı & Tefenni","rightMatch":"Karstik Çözünme (Polye Ovası)"},{"id":"g2_3","leftTerm":"Gediz & Büyük Menderes","rightMatch":"Çöküntü Hendeği (Graben / Tektonik Ova)"},{"id":"g2_4","leftTerm":"Konya & Ergene Ovaları","rightMatch":"Eski Göl Tabanı ve Tortullanma Ovası"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Çukurova & Bafra ➔ Akarsu Birikimi (Delta Ovası); Elmalı & Tefenni ➔ Karstik Çözünme (Polye Ovası); Gediz & Büyük Menderes ➔ Çöküntü Hendeği (Graben / Tektonik Ova); Konya & Ergene Ovaları ➔ Eski Göl Tabanı ve Tortullanma Ovası',
   8
 );
 insert into public.questions (
@@ -3054,6 +3071,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Coğrafya',
@@ -3062,6 +3080,7 @@ insert into public.questions (
   2,
   'Coğrafya: Barajlar & Akarsular',
   '{"pairs":[{"id":"g3_1","leftTerm":"Atatürk & Keban Barajı","rightMatch":"Fırat Nehri"},{"id":"g3_2","leftTerm":"Ilısu (Veysel Eroğlu) Barajı","rightMatch":"Dicle Nehri"},{"id":"g3_3","leftTerm":"Deriner & Yusufeli Barajı","rightMatch":"Çoruh Nehri"},{"id":"g3_4","leftTerm":"Altınkaya & Hirfanlı Barajı","rightMatch":"Kızılırmak"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Atatürk & Keban Barajı ➔ Fırat Nehri; Ilısu (Veysel Eroğlu) Barajı ➔ Dicle Nehri; Deriner & Yusufeli Barajı ➔ Çoruh Nehri; Altınkaya & Hirfanlı Barajı ➔ Kızılırmak',
   9
 );
 insert into public.questions (
@@ -3071,6 +3090,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Coğrafya',
@@ -3079,6 +3099,7 @@ insert into public.questions (
   2,
   'Coğrafya: Yerel Rüzgârlar & Yönleri',
   '{"pairs":[{"id":"g4_1","leftTerm":"Karayel","rightMatch":"Kuzeybatıdan Esen Soğuk Rüzgâr"},{"id":"g4_2","leftTerm":"Poyraz","rightMatch":"Kuzeydoğudan Esen Soğuk ve Kuru Rüzgâr"},{"id":"g4_3","leftTerm":"Samyeli (Keşişleme)","rightMatch":"Güneydoğudan Esen Sıcak ve Çöl Kökenli Rüzgâr"},{"id":"g4_4","leftTerm":"Lodos","rightMatch":"Güneybatıdan Esen Ilık ve Denizel Rüzgâr"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Karayel ➔ Kuzeybatıdan Esen Soğuk Rüzgâr; Poyraz ➔ Kuzeydoğudan Esen Soğuk ve Kuru Rüzgâr; Samyeli (Keşişleme) ➔ Güneydoğudan Esen Sıcak ve Çöl Kökenli Rüzgâr; Lodos ➔ Güneybatıdan Esen Ilık ve Denizel Rüzgâr',
   10
 );
 insert into public.questions (
@@ -3088,6 +3109,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Coğrafya',
@@ -3096,6 +3118,7 @@ insert into public.questions (
   2,
   'Coğrafya: Göller & Oluşum Tipleri',
   '{"pairs":[{"id":"g5_1","leftTerm":"Abant & Yedigöller","rightMatch":"Heyelan Set Gölü"},{"id":"g5_2","leftTerm":"Nemrut & Meke Gölü","rightMatch":"Volkanik Krater / Maar Gölü"},{"id":"g5_3","leftTerm":"Çıldır & Van Gölü","rightMatch":"Volkanik Set Gölü"},{"id":"g5_4","leftTerm":"Salda & Avlan Gölü","rightMatch":"Karstik Erime Gölü"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Abant & Yedigöller ➔ Heyelan Set Gölü; Nemrut & Meke Gölü ➔ Volkanik Krater / Maar Gölü; Çıldır & Van Gölü ➔ Volkanik Set Gölü; Salda & Avlan Gölü ➔ Karstik Erime Gölü',
   11
 );
 insert into public.questions (
@@ -3105,6 +3128,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Vatandaşlık',
@@ -3113,6 +3137,7 @@ insert into public.questions (
   2,
   'Vatandaşlık: Erkler & Kurumlar',
   '{"pairs":[{"id":"v1_1","leftTerm":"Yasama Yetkisi","rightMatch":"Türkiye Büyük Millet Meclisi"},{"id":"v1_2","leftTerm":"Yargısal Denetim (Bireysel Başvuru)","rightMatch":"Anayasa Mahkemesi"},{"id":"v1_3","leftTerm":"İdari Yargı En Üst Mercii","rightMatch":"Danıştay"},{"id":"v1_4","leftTerm":"Adli Yargı En Üst Mercii","rightMatch":"Yargıtay"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Yasama Yetkisi ➔ Türkiye Büyük Millet Meclisi; Yargısal Denetim (Bireysel Başvuru) ➔ Anayasa Mahkemesi; İdari Yargı En Üst Mercii ➔ Danıştay; Adli Yargı En Üst Mercii ➔ Yargıtay',
   12
 );
 insert into public.questions (
@@ -3122,6 +3147,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Vatandaşlık',
@@ -3130,6 +3156,7 @@ insert into public.questions (
   2,
   'Vatandaşlık: Kurumlar & Üye Sayıları',
   '{"pairs":[{"id":"v2_1","leftTerm":"Türkiye Büyük Millet Meclisi","rightMatch":"600 Milletvekili"},{"id":"v2_2","leftTerm":"Anayasa Mahkemesi","rightMatch":"15 Asıl Üye (12 Yıllığına)"},{"id":"v2_3","leftTerm":"Hâkimler ve Savcılar Kurulu","rightMatch":"13 Üye (2 Daire Hâlinde)"},{"id":"v2_4","leftTerm":"Yüksek Seçim Kurulu","rightMatch":"7 Asıl, 4 Yedek (11 Üye)"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Türkiye Büyük Millet Meclisi ➔ 600 Milletvekili; Anayasa Mahkemesi ➔ 15 Asıl Üye (12 Yıllığına); Hâkimler ve Savcılar Kurulu ➔ 13 Üye (2 Daire Hâlinde); Yüksek Seçim Kurulu ➔ 7 Asıl, 4 Yedek (11 Üye)',
   13
 );
 insert into public.questions (
@@ -3139,6 +3166,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Vatandaşlık',
@@ -3147,6 +3175,7 @@ insert into public.questions (
   2,
   'Vatandaşlık: Hak Türleri & Kategorileri',
   '{"pairs":[{"id":"v3_1","leftTerm":"Konut Dokunulmazlığı & Mülkiyet","rightMatch":"Kişi Hak ve Ödevleri (Koruyucu / Negatif)"},{"id":"v3_2","leftTerm":"Sendika Kurma & Sağlık Hakkı","rightMatch":"Sosyal ve Ekonomik Haklar (İsteme / Pozitif)"},{"id":"v3_3","leftTerm":"Kamu Hizmetine Girme & Vergi Ödevi","rightMatch":"Siyasi Haklar ve Ödevler (Katılma / Aktif)"},{"id":"v3_4","leftTerm":"Yaşama Hakkı & Masumiyet Karinesi","rightMatch":"Savaş ve OHAL''de Dokunulamaz Çekirdek Haklar"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Konut Dokunulmazlığı & Mülkiyet ➔ Kişi Hak ve Ödevleri (Koruyucu / Negatif); Sendika Kurma & Sağlık Hakkı ➔ Sosyal ve Ekonomik Haklar (İsteme / Pozitif); Kamu Hizmetine Girme & Vergi Ödevi ➔ Siyasi Haklar ve Ödevler (Katılma / Aktif); Yaşama Hakkı & Masumiyet Karinesi ➔ Savaş ve OHAL''de Dokunulamaz Çekirdek Haklar',
   14
 );
 insert into public.questions (
@@ -3156,6 +3185,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Vatandaşlık',
@@ -3164,6 +3194,7 @@ insert into public.questions (
   2,
   'Vatandaşlık: Yargı Mercileri & Görevleri',
   '{"pairs":[{"id":"v4_1","leftTerm":"Danıştay","rightMatch":"İdari İşlemlerin İptali ve İdari Yargı Temyizi"},{"id":"v4_2","leftTerm":"Yargıtay","rightMatch":"Hukuk ve Ceza Mahkemeleri Adli Yargı Temyizi"},{"id":"v4_3","leftTerm":"Uyuşmazlık Mahkemesi","rightMatch":"Adli ve İdari Yargı Arasındaki Görev İhtilafları"},{"id":"v4_4","leftTerm":"Sayıştay","rightMatch":"TBMM Adına Kamu Gelir ve Giderlerinin Kesin Hesabı"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Danıştay ➔ İdari İşlemlerin İptali ve İdari Yargı Temyizi; Yargıtay ➔ Hukuk ve Ceza Mahkemeleri Adli Yargı Temyizi; Uyuşmazlık Mahkemesi ➔ Adli ve İdari Yargı Arasındaki Görev İhtilafları; Sayıştay ➔ TBMM Adına Kamu Gelir ve Giderlerinin Kesin Hesabı',
   15
 );
 insert into public.questions (
@@ -3173,6 +3204,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Vatandaşlık',
@@ -3181,6 +3213,7 @@ insert into public.questions (
   2,
   'Vatandaşlık: Anayasal Süreler & Nisaplar',
   '{"pairs":[{"id":"v5_1","leftTerm":"Kanunların Şekil İptal Davası","rightMatch":"Resmî Gazete Yayımından İtibaren 10 Gün"},{"id":"v5_2","leftTerm":"Cumhurbaşkanının Kanun İnceleme Süresi","rightMatch":"TBMM Kabulünden İtibaren 15 Gün"},{"id":"v5_3","leftTerm":"Anayasa Değişikliği Teklif Sayısı","rightMatch":"TBMM Üye Tamsayısının En Az 1/3''ü (200 MV)"},{"id":"v5_4","leftTerm":"AYM''ye Bireysel Başvuru Süresi","rightMatch":"Olağan Kanun Yollarının Tüketilmesinden Sonra 30 Gün"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Kanunların Şekil İptal Davası ➔ Resmî Gazete Yayımından İtibaren 10 Gün; Cumhurbaşkanının Kanun İnceleme Süresi ➔ TBMM Kabulünden İtibaren 15 Gün; Anayasa Değişikliği Teklif Sayısı ➔ TBMM Üye Tamsayısının En Az 1/3''ü (200 MV); AYM''ye Bireysel Başvuru Süresi ➔ Olağan Kanun Yollarının Tüketilmesinden Sonra 30 Gün',
   16
 );
 insert into public.questions (
@@ -3190,6 +3223,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Güncel Bilgiler',
@@ -3198,6 +3232,7 @@ insert into public.questions (
   2,
   'Güncel Bilgiler: Örgütler & Merkezleri',
   '{"pairs":[{"id":"gu1_1","leftTerm":"Türk Devletleri Teşkilatı (TDT)","rightMatch":"İstanbul / Türkiye"},{"id":"gu1_2","leftTerm":"Uluslararası Adalet Divanı (UAD)","rightMatch":"Lahey (Barış Sarayı) / Hollanda"},{"id":"gu1_3","leftTerm":"Uluslararası Para Fonu (IMF)","rightMatch":"Washington D.C. / ABD"},{"id":"gu1_4","leftTerm":"İslam İşbirliği Teşkilatı (İİT)","rightMatch":"Cidde / Suudi Arabistan"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Türk Devletleri Teşkilatı (TDT) ➔ İstanbul / Türkiye; Uluslararası Adalet Divanı (UAD) ➔ Lahey (Barış Sarayı) / Hollanda; Uluslararası Para Fonu (IMF) ➔ Washington D.C. / ABD; İslam İşbirliği Teşkilatı (İİT) ➔ Cidde / Suudi Arabistan',
   17
 );
 insert into public.questions (
@@ -3207,6 +3242,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Güncel Bilgiler',
@@ -3215,6 +3251,7 @@ insert into public.questions (
   2,
   'Güncel Bilgiler: Sporcular & Başarıları',
   '{"pairs":[{"id":"gu2_1","leftTerm":"Yusuf Dikeç","rightMatch":"10m Havalı Tabanca Karışık Takım (Paris 2024 Gümüş)"},{"id":"gu2_2","leftTerm":"Mete Gazoz","rightMatch":"Klasik Yay Okçuluk (Tokyo 2020 Altın & Paris 2024 Bronz)"},{"id":"gu2_3","leftTerm":"Arda Güler","rightMatch":"UEFA Şampiyonlar Ligi Kupası (Real Madrid)"},{"id":"gu2_4","leftTerm":"Melissa Vargas","rightMatch":"CEV Avrupa ve Milletler Ligi VNL Şampiyonluğu (MVP)"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Yusuf Dikeç ➔ 10m Havalı Tabanca Karışık Takım (Paris 2024 Gümüş); Mete Gazoz ➔ Klasik Yay Okçuluk (Tokyo 2020 Altın & Paris 2024 Bronz); Arda Güler ➔ UEFA Şampiyonlar Ligi Kupası (Real Madrid); Melissa Vargas ➔ CEV Avrupa ve Milletler Ligi VNL Şampiyonluğu (MVP)',
   18
 );
 insert into public.questions (
@@ -3224,6 +3261,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Güncel Bilgiler',
@@ -3232,6 +3270,7 @@ insert into public.questions (
   2,
   'Güncel Bilgiler: Küresel Ödüller & İsimler',
   '{"pairs":[{"id":"gu3_1","leftTerm":"Daron Acemoğlu","rightMatch":"2024 Nobel Ekonomi Ödülü (Kurumlar ve Refah)"},{"id":"gu3_2","leftTerm":"Han Kang","rightMatch":"2024 Nobel Edebiyat Ödülü (Güney Koreli Yazar)"},{"id":"gu3_3","leftTerm":"Nihon Hidankyo","rightMatch":"2024 Nobel Barış Ödülü (Japon Nükleer Karşıtı Örgüt)"},{"id":"gu3_4","leftTerm":"Alper Gezeravcı","rightMatch":"Ax-3 Misyonu ile İlk Türk Uzay Yolcusu (ISS)"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: Daron Acemoğlu ➔ 2024 Nobel Ekonomi Ödülü (Kurumlar ve Refah); Han Kang ➔ 2024 Nobel Edebiyat Ödülü (Güney Koreli Yazar); Nihon Hidankyo ➔ 2024 Nobel Barış Ödülü (Japon Nükleer Karşıtı Örgüt); Alper Gezeravcı ➔ Ax-3 Misyonu ile İlk Türk Uzay Yolcusu (ISS)',
   19
 );
 insert into public.questions (
@@ -3241,6 +3280,7 @@ insert into public.questions (
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   'Güncel Bilgiler',
@@ -3249,6 +3289,7 @@ insert into public.questions (
   2,
   'Güncel Bilgiler: Mega Projeler & Özellikleri',
   '{"pairs":[{"id":"gu4_1","leftTerm":"1915 Çanakkale Köprüsü","rightMatch":"Dünyanın En Uzun Orta Açıklıklı Asma Köprüsü (2023 m)"},{"id":"gu4_2","leftTerm":"Yeni Zigana Tüneli","rightMatch":"Avrupa''nın En Uzun Çift Tüplü Kara Yolu Tüneli (14,5 km)"},{"id":"gu4_3","leftTerm":"Yusufeli Barajı","rightMatch":"Türkiye''nin En Yüksek Kemer Barajı (275 m)"},{"id":"gu4_4","leftTerm":"TCG Anadolu","rightMatch":"Dünyanın İlk SİHA ve İHA Gemisi (L400)"}]}'::jsonb,
+  'Kadro Kavram Eşleştirme Çözümü: 1915 Çanakkale Köprüsü ➔ Dünyanın En Uzun Orta Açıklıklı Asma Köprüsü (2023 m); Yeni Zigana Tüneli ➔ Avrupa''nın En Uzun Çift Tüplü Kara Yolu Tüneli (14,5 km); Yusufeli Barajı ➔ Türkiye''nin En Yüksek Kemer Barajı (275 m); TCG Anadolu ➔ Dünyanın İlk SİHA ve İHA Gemisi (L400)',
   20
 );
 

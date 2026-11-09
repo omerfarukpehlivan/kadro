@@ -104,6 +104,7 @@ create index if not exists idx_map_challenges_category on public.map_challenges 
 
 -- Questions tablosu indeks ve order_index güncellemesi
 alter table public.questions add column if not exists order_index integer;
+alter table public.questions alter column explanation drop not null;
 create index if not exists idx_questions_type_lesson_topic on public.questions (question_type, lesson, topic);
 create index if not exists idx_questions_order_index on public.questions (order_index);
 ''');
@@ -194,6 +195,12 @@ create index if not exists idx_questions_order_index on public.questions (order_
           )
           .toList();
       final interaction = escapeSql(jsonEncode({'pairs': pairsJson}));
+      final pairsExplanation = cms.pairs
+          .map((p) => '${p.leftTerm} ➔ ${p.rightMatch}')
+          .join('; ');
+      final explanation = escapeSql(
+        'Kadro Kavram Eşleştirme Çözümü: $pairsExplanation',
+      );
       final order = i + 1;
 
       buffer.writeln("""insert into public.questions (
@@ -203,6 +210,7 @@ create index if not exists idx_questions_order_index on public.questions (order_
   difficulty,
   prompt_text,
   interaction_data,
+  explanation,
   order_index
 ) values (
   '$lesson',
@@ -211,6 +219,7 @@ create index if not exists idx_questions_order_index on public.questions (order_
   2,
   '$prompt',
   '$interaction'::jsonb,
+  '$explanation',
   $order
 );""");
     }
