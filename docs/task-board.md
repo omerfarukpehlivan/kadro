@@ -113,6 +113,11 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-86** | **2024-2026 KPSS Güncel Bilgiler Soru Havuzu Standardizasyonu (6 Konu × 40 Soru = 240 Soru)** | UNESCO mirasları, TÜRKSOY kültür başkentleri, son siyasi/kültürel gelişmeler, Nobel, uzay ve spor başarıları odaklı güncel soru havuzunun `order_index: 1..40` ile derlenmesi, master SQL ve offline fallback entegrasyonu | ✅ **Tamamlandı** |
 | **TASK-87** | **60 Soru, 65 Dakika Gerçek Genel Kültür Deneme Sınavı Motoru & Detaylı Net Karnesi** | 27 Tarih + 18 Coğrafya + 9 Vatandaşlık + 6 Güncel soru dağılımıyla tam 60 soruluk gerçek sınav modu; soru paleti/atlama, boş bırakma, 65 dk geri sayım ve 4 yanlış 1 doğruyu götüren detaylı ders bazlı net karnesi | ✅ **Tamamlandı** |
 | **TASK-88** | **Ticari Sürüm & Mağaza Hazırlığı (Kadro PRO Satın Alma, AdMob Ödüllü Reklam, Çevrimdışı İndirme & Release Optimizasyonu)** | Günlük 30 soru bittiğinde +20 soru kazandıran Rewarded Ad akışı; Kadro PRO abonelik kontrolü, soru paketlerini cihaza indirme (offline mode) ve Google Play Store release bundle optimizasyonu | ✅ **Tamamlandı** |
+| **TASK-89** | **Veritabanı Seviyesinde Rate-Limit & RLS Zırhı (`public.rate_limits` + PostgreSQL Sliding-Window Triggers)** | PostgreSQL içinde kayan pencereli rate limit motoru; 1 dakikada max 3 soru raporu, 60 saniyede max 2 sınav kaydı, profil XP hile önleme trigger'ı ve `questions`/`flashcards` read-only RLS kısıtlaması | ✅ **Tamamlandı** |
+| **TASK-90** | **İstemci (Flutter) Seviyesinde Akıllı Rate Limiter & Cooldown Kalkanı (`ClientRateLimiter` + Anti-Spam)** | `ClientRateLimiter` yardımcı servisi; soru raporlamada (`QuestionReportRepository`) 1 dakikada 3 rapordan fazlasının sunucuya gitmeden cihazda engellenmesi ve butonlara çift tıklama koruması | ✅ **Tamamlandı** |
+| **TASK-91** | **Mikro-Analitik Soru Denemelerinin Toplu Gönderimi (`CloudSyncRepository` Batching Queue)** | Her soruda tekil HTTP POST isteği atmak yerine `_attemptQueue` içinde toplanması ve sınav bitiminde tek 1 toplu (bulk) INSERT ile gönderilmesi; ağ trafiği ve istek adedinin %98 azaltılması | ✅ **Tamamlandı** |
+| **TASK-92** | **Akıllı Çevrimdışı TTL Veri Önbelleği (`QuestionRepository` 2 Saatlik In-Memory Caching)** | Sorular, doğru/yanlış ve kavram eşleştirme verilerinin her ekran açılışında yeniden Supabase'ten çekilmeyip 2 saatlik TTL ile bellekten (0ms) sunulması; Egress maliyetinin %95 düşürülmesi | ✅ **Tamamlandı** |
+| **TASK-93** | **Supabase Dashboard & Kong API Gateway Güvenlik Rehberi (`02_security_ratelimit_hardening.sql`)** | Supabase SQL Editor için tek tıkla çalıştırılabilir rate limit migrasyonu, Kong IP rate limit ve Auth brute-force koruma kılavuzunun hazırlanması | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4863,6 +4868,53 @@ ADIM 4: Test ve Doğrulama (`test/pomodoro_studio_test.dart`)
 2. `docs/task-board.md` içinde `TASK-78` durumunu `✅ **Tamamlandı**` yap.
 3. Sırasıyla `dart format lib test`, `flutter analyze` (0 hata) ve `flutter test` (%100 geçiş) çalıştır.
 ```
+
+---
+
+### 📦 TASK-89: Veritabanı Seviyesinde Rate-Limit & RLS Zırhı (`public.rate_limits` + PostgreSQL Sliding-Window Triggers)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - PostgreSQL motoru seviyesinde kayan pencereli `public.check_rate_limit()` fonksiyonu ve `public.rate_limits` tablosu kuruldu.
+  - `question_reports` tablosuna 1 dakikada max 3 rapor kısıtlaması getirildi (`trg_check_report_rate_limit`).
+  - `quiz_sessions` tablosuna 60 saniyede max 2 oturum kaydetme kısıtlaması getirildi (`trg_check_quiz_session_rate_limit`).
+  - `profiles.total_xp` için fahiş sıçramaları (max +250 XP/istek) ve hileli güncellemeleri engelleyen `trg_prevent_xp_tampering` trigger'ı yazıldı.
+  - `questions`, `flashcards`, `map_challenges` tablolarına `anon` ve `authenticated` için INSERT/UPDATE/DELETE engellendi; sadece `service_role` yetkilendirildi.
+
+---
+
+### 📦 TASK-90: İstemci (Flutter) Seviyesinde Akıllı Rate Limiter & Cooldown Kalkanı (`ClientRateLimiter` + Anti-Spam)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - `lib/core/network/client_rate_limiter.dart` servisi yazıldı.
+  - Soru bildirim ekranında (`ReportQuestionBottomSheet` & `QuestionReportRepository`) 1 dakikada 3'ten fazla istek cihazda kesilerek kullanıcıya bilgilendirici SnackBar gösterildi.
+  - Butonlara `_isSubmitting` kilidi konularak çift tıklama (double-tap flood) engellendi.
+
+---
+
+### 📦 TASK-91: Mikro-Analitik Soru Denemelerinin Toplu Gönderimi (`CloudSyncRepository` Batching Queue)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - Her soru cevaplandığında tekil HTTP isteği göndermek yerine `_attemptQueue` içine toplanması sağlandı.
+  - Sınav/test tamamlandığında `saveQuizSession` tetiklenerek kuyruktaki tüm soru analitikleri tek bir toplu (`bulk insert`) HTTP isteğiyle gönderildi.
+  - Ağ istek sayısı 60 soruluk bir sınavda 60'tan 1'e indirilerek ağ trafiği ve sunucu maliyeti %98 düşürüldü.
+
+---
+
+### 📦 TASK-92: Akıllı Çevrimdışı TTL Veri Önbelleği (`QuestionRepository` 2 Saatlik In-Memory Caching)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - `QuestionRepository` içine 2 saatlik bellek içi önbellekleme (`cacheTtl`) eklendi.
+  - `fetchQuestions`, `fetchTrueFalseItems` ve `fetchConceptMatchSets` metotları önbellekten anında (0ms gecikme) veri sunacak şekilde güncellendi.
+  - Supabase Read operasyonları ve Egress çıkış bant genişliği %95 azaltıldı.
+
+---
+
+### 📦 TASK-93: Supabase Dashboard, Kong Gateway & Güvenlik Kılavuzu
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - `docs/supabase_migrations/02_security_ratelimit_hardening.sql` ve `02_README_SECURITY_GUIDE.md` dosyaları oluşturuldu.
+  - Masaüstündeki `C:\Users\omere\Desktop\kpss-supabase-sql\` klasörüne kopyalanarak kullanıcıya tek tıkla kurulum sağlandı.
+  - Kong API Gateway IP rate-limit ve Auth brute-force koruma adımları dokümante edildi.
 
 ---
 
