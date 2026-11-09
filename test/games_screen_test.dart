@@ -2,12 +2,77 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/app/theme.dart';
+import 'package:kadro/features/games/data/models/concept_match_set.dart';
 import 'package:kadro/features/games/data/models/true_false_item.dart';
 import 'package:kadro/features/games/presentation/concept_match_screen.dart';
 import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
 import 'package:kadro/main.dart';
 
 void main() {
+  group('TASK-83: 20 Tematik Kavram Eşleştirme Seti Testleri', () {
+    test(
+      'sampleConceptMatchSets tam olarak 20 set ve 80 kavram çifti içermeli',
+      () {
+        expect(sampleConceptMatchSets.length, equals(20));
+
+        final tarihSets = sampleConceptMatchSets
+            .where((s) => s.lesson == 'Tarih')
+            .toList();
+        final cografyaSets = sampleConceptMatchSets
+            .where((s) => s.lesson == 'Coğrafya')
+            .toList();
+        final vatandaslikSets = sampleConceptMatchSets
+            .where((s) => s.lesson == 'Vatandaşlık')
+            .toList();
+        final guncelSets = sampleConceptMatchSets
+            .where((s) => s.lesson == 'Güncel Bilgiler')
+            .toList();
+
+        expect(tarihSets.length, equals(6));
+        expect(cografyaSets.length, equals(5));
+        expect(vatandaslikSets.length, equals(5));
+        expect(guncelSets.length, equals(4));
+
+        final setIdSet = <String>{};
+        final pairIdSet = <String>{};
+        int totalPairs = 0;
+
+        for (final s in sampleConceptMatchSets) {
+          expect(s.id.trim(), isNotEmpty);
+          expect(
+            setIdSet.contains(s.id),
+            isFalse,
+            reason: 'Mükerrer set ID: ${s.id}',
+          );
+          setIdSet.add(s.id);
+
+          expect(s.title.trim(), isNotEmpty);
+          expect(
+            s.pairs.length,
+            equals(4),
+            reason: '${s.id} seti tam 4 çift içermelidir',
+          );
+          totalPairs += s.pairs.length;
+
+          for (final p in s.pairs) {
+            expect(p.id.trim(), isNotEmpty);
+            expect(
+              pairIdSet.contains(p.id),
+              isFalse,
+              reason: 'Mükerrer pair ID: ${p.id}',
+            );
+            pairIdSet.add(p.id);
+
+            expect(p.leftTerm.trim(), isNotEmpty);
+            expect(p.rightMatch.trim(), isNotEmpty);
+          }
+        }
+
+        expect(totalPairs, equals(80));
+      },
+    );
+  });
+
   group('TASK-82: 100 Maddelik Doğru / Yanlış Refleks Havuzu Testleri', () {
     test('sampleTrueFalseItems tam olarak 100 adet olmalı ve 4 derse eşit dağılmalı (25-25-25-25)', () {
       expect(sampleTrueFalseItems.length, equals(100));
