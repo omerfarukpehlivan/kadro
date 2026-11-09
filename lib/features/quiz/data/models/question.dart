@@ -929,7 +929,8 @@ class Question {
       geoConfig: geoConfig,
       pyramidConfig: pyramidConfig,
       sunConfig: sunConfig,
-      orderIndex: (json['order_index'] as num?)?.toInt() ??
+      orderIndex:
+          (json['order_index'] as num?)?.toInt() ??
           (json['orderIndex'] as num?)?.toInt(),
     );
   }
@@ -1005,7 +1006,8 @@ class Question {
       geoConfig: geoConfig,
       pyramidConfig: pyramidConfig,
       sunConfig: sunConfig,
-      orderIndex: (row['order_index'] as num?)?.toInt() ??
+      orderIndex:
+          (row['order_index'] as num?)?.toInt() ??
           (row['orderIndex'] as num?)?.toInt(),
     );
   }

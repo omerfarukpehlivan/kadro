@@ -125,10 +125,9 @@ class GeoDiagramCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color:
-                    isDark
-                        ? Colors.black.withValues(alpha: 0.25)
-                        : Colors.white.withValues(alpha: 0.6),
+                color: isDark
+                    ? Colors.black.withValues(alpha: 0.25)
+                    : Colors.white.withValues(alpha: 0.6),
                 border: Border(
                   top: BorderSide(
                     color: theme.colorScheme.outlineVariant.withValues(

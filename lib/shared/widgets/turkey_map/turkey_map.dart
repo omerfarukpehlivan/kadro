@@ -51,7 +51,8 @@ class TurkeyMap extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     // Varsayılan zemin ve çizgi renkleri (Açık temada yüksek kontrastlı belirgin tonlar)
-    final defaultBaseFill = config.baseFillColor ??
+    final defaultBaseFill =
+        config.baseFillColor ??
         (isDark ? const Color(0xFF334155) : const Color(0xFFC8D7E6));
     final defaultStrokeColor =
         config.strokeColor ?? (isDark ? const Color(0xFF475569) : Colors.white);

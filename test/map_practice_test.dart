@@ -9,40 +9,43 @@ import 'package:kadro/features/map_practice/presentation/map_practice_hub_screen
 
 void main() {
   group('MapPractice Model & Logic Birim Testleri', () {
-    test('MapChallenge modeli doğru oluşturulmalı ve doğrulamaları yapmalı', () {
-      const challenge = MapChallenge(
-        id: 'test_01',
-        category: MapPracticeCategory.agriculture,
-        interactionType: MapInteractionType.tapProvince,
-        title: 'Pamuk Lideri',
-        questionText: 'Pamuk üretiminde 1. olan ile dokunun.',
-        targetProvinceId: 'sanliurfa',
-        validProvinceIds: ['sanliurfa'],
-        hint: 'Güneydoğu Anadolu ilimiz',
-        explanation: 'Şanlıurfa pamukta 1. sıradadır.',
-        tag: 'Pamuk',
-        options: ['Şanlıurfa', 'Adana', 'Aydın', 'Diyarbakır'],
-        correctOptionIndex: 0,
-      );
+    test(
+      'MapChallenge modeli doğru oluşturulmalı ve doğrulamaları yapmalı',
+      () {
+        const challenge = MapChallenge(
+          id: 'test_01',
+          category: MapPracticeCategory.agriculture,
+          interactionType: MapInteractionType.tapProvince,
+          title: 'Pamuk Lideri',
+          questionText: 'Pamuk üretiminde 1. olan ile dokunun.',
+          targetProvinceId: 'sanliurfa',
+          validProvinceIds: ['sanliurfa'],
+          hint: 'Güneydoğu Anadolu ilimiz',
+          explanation: 'Şanlıurfa pamukta 1. sıradadır.',
+          tag: 'Pamuk',
+          options: ['Şanlıurfa', 'Adana', 'Aydın', 'Diyarbakır'],
+          correctOptionIndex: 0,
+        );
 
-      // İl doğrulama testi (büyük/küçük harf toleransı)
-      expect(challenge.isProvinceCorrect('sanliurfa'), isTrue);
-      expect(challenge.isProvinceCorrect('SANLIURFA'), isTrue);
-      expect(challenge.isProvinceCorrect('  Sanliurfa  '), isTrue);
-      expect(challenge.isProvinceCorrect('adana'), isFalse);
+        // İl doğrulama testi (büyük/küçük harf toleransı)
+        expect(challenge.isProvinceCorrect('sanliurfa'), isTrue);
+        expect(challenge.isProvinceCorrect('SANLIURFA'), isTrue);
+        expect(challenge.isProvinceCorrect('  Sanliurfa  '), isTrue);
+        expect(challenge.isProvinceCorrect('adana'), isFalse);
 
-      // Seçenek doğrulama testi
-      expect(challenge.isOptionCorrect(0), isTrue);
-      expect(challenge.isOptionCorrect(1), isFalse);
+        // Seçenek doğrulama testi
+        expect(challenge.isOptionCorrect(0), isTrue);
+        expect(challenge.isOptionCorrect(1), isFalse);
 
-      // JSON serileştirme döngüsü
-      final json = challenge.toJson();
-      final fromJson = MapChallenge.fromJson(json);
-      expect(fromJson.id, 'test_01');
-      expect(fromJson.category, MapPracticeCategory.agriculture);
-      expect(fromJson.targetProvinceId, 'sanliurfa');
-      expect(fromJson.options.length, 4);
-    });
+        // JSON serileştirme döngüsü
+        final json = challenge.toJson();
+        final fromJson = MapChallenge.fromJson(json);
+        expect(fromJson.id, 'test_01');
+        expect(fromJson.category, MapPracticeCategory.agriculture);
+        expect(fromJson.targetProvinceId, 'sanliurfa');
+        expect(fromJson.options.length, 4);
+      },
+    );
 
     test('MapPracticeData dinamik il soruları doğru üretmeli', () {
       final dynamicTap = MapPracticeData.generateDynamicProvinceChallenges(
@@ -67,65 +70,68 @@ void main() {
       expect(dynamicId.length, 5);
       expect(dynamicId.every((c) => c.options.length == 4), isTrue);
       expect(
-        dynamicId.every(
-          (c) => c.options[c.correctOptionIndex].isNotEmpty,
-        ),
+        dynamicId.every((c) => c.options[c.correctOptionIndex].isNotEmpty),
         isTrue,
       );
     });
 
-    test('LocalMapPracticeRepository kategorilere göre soruları getirmeli', () async {
-      final repo = LocalMapPracticeRepository();
+    test(
+      'LocalMapPracticeRepository kategorilere göre soruları getirmeli',
+      () async {
+        final repo = LocalMapPracticeRepository();
 
-      final agrChallenges = await repo.getChallengesByCategory(
-        MapPracticeCategory.agriculture,
-        count: 4,
-      );
-      expect(agrChallenges.isNotEmpty, isTrue);
+        final agrChallenges = await repo.getChallengesByCategory(
+          MapPracticeCategory.agriculture,
+          count: 4,
+        );
+        expect(agrChallenges.isNotEmpty, isTrue);
 
-      final dynamicProvinces = await repo.getDynamicProvinceChallenges(count: 8);
-      expect(dynamicProvinces.length, 8);
+        final dynamicProvinces = await repo.getDynamicProvinceChallenges(
+          count: 8,
+        );
+        expect(dynamicProvinces.length, 8);
 
-      final hisChallenges = await repo.getChallengesByCategory(
-        MapPracticeCategory.history,
-        count: 5,
-      );
-      expect(hisChallenges.length, 5);
-      expect(hisChallenges.every((c) => c.category == MapPracticeCategory.history), isTrue);
+        final hisChallenges = await repo.getChallengesByCategory(
+          MapPracticeCategory.history,
+          count: 5,
+        );
+        expect(hisChallenges.length, 5);
+        expect(
+          hisChallenges.every((c) => c.category == MapPracticeCategory.history),
+          isTrue,
+        );
 
-      final marathon = await repo.getDailyMarathonChallenges(count: 6);
-      expect(marathon.length, greaterThanOrEqualTo(5));
+        final marathon = await repo.getDailyMarathonChallenges(count: 6);
+        expect(marathon.length, greaterThanOrEqualTo(5));
 
-      // 50 uzman sorunun eksiksiz yüklendiğini doğrula
-      expect(MapPracticeData.predefinedChallenges.length, 50);
-    });
+        // 50 uzman sorunun eksiksiz yüklendiğini doğrula
+        expect(MapPracticeData.predefinedChallenges.length, 50);
+      },
+    );
   });
 
   group('MapPractice UI Widget Testleri', () {
-    testWidgets('MapPracticeHubScreen başlıkları ve kategorileri render etmeli', (
-      tester,
-    ) async {
-      await tester.binding.setSurfaceSize(const Size(800, 1400));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets(
+      'MapPracticeHubScreen başlıkları ve kategorileri render etmeli',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(800, 1400));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MaterialApp(
-            home: MapPracticeHubScreen(),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          const ProviderScope(child: MaterialApp(home: MapPracticeHubScreen())),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('Harita Atölyesi'), findsOneWidget);
-      expect(find.text('Dilsiz Harita (81 İl)'), findsOneWidget);
-      expect(find.text('Tarım & Hayvancılık'), findsOneWidget);
-      expect(find.text('Madenler & Enerji'), findsOneWidget);
-      expect(find.text('Plato, Dağ & Göller'), findsOneWidget);
-      expect(find.text('Sanayi & Limanlar'), findsOneWidget);
-      expect(find.text('Tarih: Millî Mücadele Haritası'), findsOneWidget);
-      expect(find.text('Genel Harita Maratonu'), findsOneWidget);
-    });
+        expect(find.text('Harita Atölyesi'), findsOneWidget);
+        expect(find.text('Dilsiz Harita (81 İl)'), findsOneWidget);
+        expect(find.text('Tarım & Hayvancılık'), findsOneWidget);
+        expect(find.text('Madenler & Enerji'), findsOneWidget);
+        expect(find.text('Plato, Dağ & Göller'), findsOneWidget);
+        expect(find.text('Sanayi & Limanlar'), findsOneWidget);
+        expect(find.text('Tarih: Millî Mücadele Haritası'), findsOneWidget);
+        expect(find.text('Genel Harita Maratonu'), findsOneWidget);
+      },
+    );
 
     testWidgets('MapChallengeScreen harita ve soru arayüzünü render etmeli', (
       tester,
@@ -164,7 +170,10 @@ void main() {
 
       expect(find.text('Madenler Testi'), findsOneWidget);
       expect(find.textContaining('Soru 1/1'), findsOneWidget);
-      expect(find.text('Haritada işaretli havzada hangi maden çıkarılır?'), findsOneWidget);
+      expect(
+        find.text('Haritada işaretli havzada hangi maden çıkarılır?'),
+        findsOneWidget,
+      );
       expect(find.text('Bor'), findsOneWidget);
       expect(find.text('Krom'), findsOneWidget);
 

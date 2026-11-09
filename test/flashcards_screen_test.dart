@@ -2,10 +2,111 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/flashcards/data/models/flashcard.dart';
+import 'package:kadro/features/flashcards/data/sample_flashcards.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 
 void main() {
+  group('TASK-81: 200 Kartlık KPSS Hap Bilgi Havuzu Doğrulama Testleri', () {
+    test('sampleFlashcards tam olarak 200 adet olmalı ve ders dağılımı 50-50-50-50 olmalı', () {
+      expect(sampleFlashcards.length, equals(200));
+
+      final tarihCards = sampleFlashcards
+          .where((c) => c.lesson == 'Tarih')
+          .toList();
+      final cografyaCards = sampleFlashcards
+          .where((c) => c.lesson == 'Coğrafya')
+          .toList();
+      final vatandaslikCards = sampleFlashcards
+          .where((c) => c.lesson == 'Vatandaşlık')
+          .toList();
+      final guncelCards = sampleFlashcards
+          .where((c) => c.lesson == 'Güncel Bilgiler')
+          .toList();
+
+      expect(tarihCards.length, equals(50));
+      expect(cografyaCards.length, equals(50));
+      expect(vatandaslikCards.length, equals(50));
+      expect(guncelCards.length, equals(50));
+
+      // Tüm ID'lerin benzersiz olduğunu ve boş alan olmadığını doğrula
+      final idSet = <String>{};
+      for (final card in sampleFlashcards) {
+        expect(card.id.trim(), isNotEmpty);
+        expect(
+          idSet.contains(card.id),
+          isFalse,
+          reason: 'Mükerrer kart ID: ${card.id}',
+        );
+        idSet.add(card.id);
+
+        expect(card.topic.trim(), isNotEmpty);
+        expect(card.frontText.trim(), isNotEmpty);
+        expect(card.backText.trim(), isNotEmpty);
+      }
+    });
+
+    test('Önemli KPSS akrostiş ve şifreleri kartlarda mevcut olmalı', () {
+      final allBackTexts = sampleFlashcards
+          .map((c) => c.backText)
+          .join('\n---\n');
+
+      expect(allBackTexts.contains('K-A-Y-I-P  S-A-K-A-L'), isTrue);
+      expect(allBackTexts.contains('T-A-K-K-E-M'), isTrue);
+      expect(allBackTexts.contains('M-İ-L-A-T'), isTrue);
+      expect(allBackTexts.contains('0-3-4  B-M-V'), isTrue);
+      expect(allBackTexts.contains('K-A-D-E-R'), isTrue);
+      expect(allBackTexts.contains('YUSUF DİKEÇ'), isTrue);
+      expect(allBackTexts.contains('ALPER GEZERAVCI'), isTrue);
+    });
+
+    testWidgets(
+      'FlashcardsScreen varsayılan 200 kartla açılmalı ve her ders filtresinde 50 kart göstermeli',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        await tester.pumpWidget(
+          const ProviderScope(child: MaterialApp(home: FlashcardsScreen())),
+        );
+        await tester.pumpAndSettle();
+
+        // Varsayılan olarak 'Tümü' seçili ve 200 kart olmalı
+        expect(find.text('Kart 1 / 200'), findsOneWidget);
+
+        // Tarih seçildiğinde 50 kart olmalı
+        await tester.tap(find.widgetWithText(ChoiceChip, 'Tarih'));
+        await tester.pumpAndSettle();
+        expect(find.text('Kart 1 / 50'), findsOneWidget);
+
+        // Coğrafya seçildiğinde 50 kart olmalı
+        await tester.tap(find.widgetWithText(ChoiceChip, 'Coğrafya'));
+        await tester.pumpAndSettle();
+        expect(find.text('Kart 1 / 50'), findsOneWidget);
+
+        // Vatandaşlık seçildiğinde 50 kart olmalı
+        await tester.tap(find.widgetWithText(ChoiceChip, 'Vatandaşlık'));
+        await tester.pumpAndSettle();
+        expect(find.text('Kart 1 / 50'), findsOneWidget);
+
+        // Güncel Bilgiler seçildiğinde 50 kart olmalı
+        final guncelChipFinder = find.widgetWithText(
+          ChoiceChip,
+          'Güncel Bilgiler',
+        );
+        await tester.drag(find.byType(Scrollable).first, const Offset(-200, 0));
+        await tester.pumpAndSettle();
+        await tester.tap(guncelChipFinder);
+        await tester.pumpAndSettle();
+        expect(find.text('Kart 1 / 50'), findsOneWidget);
+      },
+    );
+  });
+
   group('FlashcardsScreen Widget Testleri', () {
     const testCards = [
       Flashcard(

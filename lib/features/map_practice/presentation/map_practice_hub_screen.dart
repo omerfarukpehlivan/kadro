@@ -40,11 +40,10 @@ class MapPracticeHubScreen extends ConsumerWidget {
 
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder:
-            (_) => MapChallengeScreen(
-              challenges: challenges,
-              sessionTitle: category.title,
-            ),
+        builder: (_) => MapChallengeScreen(
+          challenges: challenges,
+          sessionTitle: category.title,
+        ),
       ),
     );
   }
@@ -96,8 +95,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
                   context: ctx,
                   icon: LucideIcons.hand,
                   title: 'Haritada İle Dokun (Zor)',
-                  subtitle:
-                      'Ekranda ilin adı yazar, sen Türkiye haritasında o ile dokunursun.',
+                  subtitle: 'Ekranda ilin adı yazar, sen Türkiye haritasında o ile dokunursun.',
                   color: const Color(0xFF2563EB),
                   onTap: () {
                     Navigator.of(ctx).pop();
@@ -114,8 +112,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
                   context: ctx,
                   icon: LucideIcons.sparkles,
                   title: 'Parlayan İli Tanı (Çoktan Seçmeli)',
-                  subtitle:
-                      'Haritada rastgele bir il parlar, sen 4 seçenek arasından doğru ili seçersin.',
+                  subtitle: 'Haritada rastgele bir il parlar, sen 4 seçenek arasından doğru ili seçersin.',
                   color: const Color(0xFFD97706),
                   onTap: () {
                     Navigator.of(ctx).pop();
@@ -214,8 +211,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
               mood: MascotMood.geography,
               badgeLabel: 'GÖRSEL COĞRAFYA',
               title: 'Harita ile Öğren',
-              message:
-                  'KPSS Coğrafya\'da dilsiz harita sorularını kaçırmaya son! İlleri, madenleri, tarım havzalarını ve platoları interaktif haritada keşfet.',
+              message: 'KPSS Coğrafya\'da dilsiz harita sorularını kaçırmaya son! İlleri, madenleri, tarım havzalarını ve platoları interaktif haritada keşfet.',
             ),
 
             AppSpacing.gapMd,
@@ -260,9 +256,8 @@ class MapPracticeHubScreen extends ConsumerWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFF10B981,
-                                ).withValues(alpha: 0.15),
+                                color: const Color(0xFF10B981)
+                                    .withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: const Text(
@@ -312,12 +307,11 @@ class MapPracticeHubScreen extends ConsumerWidget {
                       badgeText: 'Tarım',
                       icon: PhosphorIconsDuotone.plant,
                       color: const Color(0xFF10B981),
-                      onTap:
-                          () => _startPractice(
-                            context,
-                            ref,
-                            MapPracticeCategory.agriculture,
-                          ),
+                      onTap: () => _startPractice(
+                        context,
+                        ref,
+                        MapPracticeCategory.agriculture,
+                      ),
                     ),
                   ),
                   SizedBox(width: gridSpacing),
@@ -329,12 +323,11 @@ class MapPracticeHubScreen extends ConsumerWidget {
                       badgeText: 'Madenler',
                       icon: PhosphorIconsDuotone.hammer,
                       color: const Color(0xFF2563EB),
-                      onTap:
-                          () => _startPractice(
-                            context,
-                            ref,
-                            MapPracticeCategory.mines,
-                          ),
+                      onTap: () => _startPractice(
+                        context,
+                        ref,
+                        MapPracticeCategory.mines,
+                      ),
                     ),
                   ),
                 ],
@@ -353,12 +346,11 @@ class MapPracticeHubScreen extends ConsumerWidget {
                       badgeText: 'Fiziki',
                       icon: PhosphorIconsDuotone.mountains,
                       color: const Color(0xFFD97706),
-                      onTap:
-                          () => _startPractice(
-                            context,
-                            ref,
-                            MapPracticeCategory.physical,
-                          ),
+                      onTap: () => _startPractice(
+                        context,
+                        ref,
+                        MapPracticeCategory.physical,
+                      ),
                     ),
                   ),
                   SizedBox(width: gridSpacing),
@@ -370,12 +362,11 @@ class MapPracticeHubScreen extends ConsumerWidget {
                       badgeText: 'Sanayi',
                       icon: PhosphorIconsDuotone.factory,
                       color: const Color(0xFF8B5CF6),
-                      onTap:
-                          () => _startPractice(
-                            context,
-                            ref,
-                            MapPracticeCategory.industry,
-                          ),
+                      onTap: () => _startPractice(
+                        context,
+                        ref,
+                        MapPracticeCategory.industry,
+                      ),
                     ),
                   ),
                 ],
@@ -386,12 +377,8 @@ class MapPracticeHubScreen extends ConsumerWidget {
 
             // 4. Tarih Haritası (Kurtuluş Savaşı & Kongreler)
             TactileCard(
-              onTap:
-                  () => _startPractice(
-                    context,
-                    ref,
-                    MapPracticeCategory.history,
-                  ),
+              onTap: () =>
+                  _startPractice(context, ref, MapPracticeCategory.history),
               padding: const EdgeInsets.all(14),
               child: Row(
                 children: [
@@ -430,9 +417,8 @@ class MapPracticeHubScreen extends ConsumerWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFFDC2626,
-                                ).withValues(alpha: 0.12),
+                                color: const Color(0xFFDC2626)
+                                    .withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: const Text(
@@ -471,12 +457,8 @@ class MapPracticeHubScreen extends ConsumerWidget {
             // 5. Genel Harita Maratonu
             const SectionTitle('Sınav Düzeni'),
             TactileCard(
-              onTap:
-                  () => _startPractice(
-                    context,
-                    ref,
-                    MapPracticeCategory.marathon,
-                  ),
+              onTap: () =>
+                  _startPractice(context, ref, MapPracticeCategory.marathon),
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
@@ -516,12 +498,11 @@ class MapPracticeHubScreen extends ConsumerWidget {
                     ),
                   ),
                   FilledButton(
-                    onPressed:
-                        () => _startPractice(
-                          context,
-                          ref,
-                          MapPracticeCategory.marathon,
-                        ),
+                    onPressed: () => _startPractice(
+                      context,
+                      ref,
+                      MapPracticeCategory.marathon,
+                    ),
                     child: const Text('Başla'),
                   ),
                 ],

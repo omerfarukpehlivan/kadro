@@ -554,9 +554,9 @@ class _MapPracticeSpecialCard extends StatelessWidget {
       borderColor: const Color(0xFF10B981).withValues(alpha: 0.5),
       padding: EdgeInsets.all(isCompact ? 12 : 16),
       onTap: () {
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const MapPracticeHubScreen()),
-        );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => const MapPracticeHubScreen()));
       },
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,

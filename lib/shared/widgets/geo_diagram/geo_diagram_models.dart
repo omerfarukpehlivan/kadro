@@ -65,8 +65,7 @@ class GeoPresets {
     title: 'Kırıklı Dağ Oluşumu (Horst - Graben)',
     subtitle: 'Sert tabakaların yan basınçlarla kırılması (Ege Sistemi)',
     badges: ['HORST (Yüksekte Kalan)', 'GRABEN (Çöken Ova)', 'FAY HATTI'],
-    educationalNote:
-        'Kaz, Madra, Yunt, Bozdağlar, Aydın ve Menteşe Dağları birer HORST;\nBakırçay, Gediz, Küçük ve Büyük Menderes ovaları ise birer GRABEN alanıdır.',
+    educationalNote: 'Kaz, Madra, Yunt, Bozdağlar, Aydın ve Menteşe Dağları birer HORST;\nBakırçay, Gediz, Küçük ve Büyük Menderes ovaları ise birer GRABEN alanıdır.',
   );
 
   /// 2. Kıvrımlı Dağ Oluşumu (Antiklinal - Senklinal)
@@ -75,8 +74,7 @@ class GeoPresets {
     title: 'Kıvrımlı Dağ Oluşumu (Antiklinal - Senklinal)',
     subtitle: 'Esnek tortul tabakaların yan basınçla kıvrılması (Alp-Himalaya)',
     badges: ['ANTİKLİNAL (Kıvrım Tepesi)', 'SENKLİNAL (Kıvrım Çukuru)'],
-    educationalNote:
-        'Kuzey Anadolu Dağları (Kaçkarlar, Canik, Küre) ve Toros Dağları Antiklinal;\naralarındaki çöküntü olukları ve vadi tabanları ise Senklinal sahalarıdır.',
+    educationalNote: 'Kuzey Anadolu Dağları (Kaçkarlar, Canik, Küre) ve Toros Dağları Antiklinal;\naralarındaki çöküntü olukları ve vadi tabanları ise Senklinal sahalarıdır.',
   );
 
   /// 3. Akarsu Vadi Tipleri Karşılaştırması
@@ -84,9 +82,13 @@ class GeoPresets {
     type: GeoDiagramType.vadiTipleri,
     title: 'Akarsu Vadi Tipleri Karşılaştırması',
     subtitle: 'Aşındırma gücü, eğim ve kayaç yapısına göre şekillenen vadiler',
-    badges: ['Çentik (V) Vadi', 'Boğaz (Yarma) Vadi', 'Kanyon Vadi', 'Menderesli Tabanlı'],
-    educationalNote:
-        'Çentik: Derine aşındırma, hidroelektrik yüksek (Doğu Anadolu/Karadeniz).\nBoğaz: Dağları enine yaran ulaşım geçidi. Kanyon: Karstik basamaklı.\nMenderes: Eğim az, yana aşındırma, büklümler (Ege).',
+    badges: [
+      'Çentik (V) Vadi',
+      'Boğaz (Yarma) Vadi',
+      'Kanyon Vadi',
+      'Menderesli Tabanlı',
+    ],
+    educationalNote: 'Çentik: Derine aşındırma, hidroelektrik yüksek (Doğu Anadolu/Karadeniz).\nBoğaz: Dağları enine yaran ulaşım geçidi. Kanyon: Karstik basamaklı.\nMenderes: Eğim az, yana aşındırma, büklümler (Ege).',
   );
 
   /// 4. Karstik Aşınım ve Birikim Kesiti (Obruk & Mağara)
@@ -96,7 +98,8 @@ class GeoPresets {
     subtitle: 'Kalker ve jipsin kimyasal erimesiyle oluşan şekiller',
     badges: ['LAPYA & DOLİN', 'OBRUK (Çöküntü)', 'MAĞARA', 'SARKIT & DİKİT'],
     educationalNote:
-        'En küçük erime çukuru Lapya, tavan çökmesiyle oluşan dev kuyu Obruk''tur (Cennet-Cehennem, Kızören).\nİçeride kalsiyum karbonat birikimiyle Sarkıt, Dikit ve Sütunlar oluşur.',
+        'En küçük erime çukuru Lapya, tavan çökmesiyle oluşan dev kuyu Obruk'
+        'tur (Cennet-Cehennem, Kızören).\nİçeride kalsiyum karbonat birikimiyle Sarkıt, Dikit ve Sütunlar oluşur.',
   );
 
   /// 5. Kıyı Birikim Şekilleri (Tombolo & Lagün)
@@ -106,6 +109,8 @@ class GeoPresets {
     subtitle: 'Kıyı kordonlarının bir adayı karaya bağlaması (Saplı Ada)',
     badges: ['TOMBOLO (Saplı Ada)', 'LAGÜN (Kıyı Set Gölü)', 'KIYI OKU'],
     educationalNote:
-        'Bir adanın kıyı kordonuyla karaya bağlanmasıyla oluşan TOMBOLO''nun en net örnekleri:\nKapıdağ Yarımadası (Balıkesir) ve Sinop İnceburun Yarımadası''dır.',
+        'Bir adanın kıyı kordonuyla karaya bağlanmasıyla oluşan TOMBOLO'
+        'nun en net örnekleri:\nKapıdağ Yarımadası (Balıkesir) ve Sinop İnceburun Yarımadası'
+        'dır.',
   );
 }

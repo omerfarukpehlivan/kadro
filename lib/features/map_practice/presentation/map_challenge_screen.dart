@@ -102,7 +102,11 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
           ),
           title: Row(
             children: [
-              const Icon(LucideIcons.trophy, color: Color(0xFFD97706), size: 26),
+              const Icon(
+                LucideIcons.trophy,
+                color: Color(0xFFD97706),
+                size: 26,
+              ),
               const SizedBox(width: 10),
               Text(
                 'Antrenman Tamamlandı!',
@@ -331,9 +335,7 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
                         color: const Color(0xFFD97706).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: const Color(
-                            0xFFD97706,
-                          ).withValues(alpha: 0.3),
+                          color: const Color(0xFFD97706).withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
@@ -443,15 +445,13 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
 
                         if (_hasAnswered) {
                           if (isCorrectOption) {
-                            btnBg = const Color(
-                              0xFF10B981,
-                            ).withValues(alpha: 0.15);
+                            btnBg = const Color(0xFF10B981)
+                                .withValues(alpha: 0.15);
                             btnBorder = const Color(0xFF10B981);
                             textColor = const Color(0xFF10B981);
                           } else if (isSelected) {
-                            btnBg = const Color(
-                              0xFFEF4444,
-                            ).withValues(alpha: 0.15);
+                            btnBg = const Color(0xFFEF4444)
+                                .withValues(alpha: 0.15);
                             btnBorder = const Color(0xFFEF4444);
                             textColor = const Color(0xFFEF4444);
                           }
@@ -491,8 +491,7 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w700,
-                                        color:
-                                            textColor ?? colorScheme.primary,
+                                        color: textColor ?? colorScheme.primary,
                                       ),
                                     ),
                                   ),
@@ -590,14 +589,12 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: const Color(
-                                  0xFFD97706,
-                                ).withValues(alpha: 0.1),
+                                color: const Color(0xFFD97706)
+                                    .withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: const Color(
-                                    0xFFD97706,
-                                  ).withValues(alpha: 0.3),
+                                  color: const Color(0xFFD97706)
+                                      .withValues(alpha: 0.3),
                                 ),
                               ),
                               child: Text(
