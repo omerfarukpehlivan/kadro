@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
-import 'package:kadro/core/utils/exam_calendar_utils.dart';
+import 'package:kadro/shared/widgets/kadro_dropdown.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -13,18 +13,10 @@ class ExamTargetPickerView extends StatefulWidget {
   final ExamSelection value;
   final ValueChanged<ExamSelection> onChanged;
 
-  /// Seçili aile veya hızlı dönem kartına tek tıkla onay davranışı bağlamak için.
-  final ValueChanged<ExamSelection>? onQuickPresetTap;
-
-  /// ÖSYM standart 5 hızlı profil kartını alt bölümde gösterip göstermeyeceği.
-  final bool showQuickPresets;
-
   const ExamTargetPickerView({
     super.key,
     required this.value,
     required this.onChanged,
-    this.onQuickPresetTap,
-    this.showQuickPresets = true,
   });
 
   /// KPSS A Grubu 9 resmî alan bilgisi testi listesi.
@@ -45,15 +37,6 @@ class ExamTargetPickerView extends StatefulWidget {
 }
 
 class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
-  final TextEditingController _oabtSearchController = TextEditingController();
-  String _oabtQuery = '';
-
-  @override
-  void dispose() {
-    _oabtSearchController.dispose();
-    super.dispose();
-  }
-
   IconData _familyIcon(KpssExamFamily family) {
     switch (family) {
       case KpssExamFamily.bGrubu:
@@ -133,17 +116,6 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
     }
   }
 
-  String _normalizeTurkish(String input) {
-    return input
-        .toLowerCase()
-        .replaceAll('ç', 'c')
-        .replaceAll('ğ', 'g')
-        .replaceAll('ı', 'i')
-        .replaceAll('ö', 'o')
-        .replaceAll('ş', 's')
-        .replaceAll('ü', 'u');
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -156,37 +128,15 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          '1. Sınav Ailesi',
-          style: textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: 8),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: KpssExamFamily.values.map((family) {
-              final isSelected = selection.family == family;
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: ChoiceChip(
-                  key: ValueKey('picker_family_${family.key}'),
-                  avatar: PhosphorIcon(
-                    _familyIcon(family),
-                    size: 16,
-                    color: isSelected
-                        ? colorScheme.onPrimaryContainer
-                        : colorScheme.onSurfaceVariant,
-                  ),
-                  label: Text(family.shortLabel),
-                  selected: isSelected,
-                  onSelected: (_) => _selectFamily(family),
-                ),
-              );
-            }).toList(),
-          ),
+        KadroDropdown<KpssExamFamily>(
+          dropdownKey: const ValueKey('picker_family_dropdown'),
+          label: '1. Sınav Ailesi',
+          leadingIcon: _familyIcon(selection.family),
+          value: selection.family,
+          items: KpssExamFamily.values,
+          itemKeyBuilder: (family) => ValueKey('picker_family_${family.key}'),
+          itemLabelBuilder: (family) => family.shortLabel,
+          onChanged: _selectFamily,
         ),
         const SizedBox(height: 12),
 
@@ -239,87 +189,6 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
             ],
           ),
         ),
-
-        if (widget.showQuickPresets) ...[
-          const SizedBox(height: 16),
-          Text(
-            'Hızlı ÖSYM Dönem Profilleri',
-            style: textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 8),
-          ...KpssExamTarget.values.map((target) {
-            final presetSelection = ExamSelection.fromLegacyTarget(target);
-            final isSelected =
-                selection.family == presetSelection.family &&
-                selection.educationLevel == presetSelection.educationLevel &&
-                selection.examCycleYear == presetSelection.examCycleYear &&
-                selection.bGroupProfile == presetSelection.bGroupProfile;
-            final targetRemaining = presetSelection.detailedRemaining();
-
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: TactileCard(
-                onTap: () {
-                  if (widget.onQuickPresetTap != null) {
-                    widget.onQuickPresetTap!(presetSelection);
-                  } else {
-                    widget.onChanged(presetSelection);
-                  }
-                },
-                backgroundColor: isSelected
-                    ? colorScheme.primaryContainer.withAlpha(75)
-                    : colorScheme.surface,
-                borderColor: isSelected
-                    ? colorScheme.primary
-                    : colorScheme.outlineVariant,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 11,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            target.title,
-                            style: textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: isSelected
-                                  ? colorScheme.primary
-                                  : colorScheme.onSurface,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${target.subtitle} · ${targetRemaining.formattedRemaining}',
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    PhosphorIcon(
-                      isSelected
-                          ? PhosphorIconsFill.checkCircle
-                          : PhosphorIconsRegular.circle,
-                      size: 18,
-                      color: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.outlineVariant,
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
-        ],
       ],
     );
   }
@@ -331,96 +200,37 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
 
     switch (selection.family) {
       case KpssExamFamily.bGrubu:
+        final currentBLevel = _BGroupLevelOption.fromSelection(selection);
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Öğrenim Düzeyi ve Dönem',
-              style: textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
+            KadroDropdown<_BGroupLevelOption>(
+              dropdownKey: const ValueKey('b_level_dropdown'),
+              label: 'Öğrenim Düzeyi ve Dönem',
+              value: currentBLevel,
+              items: _BGroupLevelOption.values,
+              itemLabelBuilder: (opt) => opt.label,
+              onChanged: (opt) => widget.onChanged(
+                selection.copyWith(
+                  educationLevel: opt.educationLevel,
+                  examCycleYear: opt.examCycleYear,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ChoiceChip(
-                  label: const Text('Lisans 2027'),
-                  selected:
-                      selection.educationLevel == EducationLevel.lisans &&
-                      selection.examCycleYear <= 2027,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(
-                      educationLevel: EducationLevel.lisans,
-                      examCycleYear: 2027,
-                    ),
-                  ),
-                ),
-                ChoiceChip(
-                  label: const Text('Lisans 2028'),
-                  selected:
-                      selection.educationLevel == EducationLevel.lisans &&
-                      selection.examCycleYear >= 2028,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(
-                      educationLevel: EducationLevel.lisans,
-                      examCycleYear: 2028,
-                    ),
-                  ),
-                ),
-                ChoiceChip(
-                  label: const Text('Ön Lisans'),
-                  selected: selection.educationLevel == EducationLevel.onlisans,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(
-                      educationLevel: EducationLevel.onlisans,
-                      examCycleYear: 2028,
-                    ),
-                  ),
-                ),
-                ChoiceChip(
-                  label: const Text('Ortaöğretim'),
-                  selected:
-                      selection.educationLevel == EducationLevel.ortaogretim,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(
-                      educationLevel: EducationLevel.ortaogretim,
-                      examCycleYear: 2028,
-                    ),
-                  ),
-                ),
-              ],
             ),
             const SizedBox(height: 12),
-            Text(
-              'Sınav Kapsamı',
-              style: textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
+            KadroDropdown<BGroupProfile>(
+              dropdownKey: const ValueKey('b_profile_dropdown'),
+              label: 'Sınav Kapsamı',
+              value: selection.bGroupProfile,
+              items: BGroupProfile.values,
+              itemKeyBuilder: (p) => ValueKey(
+                p == BGroupProfile.onlyGk
+                    ? 'b_profile_only_gk'
+                    : 'b_profile_full_gygk',
               ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ChoiceChip(
-                  key: const ValueKey('b_profile_only_gk'),
-                  label: Text(BGroupProfile.onlyGk.label),
-                  selected: selection.bGroupProfile == BGroupProfile.onlyGk,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(bGroupProfile: BGroupProfile.onlyGk),
-                  ),
-                ),
-                ChoiceChip(
-                  key: const ValueKey('b_profile_full_gygk'),
-                  label: Text(BGroupProfile.fullGyGk.label),
-                  selected: selection.bGroupProfile == BGroupProfile.fullGyGk,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(bGroupProfile: BGroupProfile.fullGyGk),
-                  ),
-                ),
-              ],
+              itemLabelBuilder: (p) => p.label,
+              onChanged: (profile) =>
+                  widget.onChanged(selection.copyWith(bGroupProfile: profile)),
             ),
           ],
         );
@@ -429,52 +239,31 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Öğrenim Düzeyi',
-              style: textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: EducationLevel.values.map((level) {
-                return ChoiceChip(
-                  label: Text(level.label),
-                  selected: selection.educationLevel == level,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(educationLevel: level),
-                  ),
-                );
-              }).toList(),
+            KadroDropdown<EducationLevel>(
+              dropdownKey: const ValueKey('ekpss_level_dropdown'),
+              label: 'Öğrenim Düzeyi',
+              value: selection.educationLevel,
+              items: EducationLevel.values,
+              itemLabelBuilder: (level) => level.label,
+              onChanged: (level) =>
+                  widget.onChanged(selection.copyWith(educationLevel: level)),
             ),
             const SizedBox(height: 12),
-            Text(
-              'E-KPSS Kitapçık & Engel Grubu',
-              style: textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
+            KadroDropdown<DisabilityGroup>(
+              dropdownKey: const ValueKey('ekpss_group_dropdown'),
+              label: 'E-KPSS Kitapçık & Engel Grubu',
+              value: selection.disabilityGroup,
+              items: DisabilityGroup.values,
+              itemKeyBuilder: (g) => ValueKey('ekpss_group_${g.key}'),
+              itemLabelBuilder: (g) => g.label,
+              onChanged: (group) => widget.onChanged(
+                selection.copyWith(
+                  disabilityGroup: group,
+                  includeExtraTime: group.standardExtraMinutes > 0
+                      ? true
+                      : selection.includeExtraTime,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: DisabilityGroup.values.map((group) {
-                return ChoiceChip(
-                  key: ValueKey('ekpss_group_${group.key}'),
-                  label: Text(group.label),
-                  selected: selection.disabilityGroup == group,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(
-                      disabilityGroup: group,
-                      includeExtraTime: group.standardExtraMinutes > 0
-                          ? true
-                          : selection.includeExtraTime,
-                    ),
-                  ),
-                );
-              }).toList(),
             ),
             const SizedBox(height: 8),
             SwitchListTile.adaptive(
@@ -498,149 +287,49 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
         );
 
       case KpssExamFamily.dhbt:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'DHBT-2 Öğrenim Düzeyi',
-              style: textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ChoiceChip(
-                  label: const Text('Ortaöğretim (İHL)'),
-                  selected:
-                      selection.educationLevel == EducationLevel.ortaogretim,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(
-                      educationLevel: EducationLevel.ortaogretim,
-                    ),
-                  ),
-                ),
-                ChoiceChip(
-                  label: const Text('Ön Lisans'),
-                  selected: selection.educationLevel == EducationLevel.onlisans,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(educationLevel: EducationLevel.onlisans),
-                  ),
-                ),
-                ChoiceChip(
-                  label: const Text('Lisans'),
-                  selected: selection.educationLevel == EducationLevel.lisans,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(educationLevel: EducationLevel.lisans),
-                  ),
-                ),
-              ],
-            ),
+        return KadroDropdown<EducationLevel>(
+          dropdownKey: const ValueKey('dhbt_level_dropdown'),
+          label: 'DHBT-2 Öğrenim Düzeyi',
+          value: selection.educationLevel,
+          items: const [
+            EducationLevel.ortaogretim,
+            EducationLevel.onlisans,
+            EducationLevel.lisans,
           ],
+          itemLabelBuilder: (level) => level == EducationLevel.ortaogretim
+              ? 'Ortaöğretim (İHL)'
+              : level.label,
+          onChanged: (level) =>
+              widget.onChanged(selection.copyWith(educationLevel: level)),
         );
 
       case KpssExamFamily.mebAgs:
-        final normalizedQuery = _normalizeTurkish(_oabtQuery.trim());
-        final filteredBranches = OabtBranch.officialOabtBranches
-            .where(
-              (b) =>
-                  normalizedQuery.isEmpty ||
-                  _normalizeTurkish(b.label).contains(normalizedQuery) ||
-                  b.key.contains(normalizedQuery),
-            )
-            .toList(growable: false);
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'MEB-AGS Puan Türü & 2. Oturum',
-              style: textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                ChoiceChip(
-                  key: const ValueKey('ags_mode_p1'),
-                  label: const Text('Yalnızca AGS (P1)'),
-                  selected: selection.oabtBranch == OabtBranch.none,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(oabtBranch: OabtBranch.none),
-                  ),
-                ),
-                ChoiceChip(
-                  key: const ValueKey('ags_mode_p3'),
-                  label: const Text('AGS + YDS Dil (P3)'),
-                  selected: selection.oabtBranch == OabtBranch.ydsDil,
-                  onSelected: (_) => widget.onChanged(
-                    selection.copyWith(oabtBranch: OabtBranch.ydsDil),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '17 ÖABT Branşından Seç (AGS-P2)',
-              style: textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 6),
-            TextField(
-              key: const ValueKey('oabt_search_field'),
-              controller: _oabtSearchController,
-              decoration: InputDecoration(
-                hintText: 'ÖABT branşı ara (ör. Matematik, Fizik, Sınıf)...',
-                prefixIcon: const PhosphorIcon(
-                  PhosphorIconsRegular.magnifyingGlass,
-                  size: 18,
-                ),
-                isDense: true,
-                suffixIcon: _oabtQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const PhosphorIcon(
-                          PhosphorIconsRegular.x,
-                          size: 16,
-                        ),
-                        onPressed: () {
-                          _oabtSearchController.clear();
-                          setState(() => _oabtQuery = '');
-                        },
-                      )
-                    : null,
-              ),
-              onChanged: (val) => setState(() => _oabtQuery = val),
-            ),
-            const SizedBox(height: 8),
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 168),
-              child: SingleChildScrollView(
-                child: Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: filteredBranches.map((branch) {
-                    final isSelected = selection.oabtBranch == branch;
-                    return ChoiceChip(
-                      key: ValueKey('oabt_branch_${branch.key}'),
-                      label: Text(
-                        '${branch.label} (${branch.durationMinutes} dk)',
-                      ),
-                      selected: isSelected,
-                      onSelected: (_) => widget.onChanged(
-                        selection.copyWith(oabtBranch: branch),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-          ],
+        final allAgsOptions = <OabtBranch>[
+          OabtBranch.none,
+          OabtBranch.ydsDil,
+          ...OabtBranch.officialOabtBranches,
+        ];
+        return KadroDropdown<OabtBranch>(
+          dropdownKey: const ValueKey('meb_ags_branch_dropdown'),
+          label: 'MEB-AGS Puan Türü & 2. Oturum / ÖABT Branşı',
+          value: selection.oabtBranch,
+          items: allAgsOptions,
+          itemKeyBuilder: (branch) {
+            if (branch == OabtBranch.none) {
+              return const ValueKey('ags_mode_p1');
+            }
+            if (branch == OabtBranch.ydsDil) {
+              return const ValueKey('ags_mode_p3');
+            }
+            return ValueKey('oabt_branch_${branch.key}');
+          },
+          itemLabelBuilder: (branch) {
+            if (branch == OabtBranch.none) return 'Yalnızca AGS (P1)';
+            if (branch == OabtBranch.ydsDil) return 'AGS + YDS Dil (P3)';
+            return '${branch.label} (${branch.durationMinutes} dk)';
+          },
+          onChanged: (branch) =>
+              widget.onChanged(selection.copyWith(oabtBranch: branch)),
         );
 
       case KpssExamFamily.aGrubu:
@@ -746,5 +435,30 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
           ],
         );
     }
+  }
+}
+
+enum _BGroupLevelOption {
+  lisans2027('Lisans 2027', EducationLevel.lisans, 2027),
+  lisans2028('Lisans 2028', EducationLevel.lisans, 2028),
+  onlisans('Ön Lisans', EducationLevel.onlisans, 2028),
+  ortaogretim('Ortaöğretim', EducationLevel.ortaogretim, 2028);
+
+  final String label;
+  final EducationLevel educationLevel;
+  final int examCycleYear;
+
+  const _BGroupLevelOption(this.label, this.educationLevel, this.examCycleYear);
+
+  static _BGroupLevelOption fromSelection(ExamSelection selection) {
+    if (selection.educationLevel == EducationLevel.onlisans) {
+      return _BGroupLevelOption.onlisans;
+    }
+    if (selection.educationLevel == EducationLevel.ortaogretim) {
+      return _BGroupLevelOption.ortaogretim;
+    }
+    return selection.examCycleYear <= 2027
+        ? _BGroupLevelOption.lisans2027
+        : _BGroupLevelOption.lisans2028;
   }
 }

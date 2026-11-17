@@ -178,8 +178,6 @@ class _TargetExamSelectorBottomSheetState
                       value: _draftSelection,
                       onChanged: (next) =>
                           setState(() => _draftSelection = next),
-                      onQuickPresetTap: _applyAndClose,
-                      showQuickPresets: true,
                     ),
                     const SizedBox(height: 6),
 

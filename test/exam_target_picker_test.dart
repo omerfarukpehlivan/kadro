@@ -41,32 +41,46 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // 1. Başlangıçta B Grubu görünür
-        expect(find.byKey(const ValueKey('b_profile_only_gk')), findsOneWidget);
+        // 1. Başlangıçta B Grubu dropdownları görünür
+        expect(find.byKey(const ValueKey('b_level_dropdown')), findsOneWidget);
         expect(
-          find.byKey(const ValueKey('b_profile_full_gygk')),
+          find.byKey(const ValueKey('b_profile_dropdown')),
           findsOneWidget,
         );
 
-        await tester.tap(find.byKey(const ValueKey('b_profile_only_gk')));
+        await tester.tap(find.byKey(const ValueKey('b_profile_dropdown')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('b_profile_only_gk')).last);
         await tester.pumpAndSettle();
         expect(current.bGroupProfile, BGroupProfile.onlyGk);
 
         // 2. E-KPSS: engel grubu + ek süre anahtarı
-        final ekpssChip = find.byKey(
-          ValueKey('picker_family_${KpssExamFamily.ekpss.key}'),
+        final familyDropdown = find.byKey(
+          const ValueKey('picker_family_dropdown'),
         );
-        await tester.ensureVisible(ekpssChip);
-        await tester.tap(ekpssChip);
+        await tester.ensureVisible(familyDropdown);
+        await tester.tap(familyDropdown);
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find
+              .byKey(ValueKey('picker_family_${KpssExamFamily.ekpss.key}'))
+              .last,
+        );
         await tester.pumpAndSettle();
 
         expect(current.family, KpssExamFamily.ekpss);
         final gormeGroup = DisabilityGroup.values.firstWhere(
           (g) => g.label.toLowerCase().contains('görme'),
         );
-        final gormeChip = find.byKey(ValueKey('ekpss_group_${gormeGroup.key}'));
-        await tester.ensureVisible(gormeChip);
-        await tester.tap(gormeChip);
+        final ekpssGroupDropdown = find.byKey(
+          const ValueKey('ekpss_group_dropdown'),
+        );
+        await tester.ensureVisible(ekpssGroupDropdown);
+        await tester.tap(ekpssGroupDropdown);
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(ValueKey('ekpss_group_${gormeGroup.key}')).last,
+        );
         await tester.pumpAndSettle();
         expect(current.disabilityGroup, gormeGroup);
 
@@ -79,56 +93,69 @@ void main() {
         expect(current.includeExtraTime, isTrue);
 
         // 3. DHBT: 3 öğrenim düzeyi
-        final dhbtChip = find.byKey(
-          ValueKey('picker_family_${KpssExamFamily.dhbt.key}'),
+        await tester.ensureVisible(familyDropdown);
+        await tester.tap(familyDropdown);
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(ValueKey('picker_family_${KpssExamFamily.dhbt.key}')).last,
         );
-        await tester.ensureVisible(dhbtChip);
-        await tester.tap(dhbtChip);
         await tester.pumpAndSettle();
         expect(current.family, KpssExamFamily.dhbt);
-        final ihlChip = find.text('Ortaöğretim (İHL)');
-        await tester.ensureVisible(ihlChip);
-        await tester.tap(ihlChip);
+        final dhbtLevelDropdown = find.byKey(
+          const ValueKey('dhbt_level_dropdown'),
+        );
+        await tester.ensureVisible(dhbtLevelDropdown);
+        await tester.tap(dhbtLevelDropdown);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Ortaöğretim (İHL)').last);
         await tester.pumpAndSettle();
         expect(current.educationLevel, EducationLevel.ortaogretim);
 
-        // 4. MEB-AGS + ÖABT arama ve P3 modu
-        final agsChip = find.byKey(
-          ValueKey('picker_family_${KpssExamFamily.mebAgs.key}'),
+        // 4. MEB-AGS + ÖABT branşı ve P3 modu
+        await tester.ensureVisible(familyDropdown);
+        await tester.tap(familyDropdown);
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find
+              .byKey(ValueKey('picker_family_${KpssExamFamily.mebAgs.key}'))
+              .last,
         );
-        await tester.ensureVisible(agsChip);
-        await tester.tap(agsChip);
         await tester.pumpAndSettle();
         expect(current.family, KpssExamFamily.mebAgs);
 
-        final searchField = find.byKey(const ValueKey('oabt_search_field'));
-        await tester.ensureVisible(searchField);
-        await tester.enterText(searchField, 'Türkçe');
+        final agsDropdown = find.byKey(
+          const ValueKey('meb_ags_branch_dropdown'),
+        );
+        await tester.ensureVisible(agsDropdown);
+        await tester.tap(agsDropdown);
         await tester.pumpAndSettle();
 
         final turkceBranch = OabtBranch.values.firstWhere(
           (b) => b.label.contains('Türkçe'),
         );
-        final turkceChip = find.byKey(
-          ValueKey('oabt_branch_${turkceBranch.key}'),
-        );
-        await tester.ensureVisible(turkceChip);
-        await tester.tap(turkceChip);
+        final turkceItem = find
+            .byKey(ValueKey('oabt_branch_${turkceBranch.key}'))
+            .last;
+        await tester.ensureVisible(turkceItem);
+        await tester.tap(turkceItem);
         await tester.pumpAndSettle();
         expect(current.oabtBranch, turkceBranch);
 
-        final p3Chip = find.byKey(const ValueKey('ags_mode_p3'));
-        await tester.ensureVisible(p3Chip);
-        await tester.tap(p3Chip);
+        await tester.tap(agsDropdown);
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('ags_mode_p3')).last);
         await tester.pumpAndSettle();
         expect(current.includeYdsForAgsP3, isTrue);
 
         // 5. A Grubu: ön ayarlar ve çoklu ders seçimi
-        final aChip = find.byKey(
-          ValueKey('picker_family_${KpssExamFamily.aGrubu.key}'),
+        await tester.ensureVisible(familyDropdown);
+        await tester.tap(familyDropdown);
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find
+              .byKey(ValueKey('picker_family_${KpssExamFamily.aGrubu.key}'))
+              .last,
         );
-        await tester.ensureVisible(aChip);
-        await tester.tap(aChip);
         await tester.pumpAndSettle();
         expect(current.family, KpssExamFamily.aGrubu);
 
@@ -187,11 +214,15 @@ void main() {
         await tester.tap(find.text('Ac'));
         await tester.pumpAndSettle();
 
-        final dhbtChip = find.byKey(
-          ValueKey('picker_family_${KpssExamFamily.dhbt.key}'),
+        final familyDropdown = find.byKey(
+          const ValueKey('picker_family_dropdown'),
         );
-        await tester.ensureVisible(dhbtChip);
-        await tester.tap(dhbtChip);
+        await tester.ensureVisible(familyDropdown);
+        await tester.tap(familyDropdown);
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(ValueKey('picker_family_${KpssExamFamily.dhbt.key}')).last,
+        );
         await tester.pumpAndSettle();
 
         await tester.tap(

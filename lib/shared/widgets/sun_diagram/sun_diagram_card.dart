@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'sun_diagram.dart';
@@ -231,7 +232,7 @@ class SunDiagramCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          'Çift parmakla yakınlaştırabilirsiniz',
+                          ResponsiveBreakpoints.zoomHintText(ctx),
                           style: ctxText.bodySmall?.copyWith(
                             color: ctxScheme.onSurfaceVariant,
                           ),

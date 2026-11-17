@@ -61,9 +61,7 @@ void main() {
           expect(find.byType(OnboardingScreen), findsOneWidget);
           expect(find.byType(AppNavigationBar), findsNothing);
 
-          // Adım 1: Sınav
-          await tester.tap(find.text(KpssExamTarget.lisans.title));
-          await tester.pumpAndSettle();
+          // Adım 1: Sınav (varsayılan 2027 KPSS Lisans seçili)
           await tester.tap(find.text('Devam Et'));
           await tester.pumpAndSettle();
 

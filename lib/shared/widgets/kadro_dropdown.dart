@@ -194,7 +194,7 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>> {
         ? colorScheme.primaryContainer
         : colorScheme.outlineVariant;
 
-    return Focus(
+    final box = Focus(
       skipTraversal: true,
       onFocusChange: (focused) {
         if (_isFocused != focused) {
@@ -217,10 +217,7 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>> {
               : const Duration(milliseconds: 120),
           padding: widget.isCompact
               ? const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
-              : EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: widget.label != null ? 8 : 10,
-                ),
+              : const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
             color: containerBg,
             borderRadius: BorderRadius.circular(12),
@@ -244,16 +241,6 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>> {
                 ),
                 SizedBox(width: widget.isCompact ? 5 : 8),
               ],
-              if (widget.label != null) ...[
-                Text(
-                  widget.label!,
-                  style: textTheme.labelLarge?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(width: 12),
-              ],
               if (widget.isCompact)
                 Flexible(child: dropdownButton)
               else
@@ -262,6 +249,26 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>> {
           ),
         ),
       ),
+    );
+
+    if (widget.label == null || widget.isCompact) {
+      return box;
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          widget.label!,
+          style: textTheme.labelMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        box,
+      ],
     );
   }
 }

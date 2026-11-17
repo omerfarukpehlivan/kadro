@@ -169,21 +169,35 @@ class _LessonCard extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       if (lesson.badgeText != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: accent.withAlpha(24),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: accent.withAlpha(75)),
-                          ),
-                          child: Text(
-                            lesson.badgeText!,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: accent,
-                              fontWeight: FontWeight.w700,
+                        Tooltip(
+                          message: 'Her hafta yeni sorularla güncellenir',
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: accent.withAlpha(20),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: accent.withAlpha(65)),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                PhosphorIcon(
+                                  PhosphorIconsRegular.arrowsClockwise,
+                                  size: 11,
+                                  color: accent,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  lesson.badgeText!,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: accent,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

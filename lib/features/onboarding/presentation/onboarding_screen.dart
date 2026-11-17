@@ -302,7 +302,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         return ExamTargetPickerView(
           value: _selectedExam,
           onChanged: _onExamSelectionChanged,
-          showQuickPresets: true,
         );
 
       case 1:

@@ -39,28 +39,16 @@ void main() {
         await tester.pumpWidget(const MyApp());
         await tester.pumpAndSettle();
 
-        // Auth-First: İlk açılışta oturum kapalıyken giriş kapısı gösterilir.
-        expect(find.byType(AuthScreen), findsOneWidget);
-        expect(find.byType(AppNavigationBar), findsNothing);
-
-        await tester.enterText(
-          find.widgetWithText(TextFormField, 'E-posta veya Kullanıcı Adı'),
-          'yeni_aday@kadro.com',
-        );
-        await tester.enterText(
-          find.widgetWithText(TextFormField, 'Şifre (En az 6 karakter)'),
-          'kpss2026',
-        );
-        await tester.tap(find.widgetWithText(FilledButton, 'Giriş Yap'));
-        await tester.pumpAndSettle();
-
-        // İlk kez giriş yapan aday tek seferlik zorunlu kurulum ekranına düşer.
+        // TASK-155: İlk açılışta zorunlu AuthScreen açılmaz, doğrudan kurulum ekranı gelir.
+        expect(find.byType(AuthScreen), findsNothing);
         expect(find.byType(OnboardingScreen), findsOneWidget);
         expect(find.byType(AppNavigationBar), findsNothing);
         expect(find.text('Çalışma Programını Kur'), findsOneWidget);
 
-        // Adım 1: Sınav Seçimi -> 2028 KPSS Ön Lisans seç
-        await tester.tap(find.text('2028 KPSS Ön Lisans'));
+        // Adım 1: Sınav Seçimi -> B Grubu Ön Lisans seç
+        await tester.tap(find.byKey(const ValueKey('b_level_dropdown')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Ön Lisans').last);
         await tester.pumpAndSettle();
         await tester.tap(find.text('Devam Et'));
         await tester.pumpAndSettle();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'turkey_map.dart';
@@ -179,7 +180,7 @@ class TurkeyMapCard extends StatelessWidget {
                             const SizedBox(width: 8),
                             Flexible(
                               child: Text(
-                                'İki parmağınızla yakınlaştırabilirsiniz',
+                                ResponsiveBreakpoints.zoomHintText(ctx),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: ctxText.bodySmall?.copyWith(

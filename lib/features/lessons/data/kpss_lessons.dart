@@ -87,7 +87,7 @@ const List<Lesson> kpssLessons = [
     section: 'Genel Kültür',
     questionCount: 6,
     icon: PhosphorIconsDuotone.newspaperClipping,
-    badgeText: 'Her Hafta Yeni',
+    badgeText: 'Haftalık',
     topics: [
       'Türkiye ve Dünya Gündemi',
       'Kültür, Sanat ve Edebiyat',

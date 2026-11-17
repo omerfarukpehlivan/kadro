@@ -49,8 +49,6 @@ class _OptionTileState extends State<OptionTile> {
     final colorScheme = theme.colorScheme;
     final isCompact = ResponsiveBreakpoints.isCompact(context);
     final isDesktop = ResponsiveBreakpoints.isDesktop(context);
-    final showDesktopHints =
-        isDesktop || ResponsiveBreakpoints.usesSplitPane(context);
     final disableAnimations = MediaQuery.disableAnimationsOf(context);
     final interactive = widget.onTap != null;
 
@@ -217,31 +215,6 @@ class _OptionTileState extends State<OptionTile> {
                       ),
                     ),
                   ),
-                  if (showDesktopHints &&
-                      widget.shortcutHint != null &&
-                      widget.status == OptionStatus.normal) ...[
-                    const SizedBox(width: 6),
-                    ExcludeSemantics(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerLow,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: colorScheme.outlineVariant),
-                        ),
-                        child: Text(
-                          widget.shortcutHint!,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            fontFeatures: const [FontFeature.tabularFigures()],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
                   if (canShowEliminate) ...[
                     const SizedBox(width: 4),
                     Tooltip(

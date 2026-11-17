@@ -231,7 +231,6 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                     value: _selectedSelection,
                     onChanged: (next) =>
                         setState(() => _selectedSelection = next),
-                    showQuickPresets: false,
                   ),
                   const SizedBox(height: 10),
 

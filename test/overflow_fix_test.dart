@@ -78,7 +78,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(guncelFinder, findsOneWidget);
-        expect(find.text('Her Hafta Yeni'), findsOneWidget);
+        expect(find.text('Haftalık'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );

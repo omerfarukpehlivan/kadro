@@ -1511,7 +1511,10 @@ class _QuestionImageCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
-                      'İki parmağınızla yakınlaştırıp kaydırabilirsiniz',
+                      ResponsiveBreakpoints.zoomHintText(
+                        context,
+                        includePan: true,
+                      ),
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: colorScheme.onPrimary,
                       ),

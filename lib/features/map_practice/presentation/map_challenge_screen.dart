@@ -309,7 +309,10 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
                             Flexible(
                               fit: FlexFit.tight,
                               child: Text(
-                                'İki parmakla yakınlaştırıp ili seçin',
+                                ResponsiveBreakpoints.zoomHintText(
+                                  ctx,
+                                  selectProvince: true,
+                                ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: ctxText.labelSmall?.copyWith(

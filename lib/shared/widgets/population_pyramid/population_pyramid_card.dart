@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'population_pyramid.dart';
@@ -292,7 +293,7 @@ class PopulationPyramidCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          'Çift parmakla yakınlaştırabilirsiniz',
+                          ResponsiveBreakpoints.zoomHintText(ctx),
                           style: ctxText.bodySmall?.copyWith(
                             color: ctxScheme.onSurfaceVariant,
                           ),

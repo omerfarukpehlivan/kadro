@@ -109,6 +109,29 @@ class ResponsiveBreakpoints {
     if (isTablet(context)) return 24.0;
     return 16.0;
   }
+
+  /// Harita, grafik ve görsel büyütme modalında cihaz/ekran boyutuna göre
+  /// yakınlaştırma ipucu metnini döner (PC'de fare tekerleği, mobil/tablette parmak).
+  static String zoomHintText(
+    BuildContext context, {
+    bool includePan = false,
+    bool selectProvince = false,
+  }) {
+    final desktop = isDesktop(context);
+    if (selectProvince) {
+      return desktop
+          ? 'Fare tekerleğiyle yakınlaştırıp ili seçin'
+          : 'İki parmakla yakınlaştırıp ili seçin';
+    }
+    if (includePan) {
+      return desktop
+          ? 'Fare tekerleğiyle yakınlaştırıp sürükleyebilirsiniz'
+          : 'İki parmağınızla yakınlaştırıp kaydırabilirsiniz';
+    }
+    return desktop
+        ? 'Fare tekerleğiyle yakınlaştırabilirsiniz'
+        : 'İki parmağınızla yakınlaştırabilirsiniz';
+  }
 }
 
 /// Tablet ve büyük ekranlarda içeriğin aşırı sündürülmesini önleyen,
