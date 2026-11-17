@@ -3,10 +3,12 @@ import 'dart:async' show StreamSubscription, unawaited;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/config/supabase_config.dart';
+import 'package:kadro/core/services/local_storage_service.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Girilen e-posta veya kullanıcı adını Supabase auth ile uyumlu e-posta formatına dönüştürür.
@@ -31,6 +33,11 @@ class AuthUserState {
   final String? email;
   final String displayName;
   final bool isLoading;
+
+  /// Giriş sonrası bulut tercihleri ve plan senkronizasyonu sürerken true olur.
+  ///
+  /// Web/Angular karşılığı: Route Guard / App Initializer hydration flag.
+  final bool isHydrating;
   final String? errorMessage;
 
   const AuthUserState({
@@ -39,6 +46,7 @@ class AuthUserState {
     this.email,
     this.displayName = 'Memur Adayı',
     this.isLoading = false,
+    this.isHydrating = false,
     this.errorMessage,
   });
 
@@ -48,6 +56,7 @@ class AuthUserState {
     String? email,
     String? displayName,
     bool? isLoading,
+    bool? isHydrating,
     String? errorMessage,
   }) {
     return AuthUserState(
@@ -56,6 +65,7 @@ class AuthUserState {
       email: email ?? this.email,
       displayName: displayName ?? this.displayName,
       isLoading: isLoading ?? this.isLoading,
+      isHydrating: isHydrating ?? this.isHydrating,
       errorMessage: errorMessage,
     );
   }
@@ -66,22 +76,60 @@ class AuthUserState {
 /// Web/Angular karşılığı: AuthService / AuthStore (Supabase Auth Wrapper).
 class AuthNotifier extends Notifier<AuthUserState> {
   StreamSubscription<AuthState>? _authSubscription;
+  Future<void>? _activeHydration;
 
-  /// Yeni cihazda veya ilk oturum açılışında tüm bulut verilerini (XP, seri, oturumlar,
-  /// tercihler, hedef sınav, çalışma planı ve yanlış defteri) yerel state ile birleştirir.
-  Future<void> _hydrateAllFromCloud() async {
+  /// Yeni cihazda veya ilk oturum açılışında tüm bulut verilerini (tercihler,
+  /// XP/seri, çalışma planı ve yanlış defteri) sıralı olarak yerel state ile birleştirir.
+  Future<void> _hydrateAllFromCloud() {
+    final existing = _activeHydration;
+    if (existing != null) return existing;
+
+    final future = _runHydrationSequence();
+    _activeHydration = future;
+    return future;
+  }
+
+  Future<void> _runHydrationSequence() async {
+    if (!ref.mounted) return;
+    state = state.copyWith(isHydrating: true);
     try {
-      await ref.read(studyStatsProvider.notifier).loadFromCloud();
-    } catch (_) {}
-    try {
-      await ref.read(userPreferencesProvider.notifier).loadFromCloud();
-    } catch (_) {}
-    try {
-      await ref.read(studyPlannerProvider.notifier).loadTasksFromCloud();
-    } catch (_) {}
-    try {
-      await const MistakeRepository().hydrateFromCloud();
-    } catch (_) {}
+      final accountKey = state.email ?? state.userId;
+
+      // 1. Önce kullanıcı tercihleri çekilir: hasCompletedOnboarding, targetExam,
+      // studyProgramPace ve focusLesson netleşmeden plan üretilmemelidir.
+      try {
+        await ref
+            .read(userPreferencesProvider.notifier)
+            .loadFromCloud(accountKey: accountKey);
+      } catch (_) {}
+      if (!ref.mounted) return;
+
+      // 2. İstatistik ve günlük soru kotası bulutla eşitlenir.
+      try {
+        await ref
+            .read(studyStatsProvider.notifier)
+            .loadFromCloud(accountKey: accountKey);
+      } catch (_) {}
+      if (!ref.mounted) return;
+
+      // 3. Planlayıcı görevleri tercihlerle sıralı ve tutarlı biçimde yüklenir.
+      try {
+        await ref
+            .read(studyPlannerProvider.notifier)
+            .loadTasksFromCloud(accountKey: accountKey);
+      } catch (_) {}
+      if (!ref.mounted) return;
+
+      // 4. Hata defteri buluttan eşitlenir.
+      try {
+        await const MistakeRepository().hydrateFromCloud();
+      } catch (_) {}
+    } finally {
+      _activeHydration = null;
+      if (ref.mounted) {
+        state = state.copyWith(isHydrating: false);
+      }
+    }
   }
 
   @override
@@ -90,21 +138,29 @@ class AuthNotifier extends Notifier<AuthUserState> {
 
     if (client != null && _authSubscription == null) {
       _authSubscription = client.auth.onAuthStateChange.listen((data) {
+        if (!ref.mounted) return;
         final user = data.session?.user;
         if (user != null) {
+          final shouldHydrate =
+              data.event == AuthChangeEvent.signedIn ||
+              data.event == AuthChangeEvent.initialSession;
           state = state.copyWith(
             isAuthenticated: true,
+            isHydrating: shouldHydrate ? true : state.isHydrating,
             userId: user.id,
             email: user.email,
             displayName:
                 user.userMetadata?['display_name'] as String? ??
                 user.userMetadata?['full_name'] as String? ??
                 (user.email?.split('@').first ?? 'Memur Adayı'),
-            isLoading: false,
+            isLoading: shouldHydrate ? state.isLoading : false,
             errorMessage: null,
           );
-          unawaited(_hydrateAllFromCloud());
+          if (shouldHydrate) {
+            unawaited(_hydrateAllFromCloud());
+          }
         } else if (data.event == AuthChangeEvent.signedOut) {
+          _activeHydration = null;
           state = const AuthUserState();
           ref.read(studyStatsProvider.notifier).reset();
           ref.read(userPreferencesProvider.notifier).reset();
@@ -124,6 +180,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
       Future.microtask(() => _hydrateAllFromCloud());
       return AuthUserState(
         isAuthenticated: true,
+        isHydrating: true,
         userId: user.id,
         email: user.email,
         displayName:
@@ -159,12 +216,15 @@ class AuthNotifier extends Notifier<AuthUserState> {
 
         state = state.copyWith(
           isAuthenticated: true,
+          isHydrating: true,
           userId: 'demo_user',
           email: effectiveEmail,
           displayName: displayName,
-          isLoading: false,
         );
-        unawaited(_hydrateAllFromCloud());
+        await _hydrateAllFromCloud();
+        if (ref.mounted) {
+          state = state.copyWith(isLoading: false);
+        }
         return true;
       } else {
         state = state.copyWith(
@@ -181,18 +241,22 @@ class AuthNotifier extends Notifier<AuthUserState> {
         email: effectiveEmail,
         password: password,
       );
+      if (!ref.mounted) return false;
       final user = response.user;
       if (user != null) {
         state = state.copyWith(
           isAuthenticated: true,
+          isHydrating: true,
           userId: user.id,
           email: user.email,
           displayName:
               user.userMetadata?['display_name'] as String? ??
               (user.email?.split('@').first ?? 'Memur Adayı'),
-          isLoading: false,
         );
-        unawaited(_hydrateAllFromCloud());
+        await _hydrateAllFromCloud();
+        if (ref.mounted) {
+          state = state.copyWith(isLoading: false);
+        }
         return true;
       }
       state = state.copyWith(
@@ -201,6 +265,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
       );
       return false;
     } catch (e) {
+      if (!ref.mounted) return false;
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Giriş hatası: ${e.toString()}',
@@ -228,6 +293,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
     if (client == null) {
       state = state.copyWith(
         isAuthenticated: true,
+        isHydrating: true,
         userId: 'demo_user',
         email: effectiveEmail,
         displayName: displayName.trim().isNotEmpty
@@ -235,9 +301,11 @@ class AuthNotifier extends Notifier<AuthUserState> {
             : (rawIdentifier.contains('@')
                   ? rawIdentifier.split('@').first
                   : rawIdentifier),
-        isLoading: false,
       );
-      unawaited(_hydrateAllFromCloud());
+      await _hydrateAllFromCloud();
+      if (ref.mounted) {
+        state = state.copyWith(isLoading: false);
+      }
       return true;
     }
 
@@ -247,16 +315,20 @@ class AuthNotifier extends Notifier<AuthUserState> {
         password: password,
         data: {'display_name': displayName.trim()},
       );
+      if (!ref.mounted) return false;
       final user = response.user;
       if (user != null) {
         state = state.copyWith(
           isAuthenticated: true,
+          isHydrating: true,
           userId: user.id,
           email: user.email,
           displayName: displayName.trim(),
-          isLoading: false,
         );
-        unawaited(_hydrateAllFromCloud());
+        await _hydrateAllFromCloud();
+        if (ref.mounted) {
+          state = state.copyWith(isLoading: false);
+        }
         return true;
       }
       state = state.copyWith(
@@ -265,6 +337,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
       );
       return false;
     } catch (e) {
+      if (!ref.mounted) return false;
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Kayıt hatası: ${e.toString()}',
@@ -284,12 +357,15 @@ class AuthNotifier extends Notifier<AuthUserState> {
       // Demo / Test ortamı fallback
       state = state.copyWith(
         isAuthenticated: true,
+        isHydrating: true,
         userId: 'google_demo_user',
         email: 'demo_kpss@gmail.com',
         displayName: 'Google ile Giriş Yapan Aday',
-        isLoading: false,
       );
-      unawaited(_hydrateAllFromCloud());
+      await _hydrateAllFromCloud();
+      if (ref.mounted) {
+        state = state.copyWith(isLoading: false);
+      }
       return true;
     }
     try {
@@ -304,9 +380,11 @@ class AuthNotifier extends Notifier<AuthUserState> {
         OAuthProvider.google,
         redirectTo: effectiveRedirectTo,
       );
+      if (!ref.mounted) return res;
       state = state.copyWith(isLoading: false);
       return res;
     } catch (e) {
+      if (!ref.mounted) return false;
       state = state.copyWith(
         isLoading: false,
         errorMessage: 'Google ile giriş hatası: ${e.toString()}',
@@ -326,6 +404,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
       await client.auth.resetPasswordForEmail(email.trim());
       return true;
     } catch (e) {
+      if (!ref.mounted) return false;
       state = state.copyWith(
         errorMessage:
             'Şifre sıfırlama bağlantısı gönderilemedi: ${e.toString()}',
@@ -336,14 +415,79 @@ class AuthNotifier extends Notifier<AuthUserState> {
 
   /// Oturumu kapatır ve yerel state ile kullanıcı cache'ini temizler.
   Future<void> signOut() async {
+    _activeHydration = null;
+    final accountKey = state.email ?? state.userId;
+    if (accountKey != null && accountKey.trim().isNotEmpty) {
+      try {
+        final plannerNotifier = ref.read(studyPlannerProvider.notifier);
+        final snapshot = plannerNotifier.exportSnapshot();
+        final currentPrefs = ref.read(userPreferencesProvider);
+        final currentStats = ref.read(studyStatsProvider);
+        unawaited(
+          LocalStorageService().saveAccountStudyStats(accountKey, currentStats),
+        );
+        unawaited(
+          LocalStorageService().savePlannerSnapshot(
+            snapshot,
+            accountKey: accountKey,
+          ),
+        );
+        unawaited(
+          LocalStorageService().saveAccountUserPreferences(
+            accountKey,
+            currentPrefs,
+          ),
+        );
+      } catch (_) {}
+    }
+
     try {
       await SupabaseConfig.clientOrNull?.auth.signOut();
     } catch (_) {}
+    if (!ref.mounted) return;
     state = const AuthUserState();
     ref.read(studyStatsProvider.notifier).reset();
     ref.read(userPreferencesProvider.notifier).reset();
     ref.read(studyPlannerProvider.notifier).reset();
     const MistakeRepository().clearLocal();
+  }
+
+  /// Google Play Data Safety & KVKK: Hesabı ve ilişkili tüm sınav verilerini kalıcı olarak siler.
+  Future<bool> deleteAccountAndData() async {
+    _activeHydration = null;
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final client = SupabaseConfig.clientOrNull;
+      if (client != null && state.userId != null) {
+        try {
+          await client.rpc('delete_user_account');
+        } catch (_) {}
+        try {
+          await client.auth.signOut();
+        } catch (_) {}
+      }
+      if (!ref.mounted) return true;
+
+      state = const AuthUserState();
+      ref.read(studyStatsProvider.notifier).reset();
+      ref.read(userPreferencesProvider.notifier).reset();
+      ref.read(studyPlannerProvider.notifier).reset();
+      const MistakeRepository().clearLocal();
+
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+      } catch (_) {}
+
+      return true;
+    } catch (e) {
+      if (!ref.mounted) return false;
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Hesap silinirken bir hata oluştu: ${e.toString()}',
+      );
+      return false;
+    }
   }
 
   /// Varsa hata mesajını temizler.

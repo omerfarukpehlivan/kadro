@@ -1,36 +1,38 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
+import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/test_difficulty_tier.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
-import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
+import 'package:kadro/shared/widgets/empty_state_view.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Bir konuya ait tüm soruları kolaydan zora doğru sıralayan ve
-/// 10'ar soruluk numaralandırılmış testlere (Test 1, Test 2, ...) bölen ekran.
-///
-/// Web/Angular Karşılığı: `TopicTestsComponent`.
-/// Kullanıcı konuyu seçtiğinde devasa tek bir test yerine,
-/// pedagojik olarak yönetilebilir ve dikkat çekici seviye testleri (Basit Alıştırma,
-/// Tam Sınav Ayarı, Net Sıçratan, Kurtlar Sofrası) sunulur.
+/// Bir konuya ait soruları 10'ar soruluk aşamalı seviye testlerine bölen ekran.
 class TopicTestsScreen extends ConsumerStatefulWidget {
   final String lessonName;
   final String topic;
+  final ExamSelection? selection;
   final QuestionRepository questionRepository;
+
+  /// Masaüstü Master-Detail (`LessonTopicsScreen >= 960px`) içinde sağ panel olarak
+  /// gömüldüğünde `true` olur; iç içe `Scaffold` ve `AppBar` üretmez.
+  final bool isEmbedded;
 
   const TopicTestsScreen({
     super.key,
     required this.lessonName,
     required this.topic,
+    this.selection,
     this.questionRepository = const QuestionRepository(),
+    this.isEmbedded = false,
   });
 
   @override
@@ -42,7 +44,14 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
   List<Question> _allQuestions = [];
   List<List<Question>> _testChunks = [];
 
-  String get packageId => 'topic_${widget.lessonName}_${widget.topic}';
+  ExamSelection get _effectiveSelection =>
+      widget.selection ?? readOrWatchExamSelection(ref, watch: false);
+
+  String get packageId => OfflineDownloadService.topicPackageId(
+    scopeNamespace: _effectiveSelection.curriculumNamespace,
+    lesson: widget.lessonName,
+    topic: widget.topic,
+  );
 
   @override
   void initState() {
@@ -50,10 +59,28 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
     _loadQuestions();
   }
 
+  @override
+  void didUpdateWidget(covariant TopicTestsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.topic != widget.topic ||
+        oldWidget.lessonName != widget.lessonName ||
+        oldWidget.selection?.curriculumNamespace !=
+            widget.selection?.curriculumNamespace) {
+      setState(() => _isLoading = true);
+      _loadQuestions();
+    }
+  }
+
   Future<void> _loadQuestions() async {
+    final selection = _effectiveSelection;
     final isOnline = ref.read(isOnlineProvider);
     final downloadedPackages = ref.read(downloadedPackagesProvider);
-    final isDownloaded = downloadedPackages.contains(packageId);
+    final isDownloaded = OfflineDownloadService.isTopicPackageDownloaded(
+      downloadedPackages,
+      scopeNamespace: selection.curriculumNamespace,
+      lesson: widget.lessonName,
+      topic: widget.topic,
+    );
 
     List<Question> fetched = [];
 
@@ -68,42 +95,23 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
         fetched = await repo.fetchQuestions(
           lesson: widget.lessonName,
           topic: widget.topic,
+          selection: selection,
         );
       } catch (_) {
-        // Fallback to widget repository instance
         fetched = await widget.questionRepository.fetchQuestions(
           lesson: widget.lessonName,
           topic: widget.topic,
+          selection: selection,
         );
       }
     }
 
-    // Soruları sırala:
-    // 1. Öncelik: Eğer orderIndex tanımlıysa (1..60), doğrudan orderIndex'e göre sırala.
-    // 2. Fallback: orderIndex yoksa pedagojik olarak kolaydan zora (difficultyLevel: 1 -> 2 -> 3) sırala.
-    fetched.sort((a, b) {
-      final aOrder = a.orderIndex;
-      final bOrder = b.orderIndex;
-      if (aOrder != null && bOrder != null && aOrder > 0 && bOrder > 0) {
-        return aOrder.compareTo(bOrder);
-      }
-      if (aOrder != null && aOrder > 0) return -1;
-      if (bOrder != null && bOrder > 0) return 1;
-      return a.difficultyLevel.compareTo(b.difficultyLevel);
-    });
-
-    // Soruları 10'ar soruluk test paketlerine böl
-    final chunks = <List<Question>>[];
-    if (fetched.isNotEmpty) {
-      const chunkSize = 10;
-      for (var i = 0; i < fetched.length; i += chunkSize) {
-        chunks.add(fetched.sublist(i, min(i + chunkSize, fetched.length)));
-      }
-    }
+    final sorted = QuestionRepository.sortTopicQuestions(fetched);
+    final chunks = QuestionRepository.chunkTopicQuestions(sorted);
 
     if (!mounted) return;
     setState(() {
-      _allQuestions = fetched;
+      _allQuestions = sorted;
       _testChunks = chunks;
       _isLoading = false;
     });
@@ -129,6 +137,83 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final mood = TugrulMoodExtension.fromLesson(widget.lessonName);
+    final accent = mood.accentColor(colorScheme);
+
+    final content = _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : _testChunks.isEmpty
+        ? _TopicTestsEmptyState(
+            lessonName: widget.lessonName,
+            allowBackNavigation: !widget.isEmbedded,
+          )
+        : ResponsiveContentWrapper(
+            maxWidth: widget.isEmbedded ? double.infinity : 720,
+            padding: EdgeInsets.zero,
+            child: Scrollbar(
+              child: ListView(
+                padding: widget.isEmbedded
+                    ? const EdgeInsets.all(20)
+                    : AppSpacing.pagePadding(context),
+                children: [
+                  TactileCard(
+                    backgroundColor: colorScheme.surfaceContainerLow,
+                    borderColor: accent.withAlpha(110),
+                    lipColor: accent.withAlpha(130),
+                    padding: const EdgeInsets.all(14),
+                    child: Row(
+                      children: [
+                        if (!widget.isEmbedded) ...[
+                          TugrulAvatar(
+                            mood: mood,
+                            size: 52,
+                            ringColor: accent,
+                            tooltip: '${widget.lessonName} İpuçları',
+                            onTap: () =>
+                                TugrulTipsSheet.show(context, mood: mood),
+                          ),
+                          const SizedBox(width: 12),
+                        ],
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${widget.topic} Testleri',
+                                style: textTheme.titleMedium?.copyWith(
+                                  color: colorScheme.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                widget.isEmbedded
+                                    ? '${_testChunks.length} Test · ${_allQuestions.length} Soru · Kolaydan zora'
+                                    : 'Kolaydan zora 10\'ar soruluk testler halinde hazırlanmıştır.',
+                                style: textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  AppSpacing.gapMd,
+                  for (var i = 0; i < _testChunks.length; i++)
+                    _buildTestCard(
+                      context: context,
+                      index: i,
+                      chunk: _testChunks[i],
+                    ),
+                ],
+              ),
+            ),
+          );
+
+    if (widget.isEmbedded) {
+      return content;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -140,9 +225,7 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
               widget.topic,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-              ),
+              style: textTheme.titleSmall,
             ),
             Text(
               '${widget.lessonName} · ${_testChunks.length} Test (${_allQuestions.length} Soru)',
@@ -155,66 +238,7 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
           ],
         ),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _testChunks.isEmpty
-          ? _buildEmptyState(context)
-          : ResponsiveContentWrapper(
-              maxWidth: 720,
-              padding: EdgeInsets.zero,
-              child: ListView(
-                padding: AppSpacing.pagePadding(context),
-                children: [
-                  MascotCoachBanner(
-                    mood: MascotMoodExtension.fromLesson(widget.lessonName),
-                    badgeLabel:
-                        '${widget.lessonName.toUpperCase()} · ${_testChunks.length} TEST',
-                    title: '${widget.topic} Testleri',
-                    message: 'Bu konudaki sorular kolaydan zora doğru 10\'ar soruluk testlere ayrılmıştır. Sırayla tamamla, netlerini zirveye taşı!',
-                  ),
-                  AppSpacing.gapMd,
-                  for (var i = 0; i < _testChunks.length; i++)
-                    _buildTestCard(
-                      context: context,
-                      index: i,
-                      chunk: _testChunks[i],
-                    ),
-                ],
-              ),
-            ),
-    );
-  }
-
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: TactileCard(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const PhosphorIcon(PhosphorIconsDuotone.bookOpenText, size: 48),
-              const SizedBox(height: 12),
-              Text(
-                'Test Bulunamadı',
-                style: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Bu konuya ait henüz soru yüklenmemiş veya çevrimdışı paket indirilmemiş.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const SizedBox(height: 16),
-              FilledButton.tonal(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Geri Dön'),
-              ),
-            ],
-          ),
-        ),
-      ),
+      body: content,
     );
   }
 
@@ -233,7 +257,6 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
       testNumber: index + 1,
     );
 
-    // Ortalama zorluk hesabı ve Seviye (Tier) belirleme
     final avgDifficulty = chunk.isNotEmpty
         ? chunk.map((q) => q.difficultyLevel).reduce((a, b) => a + b) /
               chunk.length
@@ -248,16 +271,18 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
       child: TactileCard(
         onTap: () => _startTest(index, chunk, tier),
         backgroundColor: solvedSession != null
-            ? colorScheme.secondaryContainer.withAlpha(35)
+            ? colorScheme.secondaryContainer.withAlpha(45)
             : colorScheme.surface,
         borderColor: solvedSession != null
             ? colorScheme.secondary.withAlpha(160)
+            : colorScheme.outlineVariant,
+        lipColor: solvedSession != null
+            ? colorScheme.secondary.withAlpha(170)
             : colorScheme.outlineVariant,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Sol: Test Numarası Rozeti, Seviye Rozeti ve Çözüldü Rozeti
             Expanded(
               child: Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
@@ -293,7 +318,7 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(tier.icon, size: 12, color: badgeFg),
+                        PhosphorIcon(tier.icon, size: 12, color: badgeFg),
                         const SizedBox(width: 4),
                         Text(
                           tier.title,
@@ -338,10 +363,10 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            // Sağ: Aksiyon Butonu
             FilledButton.tonal(
               onPressed: () => _startTest(index, chunk, tier),
               style: FilledButton.styleFrom(
+                minimumSize: const Size(0, 38),
                 visualDensity: VisualDensity.compact,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
@@ -353,6 +378,27 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _TopicTestsEmptyState extends StatelessWidget {
+  final String lessonName;
+  final bool allowBackNavigation;
+
+  const _TopicTestsEmptyState({
+    required this.lessonName,
+    required this.allowBackNavigation,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return EmptyStateView(
+      mascotMood: TugrulMoodExtension.fromLesson(lessonName),
+      title: 'Test Bulunamadı',
+      description: 'Bu konuya ait henüz soru yüklenmemiş veya çevrimdışı paket indirilmemiş.',
+      actionLabel: allowBackNavigation ? 'Geri Dön' : null,
+      onAction: allowBackNavigation ? () => Navigator.of(context).pop() : null,
     );
   }
 }

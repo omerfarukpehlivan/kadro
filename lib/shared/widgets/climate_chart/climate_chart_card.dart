@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'climate_chart.dart';
 
@@ -18,26 +18,25 @@ class ClimateChartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16.0),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
-        ),
+        border: Border.all(color: colorScheme.outlineVariant, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: colorScheme.outlineVariant,
+            offset: const Offset(0, 3),
+            blurRadius: 0,
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(14.5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -52,23 +51,23 @@ class ClimateChartCard extends StatelessWidget {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2563EB).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          LucideIcons.cloudRain,
+                        PhosphorIcon(
+                          PhosphorIconsRegular.cloudRain,
                           size: 13,
-                          color: Color(0xFF2563EB),
+                          color: colorScheme.onPrimaryContainer,
                         ),
                         const SizedBox(width: 5),
                         Text(
                           title ?? 'KPSS İklim Analizi (Sıcaklık & Yağış)',
-                          style: theme.textTheme.labelSmall?.copyWith(
+                          style: textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF2563EB),
+                            color: colorScheme.onPrimaryContainer,
                           ),
                         ),
                       ],
@@ -78,7 +77,7 @@ class ClimateChartCard extends StatelessWidget {
                   // Büyüt Butonu
                   InkWell(
                     onTap: () => _openZoomDialog(context),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(8),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -87,16 +86,16 @@ class ClimateChartCard extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            LucideIcons.zoomIn,
+                          PhosphorIcon(
+                            PhosphorIconsRegular.magnifyingGlassPlus,
                             size: 14,
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             'Büyüt',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -118,15 +117,9 @@ class ClimateChartCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.25)
-                    : Colors.white.withValues(alpha: 0.6),
+                color: colorScheme.surfaceContainer,
                 border: Border(
-                  top: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withValues(
-                      alpha: 0.3,
-                    ),
-                  ),
+                  top: BorderSide(color: colorScheme.outlineVariant),
                 ),
               ),
               child: Wrap(
@@ -135,21 +128,24 @@ class ClimateChartCard extends StatelessWidget {
                 alignment: WrapAlignment.center,
                 children: [
                   _buildStatBadge(
-                    icon: LucideIcons.droplets,
+                    context: context,
+                    icon: PhosphorIconsRegular.drop,
                     label:
                         'Yıllık Yağış: ~${config.totalPrecipitation.round()} mm',
-                    color: const Color(0xFF2563EB),
+                    color: colorScheme.primary,
                   ),
                   _buildStatBadge(
-                    icon: LucideIcons.thermometer,
+                    context: context,
+                    icon: PhosphorIconsRegular.thermometer,
                     label:
                         'Ort. Sıcaklık: ${config.averageTemperature.toStringAsFixed(1)}°C',
-                    color: const Color(0xFFDC2626),
+                    color: colorScheme.error,
                   ),
                   _buildStatBadge(
-                    icon: LucideIcons.calendar,
+                    context: context,
+                    icon: PhosphorIconsRegular.calendar,
                     label: config.wettestSeason,
-                    color: const Color(0xFFD97706),
+                    color: colorScheme.tertiary,
                   ),
                 ],
               ),
@@ -161,10 +157,12 @@ class ClimateChartCard extends StatelessWidget {
   }
 
   Widget _buildStatBadge({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required Color color,
   }) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
       decoration: BoxDecoration(
@@ -175,12 +173,11 @@ class ClimateChartCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 11, color: color),
+          PhosphorIcon(icon, size: 11, color: color),
           const SizedBox(width: 4),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 10,
+            style: textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: color,
             ),
@@ -191,26 +188,21 @@ class ClimateChartCard extends StatelessWidget {
   }
 
   void _openZoomDialog(BuildContext context) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (ctx) {
-        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        final ctxTheme = Theme.of(ctx);
+        final ctxScheme = ctxTheme.colorScheme;
+        final ctxText = ctxTheme.textTheme;
         return Dialog(
-          backgroundColor: Colors.transparent,
+          backgroundColor: ctxScheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(color: ctxScheme.outlineVariant),
+          ),
           insetPadding: const EdgeInsets.all(12),
-          child: Container(
+          child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 580, maxHeight: 480),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0F172A) : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black38,
-                  blurRadius: 24,
-                  offset: Offset(0, 8),
-                ),
-              ],
-            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -219,24 +211,26 @@ class ClimateChartCard extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
                   child: Row(
                     children: [
-                      const Icon(
-                        LucideIcons.cloudRain,
+                      PhosphorIcon(
+                        PhosphorIconsRegular.cloudRain,
                         size: 16,
-                        color: Color(0xFF2563EB),
+                        color: ctxScheme.primary,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           config.title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                          style: ctxText.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(LucideIcons.x, size: 18),
+                        icon: const PhosphorIcon(
+                          PhosphorIconsRegular.x,
+                          size: 18,
+                        ),
                         onPressed: () => Navigator.of(ctx).pop(),
                         visualDensity: VisualDensity.compact,
                       ),
@@ -265,12 +259,12 @@ class ClimateChartCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        '💡 Çift parmakla yakınlaştırabilirsiniz',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic,
+                      Expanded(
+                        child: Text(
+                          'Çift parmakla yakınlaştırabilirsiniz',
+                          style: ctxText.bodySmall?.copyWith(
+                            color: ctxScheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
                       TextButton(

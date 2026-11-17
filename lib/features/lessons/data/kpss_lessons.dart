@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart'; // IconData için
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
+import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart'; // Karakteristik Phosphor Duotone ikon seti
 
 /// KPSS Lisans Genel Kültür'deki bir ders.
@@ -7,11 +9,12 @@ import 'package:phosphor_flutter/phosphor_flutter.dart'; // Karakteristik Phosph
 class Lesson {
   final String id;
   final String name;
-  final String section; // 'Genel Kültür'
+  final String section; // 'Genel Kültür' veya 'Genel Yetenek'
   final int questionCount; // Sınavda bu dersten kaç soru çıkıyor
   final IconData icon;
   final List<String> topics;
   final String? badgeText;
+  final bool isComingSoon;
 
   const Lesson({
     required this.id,
@@ -21,11 +24,13 @@ class Lesson {
     required this.icon,
     required this.topics,
     this.badgeText,
+    this.isComingSoon = false,
   });
 }
 
+/// **Kullanımdan Kaldırılacak (Legacy Fallback):** Yeni kodlarda
+/// [CurriculumRegistry.resolve] veya `activeCurriculumProvider` kullanın.
 /// Sınavdaki Genel Kültür dersleri ve soru sayıları (toplam 60 soru).
-/// Her yıl ÖSYM kılavuzundan kontrol et.
 const List<Lesson> kpssLessons = [
   Lesson(
     id: 'tarih',
@@ -94,41 +99,71 @@ const List<Lesson> kpssLessons = [
   ),
 ];
 
-/// Belirli bir ders ve konunun SQL soru havuzundaki veya varsayılan test sayısını döner.
-///
-/// Her test 10 sorudan oluşur. Tarih soru havuzundaki 620 soruya göre:
-/// - İslamiyet Öncesi Türk Tarihi: 8 test (80 soru)
-/// - İlk Türk-İslam Devletleri: 8 test (80 soru)
-/// - Osmanlı Kültür ve Uygarlığı: 12 test (120 soru)
-/// - Osmanlı Dağılma Dönemi: 10 test (100 soru)
-/// - Kurtuluş Savaşı Hazırlık ve Cepheler: 8 test (80 soru)
-/// - Atatürk İlke ve İnkılapları: 8 test (80 soru)
-/// - Çağdaş Türk ve Dünya Tarihi: 8 test (80 soru)
-/// Coğrafya (6 test), Vatandaşlık (5 test) ve Güncel Bilgiler (4 test) havuzlarına göre varsayılan döner.
-int defaultTopicTestCount(String lessonName, String topic) {
-  if (lessonName == 'Tarih') {
-    switch (topic) {
-      case 'İslamiyet Öncesi Türk Tarihi':
-        return 8;
-      case 'İlk Türk-İslam Devletleri':
-        return 8;
-      case 'Osmanlı Kültür ve Uygarlığı':
-        return 12;
-      case 'Osmanlı Dağılma Dönemi':
-        return 10;
-      case 'Kurtuluş Savaşı Hazırlık ve Cepheler':
-        return 8;
-      case 'Atatürk İlke ve İnkılapları':
-        return 8;
-      case 'Çağdaş Türk ve Dünya Tarihi':
-        return 8;
-    }
-  } else if (lessonName == 'Coğrafya') {
-    return 6;
-  } else if (lessonName == 'Vatandaşlık') {
-    return 5;
-  } else if (lessonName == 'Güncel Bilgiler') {
-    return 4;
-  }
-  return 5;
-}
+/// **Kullanımdan Kaldırılacak (Legacy Fallback):** Yeni kodlarda
+/// [CurriculumRegistry.resolve] veya `activeCurriculumProvider` kullanın.
+/// KPSS Lisans Genel Yetenek dersleri (toplam 60 soru, şimdilik "Yakında").
+const List<Lesson> kpssGeneralAbilityLessons = [
+  Lesson(
+    id: 'turkce',
+    name: 'Türkçe',
+    section: 'Genel Yetenek',
+    questionCount: 30,
+    icon: PhosphorIconsDuotone.bookOpenText,
+    badgeText: 'Yakında',
+    isComingSoon: true,
+    topics: [
+      'Sözcükte Anlam',
+      'Cümlede Anlam',
+      'Paragrafta Anlam ve Yapı',
+      'Sözcükte Yapı ve Ekler',
+      'Sözcük Türleri (İsim, Sıfat, Zamir, Zarf, Edat, Fiil)',
+      'Ses Bilgisi ve Ses Olayları',
+      'Yazım Kuralları',
+      'Noktalama İşaretleri',
+      'Cümlenin Ögeleri ve Cümle Türleri',
+      'Anlatım Bozuklukları',
+      'Sözel Mantık ve Muhakeme',
+    ],
+  ),
+  Lesson(
+    id: 'matematik',
+    name: 'Matematik & Geometri',
+    section: 'Genel Yetenek',
+    questionCount: 30,
+    icon: PhosphorIconsDuotone.function,
+    badgeText: 'Yakında',
+    isComingSoon: true,
+    topics: [
+      'Temel Kavramlar ve Sayı Basamakları',
+      'Bölme-Bölünebilme ve EBOB-EKOK',
+      'Rasyonel ve Ondalık Sayılar',
+      'Basit Eşitsizlikler ve Mutlak Değer',
+      'Üslü ve Köklü İfadeler',
+      'Çarpanlara Ayırma ve Oran-Orantı',
+      'Denklem Çözme ve Sayı-Kesir Problemleri',
+      'Yaş, İşçi, Hareket, Yüzde ve Karışım Problemleri',
+      'Kümeler, Bağıntı-Fonksiyon ve Modüler Aritmetik',
+      'Permütasyon, Kombinasyon ve Olasılık',
+      'Sayısal Mantık ve Tablo-Grafik Yorumlama',
+      'Doğruda ve Üçgende Açılar, Üçgenler',
+      'Çokgenler, Dörtgenler ve Çember-Daire',
+      'Analitik Geometri ve Katı Cisimler',
+    ],
+  ),
+];
+
+/// **Kullanımdan Kaldırılacak (Legacy Fallback):** Yeni kodlarda
+/// `activeCurriculumProvider.allLessons` kullanın.
+const List<Lesson> allKpssLessons = [
+  ...kpssLessons,
+  ...kpssGeneralAbilityLessons,
+];
+
+/// Belirli bir ders ve konunun merkezi [CurriculumRegistry] veri tablosundaki
+/// varsayılan 10 soruluk test sayısını döner.
+int defaultTopicTestCount(String lessonName, String topic) =>
+    CurriculumRegistry.defaultTopicTestCount(lessonName, topic);
+
+/// Varsayılan Lisans Genel Kültür müfredatındaki toplam 10 soruluk test sayısı.
+int get totalCurriculumTestCount =>
+    CurriculumRegistry.resolve(ExamSelection.initial).totalTestCount;

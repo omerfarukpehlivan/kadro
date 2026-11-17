@@ -45,6 +45,12 @@ Supabase projenizde (`https://supabase.com/dashboard/project/<project-id>/sql`):
 - **İçerik:** 6 konudaki tüm 240 soru, UNESCO, TÜRKSOY, teknoloji/spor başarıları ve `order_index`.
 - **İşlem:** SQL Editör'e yapıştırıp **RUN** butonuna basın.
 
+### 5. Adım: Çoklu KPSS & MEB-AGS Mimari Migrasyonu (`TASK-128`)
+- **Dosya:** `docs/supabase_migrations/05_multi_exam_architecture.sql`
+- **İçerik:** `questions` için `exam_scopes` (GIN indeksi + partial/composite indeksler), `user_topic_mastery` kapsam bazlı `unique(user_id, exam_scope, lesson, topic)` düzeltmesi, `profiles.exam_selection` JSONB CHECK kısıtı, `is_pro` / XP trigger zırhı, `app_config.exam_date_overrides` ve `get_weekly_leaderboard(p_exam_family)` RPC güncellemesi.
+- **Not:** Mevcut `03_remote_config_and_maintenance.sql` (`app_config`) ve `04_data_retention_and_auto_purge.sql` sonrasında çalıştırılmalıdır; tamamen idempotenttir ve canlı veriyi korur.
+- **İşlem:** SQL Editör'e yapıştırıp **RUN** butonuna basın.
+
 ---
 
 ## 🛡️ Çevrimdışı ve Offline-First Güvencesi

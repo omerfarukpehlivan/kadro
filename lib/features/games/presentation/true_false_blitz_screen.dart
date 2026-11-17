@@ -2,25 +2,33 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/games/data/models/true_false_item.dart';
+import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
-import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
+import 'package:kadro/shared/widgets/empty_state_view.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
+import 'package:kadro/shared/widgets/workshop_scope_bridge_banner.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// "60 Saniyede Pençe" Doğru / Yanlış Hızlı Düello Oyunu Ekranı.
+/// "60 Saniyede Doğru / Yanlış" Hızlı Alıştırma Ekranı.
 ///
 /// Web/Angular benzetmesi: Gamified Rapid Quiz / Duel Component.
 /// Zamana karşı refleks, kombo puanlama ve KPSS Genel Kültür pekiştirme sağlar.
 class TrueFalseBlitzScreen extends ConsumerStatefulWidget {
   final List<TrueFalseItem> items;
   final int initialSeconds;
+  final VoidCallback? onCompleted;
 
   const TrueFalseBlitzScreen({
     super.key,
     this.items = sampleTrueFalseItems,
     this.initialSeconds = 60,
+    this.onCompleted,
   });
 
   @override
@@ -42,11 +50,24 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
   bool? _lastAnswerWasCorrect;
   bool _isFinished = false;
 
+  WorkshopScopeResolution<TrueFalseItem> _resolveItems({bool watch = true}) {
+    final selection = readOrWatchExamSelection(ref, watch: watch);
+    return WorkshopScopeResolution.resolve<TrueFalseItem>(
+      selection: selection,
+      allItems: widget.items,
+      matchesSelection: (item, sel) => item.matchesSelection(sel),
+      matchesGkBridge: (item) =>
+          item.matchesSelection(const ExamSelection.bGrubuLisans()),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     _remainingSeconds = widget.initialSeconds;
-    _startTimer();
+    if (_resolveItems(watch: false).items.isNotEmpty) {
+      _startTimer();
+    }
   }
 
   @override
@@ -73,15 +94,20 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
 
   void _finishGame() {
     _timer?.cancel();
+    try {
+      widget.onCompleted?.call();
+    } catch (_) {}
     if (_correctCount + _wrongCount > 0) {
+      final scopeKey = readOrWatchExamSelection(ref, watch: false).scopeKey;
       final net = _correctCount - (_wrongCount / 4.0);
       ref
           .read(studyStatsProvider.notifier)
           .recordQuizSession(
             QuizSessionRecord(
               id: DateTime.now().microsecondsSinceEpoch.toString(),
-              title: '60 Saniyede Pençe Düellosu',
+              title: '60 Saniyede Doğru / Yanlış',
               lesson: 'Genel Kültür',
+              examScope: scopeKey,
               totalQuestions: _correctCount + _wrongCount,
               correctCount: _correctCount,
               wrongCount: _wrongCount,
@@ -113,14 +139,21 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
   }
 
   void _submitChoice(bool userChoice) {
-    if (_lastAnswerWasCorrect != null || _isFinished) return;
+    final items = _resolveItems(watch: false).items;
+    if (_lastAnswerWasCorrect != null || _isFinished || items.isEmpty) return;
 
-    final currentItem = widget.items[_currentIndex];
+    final safeIndex = _currentIndex.clamp(0, items.length - 1);
+    final currentItem = items[safeIndex];
     final isCorrect = userChoice == currentItem.isTrue;
+    final scopeKey = readOrWatchExamSelection(ref, watch: false).scopeKey;
 
     ref
         .read(studyStatsProvider.notifier)
-        .recordAnswer(lesson: currentItem.lesson, isCorrect: isCorrect);
+        .recordAnswer(
+          lesson: currentItem.lesson,
+          isCorrect: isCorrect,
+          examScope: scopeKey,
+        );
 
     setState(() {
       if (isCorrect) {
@@ -139,7 +172,8 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
   }
 
   void _nextItem() {
-    if (_currentIndex >= widget.items.length - 1) {
+    final items = _resolveItems(watch: false).items;
+    if (_currentIndex >= items.length - 1) {
       _finishGame();
     } else {
       setState(() {
@@ -152,103 +186,137 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final selection = readOrWatchExamSelection(ref);
+    final resolution = _resolveItems();
+    final items = resolution.items;
+
+    if (items.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('60 Saniyede Doğru / Yanlış'),
+          centerTitle: false,
+        ),
+        body: const EmptyStateView(
+          mascotMood: TugrulMood.practice,
+          icon: PhosphorIconsRegular.info,
+          title: 'Bu kapsamda hızlı pratik öğesi bulunmuyor',
+          description: 'Farklı bir sınav türü veya ders seçebilirsin.',
+        ),
+      );
+    }
+
+    final safeIndex = _currentIndex.clamp(0, items.length - 1);
+    final currentItem = items[safeIndex];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('60 Saniyede Pençe'),
+        title: const Text('60 Saniyede Doğru / Yanlış'),
         centerTitle: false,
       ),
       body: SafeArea(
-        child: _isFinished
-            ? _BlitzSummaryView(
-                earnedXp: _earnedXp,
-                maxCombo: _maxCombo,
-                correctCount: _correctCount,
-                wrongCount: _wrongCount,
-                onRestart: _restartGame,
-              )
-            : Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // 1. Üst Bilgi Rozetleri Şeridi (Süre - Kombo - XP)
-                    _TopMetricBar(
-                      remainingSeconds: _remainingSeconds,
-                      combo: _combo,
-                      earnedXp: _earnedXp,
-                    ),
-                    const SizedBox(height: 16),
-
-                    // 2. Orta: Soru Önerme Kartı
-                    Expanded(
-                      child: _StatementCard(
-                        item: widget.items[_currentIndex],
-                        currentIndex: _currentIndex,
-                        totalCount: widget.items.length,
-                        lastAnswerWasCorrect: _lastAnswerWasCorrect,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // 3. Alt: Butonlar veya Açıklama Alanı
-                    if (_lastAnswerWasCorrect != null) ...[
-                      _ExplanationCard(
-                        isCorrect: _lastAnswerWasCorrect!,
-                        explanation: widget.items[_currentIndex].explanation,
-                      ),
-                      const SizedBox(height: 12),
-                      FilledButton.icon(
-                        onPressed: _nextItem,
-                        icon: const PhosphorIcon(PhosphorIconsBold.arrowRight),
-                        label: Text(
-                          _currentIndex < widget.items.length - 1
-                              ? 'Sonraki İfade'
-                              : 'Düelloyu Bitir',
+        child: ResponsiveContentWrapper(
+          maxWidth: 820,
+          padding: EdgeInsets.zero,
+          child: _isFinished
+              ? _BlitzSummaryView(
+                  earnedXp: _earnedXp,
+                  maxCombo: _maxCombo,
+                  correctCount: _correctCount,
+                  wrongCount: _wrongCount,
+                  onRestart: _restartGame,
+                )
+              : Padding(
+                  padding: AppSpacing.pagePadding(context),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (resolution.isUsingGkFallback)
+                        WorkshopScopeBridgeBanner(
+                          examTitle: selection.displayTitle,
+                          margin: const EdgeInsets.only(bottom: 12),
                         ),
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                      // 1. Üst Bilgi Rozetleri Şeridi (Süre - Kombo - XP)
+                      _TopMetricBar(
+                        remainingSeconds: _remainingSeconds,
+                        combo: _combo,
+                        earnedXp: _earnedXp,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // 2. Orta: Soru Önerme Kartı
+                      Expanded(
+                        child: _StatementCard(
+                          item: currentItem,
+                          currentIndex: safeIndex,
+                          totalCount: items.length,
+                          lastAnswerWasCorrect: _lastAnswerWasCorrect,
                         ),
                       ),
-                    ] else ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: () => _submitChoice(false),
-                              icon: const PhosphorIcon(PhosphorIconsBold.x),
-                              label: const Text('YANLIŞ'),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: colorScheme.error,
-                                side: BorderSide(
-                                  color: colorScheme.error,
-                                  width: 2,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
+                      const SizedBox(height: 16),
+
+                      // 3. Alt: Butonlar veya Açıklama Alanı
+                      if (_lastAnswerWasCorrect != null) ...[
+                        _ExplanationCard(
+                          isCorrect: _lastAnswerWasCorrect!,
+                          explanation: currentItem.explanation,
+                        ),
+                        const SizedBox(height: 12),
+                        FilledButton.icon(
+                          onPressed: _nextItem,
+                          icon: const PhosphorIcon(
+                            PhosphorIconsBold.arrowRight,
+                          ),
+                          label: Text(
+                            safeIndex < items.length - 1
+                                ? 'Sonraki İfade'
+                                : 'Oturumu Bitir',
+                          ),
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                        ),
+                      ] else ...[
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: () => _submitChoice(false),
+                                icon: const PhosphorIcon(PhosphorIconsBold.x),
+                                label: const Text('YANLIŞ'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: colorScheme.error,
+                                  side: BorderSide(
+                                    color: colorScheme.error,
+                                    width: 2,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: FilledButton.icon(
-                              onPressed: () => _submitChoice(true),
-                              icon: const PhosphorIcon(PhosphorIconsBold.check),
-                              label: const Text('DOĞRU'),
-                              style: FilledButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: FilledButton.icon(
+                                onPressed: () => _submitChoice(true),
+                                icon: const PhosphorIcon(
+                                  PhosphorIconsBold.check,
+                                ),
+                                label: const Text('DOĞRU'),
+                                style: FilledButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
+        ),
       ),
     );
   }
@@ -281,7 +349,7 @@ class _TopMetricBar extends StatelessWidget {
             color: remainingSeconds <= 10
                 ? colorScheme.errorContainer
                 : colorScheme.secondaryContainer,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(6),
             border: Border.all(
               color: remainingSeconds <= 10
                   ? colorScheme.error
@@ -302,7 +370,7 @@ class _TopMetricBar extends StatelessWidget {
               Text(
                 '$remainingSeconds sn',
                 style: textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: remainingSeconds <= 10
                       ? colorScheme.onErrorContainer
                       : colorScheme.onSecondaryContainer,
@@ -319,7 +387,7 @@ class _TopMetricBar extends StatelessWidget {
             color: combo > 1
                 ? colorScheme.tertiaryContainer
                 : colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(6),
             border: Border.all(
               color: combo > 1
                   ? colorScheme.tertiary
@@ -340,7 +408,7 @@ class _TopMetricBar extends StatelessWidget {
               Text(
                 '${combo}x Kombo',
                 style: textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: combo > 1
                       ? colorScheme.onTertiaryContainer
                       : colorScheme.onSurfaceVariant,
@@ -355,7 +423,7 @@ class _TopMetricBar extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             color: colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(6),
             border: Border.all(color: colorScheme.primary.withAlpha(90)),
           ),
           child: Row(
@@ -370,7 +438,7 @@ class _TopMetricBar extends StatelessWidget {
               Text(
                 '+$earnedXp XP',
                 style: textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                   color: colorScheme.onPrimaryContainer,
                 ),
               ),
@@ -431,7 +499,7 @@ class _StatementCard extends StatelessWidget {
                 '${currentIndex + 1} / $totalCount',
                 style: textTheme.labelSmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -489,10 +557,10 @@ class _ExplanationCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                isCorrect ? 'Tebrikler, Doğru!' : 'Dikkat, Yanlış!',
+                isCorrect ? 'Doğru' : 'Yanlış',
                 style: textTheme.labelLarge?.copyWith(
                   color: borderColor,
-                  fontWeight: FontWeight.w800,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
@@ -535,12 +603,45 @@ class _BlitzSummaryView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       children: [
-        MascotCoachBanner(
-          mood: MascotMood.victory,
-          badgeLabel: 'PENÇE DÜELLOSU BİTTİ',
-          title: 'Düello Tamamlandı!',
-          message:
-              'Toplam $earnedXp XP kazandın ve en yüksek ${maxCombo}x komboya ulaştın!',
+        TactileCard(
+          backgroundColor: Color.alphaBlend(
+            colorScheme.secondaryContainer.withAlpha(110),
+            colorScheme.surface,
+          ),
+          borderColor: colorScheme.secondary,
+          lipColor: colorScheme.secondary,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              TugrulAvatar(
+                mood: TugrulMood.victory,
+                size: 62,
+                ringColor: colorScheme.secondary,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Oturum Tamamlandı',
+                      style: textTheme.titleLarge?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Toplam $earnedXp XP ve en yüksek ${maxCombo}x seri kaydedildi.',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 10),
 
@@ -564,7 +665,7 @@ class _BlitzSummaryView extends StatelessWidget {
                     Text(
                       '$correctCount',
                       style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
@@ -595,7 +696,7 @@ class _BlitzSummaryView extends StatelessWidget {
                     Text(
                       '$wrongCount',
                       style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
@@ -631,8 +732,9 @@ class _BlitzSummaryView extends StatelessWidget {
                     Text(
                       '${maxCombo}x',
                       style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: colorScheme.tertiary,
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.onTertiaryContainer,
+                        fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
                     Text(
@@ -663,7 +765,7 @@ class _BlitzSummaryView extends StatelessWidget {
                     Text(
                       '+$earnedXp XP',
                       style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         color: colorScheme.primary,
                       ),
                     ),

@@ -5,9 +5,7 @@ import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Memur adayının 4 temel performans metriğini (Seri, Soru, İsabet %, XP)
-/// ve Lig / Unvan durumunu özetleyen Duolingo tarzı dashboard bileşeni.
-///
-/// Web/Angular Karşılığı: `CandidateStatsSnapshotComponent`.
+/// ve lig ilerleme durumunu özetleyen bileşen.
 class ProfileMetricsCard extends StatelessWidget {
   final StudyStatsState stats;
 
@@ -28,25 +26,22 @@ class ProfileMetricsCard extends StatelessWidget {
     final progress = _calculateLeagueProgress(stats.totalXp);
 
     return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 1. Üst Satır: 4'lü Performans Grid'i
           Row(
             children: [
               Expanded(
                 child: _MetricItem(
-                  icon: PhosphorIconsFill.fire,
-                  iconColor: colorScheme.error,
+                  icon: PhosphorIconsRegular.fire,
+                  iconColor: colorScheme.tertiary,
                   value: '${stats.streakDays} Gün',
                   label: 'Çalışma Serisi',
                 ),
               ),
               Expanded(
                 child: _MetricItem(
-                  icon: PhosphorIconsFill.checkCircle,
+                  icon: PhosphorIconsRegular.checkCircle,
                   iconColor: colorScheme.primary,
                   value: '${stats.totalSolved}',
                   label: 'Çözülen Soru',
@@ -54,8 +49,8 @@ class ProfileMetricsCard extends StatelessWidget {
               ),
               Expanded(
                 child: _MetricItem(
-                  icon: PhosphorIconsBold.target,
-                  iconColor: colorScheme.tertiary,
+                  icon: PhosphorIconsRegular.target,
+                  iconColor: colorScheme.secondary,
                   value: stats.totalSolved == 0
                       ? '–'
                       : '%${stats.accuracyPercent}',
@@ -64,7 +59,7 @@ class ProfileMetricsCard extends StatelessWidget {
               ),
               Expanded(
                 child: _MetricItem(
-                  icon: PhosphorIconsFill.lightning,
+                  icon: PhosphorIconsRegular.lightning,
                   iconColor: colorScheme.tertiary,
                   value: '${stats.totalXp}',
                   label: 'Toplam XP',
@@ -76,21 +71,12 @@ class ProfileMetricsCard extends StatelessWidget {
           const Divider(height: 1),
           AppSpacing.gapSm,
 
-          // 2. Alt Satır: Lig & Unvan Kademesi İlerleme Çubuğu
           Row(
             children: [
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: PhosphorIcon(
-                  PhosphorIconsDuotone.shieldCheck,
-                  size: 20,
-                  color: colorScheme.onSecondaryContainer,
-                ),
+              PhosphorIcon(
+                PhosphorIconsRegular.shieldCheck,
+                size: 20,
+                color: colorScheme.secondary,
               ),
               AppSpacing.gapHorizontalSm,
               Expanded(
@@ -100,28 +86,32 @@ class ProfileMetricsCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          '${stats.leagueTier} Kadro Ligi',
-                          style: textTheme.labelLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            color: colorScheme.onSurface,
+                        Expanded(
+                          child: Text(
+                            '${stats.leagueTier} Kadro Ligi',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: textTheme.labelLarge?.copyWith(
+                              color: colorScheme.onSurface,
+                            ),
                           ),
                         ),
+                        const SizedBox(width: 8),
                         Text(
                           '${(progress * 100).toInt()}%',
                           style: textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.secondary,
+                            color: colorScheme.onSecondaryContainer,
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(999),
                       child: LinearProgressIndicator(
                         value: progress,
-                        minHeight: 6,
+                        minHeight: 8,
                         backgroundColor: colorScheme.surfaceContainerHighest,
                         valueColor: AlwaysStoppedAnimation<Color>(
                           colorScheme.secondary,
@@ -159,13 +149,22 @@ class _MetricItem extends StatelessWidget {
 
     return Column(
       children: [
-        PhosphorIcon(icon, color: iconColor, size: 20),
-        const SizedBox(height: 4),
+        Container(
+          width: 34,
+          height: 34,
+          decoration: BoxDecoration(
+            color: iconColor.withAlpha(24),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          alignment: Alignment.center,
+          child: PhosphorIcon(icon, color: iconColor, size: 18),
+        ),
+        const SizedBox(height: 6),
         Text(
           value,
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w800,
             color: colorScheme.onSurface,
+            fontFeatures: const [FontFeature.tabularFigures()],
           ),
         ),
         const SizedBox(height: 2),
@@ -173,6 +172,7 @@ class _MetricItem extends StatelessWidget {
           label,
           style: theme.textTheme.labelSmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w400,
           ),
           textAlign: TextAlign.center,
           maxLines: 1,

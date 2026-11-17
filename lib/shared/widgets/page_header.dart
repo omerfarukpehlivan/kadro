@@ -1,52 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Sayfaların en üstündeki ikon + başlık + açıklama bloğu.
-/// Geçmiş, İstatistik ve Ayarlar sayfaları bunu ortak kullanır
-/// (Angular'da shared modüldeki tekrar kullanılan bir component gibi).
+/// Sayfaların üst kısmında renkli ikon rozetiyle beraber yer alan başlık bloğu.
 class PageHeader extends StatelessWidget {
-  final IconData icon; // İkon tanımı
+  final IconData icon;
   final String title;
   final String subtitle;
+  final Color? color;
 
   const PageHeader({
     super.key,
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final accent = color ?? colorScheme.primary;
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
-          width: 48,
-          height: 48,
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: colorScheme.primaryContainer,
+            color: accent.withAlpha(24),
             borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: accent.withAlpha(70), width: 1.5),
           ),
-          child: Icon(icon, color: colorScheme.onPrimaryContainer),
+          child: PhosphorIcon(icon, size: 22, color: accent),
         ),
-        const SizedBox(width: 16),
-        // Expanded: metin uzunsa satırı taşırmak yerine kalan genişliğe sığar (flex: 1 gibi)
+        const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  color: colorScheme.onSurface,
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
                 subtitle,
-                // copyWith: temadaki stili alıp sadece rengini değiştirir
-                style: textTheme.bodyMedium?.copyWith(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),

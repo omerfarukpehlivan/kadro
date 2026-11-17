@@ -1,122 +1,161 @@
-<!DOCTYPE html><html><head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
+<!DOCTYPE html>
+<html lang="tr">
+<head>
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Kadro — KPSS B Grubu, A Grubu, E-KPSS, DHBT ve MEB-AGS + ÖABT için çoklu sınav hazırlık platformu, ÖSYM çeldirici tuzakları ve akıllı çalışma stüdyosu.">
+  <meta name="theme-color" content="#2140D4">
 
-  <!-- iOS meta tags & icons -->
+  <!-- Open Graph / Sosyal Paylaşım -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Kadro — KPSS &amp; MEB-AGS Hazırlık Stüdyosu">
+  <meta property="og:description" content="Çoklu KPSS, ÖABT, DHBT, E-KPSS denemeleri, akıllı tekrar planı ve puan simülasyonu tek çalışma masasında.">
+  <meta property="og:locale" content="tr_TR">
+
+  <!-- iOS & PWA meta -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="kadro">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kadro">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png">
 
-  <title>kadro</title>
+  <title>Kadro — KPSS &amp; MEB-AGS Hazırlık Platformu</title>
   <link rel="manifest" href="manifest.json">
+
   <style id="splash-screen-style">
-    html {
-      height: 100%
+    :root {
+      color-scheme: light dark;
     }
 
-    body {
+    html, body {
+      height: 100%;
       margin: 0;
-      min-height: 100%;
-      background-color: #0F172A;
-          background-size: 100% 100%;
-    }
-
-    .center {
-      margin: 0;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      -ms-transform: translate(-50%, -50%);
-      transform: translate(-50%, -50%);
-    }
-
-    .contain {
-      display:block;
-      width:100%; height:100%;
-      object-fit: contain;
-    }
-
-    .stretch {
-      display:block;
-      width:100%; height:100%;
-    }
-
-    .cover {
-      display:block;
-      width:100%; height:100%;
-      object-fit: cover;
-    }
-
-    .bottom {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      -ms-transform: translate(-50%, 0);
-      transform: translate(-50%, 0);
-    }
-
-    .bottomLeft {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-    }
-
-    .bottomRight {
-      position: absolute;
-      bottom: 0;
-      right: 0;
+      padding: 0;
+      background-color: #F4F7FC;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
     @media (prefers-color-scheme: dark) {
-      body {
-        background-color: #0F172A;
-          }
+      html, body {
+        background-color: #0C101C;
+        color: #F1F5FE;
+      }
+      #kadro-loader-card {
+        background-color: #151B2E !important;
+        border-color: #2B3554 !important;
+        box-shadow: 0 3px 0 0 #2B3554 !important;
+      }
+      #kadro-loader-sub {
+        color: #A3AEC8 !important;
+      }
+    }
+
+    #kadro-loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 9999;
+      transition: opacity 220ms ease-out;
+    }
+
+    #kadro-loader-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      max-width: 340px;
+      width: 100%;
+      padding: 28px 24px;
+      border-radius: 16px;
+      background-color: #FFFFFF;
+      border: 1.5px solid #D4DDF0;
+      box-shadow: 0 3px 0 0 #D4DDF0;
+      text-align: center;
+    }
+
+    #kadro-loader-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #2140D4 0%, #3E5DF0 100%);
+      border: 1.5px solid #1730A8;
+      box-shadow: 0 3px 0 0 #1730A8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.5px;
+    }
+
+    #kadro-loader-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: inherit;
+    }
+
+    #kadro-loader-sub {
+      font-size: 13px;
+      color: #505A74;
+    }
+
+    #kadro-loader-bar {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background-color: rgba(33, 64, 212, 0.14);
+      overflow: hidden;
+    }
+
+    #kadro-loader-bar-fill {
+      width: 42%;
+      height: 100%;
+      border-radius: 999px;
+      background-color: #2140D4;
+      animation: kadro-indeterminate 1.25s infinite ease-in-out;
+    }
+
+    @keyframes kadro-indeterminate {
+      0% { transform: translateX(-110%); }
+      50% { transform: translateX(70%); }
+      100% { transform: translateX(250%); }
     }
   </style>
+
   <script id="splash-screen-script">
     function removeSplashFromWeb() {
+      var loader = document.getElementById("kadro-loading");
+      if (loader) {
+        loader.style.opacity = "0";
+        setTimeout(function () { loader.remove(); }, 230);
+      }
       document.getElementById("splash")?.remove();
       document.getElementById("splash-branding")?.remove();
-      document.body.style.background = "transparent";
     }
+
+    window.addEventListener("flutter-first-frame", removeSplashFromWeb);
   </script>
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
 </head>
 <body>
-  <picture id="splash">
-      <source srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x" media="(prefers-color-scheme: light)">
-      <source srcset="splash/img/dark-1x.png 1x, splash/img/dark-2x.png 2x, splash/img/dark-3x.png 3x, splash/img/dark-4x.png 4x" media="(prefers-color-scheme: dark)">
-      <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
-  </picture>
-  <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
-  <script src="flutter_bootstrap.js" async=""></script>
-
-
-</body></html>
+  <div id="kadro-loading" role="status" aria-live="polite" aria-label="Kadro yükleniyor">
+    <div id="kadro-loader-card">
+      <div id="kadro-loader-badge" aria-hidden="true">K</div>
+      <div id="kadro-loader-title">Kadro Hazırlanıyor</div>
+      <div id="kadro-loader-sub">Çoklu KPSS &amp; MEB-AGS çalışma masası başlatılıyor...</div>
+      <div id="kadro-loader-bar">
+        <div id="kadro-loader-bar-fill"></div>
+      </div>
+    </div>
+  </div>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

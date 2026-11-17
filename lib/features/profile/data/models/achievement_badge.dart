@@ -55,7 +55,7 @@ class AchievementBadge {
     return [
       AchievementBadge(
         id: 'first_claw',
-        title: '🌱 İlk Pençe',
+        title: 'İlk Adım',
         description: 'İlk KPSS konu testini başarıyla tamamla.',
         icon: PhosphorIconsFill.footprints,
         isUnlocked: hasSolvedFirst,
@@ -65,7 +65,7 @@ class AchievementBadge {
       ),
       AchievementBadge(
         id: 'accuracy_jump',
-        title: '⚡ Net Sıçratıcı',
+        title: 'Yüksek İsabet',
         description: 'En az 10 soruluk bir testte %80 ve üzeri başarı yakala.',
         icon: PhosphorIconsFill.lightning,
         isUnlocked: hasHighAccuracy,
@@ -75,7 +75,7 @@ class AchievementBadge {
       ),
       AchievementBadge(
         id: 'streak_monster',
-        title: '🔥 Seri Canavarı',
+        title: '7 Günlük Seri',
         description: 'Aralıksız 7 gün soru çözerek haftalık seriyi tamamla.',
         icon: PhosphorIconsFill.fire,
         isUnlocked: hasWeekStreak,
@@ -83,15 +83,15 @@ class AchievementBadge {
       ),
       AchievementBadge(
         id: 'history_conqueror',
-        title: '🏛️ Tarih Fatihi',
+        title: 'Tarih Uzmanı',
         description: 'Genel Kültür lokomotifi Tarih dersinden 50 soru çöz.',
-        icon: PhosphorIconsDuotone.scroll,
+        icon: PhosphorIconsRegular.scroll,
         isUnlocked: hasTarihMastery,
         progressText: hasTarihMastery ? 'Kazanıldı' : '$tarihSolved/50 Soru',
       ),
       AchievementBadge(
         id: 'night_owl',
-        title: '🌙 Gece Kuşu',
+        title: 'Gece Çalışması',
         description: 'Saat 22:00\'den sonra sessiz saatlerde soru çöz.',
         icon: PhosphorIconsFill.moon,
         isUnlocked: hasNightStudy,
@@ -99,9 +99,9 @@ class AchievementBadge {
       ),
       AchievementBadge(
         id: 'trap_defuser',
-        title: '🛡️ Mayın Temizleyici',
+        title: 'Çeldirici Avcısı',
         description: 'ÖSYM çeldirici tuzaklarını aşarak en az 5 doğru yap.',
-        icon: PhosphorIconsDuotone.shieldCheck,
+        icon: PhosphorIconsRegular.shieldCheck,
         isUnlocked: hasTrapMaster,
         progressText: hasTrapMaster ? 'Kazanıldı' : '$correctCount/5 Doğru',
       ),

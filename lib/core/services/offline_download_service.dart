@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/local_storage_service.dart';
+import 'package:kadro/core/utils/platform_env.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 
 /// Kadro PRO üyeliği gerektiren bir eylem ücretsiz kullanıcı tarafından çağrıldığında fırlatılan özel istisna.
@@ -29,6 +30,45 @@ class OfflineDownloadService {
   OfflineDownloadService({LocalStorageService? storage, this.isOnline = true})
     : _storage = storage ?? LocalStorageService();
 
+  /// Web tarayıcılarında `localStorage` ~5MB sınırı ve telif koruması nedeniyle
+  /// çevrimdışı toplu soru indirme kapalıdır (`TASK-145`).
+  static bool get isSupported => !PlatformEnv.isWeb;
+
+  /// Sınav kapsamı (`scopeNamespace`) ile izole edilmiş kanonik konu paket ID'si üretir.
+  ///
+  /// Tüm UI ekranları sabit string birleştirme yerine bu merkezi yardımcıyı kullanır.
+  static String topicPackageId({
+    required String scopeNamespace,
+    required String lesson,
+    required String topic,
+  }) => LocalStorageService.topicPackageId(
+    scopeNamespace: scopeNamespace,
+    lesson: lesson,
+    topic: topic,
+  );
+
+  /// İndirilen paket kümesinde ilgili kapsam+konu paketinin (veya `lisans_gk` için
+  /// eski sürüm `topic_<ders>_<konu>` yedeğinin) mevcut olup olmadığını kontrol eder.
+  static bool isTopicPackageDownloaded(
+    Set<String> downloadedPackageIds, {
+    required String scopeNamespace,
+    required String lesson,
+    required String topic,
+  }) {
+    final scopedId = topicPackageId(
+      scopeNamespace: scopeNamespace,
+      lesson: lesson,
+      topic: topic,
+    );
+    if (downloadedPackageIds.contains(scopedId)) return true;
+    final legacyId = LocalStorageService.legacyTopicPackageIdIfApplicable(
+      scopeNamespace: scopeNamespace,
+      lesson: lesson,
+      topic: topic,
+    );
+    return legacyId != null && downloadedPackageIds.contains(legacyId);
+  }
+
   /// Belirtilen paketin cihaza indirilip indirilmediğini kontrol eder.
   Future<bool> isPackageDownloaded(String packageId) {
     return _storage.hasDownloadedPackage(packageId);
@@ -42,6 +82,11 @@ class OfflineDownloadService {
     required List<Question> questions,
     required bool isPro,
   }) async {
+    if (!isSupported) {
+      throw UnsupportedError(
+        'Çevrimdışı indirme özelliği yalnızca mobil uygulamada desteklenir.',
+      );
+    }
     if (!isPro) {
       throw const ProRequiredException();
     }

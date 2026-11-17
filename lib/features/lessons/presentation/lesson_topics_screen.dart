@@ -3,50 +3,79 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
+import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
+import 'package:kadro/features/lessons/presentation/topic_tests_screen.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
-import 'package:kadro/features/lessons/presentation/topic_tests_screen.dart';
-import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Bir derse ait KPSS konularını Duolingo/Brilliant tarzı dikey yol haritası (learning path)
-/// olarak listeleyen ekran.
+/// Seçilen dersin konu başlıklarını dikey yol haritası olarak sunan ekran.
 ///
-/// TASK-55 kapsamında Kadro PRO çevrimdışı konu indirme ve internetsiz açılış desteği eklenmiştir.
-class LessonTopicsScreen extends ConsumerWidget {
+/// Geniş masaüstü ve web ekranlarda (`>= 960px`) Master-Detail iki panelli
+/// yapıya geçerek solda konu haritasını, sağda seçili konunun testlerini gösterir.
+class LessonTopicsScreen extends ConsumerStatefulWidget {
   final Lesson lesson;
 
   const LessonTopicsScreen({super.key, required this.lesson});
 
+  @override
+  ConsumerState<LessonTopicsScreen> createState() => _LessonTopicsScreenState();
+}
+
+class _LessonTopicsScreenState extends ConsumerState<LessonTopicsScreen> {
+  String? _selectedTopic;
+
+  Lesson get lesson => widget.lesson;
+
+  String? get _effectiveSelectedTopic {
+    if (lesson.topics.isEmpty) return null;
+    if (_selectedTopic != null && lesson.topics.contains(_selectedTopic)) {
+      return _selectedTopic;
+    }
+    return lesson.topics.first;
+  }
+
   Future<void> _downloadAllTopics(BuildContext context, WidgetRef ref) async {
     final isPro = ref.read(userPreferencesProvider).isPro;
     if (!isPro) {
-      Navigator.of(context)
-          .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            '🔒 Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const PaywallScreen(
+            reasonMessage: 'Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
           ),
         ),
       );
       return;
     }
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${lesson.name} konuları cihazına indiriliyor...'),
+      ),
+    );
+
     try {
       final questionRepo = ref.read(questionRepositoryProvider);
       final downloadedNotifier = ref.read(downloadedPackagesProvider.notifier);
+      final selection = readOrWatchExamSelection(ref, watch: false);
 
       int count = 0;
       for (final topic in lesson.topics) {
-        final packageId = 'topic_${lesson.name}_$topic';
+        final packageId = OfflineDownloadService.topicPackageId(
+          scopeNamespace: selection.curriculumNamespace,
+          lesson: lesson.name,
+          topic: topic,
+        );
         final questions = await questionRepo.fetchQuestions(
           lesson: lesson.name,
           topic: topic,
+          selection: selection,
         );
         final finalQuestions = questions.isNotEmpty
             ? questions
@@ -63,7 +92,7 @@ class LessonTopicsScreen extends ConsumerWidget {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✅ ${lesson.name} dersine ait $count konu indirildi!'),
+          content: Text('${lesson.name} dersine ait $count konu indirildi.'),
         ),
       );
     } catch (e) {
@@ -74,7 +103,74 @@ class LessonTopicsScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final selection = readOrWatchExamSelection(ref);
+    final mood = TugrulMoodExtension.fromLesson(lesson.name);
+    final accent = mood.accentColor(colorScheme);
+    final isSplitPane = ResponsiveBreakpoints.usesSplitPane(context);
+    final activeTopic = _effectiveSelectedTopic;
+
+    final heroBanner = TactileCard(
+      backgroundColor: colorScheme.surfaceContainerLow,
+      borderColor: accent.withAlpha(120),
+      lipColor: accent.withAlpha(140),
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: accent.withAlpha(24),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${lesson.topics.length} Ünite · Sınavda ${lesson.questionCount} Soru',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: accent,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Konu Yol Haritası',
+                  style: textTheme.titleLarge?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isSplitPane
+                      ? 'Soldan ünite seçin, sağ panelde konu testlerine hemen başlayın.'
+                      : 'Üniteleri sırayla aç veya doğrudan test çözmeye başla.',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          TugrulAvatar(
+            mood: mood,
+            size: isSplitPane ? 76 : 62,
+            ringColor: accent,
+            tooltip: '${lesson.name} İpuçları',
+            onTap: () => TugrulTipsSheet.show(context, mood: mood),
+          ),
+        ],
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -82,100 +178,173 @@ class LessonTopicsScreen extends ConsumerWidget {
           '${lesson.name} Konuları',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleMedium
-              ?.copyWith(fontWeight: FontWeight.w800),
+          style: textTheme.titleMedium,
         ),
         actions: [
-          Padding(
-            padding: EdgeInsets.only(
-              right: ResponsiveBreakpoints.horizontalPadding(context) - 8,
-            ),
-            child: Tooltip(
-              message: '${lesson.name} Tüm Konuları İndir (PRO)',
-              child: TextButton.icon(
-                onPressed: () => _downloadAllTopics(context, ref),
-                style: TextButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
+          if (OfflineDownloadService.isSupported)
+            Padding(
+              padding: EdgeInsets.only(
+                right: ResponsiveBreakpoints.horizontalPadding(context) - 8,
+              ),
+              child: Tooltip(
+                message: '${lesson.name} Tüm Konuları İndir (PRO)',
+                child: TextButton.icon(
+                  onPressed: () => _downloadAllTopics(context, ref),
+                  style: TextButton.styleFrom(
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                   ),
-                ),
-                icon: const PhosphorIcon(
-                  PhosphorIconsBold.downloadSimple,
-                  size: 16,
-                ),
-                label: Text(
-                  'Tümünü İndir',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.w700,
+                  icon: const PhosphorIcon(
+                    PhosphorIconsBold.downloadSimple,
+                    size: 16,
+                  ),
+                  label: Text(
+                    'Tümünü İndir',
+                    style: textTheme.labelMedium?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
-      body: ResponsiveContentWrapper(
-        maxWidth: 720,
-        padding: EdgeInsets.zero,
-        child: ListView(
-          padding: AppSpacing.pagePadding(context),
-          children: [
-            // Derse özel Tuğrul karakteri ile Koç Karşılama Kartı (TASK-53)
-            MascotCoachBanner(
-              mood: MascotMoodExtension.fromLesson(lesson.name),
-              badgeLabel: '${lesson.name.toUpperCase()} REHBERİ',
-              title: '${lesson.name} Yol Haritası',
-              message:
-                  '${lesson.topics.length} kritik konudan oluşan KPSS yol haritası. Konuları sırayla tamamla, netlerini zirveye taşı!',
-            ),
-            AppSpacing.gapMd,
-
-            // Dikey Yol Haritası Düğümleri
-            for (var i = 0; i < lesson.topics.length; i++)
-              _TopicPathNode(
-                index: i,
-                totalCount: lesson.topics.length,
-                lessonName: lesson.name,
-                topic: lesson.topics[i],
+      body: isSplitPane && activeTopic != null
+          ? ResponsiveContentWrapper(
+              maxWidth: 1320,
+              padding: EdgeInsets.zero,
+              child: Padding(
+                padding: AppSpacing.pagePadding(context),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: Scrollbar(
+                        child: ListView(
+                          padding: const EdgeInsets.only(right: 10),
+                          children: [
+                            heroBanner,
+                            AppSpacing.gapMd,
+                            for (var i = 0; i < lesson.topics.length; i++)
+                              _TopicPathNode(
+                                index: i,
+                                totalCount: lesson.topics.length,
+                                lessonName: lesson.name,
+                                topic: lesson.topics[i],
+                                selection: selection,
+                                isSelected: lesson.topics[i] == activeTopic,
+                                onSelectTopic: () {
+                                  setState(
+                                    () => _selectedTopic = lesson.topics[i],
+                                  );
+                                },
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      flex: 6,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerLowest,
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: colorScheme.outlineVariant,
+                            width: 1.5,
+                          ),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: TopicTestsScreen(
+                          key: ValueKey('${lesson.name}_$activeTopic'),
+                          lessonName: lesson.name,
+                          topic: activeTopic,
+                          selection: selection,
+                          isEmbedded: true,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-          ],
-        ),
-      ),
+            )
+          : ResponsiveContentWrapper(
+              maxWidth: 720,
+              padding: EdgeInsets.zero,
+              child: ListView(
+                padding: AppSpacing.pagePadding(context),
+                children: [
+                  heroBanner,
+                  AppSpacing.gapMd,
+                  for (var i = 0; i < lesson.topics.length; i++)
+                    _TopicPathNode(
+                      index: i,
+                      totalCount: lesson.topics.length,
+                      lessonName: lesson.name,
+                      topic: lesson.topics[i],
+                      selection: selection,
+                    ),
+                ],
+              ),
+            ),
     );
   }
 }
 
-/// Duolingo/Brilliant tarzı dikey bağlantı çizgili yol haritası düğümü bileşeni.
 class _TopicPathNode extends ConsumerWidget {
   final int index;
   final int totalCount;
   final String lessonName;
   final String topic;
+  final ExamSelection selection;
+  final bool isSelected;
+  final VoidCallback? onSelectTopic;
 
   const _TopicPathNode({
     required this.index,
     required this.totalCount,
     required this.lessonName,
     required this.topic,
+    required this.selection,
+    this.isSelected = false,
+    this.onSelectTopic,
   });
 
-  String get packageId => 'topic_${lessonName}_$topic';
+  String get scopeNamespace => selection.curriculumNamespace;
 
   Future<void> _startTopicTest(BuildContext context, WidgetRef ref) async {
     final isOnline = ref.read(isOnlineProvider);
     final downloadedPackages = ref.read(downloadedPackagesProvider);
-    final isDownloaded = downloadedPackages.contains(packageId);
+    final isDownloaded = OfflineDownloadService.isTopicPackageDownloaded(
+      downloadedPackages,
+      scopeNamespace: scopeNamespace,
+      lesson: lessonName,
+      topic: topic,
+    );
+
+    if (onSelectTopic != null) {
+      if (isOnline || isDownloaded) {
+        onSelectTopic!();
+        return;
+      }
+    }
 
     if (!isOnline) {
       if (isDownloaded) {
         if (!context.mounted) return;
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) =>
-                TopicTestsScreen(lessonName: lessonName, topic: topic),
+            builder: (_) => TopicTestsScreen(
+              lessonName: lessonName,
+              topic: topic,
+              selection: selection,
+            ),
           ),
         );
       } else {
@@ -213,8 +382,11 @@ class _TopicPathNode extends ConsumerWidget {
     } else {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) =>
-              TopicTestsScreen(lessonName: lessonName, topic: topic),
+          builder: (_) => TopicTestsScreen(
+            lessonName: lessonName,
+            topic: topic,
+            selection: selection,
+          ),
         ),
       );
     }
@@ -225,7 +397,12 @@ class _TopicPathNode extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final downloadedPackages = ref.watch(downloadedPackagesProvider);
-    final isDownloaded = downloadedPackages.contains(packageId);
+    final isDownloaded = OfflineDownloadService.isTopicPackageDownloaded(
+      downloadedPackages,
+      scopeNamespace: scopeNamespace,
+      lesson: lessonName,
+      topic: topic,
+    );
 
     final stats = ref.watch(studyStatsProvider);
     final solvedTestCount = stats.countSolvedTestsForTopic(
@@ -233,12 +410,21 @@ class _TopicPathNode extends ConsumerWidget {
       topic: topic,
     );
     final topicCountsAsync = ref.watch(
-      lessonTopicTestCountsProvider(lessonName),
+      lessonTopicTestCountsProvider(
+        TopicCountQueryKey(
+          scopeKey: selection.scopeKey,
+          lessonName: lessonName,
+        ),
+      ),
     );
     final fetchedCount = topicCountsAsync.value?[topic];
     final rawTotalTests = (fetchedCount != null && fetchedCount > 0)
         ? fetchedCount
-        : defaultTopicTestCount(lessonName, topic);
+        : CurriculumRegistry.defaultTopicTestCount(
+            lessonName,
+            topic,
+            selection: selection,
+          );
     final totalTests = solvedTestCount > rawTotalTests
         ? solvedTestCount
         : rawTotalTests;
@@ -250,25 +436,27 @@ class _TopicPathNode extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 1. Sol Sütun (Yol Haritası Düğümü ve Dikey Bağlantı Çizgisi)
+          // Sol yol düğümü
           SizedBox(
             width: 48,
             child: Column(
               children: [
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
                     color: isAllTestsSolved
                         ? colorScheme.secondary
                         : ((isPartiallySolved || index == 0)
                               ? colorScheme.primary
-                              : colorScheme.primaryContainer),
+                              : colorScheme.surface),
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: isAllTestsSolved
                           ? colorScheme.secondary
-                          : colorScheme.primary,
+                          : (isPartiallySolved || index == 0
+                                ? colorScheme.primary
+                                : colorScheme.outlineVariant),
                       width: 2,
                     ),
                     boxShadow: [
@@ -276,9 +464,11 @@ class _TopicPathNode extends ConsumerWidget {
                         color:
                             (isAllTestsSolved
                                     ? colorScheme.secondary
-                                    : colorScheme.primary)
-                                .withAlpha(45),
-                        offset: const Offset(0, 3),
+                                    : (isPartiallySolved || index == 0
+                                          ? colorScheme.primary
+                                          : colorScheme.outlineVariant))
+                                .withAlpha(110),
+                        offset: const Offset(0, 2),
                         blurRadius: 0,
                       ),
                     ],
@@ -287,16 +477,16 @@ class _TopicPathNode extends ConsumerWidget {
                   child: isAllTestsSolved
                       ? PhosphorIcon(
                           PhosphorIconsBold.check,
-                          size: 18,
+                          size: 16,
                           color: colorScheme.onSecondary,
                         )
                       : Text(
                           '${index + 1}',
-                          style: textTheme.labelLarge?.copyWith(
+                          style: textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
                             color: (isPartiallySolved || index == 0)
                                 ? colorScheme.onPrimary
-                                : colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.bold,
+                                : colorScheme.onSurfaceVariant,
                           ),
                         ),
                 ),
@@ -304,12 +494,12 @@ class _TopicPathNode extends ConsumerWidget {
                   Expanded(
                     child: Center(
                       child: Container(
-                        width: 3,
+                        width: 2.5,
                         color:
                             (isAllTestsSolved
                                     ? colorScheme.secondary
-                                    : colorScheme.primary)
-                                .withAlpha(70),
+                                    : colorScheme.outlineVariant)
+                                .withAlpha(170),
                       ),
                     ),
                   ),
@@ -318,19 +508,29 @@ class _TopicPathNode extends ConsumerWidget {
           ),
           const SizedBox(width: 12),
 
-          // 2. Sağ Sütun: Konu Başlığı ve Test Çöz Butonu (3D TactileCard)
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: TactileCard(
                 onTap: () => _startTopicTest(context, ref),
-                borderColor: isAllTestsSolved
+                borderColor: isSelected
+                    ? colorScheme.primary
+                    : isAllTestsSolved
                     ? colorScheme.secondary.withAlpha(150)
                     : (isPartiallySolved
                           ? colorScheme.primary.withAlpha(140)
                           : colorScheme.outlineVariant),
-                backgroundColor: isAllTestsSolved
-                    ? colorScheme.secondaryContainer.withAlpha(30)
+                lipColor: isSelected
+                    ? colorScheme.primary
+                    : isAllTestsSolved
+                    ? colorScheme.secondary.withAlpha(160)
+                    : (isPartiallySolved
+                          ? colorScheme.primary.withAlpha(150)
+                          : colorScheme.outlineVariant),
+                backgroundColor: isSelected
+                    ? colorScheme.primaryContainer.withAlpha(75)
+                    : isAllTestsSolved
+                    ? colorScheme.secondaryContainer.withAlpha(45)
                     : colorScheme.surface,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,12 +544,12 @@ class _TopicPathNode extends ConsumerWidget {
                           if (isAllTestsSolved)
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
+                                horizontal: 8,
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
                                 color: colorScheme.secondaryContainer,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -373,12 +573,12 @@ class _TopicPathNode extends ConsumerWidget {
                           else if (isPartiallySolved)
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
+                                horizontal: 8,
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
                                 color: colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -402,12 +602,12 @@ class _TopicPathNode extends ConsumerWidget {
                           else
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
+                                horizontal: 8,
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
                                 color: colorScheme.surfaceContainerHighest,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 '0/$totalTests Test',
@@ -420,12 +620,12 @@ class _TopicPathNode extends ConsumerWidget {
                           if (isDownloaded)
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
+                                horizontal: 8,
                                 vertical: 3,
                               ),
                               decoration: BoxDecoration(
                                 color: colorScheme.secondaryContainer,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -450,20 +650,19 @@ class _TopicPathNode extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    // Orta: Konu Başlığı (Tam Genişlik)
                     Text(
                       topic,
                       style: textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    // Alt Satır: Sağa Yaslı Test Çöz Butonu
+                    const SizedBox(height: 10),
                     Align(
                       alignment: Alignment.centerRight,
                       child: FilledButton.tonal(
                         onPressed: () => _startTopicTest(context, ref),
                         style: FilledButton.styleFrom(
+                          minimumSize: const Size(0, 38),
                           visualDensity: VisualDensity.compact,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 14,

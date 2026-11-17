@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 
-/// Instagram ve WhatsApp hikayelerine uygun 9:16 formatında Zafer Karnesi paylaşım kartı.
-///
-/// Angular'daki `ShareStoryCardComponent` karşılığıdır.
-/// Kullanıcının test sonucunu sosyal medyada paylaşarak organik viral döngü
-/// (word-of-mouth growth) oluşturmasını sağlar.
+/// Tuğrul zafer madalyonu ve KPSS başarı özetini sunan paylaşılabilir sonuç kartı.
 class VictoryStoryCard extends StatelessWidget {
   final QuizResult result;
   final String? testTitle;
@@ -17,187 +13,204 @@ class VictoryStoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     final netDisplay = result.net % 1 == 0
         ? result.net.toInt().toString()
         : result.net.toStringAsFixed(2);
 
     return Container(
+      padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [colorScheme.primary, colorScheme.surfaceContainerHighest],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: colorScheme.tertiary, width: 2),
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colorScheme.primary, width: 2),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withAlpha(50),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+            color: colorScheme.primary.withAlpha(110),
+            offset: const Offset(0, 4),
+            blurRadius: 0,
           ),
         ],
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 1. Üst Rozet
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  PhosphorIcon(
-                    PhosphorIconsFill.trophy,
-                    color: colorScheme.tertiary,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 6),
-                  Flexible(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        'KADRO · KPSS GENEL KÜLTÜR',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onPrimary,
-                          letterSpacing: 0.6,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              // 2. Maskot
-              Image.asset(
-                'assets/images/mascot/tugrul_victory.png',
-                height: 84,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => PhosphorIcon(
-                  PhosphorIconsDuotone.trophy,
-                  size: 72,
-                  color: colorScheme.tertiary,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: colorScheme.outlineVariant, width: 1.2),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TugrulAvatar(
+                  mood: TugrulMood.victory,
+                  size: 46,
+                  ringColor: colorScheme.tertiary,
+                  hasShadow: false,
                 ),
-              ),
-
-              // 3. Test Başlığı
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
+                const SizedBox(height: 6),
+                Text(
+                  'KADRO · KPSS GENEL KÜLTÜR',
+                  textAlign: TextAlign.center,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.tertiary,
+                    letterSpacing: 1.0,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
                   testTitle ?? 'Genel Kültür Testi',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                  style: textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurface,
                   ),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ),
+              ],
+            ),
 
-              // 4. Dev Net Göstergesi
-              Column(
-                mainAxisSize: MainAxisSize.min,
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: colorScheme.primary.withAlpha(80),
+                  width: 1.5,
+                ),
+              ),
+              child: Column(
                 children: [
                   Text(
                     '$netDisplay NET',
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: colorScheme.tertiary,
-                      letterSpacing: -0.5,
+                    textAlign: TextAlign.center,
+                    style: textTheme.displayMedium?.copyWith(
+                      color: colorScheme.primary,
+                      fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
-                    '60 Soru Üzerinden',
-                    style: theme.textTheme.labelSmall?.copyWith(
+                    '${result.totalQuestions} soru üzerinden',
+                    style: textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
+            ),
 
-              // 5. 3'lü Metrik Çubuğu
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.surface.withAlpha(220),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: colorScheme.outlineVariant.withAlpha(120),
+            Column(
+              children: [
+                IntrinsicHeight(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _CertificateMetric(
+                          label: 'Doğru',
+                          value: '${result.correctCount}',
+                        ),
+                      ),
+                      VerticalDivider(
+                        width: 1,
+                        color: colorScheme.outlineVariant,
+                      ),
+                      Expanded(
+                        child: _CertificateMetric(
+                          label: 'Yanlış',
+                          value: '${result.wrongCount}',
+                        ),
+                      ),
+                      VerticalDivider(
+                        width: 1,
+                        color: colorScheme.outlineVariant,
+                      ),
+                      Expanded(
+                        child: _CertificateMetric(
+                          label: 'Başarı',
+                          value: '%${result.successRate}',
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
+              ],
+            ),
+
+            Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: Text(
-                    'Doğru: ${result.correctCount}  |  Yanlış: ${result.wrongCount}  |  Başarı: %${result.successRate}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
+                    result.net >= 45 ? 'KADRO DERECE ADAYI' : 'HEDEF 60\'TA 60',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onTertiaryContainer,
+                      letterSpacing: 0.7,
+                      fontWeight: FontWeight.w700,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-
-              // 6. Derece Rozeti
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: colorScheme.tertiary, width: 1.2),
-                ),
-                child: Text(
-                  result.net >= 45
-                      ? '🦅 KADRO DERECE ADAYI'
-                      : '🎯 HEDEF 60\'TA 60',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onTertiaryContainer,
+                const SizedBox(height: 8),
+                Text(
+                  'kadro.app · KPSS Genel Kültür',
+                  textAlign: TextAlign.center,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.outline,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
-
-              // 7. Alt Çağrı (Call-to-Action)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer.withAlpha(150),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    'Benimle KPSS düellosuna var mısın? 📲 com.omer.kadro',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
+    );
+  }
+}
+
+class _CertificateMetric extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _CertificateMetric({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          style: textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
     );
   }
 }

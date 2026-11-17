@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
+import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/planner/data/models/study_program_pace.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
-import 'package:kadro/features/pomodoro/data/pomodoro_notifier.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/shared/widgets/adaptive_overlay.dart';
+import 'package:kadro/shared/widgets/exam_target_picker_view.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Kullanıcının hazırlandığı sınav tarihine ve hedefine göre
-/// 3 farklı tempo (Hafif, Orta, Hızlı) arasından seçim yaparak
-/// otomatik çalışma programı kurmasını sağlayan etkileşimli modal.
-///
-/// Web/Angular Karşılığı: Auto Study Schedule Setup Modal Component.
+/// Kullanıcının hedef KPSS / MEB-AGS sınavını ve günlük çalışma süresi varyasyonunu (`15–90 dk`)
+/// seçip sınav yakınlığına göre akıllı yetiştirme önerisi aldığı alt sayfa.
 class AutoStudyProgramModal extends ConsumerStatefulWidget {
   const AutoStudyProgramModal({super.key});
 
-  /// Modal alt sayfayı kullanıcıya sunar.
   static Future<void> show(BuildContext context) {
-    return showModalBottomSheet(
+    return AdaptiveOverlay.showModal<void>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      dialogMaxWidth: 680,
+      transparentSheetBackground: true,
       builder: (_) => const AutoStudyProgramModal(),
     );
   }
@@ -33,15 +32,41 @@ class AutoStudyProgramModal extends ConsumerStatefulWidget {
 
 class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
   late StudyProgramPace _selectedPace;
+  late ExamSelection _selectedSelection;
 
   @override
   void initState() {
     super.initState();
-    final currentPace = ref.read(userPreferencesProvider).studyProgramPace;
-    _selectedPace = currentPace;
+    final prefs = ref.read(userPreferencesProvider);
+    _selectedPace = prefs.studyProgramPace;
+    _selectedSelection = prefs.examSelection;
   }
 
-  void _applyProgram(KpssExamTarget target, UserPreferencesState prefs) {
+  void _applyProgram(UserPreferencesState prefs) {
+    final oldPace = prefs.studyProgramPace;
+    final hasActive = prefs.hasActiveStudyProgram;
+    final stats = ref.read(studyStatsProvider);
+    final selectedTarget = _selectedSelection.toLegacyTarget();
+    final selectedCurriculum = CurriculumRegistry.resolve(_selectedSelection);
+    final effectiveFocusLesson =
+        selectedCurriculum.primaryLessonNames.contains(prefs.focusLesson)
+        ? prefs.focusLesson
+        : (selectedCurriculum.primaryLessonNames.isNotEmpty
+              ? selectedCurriculum.primaryLessonNames.first
+              : prefs.focusLesson);
+
+    bool isTestSolved(String lesson, String topic, int testNumber) {
+      return stats.findLatestSessionForTest(
+            lesson: lesson,
+            topic: topic,
+            testNumber: testNumber,
+          ) !=
+          null;
+    }
+
+    ref
+        .read(userPreferencesProvider.notifier)
+        .setExamSelection(_selectedSelection);
     ref
         .read(userPreferencesProvider.notifier)
         .setStudyProgramPace(_selectedPace);
@@ -49,32 +74,53 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
         .read(studyStatsProvider.notifier)
         .updateDailyGoal(_selectedPace.dailyGoalQuestions);
 
-    ref
-        .read(studyPlannerProvider.notifier)
-        .setupAutoProgram(
-          examTarget: target,
-          pace: _selectedPace,
-          focusLesson: prefs.focusLesson,
-        );
+    if (hasActive) {
+      // Zaten aktif programı olan kullanıcı süresini güncellediğinde
+      // ilerlemesi sıfırlanmaz, çözülmüş testleri koruyarak yeni tempoya uyarlanır.
+      ref
+          .read(studyPlannerProvider.notifier)
+          .adaptStudyProgramPace(
+            examTarget: selectedTarget,
+            oldPace: oldPace,
+            newPace: _selectedPace,
+            focusLesson: effectiveFocusLesson,
+            curriculum: selectedCurriculum,
+            examScope: _selectedSelection.scopeKey,
+            isTestSolved: isTestSolved,
+          );
+    } else {
+      ref
+          .read(studyPlannerProvider.notifier)
+          .setupAutoProgram(
+            examTarget: selectedTarget,
+            pace: _selectedPace,
+            focusLesson: effectiveFocusLesson,
+            curriculum: selectedCurriculum,
+            examScope: _selectedSelection.scopeKey,
+            cycleDay: 1,
+            isTestSolved: isTestSolved,
+          );
+    }
 
     Navigator.of(context).pop();
+
+    final isPaceChanged = hasActive && oldPace != _selectedPace;
+    final snackText = isPaceChanged
+        ? '${_selectedPace.label} temposuna uyarlandı. İlerlemen korundu!'
+        : '${_selectedSelection.shortTitle} için ${_selectedPace.label} programın kuruldu.';
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
         content: Row(
           children: [
-            const PhosphorIcon(
+            PhosphorIcon(
               PhosphorIconsFill.checkCircle,
-              color: Colors.white,
-              size: 20,
+              color: Theme.of(context).colorScheme.onInverseSurface,
+              size: 18,
             ),
             const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                '${target.shortTitle} için ${_selectedPace.label} programın kuruldu!',
-              ),
-            ),
+            Expanded(child: Text(snackText)),
           ],
         ),
       ),
@@ -83,12 +129,16 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
 
   IconData _iconForPace(StudyProgramPace pace) {
     switch (pace) {
-      case StudyProgramPace.hafif:
-        return PhosphorIconsDuotone.plant;
-      case StudyProgramPace.orta:
-        return PhosphorIconsDuotone.lightning;
-      case StudyProgramPace.hizli:
-        return PhosphorIconsDuotone.fire;
+      case StudyProgramPace.dk15:
+        return PhosphorIconsRegular.timer;
+      case StudyProgramPace.dk30:
+        return PhosphorIconsRegular.plant;
+      case StudyProgramPace.dk45:
+        return PhosphorIconsRegular.compass;
+      case StudyProgramPace.dk60:
+        return PhosphorIconsRegular.lightning;
+      case StudyProgramPace.dk90:
+        return PhosphorIconsRegular.fire;
     }
   }
 
@@ -99,13 +149,20 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
     final textTheme = theme.textTheme;
 
     final prefs = ref.watch(userPreferencesProvider);
-    final target = prefs.targetExam;
-    final remaining = target.detailedRemaining();
+    final selectedCurriculum = CurriculumRegistry.resolve(_selectedSelection);
+    final remaining = _selectedSelection.detailedRemaining();
+    final advisory = _selectedPace.evaluateScheduleForSelection(
+      _selectedSelection,
+      curriculum: selectedCurriculum,
+    );
+    final advisoryColor = advisory.canFinishInTime
+        ? colorScheme.primary
+        : colorScheme.tertiary;
 
     return Container(
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       padding: EdgeInsets.fromLTRB(
         20,
@@ -117,48 +174,37 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Çekme çizgisi
           Center(
             child: Container(
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: colorScheme.outlineVariant.withAlpha(120),
+                color: colorScheme.outlineVariant,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
           const SizedBox(height: 14),
 
-          // Başlık
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: PhosphorIcon(
-                  PhosphorIconsDuotone.sparkle,
-                  size: 22,
-                  color: colorScheme.onPrimaryContainer,
-                ),
+              PhosphorIcon(
+                PhosphorIconsRegular.slidersHorizontal,
+                size: 20,
+                color: colorScheme.primary,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Otomatik Çalışma Programı',
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style: textTheme.titleMedium,
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Sınav tarihine ve tempona göre kişisel günlük plan.',
+                      'Sınavına ve günlük ayırdığın süreye göre gerçek içerik planı.',
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -168,39 +214,45 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
               ),
               IconButton(
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const PhosphorIcon(PhosphorIconsBold.x, size: 20),
+                icon: const PhosphorIcon(PhosphorIconsBold.x, size: 18),
                 tooltip: 'Kapat',
               ),
             ],
           ),
           const SizedBox(height: 12),
 
-          // Kaydırılabilir Seçenekler ve Bilgiler
           Flexible(
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Sınav Özeti Şeridi
+                  ExamTargetPickerView(
+                    value: _selectedSelection,
+                    onChanged: (next) =>
+                        setState(() => _selectedSelection = next),
+                    showQuickPresets: false,
+                  ),
+                  const SizedBox(height: 10),
+
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 14,
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer.withAlpha(80),
-                      borderRadius: BorderRadius.circular(14),
+                      color: colorScheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: colorScheme.primary.withAlpha(60),
-                        width: 1,
+                        color: colorScheme.outlineVariant,
+                        width: 1.5,
                       ),
                     ),
                     child: Row(
                       children: [
                         PhosphorIcon(
-                          PhosphorIconsBold.calendarCheck,
-                          size: 20,
+                          PhosphorIconsRegular.calendarCheck,
+                          size: 18,
                           color: colorScheme.primary,
                         ),
                         const SizedBox(width: 10),
@@ -209,17 +261,17 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '🎯 ${target.title}',
+                                _selectedSelection.displayTitle,
                                 style: textTheme.bodyMedium?.copyWith(
-                                  fontWeight: FontWeight.w800,
+                                  fontWeight: FontWeight.w700,
                                   color: colorScheme.onSurface,
                                 ),
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                '⏳ ${remaining.formattedRemaining} (${target.remainingDays()} Gün Kaldı)',
+                                '${remaining.formattedRemaining} (${remaining.totalDays} Gün Kaldı)',
                                 style: textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w600,
                                   color: colorScheme.primary,
                                 ),
                               ),
@@ -229,9 +281,8 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
 
-                  // 3 Tempo Seçeneği
                   ...StudyProgramPace.values.map((pace) {
                     final isSelected = _selectedPace == pace;
 
@@ -240,28 +291,26 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                       child: TactileCard(
                         onTap: () => setState(() => _selectedPace = pace),
                         backgroundColor: isSelected
-                            ? colorScheme.primaryContainer.withAlpha(80)
+                            ? Color.alphaBlend(
+                                colorScheme.primaryContainer.withAlpha(115),
+                                colorScheme.surface,
+                              )
                             : colorScheme.surface,
                         borderColor: isSelected
                             ? colorScheme.primary
-                            : colorScheme.outlineVariant.withAlpha(90),
+                            : colorScheme.outlineVariant,
+                        lipColor: isSelected ? colorScheme.primary : null,
                         padding: const EdgeInsets.all(12),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? colorScheme.primary
-                                    : colorScheme.surfaceContainerHighest,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
                               child: PhosphorIcon(
                                 _iconForPace(pace),
-                                size: 22,
+                                size: 20,
                                 color: isSelected
-                                    ? colorScheme.onPrimary
+                                    ? colorScheme.primary
                                     : colorScheme.onSurfaceVariant,
                               ),
                             ),
@@ -270,20 +319,21 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
+                                  Wrap(
+                                    spacing: 6,
+                                    runSpacing: 4,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
                                     children: [
-                                      Flexible(
-                                        child: Text(
-                                          pace.label,
-                                          style: textTheme.bodyMedium?.copyWith(
-                                            fontWeight: FontWeight.w800,
-                                            color: isSelected
-                                                ? colorScheme.primary
-                                                : colorScheme.onSurface,
-                                          ),
+                                      Text(
+                                        pace.label,
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          color: isSelected
+                                              ? colorScheme.primary
+                                              : colorScheme.onSurface,
                                         ),
                                       ),
-                                      const SizedBox(width: 6),
                                       Container(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 6,
@@ -300,8 +350,6 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                                         child: Text(
                                           pace.badgeText,
                                           style: textTheme.labelSmall?.copyWith(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w800,
                                             color: isSelected
                                                 ? colorScheme.onPrimary
                                                 : colorScheme
@@ -313,9 +361,9 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                                   ),
                                   const SizedBox(height: 3),
                                   Text(
-                                    '${pace.dailyGoalQuestions} Soru · ~${pace.estimatedMinutesPerDay} Dk / Gün',
+                                    '${pace.packageSummary} · ~${pace.estimatedCompletionDays} gün',
                                     style: textTheme.bodySmall?.copyWith(
-                                      fontWeight: FontWeight.w700,
+                                      fontWeight: FontWeight.w600,
                                       color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
@@ -323,8 +371,7 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                                   Text(
                                     pace.description,
                                     style: textTheme.bodySmall?.copyWith(
-                                      color: colorScheme.outline,
-                                      fontSize: 11,
+                                      color: colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -335,7 +382,7 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                               isSelected
                                   ? PhosphorIconsFill.checkCircle
                                   : PhosphorIconsRegular.circle,
-                              size: 22,
+                              size: 20,
                               color: isSelected
                                   ? colorScheme.primary
                                   : colorScheme.outlineVariant,
@@ -347,15 +394,15 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                   }),
                   const SizedBox(height: 6),
 
-                  // Sınava Yayma Mantığı Açıklaması
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerHighest.withAlpha(120),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: colorScheme.outlineVariant.withAlpha(80),
+                      color: Color.alphaBlend(
+                        advisoryColor.withAlpha(24),
+                        colorScheme.surfaceContainerLow,
                       ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: advisoryColor.withAlpha(120)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -363,27 +410,32 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                         Row(
                           children: [
                             PhosphorIcon(
-                              PhosphorIconsDuotone.chartLineUp,
+                              advisory.canFinishInTime
+                                  ? PhosphorIconsRegular.chartLineUp
+                                  : PhosphorIconsFill.warningCircle,
                               size: 16,
-                              color: colorScheme.primary,
+                              color: advisoryColor,
                             ),
                             const SizedBox(width: 6),
-                            Text(
-                              'Sınava Yayma & Tur Projeksiyonu',
-                              style: textTheme.labelSmall?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: colorScheme.primary,
+                            Expanded(
+                              child: Text(
+                                advisory.canFinishInTime
+                                    ? 'Sınava Yayma & Tur Projeksiyonu'
+                                    : 'Sınav Yakınlık Tavsiyesi',
+                                style: textTheme.labelMedium?.copyWith(
+                                  color: advisoryColor,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _selectedPace.calculatePacingSummary(target),
+                          advisory.message,
                           style: textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            fontSize: 11.5,
-                            height: 1.35,
+                            color: colorScheme.onSurface,
+                            height: 1.38,
                           ),
                         ),
                       ],
@@ -391,33 +443,32 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                   ),
                   const SizedBox(height: 10),
 
-                  // Mevcut Çalışma Türlerimiz Rozetleri
                   const Wrap(
                     spacing: 6,
                     runSpacing: 6,
                     children: [
                       _ActivityChip(
-                        icon: PhosphorIconsDuotone.pencilLine,
+                        icon: PhosphorIconsRegular.pencilSimple,
                         label: 'Konu Testi',
                       ),
                       _ActivityChip(
-                        icon: PhosphorIconsDuotone.cards,
+                        icon: PhosphorIconsRegular.cards,
                         label: 'Flashcards',
                       ),
                       _ActivityChip(
-                        icon: PhosphorIconsDuotone.warning,
+                        icon: PhosphorIconsRegular.warningCircle,
                         label: 'Yanlış Defteri',
                       ),
                       _ActivityChip(
-                        icon: PhosphorIconsDuotone.mapTrifold,
+                        icon: PhosphorIconsRegular.mapTrifold,
                         label: 'Harita Pratiği',
                       ),
                       _ActivityChip(
-                        icon: PhosphorIconsDuotone.gameController,
+                        icon: PhosphorIconsRegular.puzzlePiece,
                         label: 'Kavram Oyunu',
                       ),
                       _ActivityChip(
-                        icon: PhosphorIconsDuotone.trophy,
+                        icon: PhosphorIconsRegular.trophy,
                         label: 'Mini Deneme',
                       ),
                     ],
@@ -428,14 +479,10 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
             ),
           ),
 
-          // Buton: Programı Başlat
           FilledButton.icon(
-            onPressed: () => _applyProgram(target, prefs),
-            icon: const PhosphorIcon(PhosphorIconsBold.rocketLaunch, size: 18),
-            label: Text(
-              '${_selectedPace.label} Programını Başlat',
-              style: const TextStyle(fontWeight: FontWeight.w800),
-            ),
+            onPressed: () => _applyProgram(prefs),
+            icon: const PhosphorIcon(PhosphorIconsBold.play, size: 16),
+            label: Text('${_selectedPace.label} Programını Başlat'),
           ),
         ],
       ),
@@ -457,9 +504,9 @@ class _ActivityChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withAlpha(90),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colorScheme.outlineVariant.withAlpha(60)),
+        color: colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -469,8 +516,6 @@ class _ActivityChip extends StatelessWidget {
           Text(
             label,
             style: textTheme.labelSmall?.copyWith(
-              fontSize: 10.5,
-              fontWeight: FontWeight.w600,
               color: colorScheme.onSurfaceVariant,
             ),
           ),

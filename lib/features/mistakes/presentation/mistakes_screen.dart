@@ -3,25 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
+import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/shared/widgets/empty_state_view.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Kullanıcının testlerde yanlış çözdüğü soruları gösteren Yanlış Defteri ekranı.
-///
-/// Angular'daki `MistakesComponent` karşılığıdır.
-/// Yanlış sorular ders bazında filtrelenebilir, incelenebilir, silinebilir.
-/// Kadro PRO üyeleri yanlışlarından tek tıkla akıllı tekrar testleri üretebilir.
+/// Yanlış yapılan soruların biriktiği ve tekrar çözülebildiği Yanlış Defteri ekranı.
 class MistakesScreen extends ConsumerStatefulWidget {
   final MistakeRepository mistakeRepository;
+  final VoidCallback? onCompleted;
 
   const MistakesScreen({
     super.key,
     this.mistakeRepository = const MistakeRepository(),
+    this.onCompleted,
   });
 
   @override
@@ -30,6 +31,26 @@ class MistakesScreen extends ConsumerStatefulWidget {
 
 class _MistakesScreenState extends ConsumerState<MistakesScreen> {
   String _selectedLesson = 'Tümü';
+  bool _hasNotifiedCompletion = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.onCompleted != null &&
+        widget.mistakeRepository.getMistakes().isEmpty) {
+      _hasNotifiedCompletion = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onCompleted?.call();
+      });
+    }
+  }
+
+  void _notifyDone() {
+    if (!_hasNotifiedCompletion) {
+      _hasNotifiedCompletion = true;
+      widget.onCompleted?.call();
+    }
+  }
 
   Future<void> _solveMistakes(List<Question> mistakes) async {
     if (mistakes.isEmpty) return;
@@ -41,12 +62,11 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
       // ProviderScope bulunmayan izole test fallback
     }
 
-    // Kadro PRO Kapısı: Yanlışlardan özel test üretici PRO özelliğidir.
     if (!isPro) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            '🎯 Kadro PRO ile yanlış yaptığın sorulardan dilediğin an özel testler üretebilir ve eksiklerini pekiştirebilirsin.',
+            'Kadro PRO ile yanlış yaptığın sorulardan dilediğin an özel testler üretebilirsin.',
           ),
           behavior: SnackBarBehavior.floating,
         ),
@@ -54,7 +74,7 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => const PaywallScreen(
-            reasonMessage: 'Akıllı Yanlış Defteri Test Üretici: Yanlış yaptığın sorulardan özel akıllı testler üretip çözmek Kadro PRO üyelerine özeldir.',
+            reasonMessage: 'Akıllı Yanlış Defteri Test Üretici: Yanlış yaptığın sorulardan özel testler üretip çözmek Kadro PRO üyelerine özeldir.',
           ),
         ),
       );
@@ -70,12 +90,11 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
           customTitle: _selectedLesson == 'Tümü'
               ? 'Yanlış Defteri Testi'
               : '$_selectedLesson Yanlışları Testi',
+          onCompleted: _notifyDone,
         ),
       ),
     );
 
-    // QuizScreen'den geri dönüldüğünde çözülen sorular listeden düşmüş olabileceği için
-    // arayüzü güncelliyoruz (Angular change detection / rerender gibi).
     if (mounted) {
       setState(() {});
     }
@@ -85,6 +104,9 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
     setState(() {
       widget.mistakeRepository.removeMistake(questionId);
     });
+    if (widget.mistakeRepository.getMistakes().isEmpty) {
+      _notifyDone();
+    }
   }
 
   @override
@@ -98,18 +120,22 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
       );
     }
 
-    final tarihCount = mistakes.where((q) => q.lesson == 'Tarih').length;
-    final cografyaCount = mistakes.where((q) => q.lesson == 'Coğrafya').length;
-    final vatandaslikCount = mistakes
-        .where((q) => q.lesson == 'Vatandaşlık')
-        .length;
-    final guncelCount = mistakes
-        .where((q) => q.lesson == 'Güncel Bilgiler')
-        .length;
+    final lessonCounts = <String, int>{};
+    for (final question in mistakes) {
+      lessonCounts[question.lesson] = (lessonCounts[question.lesson] ?? 0) + 1;
+    }
 
-    final filteredMistakes = _selectedLesson == 'Tümü'
+    final curriculum = readOrWatchCurriculum(ref);
+    final filterLessons = curriculum.buildFilterLessons(
+      mistakes.map((q) => q.lesson),
+    );
+    final effectiveSelected = filterLessons.contains(_selectedLesson)
+        ? _selectedLesson
+        : 'Tümü';
+
+    final filteredMistakes = effectiveSelected == 'Tümü'
         ? mistakes
-        : mistakes.where((q) => q.lesson == _selectedLesson).toList();
+        : mistakes.where((q) => q.lesson == effectiveSelected).toList();
 
     bool isPro = false;
     try {
@@ -118,13 +144,16 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
       // ProviderScope bulunmayan izole test fallback
     }
 
-    final lessonChips = [
-      {'id': 'Tümü', 'label': 'Tümü (${mistakes.length})'},
-      {'id': 'Tarih', 'label': 'Tarih ($tarihCount)'},
-      {'id': 'Coğrafya', 'label': 'Coğrafya ($cografyaCount)'},
-      {'id': 'Vatandaşlık', 'label': 'Vatandaşlık ($vatandaslikCount)'},
-      {'id': 'Güncel Bilgiler', 'label': 'Güncel Bilgiler ($guncelCount)'},
-    ];
+    final lessonChips = filterLessons
+        .map(
+          (lessonName) => {
+            'id': lessonName,
+            'label': lessonName == 'Tümü'
+                ? 'Tümü (${mistakes.length})'
+                : '$lessonName (${lessonCounts[lessonName] ?? 0})',
+          },
+        )
+        .toList(growable: false);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Yanlış Defteri')),
@@ -136,12 +165,11 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Ders Filtre Şeridi
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: lessonChips.map((chip) {
-                    final isSelected = _selectedLesson == chip['id'];
+                    final isSelected = effectiveSelected == chip['id'];
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: ChoiceChip(
@@ -161,22 +189,20 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
               ),
               AppSpacing.gapSm,
 
-              // Üst Bilgi Kartı ve Tekrar Çöz Butonu (Dedektif Koç ile)
               _MistakeHeaderCard(
                 mistakeCount: filteredMistakes.length,
-                lessonName: _selectedLesson,
+                lessonName: effectiveSelected,
                 totalMistakes: mistakes.length,
                 onSolveAll: () => _solveMistakes(filteredMistakes),
                 isPro: isPro,
               ),
               AppSpacing.gapMd,
 
-              // Yanlış Soruların Listesi
               Expanded(
                 child: filteredMistakes.isEmpty
                     ? Center(
                         child: Text(
-                          '$_selectedLesson dersinden yanlışın bulunmuyor.',
+                          '$effectiveSelected dersinden yanlışın bulunmuyor.',
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
                                 color: Theme.of(context)
@@ -204,96 +230,50 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
   }
 }
 
-/// Yanlış defteri boşken gösterilen Dedektif Kadro Koçu temiz durum görünümü.
 class _EmptyMistakesView extends StatelessWidget {
   const _EmptyMistakesView();
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const EmptyStateView(
+          mascotMood: TugrulMood.detective,
+          icon: PhosphorIconsRegular.checkCircle,
+          title: 'Yanlış defterinde bekleyen soru yok',
+          description: 'Testlerde yanlış yaptığın sorular otomatik olarak burada birikir.',
+        ),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 12,
+          runSpacing: 10,
           children: [
-            Container(
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: colorScheme.primary, width: 2),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(22),
-                child: Image.asset(
-                  'assets/images/mascot/tugrul_detective.png',
-                  width: 110,
-                  height: 110,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Icon(
-                    Icons.check_circle_outline,
-                    size: 48,
-                    color: colorScheme.primary,
-                  ),
-                ),
-              ),
+            FilledButton.tonalIcon(
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).push(MaterialPageRoute(builder: (_) => const QuizScreen()));
+              },
+              icon: const PhosphorIcon(PhosphorIconsBold.play, size: 16),
+              label: const Text('Yeni Test Çöz'),
             ),
-            const SizedBox(height: 24),
-            Text(
-              'Yanlış defterin tertemiz!',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Testlerde yanlış yaptığın sorular otomatik olarak burada birikir.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            AppSpacing.gapXl,
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 12,
-              runSpacing: 10,
-              children: [
-                FilledButton.tonalIcon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const QuizScreen()),
-                    );
-                  },
-                  icon: const PhosphorIcon(PhosphorIconsBold.play, size: 18),
-                  label: const Text('Yeni Test Çöz'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const FlashcardsScreen(),
-                      ),
-                    );
-                  },
-                  icon: const PhosphorIcon(PhosphorIconsBold.cards, size: 18),
-                  label: const Text('Bilgi Kartlarına Git'),
-                ),
-              ],
+            OutlinedButton.icon(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const FlashcardsScreen()),
+                );
+              },
+              icon: const PhosphorIcon(PhosphorIconsRegular.cards, size: 16),
+              label: const Text('Bilgi Kartlarına Git'),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 }
 
-/// Yanlış sayısını, Dedektif Kadro Koçu avatarını ve 'Tüm Yanlışları Tekrar Çöz' butonunu içeren 3D kart.
 class _MistakeHeaderCard extends StatelessWidget {
   final int mistakeCount;
   final String lessonName;
@@ -328,39 +308,27 @@ class _MistakeHeaderCard extends StatelessWidget {
 
     final subtitleText = isPro
         ? 'Tekrar çözerek doğrula, defterden otomatik çıksın.'
-        : '👑 Kadro PRO: Yanlışlarından tek tıkla özel tekrar testleri üret.';
+        : 'Kadro PRO: Yanlışlarından tek tıkla özel tekrar testleri üret.';
 
     return TactileCard(
-      backgroundColor: colorScheme.errorContainer.withAlpha(80),
-      borderColor: colorScheme.error.withAlpha(90),
+      backgroundColor: Color.alphaBlend(
+        colorScheme.errorContainer.withAlpha(110),
+        colorScheme.surface,
+      ),
+      borderColor: colorScheme.error,
+      lipColor: colorScheme.error,
       child: Column(
         children: [
           Row(
             children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: colorScheme.error, width: 1.5),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.asset(
-                    'assets/images/mascot/tugrul_detective.png',
-                    width: 56,
-                    height: 56,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Icon(
-                      Icons.bookmark_remove_outlined,
-                      color: colorScheme.error,
-                      size: 28,
-                    ),
-                  ),
-                ),
+              TugrulAvatar(
+                mood: TugrulMood.detective,
+                size: 56,
+                ringColor: colorScheme.error,
+                onTap: () =>
+                    TugrulTipsSheet.show(context, mood: TugrulMood.detective),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -368,10 +336,11 @@ class _MistakeHeaderCard extends StatelessWidget {
                     Text(
                       titleText,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onErrorContainer,
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
                       subtitleText,
                       style: theme.textTheme.bodySmall?.copyWith(
@@ -390,7 +359,7 @@ class _MistakeHeaderCard extends StatelessWidget {
               onPressed: mistakeCount > 0 ? onSolveAll : null,
               icon: PhosphorIcon(
                 isPro ? PhosphorIconsBold.play : PhosphorIconsFill.crown,
-                size: 18,
+                size: 16,
               ),
               label: Text(buttonText),
             ),
@@ -401,7 +370,6 @@ class _MistakeHeaderCard extends StatelessWidget {
   }
 }
 
-/// Yanlış defterindeki tek bir soru kartı (3D Tactile).
 class _MistakeQuestionCard extends StatelessWidget {
   final Question question;
   final VoidCallback onDelete;
@@ -419,30 +387,33 @@ class _MistakeQuestionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Ders ve Konu Etiketi ile Silme Butonu
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '${question.lesson} · ${question.topic}',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colorScheme.onSecondaryContainer,
-                      fontWeight: FontWeight.bold,
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      '${question.lesson} · ${question.topic}',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSecondaryContainer,
+                      ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ),
                 IconButton(
-                  // DİKKAT: Icons.delete_outline testler tarafından aranır
-                  icon: const Icon(Icons.delete_outline),
+                  icon: const PhosphorIcon(
+                    PhosphorIconsRegular.trash,
+                    size: 18,
+                  ),
                   color: colorScheme.error,
                   tooltip: 'Defterden Sil',
                   onPressed: onDelete,
@@ -451,23 +422,21 @@ class _MistakeQuestionCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Soru Metni
             Text(
               question.text,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 12),
 
-            // Doğru Cevap Kutusu
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: colorScheme.tertiaryContainer.withAlpha(120),
+                color: colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: colorScheme.tertiary.withAlpha(100)),
+                border: Border.all(color: colorScheme.outlineVariant),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -477,9 +446,9 @@ class _MistakeQuestionCard extends StatelessWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
-                        child: Icon(
-                          Icons.check_circle,
-                          color: colorScheme.onTertiaryContainer,
+                        child: PhosphorIcon(
+                          PhosphorIconsFill.checkCircle,
+                          color: colorScheme.secondary,
                           size: 16,
                         ),
                       ),
@@ -488,33 +457,36 @@ class _MistakeQuestionCard extends StatelessWidget {
                         child: Text(
                           'Doğru Cevap: ${question.options[question.correctIndex]}',
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onTertiaryContainer,
-                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
                     ],
                   ),
                   if (question.explanation.isNotEmpty) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       question.explanation,
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onTertiaryContainer,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
                   if (question.distractorTrap != null &&
                       question.distractorTrap!.isNotEmpty) ...[
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: colorScheme.surface.withAlpha(220),
+                        color: colorScheme.tertiaryContainer,
                         borderRadius: BorderRadius.circular(6),
-                        border: Border.all(
-                          color: colorScheme.tertiary.withAlpha(140),
+                        border: Border(
+                          left: BorderSide(
+                            color: colorScheme.tertiary,
+                            width: 3,
+                          ),
                         ),
                       ),
                       child: Column(
@@ -523,16 +495,15 @@ class _MistakeQuestionCard extends StatelessWidget {
                           Row(
                             children: [
                               PhosphorIcon(
-                                PhosphorIconsFill.warning,
-                                color: colorScheme.tertiary,
+                                PhosphorIconsBold.warningCircle,
+                                color: colorScheme.onTertiaryContainer,
                                 size: 14,
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '⚠️ ÖSYM Çeldirici Tuzağı:',
+                                'ÖSYM Çeldirici Tuzağı:',
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.tertiary,
+                                  color: colorScheme.onTertiaryContainer,
                                 ),
                               ),
                             ],
@@ -541,7 +512,7 @@ class _MistakeQuestionCard extends StatelessWidget {
                           Text(
                             question.distractorTrap!,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurface,
+                              color: colorScheme.onTertiaryContainer,
                             ),
                           ),
                         ],

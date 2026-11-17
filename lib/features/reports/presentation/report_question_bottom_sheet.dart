@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/reports/data/models/question_report.dart';
 import 'package:kadro/features/reports/data/question_report_repository.dart';
+import 'package:kadro/shared/widgets/kadro_dropdown.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Test esnasında kullanıcının hatalı soruyu sebep ve isteğe bağlı not ile
-/// bildirmesini sağlayan modern alt sayfa bileşeni (BottomSheet - TASK-47).
-///
-/// Angular Karşılığı: Modal Dialog / Bottom Sheet bileşenidir.
+/// bildirmesini sağlayan alt sayfa bileşeni.
 class ReportQuestionBottomSheet extends StatefulWidget {
   final Question question;
   final String testTitle;
@@ -81,7 +80,7 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
       SnackBar(
         content: Text(
           success
-              ? 'Bildirimin için teşekkürler! Soru incelemeye alındı.'
+              ? 'Bildirimin için teşekkürler. Soru incelemeye alındı.'
               : 'Çok hızlı bildirim gönderiyorsunuz. Lütfen biraz bekleyin.',
         ),
         duration: const Duration(seconds: 3),
@@ -95,7 +94,6 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    // Sorunun ilk 80 karakteri
     final previewText = widget.question.text.length > 80
         ? '${widget.question.text.substring(0, 80)}...'
         : widget.question.text;
@@ -106,10 +104,9 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Sürükleme Tutacağı
           Center(
             child: Container(
-              width: 40,
+              width: 36,
               height: 4,
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
@@ -119,49 +116,39 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
             ),
           ),
 
-          // Başlık ve Kapat Butonu
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: colorScheme.errorContainer,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: PhosphorIcon(
-                      PhosphorIconsBold.flag,
-                      color: colorScheme.onErrorContainer,
-                      size: 20,
-                    ),
+                  PhosphorIcon(
+                    PhosphorIconsRegular.flag,
+                    color: colorScheme.error,
+                    size: 20,
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Text(
                     'Hatalı Soru Bildir',
                     style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
                       color: colorScheme.onSurface,
                     ),
                   ),
                 ],
               ),
               IconButton(
-                icon: const Icon(Icons.close),
+                icon: const PhosphorIcon(PhosphorIconsBold.x, size: 18),
                 onPressed: () => Navigator.of(context).pop(),
                 tooltip: 'Kapat',
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
 
-          // Soru Bağlam Özeti Kartı
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerHighest.withAlpha(120),
-              borderRadius: BorderRadius.circular(12),
+              color: colorScheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(8),
               border: Border.all(color: colorScheme.outlineVariant),
             ),
             child: Column(
@@ -171,8 +158,8 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
+                        horizontal: 7,
+                        vertical: 2,
                       ),
                       decoration: BoxDecoration(
                         color: colorScheme.primaryContainer,
@@ -181,7 +168,6 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
                       child: Text(
                         '${widget.question.lesson} · ${widget.question.topic}',
                         style: textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
                           color: colorScheme.onPrimaryContainer,
                         ),
                       ),
@@ -212,38 +198,28 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
           ),
           const SizedBox(height: 16),
 
-          // Rapor Sebebi Başlığı
           Text(
             'Hata Sebebi Nedir?',
-            style: textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
+            style: textTheme.titleSmall?.copyWith(color: colorScheme.onSurface),
           ),
           const SizedBox(height: 8),
 
-          // Hazır Sebepler (ChoiceChip Sarmalı)
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _reportReasons.map((reason) {
-              final isSelected = reason == _selectedReason;
-              return ChoiceChip(
-                label: Text(reason),
-                selected: isSelected,
-                onSelected: (selected) {
-                  if (selected) {
-                    setState(() {
-                      _selectedReason = reason;
-                    });
-                  }
-                },
-              );
-            }).toList(),
+          KadroDropdown<String>(
+            dropdownKey: const ValueKey('report_reason_dropdown'),
+            value: _selectedReason,
+            items: _reportReasons,
+            leadingIcon: PhosphorIconsRegular.warningCircle,
+            enabled: !_isSubmitting,
+            itemLabelBuilder: (reason) => reason,
+            itemKeyBuilder: (reason) => ValueKey('report_reason_$reason'),
+            onChanged: (reason) {
+              setState(() {
+                _selectedReason = reason;
+              });
+            },
           ),
           const SizedBox(height: 16),
 
-          // İsteğe Bağlı Detay Alanı
           TextField(
             controller: _noteController,
             maxLines: 3,
@@ -260,7 +236,6 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
           ),
           const SizedBox(height: 16),
 
-          // Bildirimi Gönder Butonu
           FilledButton.icon(
             onPressed: _isSubmitting ? null : _submitReport,
             icon: _isSubmitting
@@ -270,8 +245,8 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const PhosphorIcon(
-                    PhosphorIconsBold.paperPlaneTilt,
-                    size: 18,
+                    PhosphorIconsRegular.paperPlaneTilt,
+                    size: 16,
                   ),
             label: Text(_isSubmitting ? 'İletiliyor...' : 'Bildirimi Gönder'),
           ),

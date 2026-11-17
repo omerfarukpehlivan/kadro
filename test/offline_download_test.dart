@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/core/services/local_storage_service.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/exams/presentation/exams_screen.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 import 'package:kadro/features/lessons/presentation/lesson_topics_screen.dart';
@@ -42,6 +43,10 @@ class FakeQuestionRepository extends QuestionRepository {
   Future<List<Question>> fetchQuestions({
     String? lesson,
     String? topic,
+    ExamSelection? selection,
+    String? difficulty,
+    String? preferredSourceVariant,
+    bool strictTopicFilter = false,
     bool forceRefresh = false,
     int limit = 60,
   }) async => testQuestions;
@@ -132,6 +137,65 @@ void main() {
         expect(await service.getDownloadedQuestions('pkg_to_delete'), isNull);
       },
     );
+
+    test('topicPackageId sınav kapsamlarını birbirinden izole etmeli ve lisans_gk için eski anahtarı korumalı', () async {
+      final lisansKey = OfflineDownloadService.topicPackageId(
+        scopeNamespace: 'lisans_gk',
+        lesson: 'Tarih',
+        topic: 'İlk Türk Devletleri',
+      );
+      final ekpssKey = OfflineDownloadService.topicPackageId(
+        scopeNamespace: 'ekpss_lisans',
+        lesson: 'Tarih',
+        topic: 'İlk Türk Devletleri',
+      );
+      final dhbtKey = OfflineDownloadService.topicPackageId(
+        scopeNamespace: 'dhbt_lisans',
+        lesson: 'Fıkıh',
+        topic: 'İbadetler',
+      );
+
+      expect(lisansKey, equals('topic_lisans_gk_Tarih_İlk Türk Devletleri'));
+      expect(ekpssKey, equals('topic_ekpss_lisans_Tarih_İlk Türk Devletleri'));
+      expect(dhbtKey, equals('topic_dhbt_lisans_Fıkıh_İbadetler'));
+      expect(lisansKey, isNot(equals(ekpssKey)));
+
+      // Eski PRO kullanıcıların `topic_<ders>_<konu>` paketi `lisans_gk` kapsamından okunabilmeli
+      const legacyKey = 'topic_Tarih_İlk Türk Devletleri';
+      await service.downloadPackage(
+        packageId: legacyKey,
+        questions: sampleQuestions,
+        isPro: true,
+      );
+
+      expect(await service.isPackageDownloaded(lisansKey), isTrue);
+      final resolvedForLisans = await service.getDownloadedQuestions(lisansKey);
+      expect(resolvedForLisans, isNotNull);
+      expect(resolvedForLisans!.first.id, equals('off_q1'));
+
+      // Aynı ders/konu E-KPSS kapsamına sızmamalı
+      expect(await service.isPackageDownloaded(ekpssKey), isFalse);
+      expect(await service.getDownloadedQuestions(ekpssKey), isNull);
+
+      expect(
+        OfflineDownloadService.isTopicPackageDownloaded(
+          {legacyKey},
+          scopeNamespace: 'lisans_gk',
+          lesson: 'Tarih',
+          topic: 'İlk Türk Devletleri',
+        ),
+        isTrue,
+      );
+      expect(
+        OfflineDownloadService.isTopicPackageDownloaded(
+          {legacyKey},
+          scopeNamespace: 'ekpss_lisans',
+          lesson: 'Tarih',
+          topic: 'İlk Türk Devletleri',
+        ),
+        isFalse,
+      );
+    });
   });
 
   group('ExamsScreen & Paywall Köprüsü Çevrimdışı İndirme Widget Testleri', () {
@@ -168,7 +232,7 @@ void main() {
         expect(find.byType(PaywallScreen), findsOneWidget);
         expect(
           find.text(
-            '🔒 Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
+            'Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
           ),
           findsOneWidget,
         );
@@ -359,7 +423,7 @@ void main() {
         expect(find.byType(PaywallScreen), findsOneWidget);
         expect(
           find.text(
-            '🔒 Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
+            'Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
           ),
           findsOneWidget,
         );

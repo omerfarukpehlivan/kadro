@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/config/app_config_service.dart';
+import 'package:kadro/core/config/app_remote_config.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/exam_calendar_utils.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
 import 'package:kadro/features/planner/presentation/widgets/home_daily_plan_card.dart';
-import 'package:kadro/features/pomodoro/data/pomodoro_notifier.dart';
-import 'package:kadro/features/pomodoro/presentation/pomodoro_studio_screen.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
-import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
-import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/target_exam_selector_bottom_sheet.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Ana sayfa: Kadro Koçu konuşma balonu, günlük hedef, akıllı hatırlatıcılar ve çalışma planı.
+/// Ana sayfa: Tuğrul koçluk sahnesi, günlük hedef barı, sınav takvimi, çalışma planı ve hatırlatıcılar.
 ///
-/// Web/Angular benzetmesi: KPSS adayının günlük çalışma akışını ve hedeflerini
-/// koordine eden `HomeDashboardComponent` (Command Center).
+/// Web/Angular benzetmesi: KPSS adayının günlük ilerlemesini ve araçlarını yöneten `HomeDashboardComponent`.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -30,6 +30,34 @@ class HomeScreen extends ConsumerWidget {
     final stats = ref.watch(studyStatsProvider);
     final plannerState = ref.watch(studyPlannerProvider);
     final pendingCount = plannerState.remainingCount;
+    final remaining = (stats.dailyGoal - stats.dailySolvedCount).clamp(
+      0,
+      stats.dailyGoal,
+    );
+    final isGoalMet =
+        stats.dailySolvedCount >= stats.dailyGoal && stats.dailyGoal > 0;
+    final showDesktopBento = ResponsiveBreakpoints.usesSidebar(context);
+
+    if (showDesktopBento) {
+      return ResponsiveContentWrapper(
+        maxWidth: 1240,
+        padding: EdgeInsets.zero,
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            padding: AppSpacing.pagePadding(context),
+            child: _DesktopHomeBentoLayout(
+              solved: stats.dailySolvedCount,
+              goal: stats.dailyGoal,
+              streakDays: stats.streakDays,
+              isGoalMet: isGoalMet,
+              remaining: remaining,
+              pendingCount: pendingCount,
+              weakestLesson: stats.weakestLesson,
+            ),
+          ),
+        ),
+      );
+    }
 
     return ResponsiveContentWrapper(
       maxWidth: 720,
@@ -37,127 +65,380 @@ class HomeScreen extends ConsumerWidget {
       child: ListView(
         padding: AppSpacing.pagePadding(context),
         children: [
-          // 1. Kadro Koçu maskot konuşma balonu
-          MascotCoachBanner(
-            mood:
-                (stats.dailySolvedCount >= stats.dailyGoal &&
-                    stats.dailyGoal > 0)
-                ? MascotMood.streak
-                : MascotMood.coach,
-            badgeLabel:
-                (stats.dailySolvedCount >= stats.dailyGoal &&
-                    stats.dailyGoal > 0)
-                ? 'SERİ CANAVARI'
-                : 'KADRO KOÇU',
-            title:
-                (stats.dailySolvedCount >= stats.dailyGoal &&
-                    stats.dailyGoal > 0)
-                ? 'Hedefe Ulaştın!'
-                : 'Hoş geldin',
-            message: stats.dailySolvedCount == 0
-                ? 'Ben Kadro Koçun! KPSS Genel Kültür maratonunda bugün ilk pençeyi hangi konuya atıyoruz?'
-                : 'Harika uçuş! Bugün ${stats.dailySolvedCount} soru çözdün, kadro hedefine adım adım yaklaşıyoruz!',
+          // 1. Tuğrul Karşılama & Günlük Hedef Sahnesi (tek bütünleşik hero bloğu)
+          _HomeHeroStage(
+            solved: stats.dailySolvedCount,
+            goal: stats.dailyGoal,
+            streakDays: stats.streakDays,
+            isGoalMet: isGoalMet,
+            remaining: remaining,
           ),
           AppSpacing.gapMd,
 
-          // 2. Riverpod ile anlık güncellenen 3D Tactile günlük hedef kartı
-          _DailyGoalCard(solved: stats.dailySolvedCount, goal: stats.dailyGoal),
+          // 2. Sınav Takvimi (ana kontrol paneli)
+          const _ExamCountdownBanner(),
           AppSpacing.gapMd,
 
-          // 2.5. KPSS Sınav Geri Sayımı ve Pomodoro Odak Şeridi
-          const _ExamAndPomodoroBanner(),
-          AppSpacing.gapMd,
-
-          // 3. Akıllı Görev ve Durum Hatırlatıcıları Kartı
-          const SectionTitle('Görev & Durum Hatırlatıcıları'),
-          _SmartRemindersCard(pendingCount: pendingCount, stats: stats),
-          AppSpacing.gapMd,
-
-          // 4. Akıllı KPSS Günlük Çalışma Planı Kompakt Kartı
-          const HomeDailyPlanCard(),
-
-          // 5. Zayıf konu güçlendirme kartı (varsa)
-          if (stats.weakestLesson != 'Henüz veri yok') ...[
-            AppSpacing.gapMd,
+          // 3. Zayıf Konu Önerisi (yanlış verisi oluştuğunda öne çıkar)
+          if (stats.weakestLesson.isNotEmpty &&
+              stats.weakestLesson != 'Henüz veri yok') ...[
             _WeakLessonHomeBanner(weakestLesson: stats.weakestLesson),
+            AppSpacing.gapMd,
           ],
+
+          // 4. Bugünün Çalışma Planı
+          const HomeDailyPlanCard(),
+          AppSpacing.gapMd,
+
+          // 5. Hatırlatıcılar
+          const SectionTitle('Hatırlatıcılar'),
+          _SmartRemindersCard(
+            pendingCount: pendingCount,
+            remainingQuestions: remaining,
+            streakDays: stats.streakDays,
+            isGoalMet: isGoalMet,
+            weakestLesson: stats.weakestLesson,
+          ),
         ],
       ),
     );
   }
 }
 
-/// Adayın günlük görevlerini, seri durumunu ve antrenman hatırlatıcılarını
-/// özetleyen akıllı komuta merkezi kartı.
+/// Web/Masaüstü (`>= 1024px`) için 12 kolon mantığında 2 sütunlu Bento kokpit düzeni.
 ///
-/// Web/Angular benzetmesi: Dashboard Notification / Smart Alert List component.
-class _SmartRemindersCard extends StatelessWidget {
+/// Sol ana akış (`flex: 7`) Tuğrul hedef kartı, zayıf ders radarını ve günlük
+/// çalışma planını; sağ aksiyon sütunu (`flex: 5`) ise sınav geri sayımı ile
+/// akıllı hatırlatıcıları sergiler.
+class _DesktopHomeBentoLayout extends StatelessWidget {
+  final int solved;
+  final int goal;
+  final int streakDays;
+  final bool isGoalMet;
+  final int remaining;
   final int pendingCount;
-  final StudyStatsState stats;
+  final String weakestLesson;
 
-  const _SmartRemindersCard({required this.pendingCount, required this.stats});
+  const _DesktopHomeBentoLayout({
+    required this.solved,
+    required this.goal,
+    required this.streakDays,
+    required this.isGoalMet,
+    required this.remaining,
+    required this.pendingCount,
+    required this.weakestLesson,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final remainingQuestions = (stats.dailyGoal - stats.dailySolvedCount).clamp(
-      0,
-      stats.dailyGoal,
+    final hasWeakLesson =
+        weakestLesson.isNotEmpty && weakestLesson != 'Henüz veri yok';
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 7,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _HomeHeroStage(
+                solved: solved,
+                goal: goal,
+                streakDays: streakDays,
+                isGoalMet: isGoalMet,
+                remaining: remaining,
+              ),
+              if (hasWeakLesson) ...[
+                AppSpacing.gapMd,
+                _WeakLessonHomeBanner(weakestLesson: weakestLesson),
+              ],
+              AppSpacing.gapMd,
+              const HomeDailyPlanCard(),
+            ],
+          ),
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          flex: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const _ExamCountdownBanner(),
+              AppSpacing.gapMd,
+              const SectionTitle('Hatırlatıcılar'),
+              _SmartRemindersCard(
+                pendingCount: pendingCount,
+                remainingQuestions: remaining,
+                streakDays: streakDays,
+                isGoalMet: isGoalMet,
+                weakestLesson: weakestLesson,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
-    final isGoalMet = stats.dailySolvedCount >= stats.dailyGoal;
+  }
+}
+
+/// Tuğrul portresini günlük hedef çubuğu ve seri durumuyla tek sahnede buluşturan hero kartı.
+class _HomeHeroStage extends StatelessWidget {
+  final int solved;
+  final int goal;
+  final int streakDays;
+  final bool isGoalMet;
+  final int remaining;
+
+  const _HomeHeroStage({
+    required this.solved,
+    required this.goal,
+    required this.streakDays,
+    required this.isGoalMet,
+    required this.remaining,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final progress = goal == 0 ? 0.0 : (solved / goal).clamp(0.0, 1.0);
+    final percent = (progress * 100).round();
+    final mood = isGoalMet ? TugrulMood.victory : TugrulMood.coach;
 
     return TactileCard(
       backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.primary.withAlpha(80),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      borderColor: isGoalMet
+          ? colorScheme.secondary.withAlpha(120)
+          : colorScheme.outlineVariant,
+      lipColor: isGoalMet
+          ? colorScheme.secondary.withAlpha(150)
+          : colorScheme.outlineVariant.withAlpha(180),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: colorScheme.outlineVariant),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          PhosphorIcon(
+                            PhosphorIconsFill.flame,
+                            size: 13,
+                            color: colorScheme.tertiary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '$streakDays Gün Seri',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      isGoalMet ? 'Günlük hedef tamamlandı' : 'Hoş geldin',
+                      style: textTheme.titleLarge?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      solved == 0
+                          ? 'Günün ilk testiyle KPSS ritmini yakala.'
+                          : isGoalMet
+                          ? '$solved soruyla bugünkü hedefi tamamladın.'
+                          : 'Bugün $solved soru çözdün, hedefe $remaining soru kaldı.',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 14),
+              TugrulAvatar(
+                mood: mood,
+                size: ResponsiveBreakpoints.isDesktop(context) ? 88 : 70,
+                ringColor: isGoalMet
+                    ? colorScheme.secondary
+                    : colorScheme.primary,
+                tooltip: 'Tuğrul Çalışma Özeti',
+                onTap: () => TugrulTipsSheet.show(context, mood: mood),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // Sakin, yüksek kontrastlı ve nötr hedef kapsülü
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: colorScheme.outlineVariant),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Bugünkü hedefin',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '$solved / $goal soru',
+                            style: textTheme.titleLarge?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '%$percent',
+                        style: textTheme.labelLarge?.copyWith(
+                          color: isGoalMet
+                              ? colorScheme.secondary
+                              : colorScheme.primary,
+                          fontWeight: FontWeight.w700,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    minHeight: 8,
+                    value: progress,
+                    backgroundColor: colorScheme.surfaceContainerHighest,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      isGoalMet ? colorScheme.secondary : colorScheme.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SmartRemindersCard extends StatelessWidget {
+  final int pendingCount;
+  final int remainingQuestions;
+  final int streakDays;
+  final bool isGoalMet;
+  final String weakestLesson;
+
+  const _SmartRemindersCard({
+    required this.pendingCount,
+    required this.remainingQuestions,
+    required this.streakDays,
+    required this.isGoalMet,
+    required this.weakestLesson,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TactileCard(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       child: Column(
         children: [
-          // 1. Görev Hatırlatıcısı
           _ReminderItem(
-            icon: PhosphorIconsBold.clipboardText,
+            icon: PhosphorIconsRegular.clipboardText,
             title: 'Çalışma Planı',
             message: pendingCount > 0
                 ? 'Bugün tamamlanmayı bekleyen $pendingCount çalışma görevin var'
-                : 'Bugünkü tüm çalışma planı görevlerini tamamladın!',
-            iconBgColor: colorScheme.primaryContainer,
-            iconColor: colorScheme.onPrimaryContainer,
+                : 'Bugünkü çalışma planı görevlerinin tamamı bitti',
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(builder: (_) => const StudyPlannerScreen()),
               );
             },
           ),
-          Divider(
-            height: 16,
-            thickness: 1,
-            color: colorScheme.outlineVariant.withAlpha(80),
-          ),
-          // 2. Seri & Hedef Hatırlatıcısı
+          const Divider(height: 1),
           _ReminderItem(
-            icon: PhosphorIconsFill.fire,
+            icon: PhosphorIconsRegular.flame,
             title: 'Seri & Hedef',
             message: !isGoalMet
-                ? '${stats.streakDays} günlük serini korumak için kalan: $remainingQuestions soru'
-                : 'Günlük soru hedefini tamamladın, serin güvende!',
-            iconBgColor: colorScheme.tertiaryContainer,
-            iconColor: colorScheme.onTertiaryContainer,
+                ? '$streakDays günlük serini korumak için kalan: $remainingQuestions soru'
+                : 'Günlük soru hedefini tamamladın, serin güvende',
             onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (_) => const QuizScreen()));
+              final dynamicLimit = remainingQuestions > 0
+                  ? remainingQuestions.clamp(5, 20)
+                  : 10;
+              final targetLesson =
+                  (weakestLesson.isNotEmpty &&
+                      weakestLesson != 'Henüz veri yok')
+                  ? weakestLesson
+                  : null;
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => QuizScreen(
+                    fetchAllFromPool: true,
+                    lessonFilter: targetLesson,
+                    limit: dynamicLimit,
+                    customTitle: 'Günlük Seri & Hedef Testi',
+                  ),
+                ),
+              );
             },
           ),
-          Divider(
-            height: 16,
-            thickness: 1,
-            color: colorScheme.outlineVariant.withAlpha(80),
-          ),
-          // 3. Hızlı Pratik & Yanlış Defteri Hatırlatıcısı
+          const Divider(height: 1),
           _ReminderItem(
-            icon: PhosphorIconsDuotone.bookmarks,
+            icon: PhosphorIconsRegular.bookmarks,
             title: 'Hızlı Pratik',
-            message: 'Yanlış defteri ve çalışma modlarıyla netlerini artır',
-            iconBgColor: colorScheme.secondaryContainer,
-            iconColor: colorScheme.onSecondaryContainer,
+            message: 'Yanlış defteri ve tekrar modlarıyla eksiklerini kapat',
             onTap: () {
               Navigator.of(
                 context,
@@ -166,27 +447,20 @@ class _SmartRemindersCard extends StatelessWidget {
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 200.ms);
+    );
   }
 }
 
-/// `_SmartRemindersCard` içindeki her bir tıklanabilir hatırlatıcı satırı.
-///
-/// Web/Angular benzetmesi: `@Component` list-item bildirim satırı.
 class _ReminderItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String message;
-  final Color iconBgColor;
-  final Color iconColor;
   final VoidCallback onTap;
 
   const _ReminderItem({
     required this.icon,
     required this.title,
     required this.message,
-    required this.iconBgColor,
-    required this.iconColor,
     required this.onTap,
   });
 
@@ -198,21 +472,23 @@ class _ReminderItem extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(10),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(isCompact ? 8 : 10),
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
-                color: iconBgColor,
+                color: colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: colorScheme.outlineVariant),
               ),
               child: PhosphorIcon(
                 icon,
-                size: isCompact ? 18 : 20,
-                color: iconColor,
+                size: 18,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             SizedBox(width: isCompact ? 10 : 12),
@@ -223,8 +499,7 @@ class _ReminderItem extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
+                    style: textTheme.titleSmall?.copyWith(
                       color: colorScheme.onSurface,
                     ),
                   ),
@@ -240,11 +515,11 @@ class _ReminderItem extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 8),
             PhosphorIcon(
-              PhosphorIconsBold.caretRight,
+              PhosphorIconsRegular.caretRight,
               size: 16,
-              color: colorScheme.onSurfaceVariant,
+              color: colorScheme.outline,
             ),
           ],
         ),
@@ -253,146 +528,7 @@ class _ReminderItem extends StatelessWidget {
   }
 }
 
-/// Bugün kaç soru çözüldüğünü ve hedefe ne kadar kaldığını dairesel halka (gauge) ile gösteren dashboard kartı.
-class _DailyGoalCard extends StatelessWidget {
-  final int solved;
-  final int goal;
-
-  const _DailyGoalCard({required this.solved, required this.goal});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final isCompact = ResponsiveBreakpoints.isCompact(context);
-    final gaugeSize = isCompact ? 68.0 : 80.0;
-    final ringSize = isCompact ? 64.0 : 76.0;
-    final strokeWidth = isCompact ? 6.5 : 8.0;
-
-    final progress = goal == 0 ? 0.0 : (solved / goal).clamp(0.0, 1.0);
-    final percent = (progress * 100).round();
-
-    return TactileCard(
-          borderRadius: 22,
-          backgroundColor: colorScheme.surface,
-          borderColor: colorScheme.primary.withAlpha(90),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Sol: Metrikler ve yatay çubuk
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.tertiaryContainer,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          PhosphorIcon(
-                            PhosphorIconsFill.fire,
-                            size: 14,
-                            color: colorScheme.onTertiaryContainer,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Hedef Takibi',
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onTertiaryContainer,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Bugünkü hedefin',
-                      style: textTheme.labelLarge?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '$solved / $goal soru',
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: LinearProgressIndicator(
-                        minHeight: 8,
-                        value: progress,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: isCompact ? 10 : 16),
-              // Sağ: Dairesel Halka / Gauge
-              SizedBox(
-                width: gaugeSize,
-                height: gaugeSize,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SizedBox(
-                      width: ringSize,
-                      height: ringSize,
-                      child: CircularProgressIndicator(
-                        value: progress,
-                        strokeWidth: strokeWidth,
-                        backgroundColor: colorScheme.primaryContainer.withAlpha(
-                          90,
-                        ),
-                        color: colorScheme.primary,
-                        strokeCap: StrokeCap.round,
-                      ),
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        PhosphorIcon(
-                          PhosphorIconsFill.fire,
-                          size: isCompact ? 16 : 18,
-                          color: colorScheme.tertiary,
-                        ),
-                        Text(
-                          '%$percent',
-                          style:
-                              (isCompact
-                                      ? textTheme.labelMedium
-                                      : textTheme.labelLarge)
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w800,
-                                    color: colorScheme.primary,
-                                  ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        )
-        .animate()
-        .fadeIn(duration: 200.ms)
-        .slideY(begin: 0.04, end: 0, duration: 200.ms);
-  }
-}
-
-/// Ana sayfada en zayıf derse özel 10 soruluk hızlı güçlendirme kartı.
+/// Ana sayfada en zayıf derse özel 10 soruluk güçlendirme önerisi.
 class _WeakLessonHomeBanner extends StatelessWidget {
   final String weakestLesson;
 
@@ -405,7 +541,8 @@ class _WeakLessonHomeBanner extends StatelessWidget {
 
     return TactileCard(
       backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.error.withAlpha(140),
+      borderColor: colorScheme.outlineVariant,
+      lipColor: colorScheme.outlineVariant.withAlpha(180),
       padding: const EdgeInsets.all(14),
       onTap: () {
         Navigator.of(context).push(
@@ -421,15 +558,18 @@ class _WeakLessonHomeBanner extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: colorScheme.errorContainer,
-              borderRadius: BorderRadius.circular(12),
+              color: colorScheme.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: colorScheme.outlineVariant),
             ),
+            alignment: Alignment.center,
             child: PhosphorIcon(
-              PhosphorIconsFill.fire,
-              color: colorScheme.onErrorContainer,
-              size: 24,
+              PhosphorIconsRegular.trendDown,
+              size: 20,
+              color: colorScheme.tertiary,
             ),
           ),
           const SizedBox(width: 12),
@@ -437,38 +577,15 @@ class _WeakLessonHomeBanner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      'Zayıf Konuyu Güçlendir',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.errorContainer,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '10 Soru',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onErrorContainer,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 3),
                 Text(
-                  '$weakestLesson dersindeki eksiklerini kapatmak için hemen başla.',
+                  'Zayıf Konuyu Güçlendir · 10 Soru',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '$weakestLesson dersindeki eksiklerini kapatmak için kısa test başlat.',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -476,10 +593,11 @@ class _WeakLessonHomeBanner extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(width: 8),
           PhosphorIcon(
-            PhosphorIconsBold.caretRight,
-            color: colorScheme.onSurfaceVariant,
-            size: 20,
+            PhosphorIconsRegular.caretRight,
+            color: colorScheme.outline,
+            size: 16,
           ),
         ],
       ),
@@ -487,10 +605,9 @@ class _WeakLessonHomeBanner extends StatelessWidget {
   }
 }
 
-/// Ana sayfada KPSS hedef sınavına kalan süreyi Yıl / Ay / Gün olarak
-/// canlı gösteren, sınav değiştirme modalı ve Pomodoro odak entegrasyonu sunan komuta kartı.
-class _ExamAndPomodoroBanner extends ConsumerWidget {
-  const _ExamAndPomodoroBanner();
+/// KPSS hedef sınav takvimi geri sayım kartı.
+class _ExamCountdownBanner extends ConsumerWidget {
+  const _ExamCountdownBanner();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -499,35 +616,33 @@ class _ExamAndPomodoroBanner extends ConsumerWidget {
     final textTheme = theme.textTheme;
 
     final prefs = ref.watch(userPreferencesProvider);
-    final pomodoro = ref.watch(pomodoroProvider);
-    final target = prefs.targetExam;
-    final remaining = target.detailedRemaining();
+    final remoteConfig =
+        ref.watch(appRemoteConfigProvider).asData?.value ??
+        AppRemoteConfig.fallback;
+    final selection = ExamSelection.fromLegacyTarget(prefs.targetExam);
+    final remaining = selection.detailedRemaining(config: remoteConfig);
 
     return TactileCard(
-      onTap: () {
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const PomodoroStudioScreen()));
-      },
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.primary.withAlpha(70),
+      onTap: () => TargetExamSelectorBottomSheet.show(context),
       padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 1. Üst Başlık & Sınav Seçici Buton
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(6),
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
+                  color: colorScheme.surfaceContainerLow,
                   borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: colorScheme.outlineVariant),
                 ),
+                alignment: Alignment.center,
                 child: PhosphorIcon(
-                  PhosphorIconsDuotone.timer,
+                  PhosphorIconsFill.calendarBlank,
                   size: 20,
-                  color: colorScheme.onPrimaryContainer,
+                  color: colorScheme.primary,
                 ),
               ),
               const SizedBox(width: 10),
@@ -536,21 +651,17 @@ class _ExamAndPomodoroBanner extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      target == KpssExamTarget.lisans
-                          ? '⏳ KPSS 2027: ${target.shortTitle}'
-                          : '⏳ ${target.title}',
-                      style: textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
+                      selection.displayTitle,
+                      style: textTheme.titleSmall?.copyWith(
+                        color: colorScheme.onSurface,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 1),
                     Text(
-                      target.subtitle,
+                      selection.subtitle,
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
-                        fontSize: 11,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -559,161 +670,61 @@ class _ExamAndPomodoroBanner extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              // Sınavı Değiştir Butonu
-              InkWell(
-                onTap: () => TargetExamSelectorBottomSheet.show(context),
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer.withAlpha(120),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: colorScheme.primary.withAlpha(80),
-                      width: 1,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Değiştir',
-                        style: textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(width: 3),
-                      PhosphorIcon(
-                        PhosphorIconsBold.caretDown,
-                        size: 11,
-                        color: colorScheme.primary,
-                      ),
-                    ],
-                  ),
+              TextButton(
+                onPressed: () => TargetExamSelectorBottomSheet.show(context),
+                style: TextButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                ),
+                child: const Text('Değiştir'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Fiziksel takvim taşlarıyla YIL / AY / GÜN sayaç sırası (sakin, tek tip ve prestijli)
+          Row(
+            children: [
+              Expanded(
+                child: _CountdownMetricTile(
+                  value: remaining.years.toString(),
+                  label: 'YIL',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _CountdownMetricTile(
+                  value: remaining.months.toString(),
+                  label: 'AY',
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _CountdownMetricTile(
+                  value: remaining.days.toString(),
+                  label: 'GÜN',
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
 
-          // 2. Yıl - Ay - Gün Tactile Sayaç Kutuları
-          Row(
-            children: [
-              Expanded(
-                child: _CountdownMetricBox(
-                  value: remaining.years.toString(),
-                  label: 'YIL',
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _CountdownMetricBox(
-                  value: remaining.months.toString(),
-                  label: 'AY',
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _CountdownMetricBox(
-                  value: remaining.days.toString(),
-                  label: 'GÜN',
-                  colorScheme: colorScheme,
-                  textTheme: textTheme,
-                ),
-              ),
-            ],
+          Text(
+            'Toplam ${remaining.totalDays} gün kaldı',
+            style: textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 10),
-
-          // 3. Alt Özet Bilgi ve Pomodoro Sayaç Butonu
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '⏳ Toplam ${remaining.totalDays} Gün Kaldı · ${pomodoro.formattedTime} Odak',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 11.5,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 8),
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const PomodoroStudioScreen(),
-                    ),
-                  );
-                },
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primary,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      PhosphorIcon(
-                        PhosphorIconsBold.play,
-                        size: 13,
-                        color: colorScheme.onPrimary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Sayaç',
-                        style: textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Divider(height: 1),
-          const SizedBox(height: 8),
-
-          // 4. ÖSYM Tahmini Takvim Bilgilendirme Notu
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              PhosphorIcon(
-                PhosphorIconsDuotone.info,
-                size: 14,
-                color: colorScheme.outline,
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: Text(
-                  KpssExamTarget.osymDisclaimer,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.outline,
-                    fontSize: 10.5,
-                    height: 1.3,
-                  ),
-                ),
-              ),
-            ],
+          const SizedBox(height: 6),
+          Text(
+            KpssExamTarget.osymDisclaimer,
+            style: textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w400,
+            ),
           ),
         ],
       ),
@@ -721,31 +732,23 @@ class _ExamAndPomodoroBanner extends ConsumerWidget {
   }
 }
 
-/// Geri sayım sayacında Yıl, Ay ve Gün değerlerini gösteren 3D dokunsal kutu.
-class _CountdownMetricBox extends StatelessWidget {
+class _CountdownMetricTile extends StatelessWidget {
   final String value;
   final String label;
-  final ColorScheme colorScheme;
-  final TextTheme textTheme;
 
-  const _CountdownMetricBox({
-    required this.value,
-    required this.label,
-    required this.colorScheme,
-    required this.textTheme,
-  });
+  const _CountdownMetricTile({required this.value, required this.label});
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withAlpha(120),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: colorScheme.outlineVariant.withAlpha(90),
-          width: 1,
-        ),
+        color: colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: colorScheme.outlineVariant),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -753,19 +756,18 @@ class _CountdownMetricBox extends StatelessWidget {
           Text(
             value,
             style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w900,
-              color: colorScheme.primary,
-              height: 1.1,
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w700,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
           const SizedBox(height: 2),
           Text(
             label,
             style: textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w800,
               color: colorScheme.onSurfaceVariant,
-              fontSize: 10.5,
-              letterSpacing: 0.6,
+              letterSpacing: 0.5,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

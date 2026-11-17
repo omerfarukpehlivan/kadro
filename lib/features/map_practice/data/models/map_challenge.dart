@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/shared/widgets/turkey_map/turkey_map_models.dart';
 
 /// Harita tabanlı pratik kategorileri.
@@ -151,6 +152,12 @@ class MapChallenge {
   /// Konu etiketi (örn: "Pamuk", "GAP", "Bor")
   final String tag;
 
+  /// Sorunun geçerli olduğu KPSS / MEB-AGS sınav kapsamları (`TASK-138`)
+  final List<String> examScopes;
+
+  /// Alt branş veya düzey etiketi (`TASK-138`)
+  final String? subBranch;
+
   const MapChallenge({
     required this.id,
     required this.category,
@@ -169,7 +176,12 @@ class MapChallenge {
     required this.explanation,
     this.distractorTrap,
     required this.tag,
+    this.examScopes = const ['lisans_gk'],
+    this.subBranch,
   });
+
+  bool matchesSelection(ExamSelection selection) => selection
+      .matchesContentMetadata(examScopes: examScopes, subBranch: subBranch);
 
   /// Kullanıcının dokunduğu ilin doğru olup olmadığını kontrol eder.
   bool isProvinceCorrect(String provinceId) {
@@ -201,6 +213,9 @@ class MapChallenge {
       'explanation': explanation,
       'distractorTrap': distractorTrap,
       'tag': tag,
+      if (examScopes.length != 1 || examScopes.first != 'lisans_gk')
+        'exam_scopes': examScopes,
+      if (subBranch != null && subBranch!.isNotEmpty) 'sub_branch': subBranch,
     };
   }
 
@@ -237,6 +252,10 @@ class MapChallenge {
       explanation: json['explanation'] as String? ?? '',
       distractorTrap: json['distractorTrap'] as String?,
       tag: json['tag'] as String? ?? 'Genel',
+      examScopes: ExamSelection.parseExamScopes(
+        json['exam_scopes'] ?? json['examScopes'],
+      ),
+      subBranch: (json['sub_branch'] ?? json['subBranch']) as String?,
     );
   }
 }

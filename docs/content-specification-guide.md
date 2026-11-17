@@ -1,14 +1,25 @@
-# 🎯 Kadro (KPSS Lisans Genel Kültür) — İçerik Üretim & Veri Formatları Kılavuzu
+# 🎯 Kadro (KPSS Ekosistemi) — İçerik Üretim & Veri Formatları Kılavuzu
 
-Bu belge, **Kadro** uygulaması için başka bir yapay zeka ajanı, ekip üyesi veya içerik yazarı tarafından soru ve etkileşimli içerik üretilirken uyulması gereken **birebir veri şemalarını, resmi konu adlarını, JSON ve Supabase SQL şablonlarını** içerir.
+Bu belge, **Kadro** uygulaması için başka bir yapay zeka ajanı, ekip üyesi veya içerik yazarı tarafından soru ve etkileşimli içerik üretilirken uyulması gereken **birebir veri şemalarını, kanonik çoklu sınav taksonomisini (`exam_scopes` / `sub_branch`), resmi konu adlarını, JSON ve Supabase SQL şablonlarını** içerir.
 
 ---
 
 ## 📌 1. Temel İçerik Kuralları
 
 1. **Özgün İçerik Zorunluluğu:** ÖSYM'nin çıkmış soruları teliflidir; birebir kopyalanmaz. ÖSYM'nin soru sorma stili, kazanımları ve çeldirici kurguları analiz edilerek **%100 özgün** sorular üretilir.
-2. **"ÖSYM Çeldirici Tuzağı" (UWorld Modeli):** Her çoktan seçmeli soruda `distractor_trap` alanı **zorunludur**. Adayın en çok düşebileceği yanıltıcı şık deşifre edilir ve neden doğru sanıldığı net bir dille izah edilir.
-3. **Resmi Konu Adı Eşleşmesi:** Üretilen soruların `lesson` ve `topic` alanları, aşağıdaki tabloda belirtilen isimlerle **harfi harfine aynı** olmalıdır. Aksi halde konu yol haritası ve filtreler eşleşmez.
+2. **"ÖSYM Çeldirici Tuzağı" (UWorld Modeli):** Her çoktan seçmeli soruda `distractor_trap` alanı **zorunludur**. Adayın en çok düşebileceği yanıltıcı şık deşifre edilir ve neden doğru sanıldığı net bir dille izah edilir *(mevzuat, Fıkıh/Kelam, Hukuk, İktisat ve Eğitim Bilimleri dahil tüm sınav türlerinde geçerlidir)*.
+3. **Resmi Konu Adı & Kapsam (`exam_scopes`) Eşleşmesi:** Üretilen soruların `lesson` ve `topic` alanları uygulamadaki `CurriculumRegistry` tanımıyla **harfi harfine aynı** olmalıdır. Ortak dersler (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`, `Türkçe`, `Matematik & Geometri`) sınavlar arasında kanonik isimle paylaşılırken `exam_scopes` ile filtrelenir; alana özgü dersler çakışmasız kanonik ön ek taşır (`DHBT-1 Temel Din Bilgisi`, `DHBT-2 Alan Bilgisi`, `Eğitim Bilimleri & TYMM`, `Eğitim Mevzuatı`, `ÖABT <Branş>`, `Alan Hukuk`, `Alan İktisat` vb.).
+
+---
+
+## 🌐 1.B Çoklu KPSS Kapsam Alanları (`exam_scopes`, `sub_branch`, Varyantlar)
+
+Yeni eklenen soru ve içeriklerde aşağıdaki metadata alanları desteklenir (varsayılanı geriye dönük uyumlu olarak `["lisans_gk"]` şeklindedir):
+- `exam_scopes` (`string[]`): Örn. `["lisans_gk", "lisans_gygk", "onlisans_gygk", "ortaogretim_gygk"]`, `["dhbt_lisans", "dhbt_onlisans"]`, `["ekpss_lisans"]`, `["meb_ags"]`, `["meb_ags_oabt_tarih"]`, `["a_grubu_p48"]`.
+- `sub_branch` (`string?`): İsteğe bağlı alt dal/branş kodu (`"oabt_sinif_ogretmenligi"`, `"dhbt_onlisans"`, `"a_grubu_hukuk"` vb.).
+- `education_level` (`string?`): `"lisans"` | `"onlisans"` | `"ortaogretim"`.
+- `disability_variant` (`string?`): `"genel"` | `"gorme"` | `"isitme1"` | `"zihinsel"`.
+- `source_variant` (`string?`): `"standard"` | `"simplified"` (`İşitme-1` / `Zihinsel` erişilebilir sade metin varyantı).
 
 ---
 
@@ -54,7 +65,7 @@ Uygulamanın ana motorudur. Konu testlerinde, 65 dakikalık 60 soruluk Genel Kü
 
 #### Alan Kuralları:
 - `id`: Benzersiz metin (`tar_001`, `cog_042`, `vat_015`, `gun_003` vb.).
-- `lesson`: Tablodaki 4 dersten biri (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`).
+- `lesson`: Seçili `exam_scopes` kapsamına ait `CurriculumRegistry` kanonik ders adlarından biri (B Grubu Genel Kültür için: `Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`).
 - `topic`: İlgili dersin resmi konu adlarından biri (Bkz. Bölüm 2).
 - `difficulty`: `'easy'` (1), `'medium'` (2), `'hard'` (3).
 - `text`: Soru kökü. Varsa öncüller (I., II., III.) satır atlamalı (`\n`) yazılır.
@@ -226,7 +237,7 @@ Kadro mobil uygulaması için 5 şıklı, pedagojik açıklamalı ve ÖSYM çeld
 
 KESİN KURALLAR:
 1. Asla ÖSYM'nin çıkmış sorularını birebir kopyalama; benzer mantıkta, aynı kazanımı ölçen %100 özgün sorular yaz.
-2. 'lesson' alanı SADECE şu 4 değerden biri olabilir: 'Tarih', 'Coğrafya', 'Vatandaşlık', 'Güncel Bilgiler'.
+2. `lesson` alanı yalnızca hedef sınava ait `CurriculumRegistry` kanonik ders adlarından biri olmalıdır (Örn. B Grubu GK için `'Tarih'`, `'Coğrafya'`, `'Vatandaşlık'`, `'Güncel Bilgiler'`; diğer türler için `'DHBT-1 Temel Din Bilgisi'`, `'Alan Hukuk'`, `'ÖABT Sınıf Öğretmenliği'` vb.).
 3. 'topic' alanı yalnızca resmi müfredat konusunu içermelidir (Örn: 'İslamiyet Öncesi Türk Tarihi', 'Türkiye''nin Coğrafi Konumu', '1982 Anayasası ve Temel İlkeler', 'UNESCO Miras Listesi').
 4. 'options' tam 5 seçenekli olmalıdır.
 5. 'distractor_trap' (UWorld Modeli): Adayın sınavda düşebileceği en tehlikeli yanıltıcı şıkkı belirt ve adayın zihnindeki hangi ön yargı veya eksik bilgi yüzünden o tuzağa düştüğünü deşifre et.

@@ -283,7 +283,7 @@ void main() {
             find.text('Göktürkler hakkında hangisi doğrudur?'),
             findsOneWidget,
           );
-          expect(find.text('⚠️ ÖSYM Çeldirici Tuzağı:'), findsOneWidget);
+          expect(find.text('ÖSYM Çeldirici Tuzağı:'), findsOneWidget);
 
           // Ancak akıllı test üretimi PRO kapısına bağlıdır
           expect(
@@ -298,7 +298,7 @@ void main() {
           expect(find.byType(PaywallScreen), findsOneWidget);
           expect(
             find.text(
-              'Akıllı Yanlış Defteri Test Üretici: Yanlış yaptığın sorulardan özel akıllı testler üretip çözmek Kadro PRO üyelerine özeldir.',
+              'Akıllı Yanlış Defteri Test Üretici: Yanlış yaptığın sorulardan özel testler üretip çözmek Kadro PRO üyelerine özeldir.',
             ),
             findsOneWidget,
           );

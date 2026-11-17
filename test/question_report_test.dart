@@ -7,6 +7,7 @@ import 'package:kadro/features/reports/data/models/question_report.dart';
 import 'package:kadro/features/reports/data/question_report_repository.dart';
 import 'package:kadro/features/reports/presentation/admin_reports_screen.dart';
 import 'package:kadro/features/reports/presentation/report_question_bottom_sheet.dart';
+import 'package:kadro/shared/widgets/kadro_dropdown.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -129,15 +130,23 @@ void main() {
           await tester.tap(flagButton);
           await tester.pumpAndSettle();
 
-          // Alt sayfa açıldı mı?
+          // Alt sayfa ve ortak KadroDropdown açıldı mı?
           expect(find.byType(ReportQuestionBottomSheet), findsOneWidget);
+          expect(find.byType(KadroDropdown<String>), findsOneWidget);
           expect(find.text('Hatalı Soru Bildir'), findsOneWidget);
           expect(find.text('Cevap anahtarı hatalı'), findsOneWidget);
-          expect(find.text('Birden fazla doğru şık var'), findsOneWidget);
 
-          // Sebep seç ve gönder
-          await tester.tap(find.text('Birden fazla doğru şık var'));
+          // Dropdown'ı aç, sebep seç ve gönder
+          await tester.tap(
+            find.byKey(const ValueKey('report_reason_dropdown')),
+          );
           await tester.pumpAndSettle();
+
+          expect(find.text('Birden fazla doğru şık var'), findsWidgets);
+          await tester.tap(find.text('Birden fazla doğru şık var').last);
+          await tester.pumpAndSettle();
+
+          expect(find.text('Birden fazla doğru şık var'), findsOneWidget);
 
           await tester.tap(find.text('Bildirimi Gönder'));
           await tester.pumpAndSettle();
@@ -145,7 +154,7 @@ void main() {
           // Alt sayfa kapandı mı ve teşekkür mesajı çıktı mı?
           expect(find.byType(ReportQuestionBottomSheet), findsNothing);
           expect(
-            find.text('Bildirimin için teşekkürler! Soru incelemeye alındı.'),
+            find.text('Bildirimin için teşekkürler. Soru incelemeye alındı.'),
             findsOneWidget,
           );
         },
@@ -170,7 +179,7 @@ void main() {
           );
           await tester.pumpAndSettle();
 
-          expect(find.text('Henüz bildirilmiş soru yok!'), findsOneWidget);
+          expect(find.text('Henüz bildirilmiş soru yok'), findsOneWidget);
 
           // 2. Rapor ekle ve yeniden yükle
           await repo.submitReport(
@@ -189,7 +198,7 @@ void main() {
 
           // Yenile butonuna tıkla
           await tester.tap(
-            find.byIcon(PhosphorIconsBold.arrowsCounterClockwise),
+            find.byIcon(PhosphorIconsRegular.arrowsCounterClockwise),
           );
           await tester.pumpAndSettle();
 

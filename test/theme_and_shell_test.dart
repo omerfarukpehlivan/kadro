@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/app/theme.dart';
+import 'package:kadro/app/widgets/app_navigation_bar.dart';
+import 'package:kadro/app/widgets/app_top_bar.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/main.dart';
-import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 void main() {
@@ -16,32 +20,39 @@ void main() {
       expect(AppTheme.dark.brightness, Brightness.dark);
     });
 
-    test('WCAG AAA uyumlu yüksek kontrastlı renk çiftleri tanımlıdır', () {
-      final light = AppTheme.light;
-      expect(light.colorScheme.secondary, equals(AppTheme.secondaryColor));
-      expect(light.colorScheme.secondary, equals(const Color(0xFF0D9488)));
-      expect(light.colorScheme.primary, equals(AppTheme.seedColor));
-      expect(light.colorScheme.surface, equals(const Color(0xFFFFFFFF)));
-      expect(light.colorScheme.onSurface, equals(const Color(0xFF0F172A)));
-      expect(
-        light.colorScheme.primaryContainer,
-        equals(const Color(0xFFF0F4F8)),
-      );
-      expect(
-        light.colorScheme.onPrimaryContainer,
-        equals(const Color(0xFF0C2138)),
-      );
+    test(
+      'Tuğrul Kobaltı & Anadolu Altını renk paleti doğru tokenlarla tanımlıdır',
+      () {
+        final light = AppTheme.light;
+        expect(light.colorScheme.secondary, equals(AppTheme.secondaryColor));
+        expect(light.colorScheme.secondary, equals(const Color(0xFF0E9F6E)));
+        expect(light.colorScheme.primary, equals(AppTheme.seedColor));
+        expect(light.colorScheme.primary, equals(const Color(0xFF2140D4)));
+        expect(light.colorScheme.tertiary, equals(const Color(0xFFE28400)));
+        expect(light.colorScheme.surface, equals(const Color(0xFFFFFFFF)));
+        expect(light.scaffoldBackgroundColor, equals(const Color(0xFFF4F7FC)));
+        expect(light.colorScheme.onSurface, equals(const Color(0xFF141928)));
+        expect(
+          light.colorScheme.primaryContainer,
+          equals(const Color(0xFFE4EBFF)),
+        );
+        expect(
+          light.colorScheme.onPrimaryContainer,
+          equals(const Color(0xFF102070)),
+        );
 
-      final dark = AppTheme.dark;
-      expect(dark.colorScheme.primary, equals(AppTheme.darkPrimaryColor));
-      expect(dark.colorScheme.secondary, equals(AppTheme.darkSecondaryColor));
-      expect(dark.colorScheme.surface, equals(const Color(0xFF1E293B)));
-      expect(dark.colorScheme.onSurface, equals(const Color(0xFFF8FAFC)));
-      expect(
-        dark.colorScheme.surfaceContainerHighest,
-        equals(const Color(0xFF334155)),
-      );
-    });
+        final dark = AppTheme.dark;
+        expect(dark.colorScheme.primary, equals(AppTheme.darkPrimaryColor));
+        expect(dark.colorScheme.secondary, equals(AppTheme.darkSecondaryColor));
+        expect(dark.colorScheme.surface, equals(const Color(0xFF151B2E)));
+        expect(dark.scaffoldBackgroundColor, equals(const Color(0xFF0C101C)));
+        expect(dark.colorScheme.onSurface, equals(const Color(0xFFF1F5FE)));
+        expect(
+          dark.colorScheme.surfaceContainerHighest,
+          equals(const Color(0xFF273152)),
+        );
+      },
+    );
 
     test('TASK-73: 15 M3 metin stilinin tamamı hiyerarşik ve doğru font boyutlarına (Base=16px) sahiptir', () {
       final textTheme = AppTheme.light.textTheme;
@@ -122,57 +133,124 @@ void main() {
 
   group('Shell Modernizasyon Testleri', () {
     testWidgets(
-      'AppNavigationBar içinde PhosphorIcons ikonları render edilir',
+      'AppNavigationBar ve AppTopBar içinde PhosphorIcons ikonları render edilir',
       (WidgetTester tester) async {
-        await tester.pumpWidget(const MyApp());
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              initialUserPreferencesProvider.overrideWithValue(
+                const UserPreferencesState(
+                  hasCompletedOnboarding: true,
+                  hasActiveStudyProgram: true,
+                ),
+              ),
+            ],
+            child: const MyApp(),
+          ),
+        );
         await tester.pumpAndSettle();
 
+        final navBar = find.byType(AppNavigationBar);
         // Seçili tab (0 - Ana Sayfa) Fill ikonu kullanır
-        expect(find.byIcon(PhosphorIconsFill.house), findsOneWidget);
-        // Diğer seçili olmayan sekmeler Bold ikonu kullanır
-        expect(find.byIcon(PhosphorIconsBold.books), findsOneWidget);
-        expect(find.byIcon(PhosphorIconsBold.target), findsOneWidget);
-        expect(find.byIcon(PhosphorIconsBold.timer), findsOneWidget);
-        expect(find.byIcon(PhosphorIconsBold.chartBar), findsOneWidget);
-        expect(find.byIcon(PhosphorIconsBold.userCircle), findsOneWidget);
-        expect(find.byIcon(PhosphorIconsFill.crown), findsOneWidget);
+        expect(
+          find.descendant(
+            of: navBar,
+            matching: find.byIcon(PhosphorIconsFill.house),
+          ),
+          findsOneWidget,
+        );
+        // Diğer seçili olmayan sekmeler Regular ikonu kullanır
+        expect(
+          find.descendant(
+            of: navBar,
+            matching: find.byIcon(PhosphorIconsRegular.books),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: navBar,
+            matching: find.byIcon(PhosphorIconsRegular.target),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: navBar,
+            matching: find.byIcon(PhosphorIconsRegular.timer),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: navBar,
+            matching: find.byIcon(PhosphorIconsRegular.chartBar),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: navBar,
+            matching: find.byIcon(PhosphorIconsRegular.userCircle),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: find.byType(AppTopBar),
+            matching: find.byType(TugrulAvatar),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: find.byType(AppTopBar),
+            matching: find.byIcon(PhosphorIconsFill.crown),
+          ),
+          findsOneWidget,
+        );
         expect(find.text('PRO'), findsOneWidget);
       },
     );
   });
 
-  group('TactileCard ve MascotCoachBanner Testleri', () {
-    testWidgets('TactileCard ve MascotCoachBanner hatasız render edilir', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: const Scaffold(
-            body: Column(
-              children: [
-                TactileCard(child: Text('Dokunulabilir Kart')),
-                MascotCoachBanner(
-                  title: 'Günün KPSS Tavsiyesi',
-                  message: 'Tarihte ilk Türk devletlerine odaklan!',
-                ),
-              ],
+  group('TactileCard ve TugrulAvatar Testleri', () {
+    testWidgets(
+      'TactileCard keskin 3px alt dudak gölgesi ve TugrulAvatar dairesel madalyonla render edilir',
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(
+              body: Column(
+                children: [
+                  TugrulAvatar(mood: TugrulMood.history, size: 64),
+                  TactileCard(child: Text('Dokunulabilir Kart')),
+                ],
+              ),
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.byType(TactileCard), findsOneWidget);
-      expect(find.byType(MascotCoachBanner), findsOneWidget);
-      expect(find.text('Dokunulabilir Kart'), findsOneWidget);
-      expect(find.text('KADRO KOÇU'), findsOneWidget);
-      expect(find.text('Günün KPSS Tavsiyesi'), findsOneWidget);
-      expect(
-        find.text('Tarihte ilk Türk devletlerine odaklan!'),
-        findsOneWidget,
-      );
-    });
+        expect(find.byType(TactileCard), findsOneWidget);
+        expect(find.byType(TugrulAvatar), findsOneWidget);
+        expect(find.text('Dokunulabilir Kart'), findsOneWidget);
+
+        final cardContainer = tester.widget<Container>(
+          find
+              .descendant(
+                of: find.byType(TactileCard),
+                matching: find.byType(Container),
+              )
+              .first,
+        );
+        final decoration = cardContainer.decoration! as BoxDecoration;
+        expect(decoration.boxShadow, isNotNull);
+        expect(decoration.boxShadow!.single.offset, equals(const Offset(0, 3)));
+        expect(decoration.boxShadow!.single.blurRadius, equals(0.0));
+      },
+    );
 
     testWidgets(
       'TactileCard yarı saydam renkleri Color.alphaBlend ile opak harmanlar',

@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/ad_service.dart';
+import 'package:kadro/core/services/offline_download_service.dart';
 import 'package:kadro/core/services/purchase_service.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/auth/data/auth_notifier.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Kadro PRO 3'lü karma abonelik ve ödüllü reklam tanıtım ekranı (Paywall).
+/// Kadro PRO abonelik seçenekleri ve ödüllü soru hakkı ekranı (Paywall).
 ///
-/// Angular'daki `PaywallModalComponent` karşılığıdır.
-/// Kullanıcı günlük soru limitine ulaştığında veya Profil sekmesinden açılır.
-/// Aylık (89 ₺), Yıllık (499 ₺) ve Sınava Kadar (349 ₺) paket seçeneklerini sunar.
+/// Mobilde uygulama içi satın alma (`mobileIap`), Web'de güvenli `webCheckout` veya
+/// salt-okunur mobil senkronu (`unavailable`) gösterir; masaüstünde 2 kolonlu vitrin düzeni kullanır.
 class PaywallScreen extends ConsumerStatefulWidget {
-  /// Paywall'un tetiklenme nedenini açıklayan dinamik mesaj (Örn: 'Deneme Sınavı #2 Kadro PRO üyelerine özeldir.')
   final String? reasonMessage;
 
   const PaywallScreen({super.key, this.reasonMessage});
@@ -28,26 +29,49 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   bool _isLoading = false;
 
   Future<void> _handlePurchase() async {
-    setState(() => _isLoading = true);
+    final availability = PurchaseService.availability;
+    if (availability == PurchaseAvailability.unavailable) {
+      await _handleRestore();
+      return;
+    }
 
-    final success = await PurchaseService.purchasePlan(_selectedPlan);
+    setState(() => _isLoading = true);
+    final auth = ref.read(authProvider);
+
+    final result = await PurchaseService.initiatePurchase(
+      _selectedPlan,
+      userId: auth.userId,
+      email: auth.email,
+    );
 
     if (!mounted) return;
     setState(() => _isLoading = false);
 
-    if (success) {
+    if (result.isProGranted) {
       ref.read(userPreferencesProvider.notifier).upgradeToPro();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Tebrikler! ${_selectedPlan.title} aktifleşti.'),
+          content: Text('${_selectedPlan.title} aktifleşti.'),
           behavior: SnackBarBehavior.floating,
         ),
       );
       Navigator.of(context).pop();
-    } else {
+    } else if (result.launchedExternalCheckout) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Satın alma işlemi tamamlanamadı veya iptal edildi.'),
+          content: Text(
+            'Ödeme sayfası açıldı. Tamamladıktan sonra "Aboneliği Doğrula" butonuna dokun.',
+          ),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            result.errorMessage ??
+                'Satın alma işlemi tamamlanamadı veya iptal edildi.',
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -66,7 +90,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       ref.read(userPreferencesProvider.notifier).upgradeToPro();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Kadro PRO aboneliğin başarıyla geri yüklendi!'),
+          content: Text('Kadro PRO aboneliğin başarıyla doğrulandı.'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -85,329 +109,372 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final availability = PurchaseService.availability;
+    final isWebUnavailable = availability == PurchaseAvailability.unavailable;
+    final supportsAds = AdService.isRewardedAdSupported;
+
+    final heroCard = TactileCard(
+      backgroundColor: Color.alphaBlend(
+        colorScheme.primaryContainer.withAlpha(115),
+        colorScheme.surface,
+      ),
+      borderColor: colorScheme.tertiary,
+      lipColor: colorScheme.tertiary,
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        children: [
+          TugrulAvatar(
+            mood: TugrulMood.pro,
+            size: 92,
+            ringColor: colorScheme.tertiary,
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: colorScheme.tertiaryContainer,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: colorScheme.tertiary.withAlpha(120)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                PhosphorIcon(
+                  PhosphorIconsFill.crown,
+                  size: 14,
+                  color: colorScheme.onTertiaryContainer,
+                ),
+                const SizedBox(width: 5),
+                Text(
+                  'PRO Üyelik',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onTertiaryContainer,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Sınırsız KPSS Hazırlığı',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.headlineMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Günlük soru limitine takılmadan, tüm deneme arşivine ve akıllı tekrar araçlarına eriş.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final planSection = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Abonelik Paketini Seç', style: theme.textTheme.titleMedium),
+        AppSpacing.gapXs,
+        ...SubscriptionPlan.values.map((plan) {
+          final isSelected = _selectedPlan == plan;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: TactileCard(
+              onTap: () => setState(() => _selectedPlan = plan),
+              padding: const EdgeInsets.all(14),
+              backgroundColor: isSelected
+                  ? Color.alphaBlend(
+                      colorScheme.primaryContainer.withAlpha(110),
+                      colorScheme.surface,
+                    )
+                  : colorScheme.surface,
+              borderColor: isSelected
+                  ? colorScheme.primary
+                  : colorScheme.outlineVariant,
+              lipColor: isSelected ? colorScheme.primary : null,
+              child: Row(
+                children: [
+                  PhosphorIcon(
+                    isSelected
+                        ? PhosphorIconsFill.checkCircle
+                        : PhosphorIconsRegular.circle,
+                    color: isSelected
+                        ? colorScheme.primary
+                        : colorScheme.outline,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 6,
+                          runSpacing: 4,
+                          children: [
+                            Text(
+                              plan.title,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                color: colorScheme.onSurface,
+                              ),
+                            ),
+                            if (plan.badge != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.tertiaryContainer,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  plan.badge!,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: colorScheme.onTertiaryContainer,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          plan.subText,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    plan.priceText,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: isSelected
+                          ? colorScheme.primary
+                          : colorScheme.onSurface,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ],
+    );
+
+    final benefitsAndActions = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (isWebUnavailable) ...[
+          TactileCard(
+            isElevated: false,
+            backgroundColor: colorScheme.surfaceContainerLow,
+            borderColor: colorScheme.primary.withAlpha(110),
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PhosphorIcon(
+                  PhosphorIconsFill.shieldCheck,
+                  color: colorScheme.primary,
+                  size: 18,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Web kart ödemesi (iyzico) hazırlanıyor. Mobil uygulamadan aldığın Kadro PRO aboneliği aynı hesapla burada otomatik geçerlidir.',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurface,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          AppSpacing.gapMd,
+        ],
+        TactileCard(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Kadro PRO Avantajları', style: theme.textTheme.titleSmall),
+              const SizedBox(height: 10),
+              const _ProFeatureRow(
+                title: 'Sınırsız Soru Çözümü & Sıfır Reklam',
+                description: 'Günlük 30 soru limitine ve bekleme sürelerine takılmadan kesintisiz çalış.',
+              ),
+              const _ProFeatureRow(
+                title: 'Tüm Türkiye Geneli Deneme Arşivi',
+                description: 'Tüm çoklu KPSS, MEB-AGS, DHBT, E-KPSS ve A Grubu deneme simülasyonları.',
+              ),
+              if (OfflineDownloadService.isSupported)
+                const _ProFeatureRow(
+                  title: 'Çevrimdışı Soru & Deneme İndirme',
+                  description: 'İnternet olmayan ortamlarda test ve denemeleri cihazından çöz.',
+                ),
+              const _ProFeatureRow(
+                title: 'Akıllı Yanlış Defteri Test Üretici',
+                description: 'Yaptığın yanlışlardan tek tıkla 10 veya 20 soruluk tekrar testleri üret.',
+              ),
+            ],
+          ),
+        ),
+        AppSpacing.gapMd,
+        FilledButton.icon(
+          key: const ValueKey('paywall_cta_button'),
+          onPressed: _isLoading ? null : _handlePurchase,
+          icon: _isLoading
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : PhosphorIcon(
+                  isWebUnavailable
+                      ? PhosphorIconsRegular.arrowsClockwise
+                      : PhosphorIconsFill.crown,
+                  size: 18,
+                ),
+          label: Text(
+            _isLoading
+                ? 'İşlem yapılıyor...'
+                : isWebUnavailable
+                ? 'PRO Üyeliğimi Doğrula'
+                : "Kadro PRO'ya Geç (${_selectedPlan.priceText})",
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextButton(
+          onPressed: _isLoading ? null : _handleRestore,
+          child: Text(
+            isWebUnavailable
+                ? 'Web / Mobil Aboneliği Eşitle'
+                : 'Satın Almaları Geri Yükle',
+          ),
+        ),
+        if (supportsAds) ...[
+          const SizedBox(height: 4),
+          OutlinedButton.icon(
+            key: const ValueKey('paywall_rewarded_ad_button'),
+            onPressed: () {
+              AdService.showRewardedAd(
+                onUserEarnedReward: () {
+                  ref
+                      .read(userPreferencesProvider.notifier)
+                      .rewardExtraQuestions(20);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('+20 soru hakkı tanımlandı.'),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  }
+                },
+              );
+            },
+            icon: const PhosphorIcon(PhosphorIconsRegular.playCircle, size: 18),
+            label: const Text('Kısa Reklam İzle (+20 Soru Hakkı Kazan)'),
+          ),
+        ],
+        const SizedBox(height: 12),
+        Text(
+          availability == PurchaseAvailability.webCheckout
+              ? 'Ödemeler güvenli iyzico / Web Checkout altyapısı üzerinden işlenir ve Supabase hesabınla eşitlenir.'
+              : 'Abonelikler Google Play / App Store üzerinden yönetilir. İstediğin zaman iptal edebilirsin.',
+          textAlign: TextAlign.center,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Kadro PRO')),
       body: SafeArea(
-        child: ResponsiveContentWrapper(
-          maxWidth: 720,
-          padding: EdgeInsets.zero,
-          child: ListView(
-            padding: AppSpacing.pagePadding(context),
-            children: [
-              // 1. Üst Vurgu 3D Kartı (Kraliyet Taçlı Kadro Koçu)
-              TactileCard(
-                backgroundColor: colorScheme.primaryContainer.withAlpha(110),
-                borderColor: colorScheme.primary.withAlpha(120),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 16,
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: colorScheme.surface,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: colorScheme.tertiary,
-                          width: 2.5,
-                        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth >= 900;
+            return ResponsiveContentWrapper(
+              maxWidth: isWide ? 1040 : 720,
+              padding: EdgeInsets.zero,
+              child: ListView(
+                padding: AppSpacing.pagePadding(context),
+                children: [
+                  if (widget.reasonMessage != null) ...[
+                    TactileCard(
+                      backgroundColor: colorScheme.tertiaryContainer,
+                      borderColor: colorScheme.tertiary,
+                      lipColor: colorScheme.tertiary,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 14,
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(18),
-                        child: Image.asset(
-                          'assets/images/mascot/tugrul_pro.png',
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) =>
-                              PhosphorIcon(
-                                PhosphorIconsFill.crown,
-                                size: 38,
-                                color: colorScheme.primary,
-                              ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'KPSS Hazırlığını Zirveye Taşı',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Günlük soru limitine takılmadan, tam kapsamlı çalış.',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (widget.reasonMessage != null) ...[
-                AppSpacing.gapSm,
-                TactileCard(
-                  backgroundColor: colorScheme.tertiaryContainer.withAlpha(120),
-                  borderColor: colorScheme.tertiary.withAlpha(160),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 14,
-                  ),
-                  child: Row(
-                    children: [
-                      PhosphorIcon(
-                        PhosphorIconsFill.crown,
-                        color: colorScheme.onTertiaryContainer,
-                        size: 22,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          widget.reasonMessage!,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.onTertiaryContainer,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              AppSpacing.gapMd,
-
-              // 2. Paket Seçenekleri Başlığı
-              Text(
-                'Abonelik Paketini Seç',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              AppSpacing.gapXs,
-
-              // 3. 3 Seçenekli Paket Kartları
-              ...SubscriptionPlan.values.map((plan) {
-                final isSelected = _selectedPlan == plan;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(16),
-                    onTap: () {
-                      setState(() => _selectedPlan = plan);
-                    },
-                    child: TactileCard(
-                      padding: const EdgeInsets.all(16),
-                      backgroundColor: isSelected
-                          ? Color.alphaBlend(
-                              colorScheme.primaryContainer.withAlpha(80),
-                              colorScheme.surface,
-                            )
-                          : colorScheme.surface,
-                      borderColor: isSelected
-                          ? colorScheme.primary
-                          : colorScheme.outlineVariant,
                       child: Row(
                         children: [
                           PhosphorIcon(
-                            isSelected
-                                ? PhosphorIconsFill.checkCircle
-                                : PhosphorIconsBold.circle,
-                            color: isSelected
-                                ? colorScheme.primary
-                                : colorScheme.onSurfaceVariant.withAlpha(120),
-                            size: 22,
+                            PhosphorIconsFill.crown,
+                            color: colorScheme.onTertiaryContainer,
+                            size: 18,
                           ),
-                          const SizedBox(width: 14),
+                          const SizedBox(width: 10),
                           Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Wrap(
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  spacing: 6,
-                                  runSpacing: 4,
-                                  children: [
-                                    Text(
-                                      plan.title,
-                                      style: theme.textTheme.bodyLarge
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: colorScheme.onSurface,
-                                          ),
-                                    ),
-                                    if (plan.badge != null)
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 7,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: colorScheme.tertiaryContainer,
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          plan.badge!,
-                                          style: theme.textTheme.labelSmall
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: colorScheme
-                                                    .onTertiaryContainer,
-                                              ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  plan.subText,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            plan.priceText,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              color: isSelected
-                                  ? colorScheme.primary
-                                  : colorScheme.onSurface,
+                            child: Text(
+                              widget.reasonMessage!,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: colorScheme.onTertiaryContainer,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                );
-              }),
-              const SizedBox(height: 8),
-
-              // 4. PRO Avantajları Listesi (Cömert Temel Deneyim + Güçlü 4 PRO Ayrıcalığı)
-              TactileCard(
-                padding: const EdgeInsets.all(16),
-                backgroundColor: colorScheme.surface,
-                borderColor: colorScheme.outlineVariant,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Kadro PRO Avantajları',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    const _ProFeatureRow(
-                      title: 'Sınırsız Soru Çözümü & Sıfır Reklam',
-                      description: 'Günlük 30 soru limitine ve bekleme sürelerine takılmadan kesintisiz çalış.',
-                    ),
-                    const _ProFeatureRow(
-                      title: 'Tüm Türkiye Geneli Deneme Arşivi',
-                      description: 'Deneme #2, #3, #4 ve periyodik eklenen tüm 60 soruluk sınav simülasyonları.',
-                    ),
-                    const _ProFeatureRow(
-                      title: 'Çevrimdışı Soru & Deneme İndirme',
-                      description: 'Metroda, otobüste veya internet olmayan her yerde ders çalış.',
-                    ),
-                    const _ProFeatureRow(
-                      title: 'Akıllı Yanlış Defteri Test Üretici',
-                      description: 'Yaptığın yanlışlardan tek tıkla 10 veya 20 soruluk akıllı tekrar testleri üret.',
-                    ),
+                    AppSpacing.gapMd,
                   ],
-                ),
+                  if (isWide) ...[
+                    heroCard,
+                    AppSpacing.gapLg,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 6, child: planSection),
+                        const SizedBox(width: 24),
+                        Expanded(flex: 5, child: benefitsAndActions),
+                      ],
+                    ),
+                  ] else ...[
+                    heroCard,
+                    AppSpacing.gapMd,
+                    planSection,
+                    const SizedBox(height: 8),
+                    benefitsAndActions,
+                  ],
+                ],
               ),
-              AppSpacing.gapMd,
-
-              // 5. Kadro PRO Satın Alma Butonu (CTA)
-              FilledButton.icon(
-                key: const ValueKey('paywall_cta_button'),
-                onPressed: _isLoading ? null : _handlePurchase,
-                icon: _isLoading
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.star),
-                label: Text(
-                  _isLoading
-                      ? 'İşlem yapılıyor...'
-                      : "Kadro PRO'ya Geç (${_selectedPlan.priceText})",
-                ),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-              ),
-              const SizedBox(height: 6),
-
-              // Satın Almaları Geri Yükle Butonu
-              TextButton(
-                onPressed: _isLoading ? null : _handleRestore,
-                child: const Text('Satın Almaları Geri Yükle'),
-              ),
-              const SizedBox(height: 4),
-
-              // 6. Ödüllü Reklam ile Ücretsiz Soru Kazanma
-              OutlinedButton.icon(
-                key: const ValueKey('paywall_rewarded_ad_button'),
-                onPressed: () {
-                  AdService.showRewardedAd(
-                    onUserEarnedReward: () {
-                      ref
-                          .read(userPreferencesProvider.notifier)
-                          .rewardExtraQuestions(20);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              '+20 soru hakkı başarıyla tanımlandı!',
-                            ),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                        Navigator.of(context).pop();
-                      }
-                    },
-                  );
-                },
-                icon: const Icon(Icons.play_circle_outline),
-                label: const Text('Kısa Reklam İzle (+20 Soru Hakkı Kazan)'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Alt Açıklama
-              Text(
-                'Abonelikler Google Play / App Store üzerinden yönetilir. İstediğin zaman iptal edebilirsin.',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
   }
 }
 
-/// PRO avantaj satırı.
 class _ProFeatureRow extends StatelessWidget {
   final String title;
   final String description;
@@ -426,8 +493,8 @@ class _ProFeatureRow extends StatelessWidget {
         children: [
           PhosphorIcon(
             PhosphorIconsBold.check,
-            size: 16,
-            color: colorScheme.primary,
+            size: 15,
+            color: colorScheme.secondary,
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -437,7 +504,7 @@ class _ProFeatureRow extends StatelessWidget {
                 Text(
                   title,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 Text(

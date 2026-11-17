@@ -227,5 +227,44 @@ void main() {
         expect(find.byType(InteractiveViewer), findsNothing);
       },
     );
+
+    testWidgets(
+      '1536x700 geniş ve alçak masaüstü penceresinde TurkeyMapCard Büyüt diyaloğu taşma olmadan açılır',
+      (tester) async {
+        tester.view.physicalSize = const Size(1536, 700);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        const config = TurkeyMapConfig(
+          markers: [
+            TurkeyMapMarker(id: 'm1', label: 'I', offset: Offset(470, 80)),
+            TurkeyMapMarker(id: 'm2', label: 'II', offset: Offset(530, 395)),
+          ],
+        );
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: TurkeyMapCard(
+                  config: config,
+                  title: 'KPSS Coğrafya Haritası',
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Büyüt'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(InteractiveViewer), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
 }

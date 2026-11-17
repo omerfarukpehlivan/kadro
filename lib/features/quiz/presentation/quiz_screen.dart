@@ -3,10 +3,16 @@ import 'package:kadro/features/reports/presentation/report_question_bottom_sheet
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/config/supabase_config.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
+import 'package:kadro/features/exams/data/models/mock_exam_blueprint.dart';
+import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
+import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
@@ -18,6 +24,7 @@ import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/shared/widgets/adaptive_overlay.dart';
 import 'package:kadro/shared/widgets/climate_chart/climate_chart_card.dart';
 import 'package:kadro/shared/widgets/geo_diagram/geo_diagram_card.dart';
 import 'package:kadro/shared/widgets/population_pyramid/population_pyramid_card.dart';
@@ -93,9 +100,19 @@ class QuizScreen extends ConsumerStatefulWidget {
   final Duration? examDuration;
   final String? customTitle;
   final bool fetchAllFromPool;
+  final bool onlyDistractorTraps;
   final int? mockExamNumber;
+  final int? topicTestNumber;
   final QuizMode? mode;
   final int? limit;
+  final VoidCallback? onCompleted;
+
+  /// Çoklu ders/bölüm deneme şablonu (`TASK-130`). Sağlandığında süre, kapsam ve
+  /// soru gezinti paleti sekmeleri şablondan dinamik olarak çözümlenir.
+  final MockExamBlueprint? blueprint;
+  final ExamSelection? examSelection;
+  final bool? applyExtraTime;
+  final List<BlueprintSectionRange>? prebuiltSectionRanges;
 
   const QuizScreen({
     super.key,
@@ -107,9 +124,16 @@ class QuizScreen extends ConsumerStatefulWidget {
     this.examDuration,
     this.customTitle,
     this.fetchAllFromPool = false,
+    this.onlyDistractorTraps = false,
     this.mockExamNumber,
+    this.topicTestNumber,
     this.mode,
     this.limit,
+    this.onCompleted,
+    this.blueprint,
+    this.examSelection,
+    this.applyExtraTime,
+    this.prebuiltSectionRanges,
   });
 
   @override
@@ -126,10 +150,15 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   int _wrongCount = 0;
   Timer? _timer;
   int _remainingSeconds = 0;
+  Duration? _effectiveExamDuration;
+  int _extraTimeMinutes = 0;
+  List<BlueprintSectionRange> _sectionRanges = const [];
 
   // İki yönlü soru gezintisi (1..N) için soru durumu hafızası
   final Map<int, int?> _userAnswers = {};
   final Map<int, bool> _answeredStatus = {};
+  final Map<int, Set<int>> _eliminatedOptions = {};
+  final Set<int> _flaggedQuestions = {};
   int _maxReachedIndex = 0;
 
   // Yanlış Defteri bilgilendirme kartının tek seferlik gösterim durumu
@@ -137,6 +166,15 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   bool _showMistakeNotice = false;
 
   QuizMode? _runtimeMode;
+
+  ExamSelection _activeExamSelection() {
+    if (widget.examSelection != null) return widget.examSelection!;
+    try {
+      return ref.read(activeExamSelectionProvider);
+    } catch (_) {
+      return ExamSelection.initial;
+    }
+  }
 
   QuizMode get _effectiveMode {
     if (_runtimeMode != null) return _runtimeMode!;
@@ -163,8 +201,8 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       SnackBar(
         content: Text(
           isNowExam
-              ? '📝 Sınav Modu devrede: Şıklar gizli, optik form mantığı aktif.'
-              : '🎯 Öğrenme Modu devrede: Anında doğru/yanlış ve çözüm açıklaması aktif.',
+              ? 'Sınav Modu devrede: Şıklar gizli, optik form mantığı aktif.'
+              : 'Öğrenme Modu devrede: Anında doğru/yanlış ve çözüm açıklaması aktif.',
         ),
         duration: const Duration(seconds: 2),
       ),
@@ -174,30 +212,94 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   Question get _currentQuestion => _questions[_currentIndex];
   bool get _isLastQuestion => _currentIndex == _questions.length - 1;
 
+  List<BlueprintSectionRange> _deriveLessonRanges(List<Question> questions) {
+    if (questions.isEmpty) return const [];
+    final ranges = <BlueprintSectionRange>[];
+    var start = 0;
+    var currentLesson = questions.first.lesson;
+    for (var i = 1; i <= questions.length; i++) {
+      final isEnd =
+          i == questions.length || questions[i].lesson != currentLesson;
+      if (isEnd) {
+        final spec = ExamSectionSpec(
+          id: 'section_${ranges.length}',
+          lesson: currentLesson,
+          title: currentLesson == 'Güncel Bilgiler'
+              ? 'Güncel'
+              : currentLesson == 'Matematik & Geometri'
+              ? 'Matematik'
+              : currentLesson,
+          questionCount: i - start,
+        );
+        ranges.add(
+          BlueprintSectionRange(section: spec, startIndex: start, endIndex: i),
+        );
+        if (i < questions.length) {
+          start = i;
+          currentLesson = questions[i].lesson;
+        }
+      }
+    }
+    return ranges;
+  }
+
   @override
   void initState() {
     super.initState();
+    final selection = _activeExamSelection();
+
+    if (widget.blueprint != null) {
+      _extraTimeMinutes = widget.blueprint!.extraMinutesFor(
+        selection,
+        applyExtraTime: widget.applyExtraTime,
+      );
+      _effectiveExamDuration =
+          widget.examDuration ??
+          widget.blueprint!.resolveDuration(
+            selection,
+            applyExtraTime: widget.applyExtraTime,
+          );
+    } else if (widget.examDuration != null) {
+      final extraEnabled = widget.applyExtraTime ?? selection.includeExtraTime;
+      final extra = extraEnabled && selection.family == KpssExamFamily.ekpss
+          ? (selection.disabilityGroup.standardExtraMinutes > 0
+                ? selection.disabilityGroup.standardExtraMinutes
+                : 20)
+          : 0;
+      _extraTimeMinutes = extra;
+      _effectiveExamDuration = extra > 0
+          ? widget.examDuration! + Duration(minutes: extra)
+          : widget.examDuration!;
+    }
+
     if (widget.questions != null && widget.questions!.isNotEmpty) {
       _questions = widget.limit != null
           ? widget.questions!.take(widget.limit!).toList()
           : widget.questions!;
+      _sectionRanges =
+          widget.prebuiltSectionRanges ?? _deriveLessonRanges(_questions);
     } else {
       _questions = widget.limit != null
           ? defaultSampleQuestions.take(widget.limit!).toList()
           : defaultSampleQuestions;
-      if (widget.mockExamNumber != null) {
-        _isLoading = true;
+      _sectionRanges = _deriveLessonRanges(_questions);
+      if (widget.blueprint != null) {
+        _isLoading = !SupabaseConfig.isFlutterTest;
+        _fetchBlueprintMockExam();
+      } else if (widget.mockExamNumber != null) {
+        _isLoading = !SupabaseConfig.isFlutterTest;
         _fetchMockExam();
-      } else if (widget.fetchAllFromPool ||
+      } else if (widget.onlyDistractorTraps ||
+          widget.fetchAllFromPool ||
           widget.lessonFilter != null ||
           widget.topicFilter != null) {
-        _isLoading = true;
+        _isLoading = !SupabaseConfig.isFlutterTest;
         _fetchFilteredQuestions();
       }
     }
 
-    if (widget.examDuration != null) {
-      _remainingSeconds = widget.examDuration!.inSeconds;
+    if (_effectiveExamDuration != null) {
+      _remainingSeconds = _effectiveExamDuration!.inSeconds;
       // Timer.periodic: JavaScript/Web'deki setInterval() mantığı gibidir.
       // Her saniye kalan süreyi 1 azaltır ve süre bitince sınavı otomatik noktalar.
       _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -218,6 +320,29 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     }
   }
 
+  Future<void> _fetchBlueprintMockExam() async {
+    final blueprint = widget.blueprint;
+    if (blueprint == null) return;
+    final generated = await widget.questionRepository
+        .generateMockExamFromBlueprint(
+          blueprint,
+          selection: _activeExamSelection(),
+          mockNumber: widget.mockExamNumber,
+        );
+    if (!mounted) return;
+    setState(() {
+      if (generated.questions.isNotEmpty) {
+        _questions = widget.limit != null
+            ? generated.questions.take(widget.limit!).toList()
+            : generated.questions;
+        _sectionRanges = generated.sectionRanges.isNotEmpty
+            ? generated.sectionRanges
+            : _deriveLessonRanges(_questions);
+      }
+      _isLoading = false;
+    });
+  }
+
   Future<void> _fetchMockExam() async {
     final fetched = await widget.questionRepository
         .generateGeneralCultureMockExam(examNumber: widget.mockExamNumber ?? 1);
@@ -227,22 +352,44 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
         _questions = widget.limit != null
             ? fetched.take(widget.limit!).toList()
             : fetched;
+        _sectionRanges = _deriveLessonRanges(_questions);
       }
       _isLoading = false;
     });
   }
 
   Future<void> _fetchFilteredQuestions() async {
-    final fetched = await widget.questionRepository.fetchQuestions(
-      lesson: widget.lessonFilter,
-      topic: widget.topicFilter,
-    );
+    final selection = _activeExamSelection();
+    final variant = QuestionRepository.preferredSourceVariantFor(selection);
+    final fetched = widget.onlyDistractorTraps
+        ? await widget.questionRepository.fetchDistractorHuntQuestions(
+            lesson: widget.lessonFilter,
+            limit: widget.limit ?? 10,
+          )
+        : await widget.questionRepository.fetchQuestions(
+            lesson: widget.lessonFilter,
+            topic: widget.topicFilter,
+            selection: selection,
+            preferredSourceVariant: variant,
+          );
     if (!mounted) return;
     setState(() {
       if (fetched.isNotEmpty) {
-        _questions = widget.limit != null
-            ? fetched.take(widget.limit!).toList()
-            : fetched;
+        if (widget.topicTestNumber != null) {
+          final chunks = QuestionRepository.chunkTopicQuestions(fetched);
+          if (chunks.isNotEmpty) {
+            final safeIdx = (widget.topicTestNumber! - 1).clamp(
+              0,
+              chunks.length - 1,
+            );
+            _questions = chunks[safeIdx];
+          }
+        } else {
+          _questions = widget.limit != null
+              ? fetched.take(widget.limit!).toList()
+              : fetched;
+        }
+        _sectionRanges = _deriveLessonRanges(_questions);
       }
       _isLoading = false;
     });
@@ -285,6 +432,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     if (!_isExamMode && _isAnswered) return;
 
     setState(() {
+      _eliminatedOptions[_currentIndex]?.remove(index);
       if (_isExamMode && _selectedOptionIndex == index) {
         // Tekrar basıldığında seçimi temizle (boş bırakma desteği)
         _selectedOptionIndex = null;
@@ -296,6 +444,139 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
         _answeredStatus[_currentIndex] = true;
       }
     });
+  }
+
+  void _toggleEliminateOption(int index) {
+    if (!_isExamMode && _isAnswered) return;
+    if (index < 0 || index >= _currentQuestion.options.length) return;
+    setState(() {
+      final current = _eliminatedOptions.putIfAbsent(_currentIndex, () => {});
+      if (current.contains(index)) {
+        current.remove(index);
+      } else {
+        current.add(index);
+        if (_selectedOptionIndex == index) {
+          _selectedOptionIndex = null;
+          _userAnswers.remove(_currentIndex);
+          _answeredStatus[_currentIndex] = false;
+        }
+      }
+    });
+  }
+
+  void _toggleFlagQuestion() {
+    setState(() {
+      if (_flaggedQuestions.contains(_currentIndex)) {
+        _flaggedQuestions.remove(_currentIndex);
+      } else {
+        _flaggedQuestions.add(_currentIndex);
+      }
+    });
+  }
+
+  void _selectOptionViaKeyboard(int index) {
+    if (index < 0 || index >= _currentQuestion.options.length) return;
+    _onOptionTap(index);
+  }
+
+  void _handlePrimaryActionShortcut() {
+    final isAtHistory = _currentIndex < _maxReachedIndex;
+    if (_isExamMode) {
+      if (isAtHistory) {
+        _goToNextQuestion();
+      } else if (!_isLastQuestion) {
+        _nextQuestion();
+      } else {
+        _finishQuiz();
+      }
+      return;
+    }
+
+    if (isAtHistory) {
+      _goToNextQuestion();
+    } else if (!_isAnswered) {
+      if (_selectedOptionIndex != null) {
+        _submitAnswer();
+      }
+    } else if (!_isLastQuestion) {
+      _nextQuestion();
+    } else {
+      _finishQuiz();
+    }
+  }
+
+  void _showShortcutsHelpDialog() {
+    AdaptiveOverlay.showModal<void>(
+      context: context,
+      title: 'Klavye Kısayolları',
+      dialogMaxWidth: 460,
+      builder: (_) => const _QuizShortcutsHelpBody(),
+    );
+  }
+
+  Map<ShortcutActivator, VoidCallback> _buildShortcutBindings() {
+    return {
+      const SingleActivator(LogicalKeyboardKey.digit1): () =>
+          _selectOptionViaKeyboard(0),
+      const SingleActivator(LogicalKeyboardKey.digit2): () =>
+          _selectOptionViaKeyboard(1),
+      const SingleActivator(LogicalKeyboardKey.digit3): () =>
+          _selectOptionViaKeyboard(2),
+      const SingleActivator(LogicalKeyboardKey.digit4): () =>
+          _selectOptionViaKeyboard(3),
+      const SingleActivator(LogicalKeyboardKey.digit5): () =>
+          _selectOptionViaKeyboard(4),
+      const SingleActivator(LogicalKeyboardKey.keyA): () =>
+          _selectOptionViaKeyboard(0),
+      const SingleActivator(LogicalKeyboardKey.keyB): () =>
+          _selectOptionViaKeyboard(1),
+      const SingleActivator(LogicalKeyboardKey.keyC): () =>
+          _selectOptionViaKeyboard(2),
+      const SingleActivator(LogicalKeyboardKey.keyD): () =>
+          _selectOptionViaKeyboard(3),
+      const SingleActivator(LogicalKeyboardKey.keyE): () =>
+          _selectOptionViaKeyboard(4),
+      const SingleActivator(LogicalKeyboardKey.digit1, shift: true): () =>
+          _toggleEliminateOption(0),
+      const SingleActivator(LogicalKeyboardKey.digit2, shift: true): () =>
+          _toggleEliminateOption(1),
+      const SingleActivator(LogicalKeyboardKey.digit3, shift: true): () =>
+          _toggleEliminateOption(2),
+      const SingleActivator(LogicalKeyboardKey.digit4, shift: true): () =>
+          _toggleEliminateOption(3),
+      const SingleActivator(LogicalKeyboardKey.digit5, shift: true): () =>
+          _toggleEliminateOption(4),
+      const SingleActivator(LogicalKeyboardKey.keyA, shift: true): () =>
+          _toggleEliminateOption(0),
+      const SingleActivator(LogicalKeyboardKey.keyB, shift: true): () =>
+          _toggleEliminateOption(1),
+      const SingleActivator(LogicalKeyboardKey.keyC, shift: true): () =>
+          _toggleEliminateOption(2),
+      const SingleActivator(LogicalKeyboardKey.keyD, shift: true): () =>
+          _toggleEliminateOption(3),
+      const SingleActivator(LogicalKeyboardKey.keyE, shift: true): () =>
+          _toggleEliminateOption(4),
+      const SingleActivator(LogicalKeyboardKey.enter):
+          _handlePrimaryActionShortcut,
+      const SingleActivator(LogicalKeyboardKey.numpadEnter):
+          _handlePrimaryActionShortcut,
+      const SingleActivator(LogicalKeyboardKey.keyN):
+          _handlePrimaryActionShortcut,
+      const SingleActivator(LogicalKeyboardKey.arrowRight):
+          _handlePrimaryActionShortcut,
+      const SingleActivator(LogicalKeyboardKey.keyP): _previousQuestion,
+      const SingleActivator(LogicalKeyboardKey.arrowLeft): _previousQuestion,
+      const SingleActivator(LogicalKeyboardKey.keyF): _toggleFlagQuestion,
+      const SingleActivator(LogicalKeyboardKey.keyG):
+          _showQuestionPaletteBottomSheet,
+      const SingleActivator(LogicalKeyboardKey.keyO):
+          _showQuestionPaletteBottomSheet,
+      const SingleActivator(LogicalKeyboardKey.f2):
+          _showQuestionPaletteBottomSheet,
+      const SingleActivator(LogicalKeyboardKey.slash, shift: true):
+          _showShortcutsHelpDialog,
+      const SingleActivator(LogicalKeyboardKey.f1): _showShortcutsHelpDialog,
+    };
   }
 
   void _submitAnswer() {
@@ -312,6 +593,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             topic: _currentQuestion.topic,
             questionText: _currentQuestion.text,
             isCorrect: isCorrect,
+            examScope: _activeExamSelection().scopeKey,
           );
     } catch (_) {
       // ProviderScope bulunmayan izole test ortamlarında güvenli fallback
@@ -373,164 +655,36 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
   }
 
   void _showQuestionPaletteBottomSheet() {
-    showModalBottomSheet<void>(
+    final ranges = _sectionRanges.isNotEmpty
+        ? _sectionRanges
+        : _deriveLessonRanges(_questions);
+
+    AdaptiveOverlay.showModal<void>(
       context: context,
-      isScrollControlled: true,
-      clipBehavior: Clip.antiAlias,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      title: 'Soru Gezinti Paleti',
+      dialogMaxWidth: 560,
       builder: (ctx) {
-        final theme = Theme.of(ctx);
-        final colorScheme = theme.colorScheme;
-        final answeredCount = _userAnswers.values
-            .where((v) => v != null)
-            .length;
-        final emptyCount = _questions.length - answeredCount;
-        const optionLetters = ['A', 'B', 'C', 'D', 'E'];
-
-        return DraggableScrollableSheet(
-          initialChildSize: 0.55,
-          minChildSize: 0.35,
-          maxChildSize: 0.85,
-          expand: false,
-          builder: (sheetContext, scrollController) {
-            return Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 12, bottom: 8),
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Soru Gezinti Paleti',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '$answeredCount Dolu · $emptyCount Boş',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                      TextButton.icon(
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          _finishQuiz();
-                        },
-                        icon: const PhosphorIcon(
-                          PhosphorIconsBold.checkCircle,
-                          size: 16,
-                        ),
-                        label: const Text('Sınavı Bitir'),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(height: 1),
-                Expanded(
-                  child: GridView.builder(
-                    controller: scrollController,
-                    padding: const EdgeInsets.all(16),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 6,
-                          mainAxisSpacing: 10,
-                          crossAxisSpacing: 10,
-                          childAspectRatio: 1,
-                        ),
-                    itemCount: _questions.length,
-                    itemBuilder: (context, idx) {
-                      final isCurrent = idx == _currentIndex;
-                      final ansIndex = _userAnswers[idx];
-                      final isAnswered = ansIndex != null;
-                      final letter =
-                          isAnswered &&
-                              ansIndex >= 0 &&
-                              ansIndex < optionLetters.length
-                          ? optionLetters[ansIndex]
-                          : '';
-
-                      return InkWell(
-                        onTap: () {
-                          Navigator.pop(ctx);
-                          _goToQuestion(idx);
-                        },
-                        borderRadius: BorderRadius.circular(12),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isCurrent
-                                ? colorScheme.primaryContainer
-                                : isAnswered
-                                ? colorScheme.primary
-                                : colorScheme.surfaceContainerHighest
-                                      .withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isCurrent
-                                  ? colorScheme.primary
-                                  : isAnswered
-                                  ? Colors.transparent
-                                  : colorScheme.outlineVariant,
-                              width: isCurrent ? 2 : 1,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                '${idx + 1}',
-                                style: theme.textTheme.labelMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: isAnswered
-                                      ? colorScheme.onPrimary
-                                      : isCurrent
-                                      ? colorScheme.onPrimaryContainer
-                                      : colorScheme.onSurface,
-                                ),
-                              ),
-                              if (isAnswered)
-                                Text(
-                                  letter,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
-                                    color: colorScheme.onPrimary.withValues(
-                                      alpha: 0.9,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            );
-          },
+        final maxH = ResponsiveBreakpoints.usesDialogOverlay(ctx)
+            ? 460.0
+            : MediaQuery.sizeOf(ctx).height * 0.62;
+        return SizedBox(
+          height: maxH,
+          child: _QuizQuestionPaletteContent(
+            questions: _questions,
+            ranges: ranges,
+            currentIndex: _currentIndex,
+            userAnswers: _userAnswers,
+            flaggedQuestions: _flaggedQuestions,
+            showHeaderTitle: true,
+            onSelectQuestion: (idx) {
+              Navigator.pop(ctx);
+              _goToQuestion(idx);
+            },
+            onFinishQuiz: () {
+              Navigator.pop(ctx);
+              _finishQuiz();
+            },
+          ),
         );
       },
     );
@@ -541,7 +695,8 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       final prefs = ref.read(userPreferencesProvider);
       final stats = ref.read(studyStatsProvider);
       if (!prefs.isPro &&
-          stats.dailySolvedCount >= prefs.dailyFreeQuestionLimit) {
+          stats.effectiveDailySolvedCount() >=
+              prefs.effectiveDailyFreeLimit()) {
         Navigator.of(context)
             .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
         return;
@@ -591,6 +746,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
                   topic: q.topic,
                   questionText: q.text,
                   isCorrect: isCorrect,
+                  examScope: _activeExamSelection().scopeKey,
                 );
           } catch (_) {}
         }
@@ -636,28 +792,47 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     );
 
     try {
+      final scopeKey =
+          widget.blueprint?.scopeKey ?? _activeExamSelection().scopeKey;
+      final effectiveDuration = _effectiveExamDuration;
       final sessionRecord = QuizSessionRecord(
         id: DateTime.now().microsecondsSinceEpoch.toString(),
-        title: widget.customTitle ?? '${_currentQuestion.lesson} Testi',
+        title:
+            widget.customTitle ??
+            widget.blueprint?.title ??
+            '${_currentQuestion.lesson} Testi',
         lesson: _currentQuestion.lesson,
+        examScope: scopeKey,
         totalQuestions: _questions.length,
         correctCount: _correctCount,
         wrongCount: _wrongCount,
         emptyCount: emptyCount,
         netScore: result.net,
         earnedXp: _correctCount * 15 + _wrongCount * 5,
-        durationSeconds: widget.examDuration != null
-            ? (widget.examDuration!.inSeconds - _remainingSeconds).clamp(
+        durationSeconds: effectiveDuration != null
+            ? (effectiveDuration.inSeconds - _remainingSeconds).clamp(
                 0,
-                widget.examDuration!.inSeconds,
+                effectiveDuration.inSeconds,
               )
             : _questions.length * 20,
         completedAt: DateTime.now(),
       );
       ref.read(studyStatsProvider.notifier).recordQuizSession(sessionRecord);
+      ref
+          .read(studyPlannerProvider.notifier)
+          .markMatchingTestCompleted(
+            lesson: widget.lessonFilter ?? _currentQuestion.lesson,
+            topic: widget.topicFilter,
+            testNumber: widget.topicTestNumber,
+            mockExamNumber: widget.mockExamNumber,
+          );
     } catch (_) {
       // ProviderScope bulunmayan izole test ortamlarında güvenli fallback
     }
+
+    try {
+      widget.onCompleted?.call();
+    } catch (_) {}
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
@@ -683,8 +858,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             widget.customTitle ?? 'Test',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w800),
+            style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
         body: const Center(child: CircularProgressIndicator()),
@@ -693,6 +867,16 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
     const labels = ['A', 'B', 'C', 'D', 'E'];
     final question = _currentQuestion;
+    final highReadabilityMode = ref.watch(
+      userPreferencesProvider.select((s) => s.highReadabilityMode),
+    );
+    final baseMediaQuery = MediaQuery.of(context);
+    final baseScale = baseMediaQuery.textScaler.scale(10) / 10.0;
+    final readableMediaQuery = highReadabilityMode
+        ? baseMediaQuery.copyWith(
+            textScaler: TextScaler.linear(baseScale * 1.2),
+          )
+        : baseMediaQuery;
 
     // Alt butonun fonksiyonu, ikonu ve metnini duruma ve çalışma moduna göre belirliyoruz
     final isAtHistory = _currentIndex < _maxReachedIndex;
@@ -734,6 +918,95 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       }
     }
 
+    final isDesktop = ResponsiveBreakpoints.isDesktop(context);
+    final isWideViewport = ResponsiveBreakpoints.usesDialogOverlay(context);
+    final isFlagged = _flaggedQuestions.contains(_currentIndex);
+    final eliminatedSet = _eliminatedOptions[_currentIndex] ?? const <int>{};
+
+    final Widget? visualAidCard;
+    if (question.effectiveMapConfig != null) {
+      visualAidCard = TurkeyMapCard(config: question.effectiveMapConfig!);
+    } else if (question.effectiveClimateConfig != null) {
+      visualAidCard = ClimateChartCard(
+        config: question.effectiveClimateConfig!,
+      );
+    } else if (question.effectiveGeoConfig != null) {
+      visualAidCard = GeoDiagramCard(config: question.effectiveGeoConfig!);
+    } else if (question.effectivePyramidConfig != null) {
+      visualAidCard = PopulationPyramidCard(
+        config: question.effectivePyramidConfig!,
+      );
+    } else if (question.effectiveSunConfig != null) {
+      visualAidCard = SunDiagramCard(config: question.effectiveSunConfig!);
+    } else if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
+      visualAidCard = _QuestionImageCard(imageUrl: question.imageUrl!);
+    } else {
+      visualAidCard = null;
+    }
+
+    final questionAndOptionsColumn = MediaQuery(
+      data: readableMediaQuery,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _QuestionCard(
+            text: question.text,
+            highContrast: highReadabilityMode,
+            isCompactDesktop: isWideViewport,
+          ),
+          if (isWideViewport) const SizedBox(height: 10) else AppSpacing.gapMd,
+          for (var i = 0; i < question.options.length; i++)
+            OptionTile(
+              label: labels[i],
+              text: question.options[i],
+              status: _getOptionStatus(i),
+              highContrast: highReadabilityMode,
+              isEliminated: eliminatedSet.contains(i),
+              shortcutHint: isWideViewport ? labels[i] : null,
+              onToggleEliminate: (_isExamMode || !_isAnswered)
+                  ? () => _toggleEliminateOption(i)
+                  : null,
+              onTap: (_isExamMode || !_isAnswered)
+                  ? () => _onOptionTap(i)
+                  : null,
+            ),
+        ],
+      ),
+    );
+
+    final actionButtons = _currentIndex > 0
+        ? Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: OutlinedButton.icon(
+                  onPressed: _previousQuestion,
+                  icon: const PhosphorIcon(
+                    PhosphorIconsBold.arrowLeft,
+                    size: 18,
+                  ),
+                  label: const Text('Önceki Soru'),
+                ),
+              ),
+              AppSpacing.gapHorizontalSm,
+              Expanded(
+                flex: 3,
+                child: FilledButton.icon(
+                  onPressed: buttonAction,
+                  icon: PhosphorIcon(buttonIcon),
+                  label: Text(buttonLabel),
+                ),
+              ),
+            ],
+          )
+        : FilledButton.icon(
+            onPressed: buttonAction,
+            icon: PhosphorIcon(buttonIcon),
+            label: Text(buttonLabel),
+          );
+
+    final hasSideVisualAid = isDesktop && visualAidCard != null;
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
@@ -741,13 +1014,21 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           widget.customTitle ?? '${question.lesson} Testi',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: Theme.of(context).textTheme.titleSmall
-              ?.copyWith(fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.titleSmall,
         ),
         actions: [
           _QuizModeBadge(mode: _effectiveMode, onToggle: _toggleQuizMode),
-          if (widget.examDuration != null)
-            _ExamTimerBadge(remainingSeconds: _remainingSeconds),
+          if (_effectiveExamDuration != null)
+            _ExamTimerBadge(
+              remainingSeconds: _remainingSeconds,
+              extraMinutes: _extraTimeMinutes,
+            ),
+          if (isWideViewport)
+            IconButton(
+              icon: const PhosphorIcon(PhosphorIconsRegular.keyboard, size: 20),
+              tooltip: 'Klavye Kısayolları (?)',
+              onPressed: _showShortcutsHelpDialog,
+            ),
           IconButton(
             icon: const PhosphorIcon(PhosphorIconsBold.squaresFour, size: 20),
             tooltip: 'Soru Gezinti Paleti',
@@ -757,14 +1038,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             icon: const PhosphorIcon(PhosphorIconsBold.flag, size: 20),
             tooltip: 'Hatalı Soru Bildir',
             onPressed: () {
-              showModalBottomSheet<void>(
+              AdaptiveOverlay.showModal<void>(
                 context: context,
-                isScrollControlled: true,
-                clipBehavior: Clip.antiAlias,
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                ),
+                dialogMaxWidth: 520,
                 builder: (ctx) => Padding(
                   padding: EdgeInsets.only(
                     bottom: MediaQuery.of(ctx).viewInsets.bottom,
@@ -781,137 +1057,120 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           ),
         ],
       ),
-      body: ResponsiveContentWrapper(
-        maxWidth: 720,
-        padding: EdgeInsets.zero,
-        child: ListView(
-          padding: AppSpacing.pagePadding(context),
-          children: [
-            // Konu Başlığı ve Soru Sayacı (Meta Bar)
-            _QuestionMetaBar(
-              topic: question.topic,
-              questionNumber: _currentIndex + 1,
-              totalQuestions: _questions.length,
-            ),
-            AppSpacing.gapXs,
-
-            // İlerleme Çubuğu (Progress Indicator)
-            LinearProgressIndicator(
-              value: (_currentIndex + 1) / _questions.length,
-            ),
-            AppSpacing.gapMd,
-
-            // Varsa Harita (Vektörel), İklim Grafiği, Jeomorfoloji Kesiti, Nüfus Piramidi, Güneş Şeması veya Görsel Kartı
-            if (question.effectiveMapConfig != null) ...[
-              TurkeyMapCard(config: question.effectiveMapConfig!),
-              AppSpacing.gapMd,
-            ] else if (question.effectiveClimateConfig != null) ...[
-              ClimateChartCard(config: question.effectiveClimateConfig!),
-              AppSpacing.gapMd,
-            ] else if (question.effectiveGeoConfig != null) ...[
-              GeoDiagramCard(config: question.effectiveGeoConfig!),
-              AppSpacing.gapMd,
-            ] else if (question.effectivePyramidConfig != null) ...[
-              PopulationPyramidCard(config: question.effectivePyramidConfig!),
-              AppSpacing.gapMd,
-            ] else if (question.effectiveSunConfig != null) ...[
-              SunDiagramCard(config: question.effectiveSunConfig!),
-              AppSpacing.gapMd,
-            ] else if (question.imageUrl != null &&
-                question.imageUrl!.isNotEmpty) ...[
-              _QuestionImageCard(imageUrl: question.imageUrl!),
-              AppSpacing.gapMd,
-            ],
-
-            // Soru Metni Kartı
-            _QuestionCard(text: question.text),
-            AppSpacing.gapMd,
-
-            // Şıklar (A - E)
-            for (var i = 0; i < question.options.length; i++)
-              OptionTile(
-                label: labels[i],
-                text: question.options[i],
-                status: _getOptionStatus(i),
-                onTap: (_isExamMode || !_isAnswered)
-                    ? () => _onOptionTap(i)
-                    : null,
-              ),
-            AppSpacing.gapMd,
-
-            // Çözüm Açıklaması Kartı (Yalnızca Öğrenme modunda ve cevaplandıysa gösterilir)
-            if (!_isExamMode && _isAnswered) ...[
-              _ExplanationCard(
-                explanation: question.explanation,
-                distractorTrap: question.distractorTrap,
-              ),
-              AppSpacing.gapMd,
-            ],
-
-            // Zarif Yanlış Defteri Bilgilendirme Kartı (Tek seferlik / kapatılabilir, yalnızca Öğrenme modunda)
-            if (!_isExamMode &&
-                _showMistakeNotice &&
-                !_hasDismissedMistakeNotice) ...[
-              _MistakeNoticeCard(
-                onDismiss: () {
-                  setState(() {
-                    _showMistakeNotice = false;
-                    _hasDismissedMistakeNotice = true;
-                  });
-                },
-              ),
-              AppSpacing.gapMd,
-            ],
-
-            // Aksiyon Butonları (Önceki Soru + Birincil Buton)
-            if (_currentIndex > 0)
-              Row(
+      body: CallbackShortcuts(
+        bindings: _buildShortcutBindings(),
+        child: Focus(
+          autofocus: true,
+          child: ResponsiveContentWrapper(
+            maxWidth: hasSideVisualAid ? 1140 : (isWideViewport ? 920 : 720),
+            padding: EdgeInsets.zero,
+            child: Scrollbar(
+              child: ListView(
+                padding: EdgeInsets.symmetric(
+                  horizontal: isWideViewport
+                      ? 24
+                      : ResponsiveBreakpoints.horizontalPadding(context),
+                  vertical: isWideViewport ? 10 : 12,
+                ),
                 children: [
-                  Expanded(
-                    flex: 2,
-                    child: OutlinedButton.icon(
-                      onPressed: _previousQuestion,
-                      icon: const PhosphorIcon(
-                        PhosphorIconsBold.arrowLeft,
-                        size: 18,
-                      ),
-                      label: const Text('Önceki Soru'),
-                    ),
+                  // Konu Başlığı ve Soru Sayacı (Meta Bar)
+                  _QuestionMetaBar(
+                    topic: question.topic,
+                    questionNumber: _currentIndex + 1,
+                    totalQuestions: _questions.length,
+                    isFlagged: isFlagged,
+                    onToggleFlag: _toggleFlagQuestion,
+                    onOpenPalette: _showQuestionPaletteBottomSheet,
                   ),
-                  AppSpacing.gapHorizontalSm,
-                  Expanded(
-                    flex: 3,
-                    child: FilledButton.icon(
-                      onPressed: buttonAction,
-                      icon: PhosphorIcon(buttonIcon),
-                      label: Text(buttonLabel),
-                    ),
+                  AppSpacing.gapXs,
+
+                  // İlerleme Çubuğu (Progress Indicator)
+                  LinearProgressIndicator(
+                    value: (_currentIndex + 1) / _questions.length,
                   ),
+                  if (isWideViewport) AppSpacing.gapSm else AppSpacing.gapMd,
+
+                  if (hasSideVisualAid)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 42, child: visualAidCard),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          flex: 58,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              questionAndOptionsColumn,
+                              AppSpacing.gapSm,
+                              actionButtons,
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  else ...[
+                    if (visualAidCard != null) ...[
+                      visualAidCard,
+                      AppSpacing.gapMd,
+                    ],
+
+                    // Soru Metni Kartı + Şıklar (Yüksek Okunabilirlik aktifse ~1.2x ölçek + 2px çerçeve)
+                    questionAndOptionsColumn,
+                    if (isWideViewport) AppSpacing.gapSm else AppSpacing.gapMd,
+
+                    // Aksiyon Butonları (Önceki Soru + Birincil Buton)
+                    actionButtons,
+                  ],
+
+                  if (!_isExamMode && _isAnswered) ...[
+                    AppSpacing.gapMd,
+                    _ExplanationCard(
+                      explanation: question.explanation,
+                      distractorTrap: question.distractorTrap,
+                    ),
+                  ],
+
+                  // Zarif Yanlış Defteri Bilgilendirme Kartı (Tek seferlik / kapatılabilir, yalnızca Öğrenme modunda)
+                  if (!_isExamMode &&
+                      _showMistakeNotice &&
+                      !_hasDismissedMistakeNotice) ...[
+                    AppSpacing.gapMd,
+                    _MistakeNoticeCard(
+                      onDismiss: () {
+                        setState(() {
+                          _showMistakeNotice = false;
+                          _hasDismissedMistakeNotice = true;
+                        });
+                      },
+                    ),
+                  ],
                 ],
-              )
-            else
-              FilledButton.icon(
-                onPressed: buttonAction,
-                icon: Icon(buttonIcon),
-                label: Text(buttonLabel),
               ),
-          ],
+            ),
+          ),
         ),
       ),
     );
   }
 }
 
-/// Sorunun ait olduğu konuyu ve testteki sırasını gösteren meta bilgi çubuğu.
+/// Sorunun ait olduğu konuyu, bayrak durumunu ve testteki sırasını gösteren meta bilgi çubuğu.
 class _QuestionMetaBar extends StatelessWidget {
   final String topic;
   final int questionNumber;
   final int totalQuestions;
+  final bool isFlagged;
+  final VoidCallback? onToggleFlag;
+  final VoidCallback? onOpenPalette;
 
   const _QuestionMetaBar({
     required this.topic,
     required this.questionNumber,
     required this.totalQuestions,
+    this.isFlagged = false,
+    this.onToggleFlag,
+    this.onOpenPalette,
   });
 
   @override
@@ -940,12 +1199,121 @@ class _QuestionMetaBar extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          'Soru $questionNumber / $totalQuestions',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.bold,
-          ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (onToggleFlag != null)
+              Semantics(
+                button: true,
+                toggled: isFlagged,
+                label: isFlagged
+                    ? 'Sorunun işaretini kaldır'
+                    : 'Soruyu tekrar için işaretle',
+                child: Tooltip(
+                  message: isFlagged
+                      ? 'İşareti Kaldır (F)'
+                      : 'Tekrar İçin İşaretle (F)',
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: InkWell(
+                      onTap: onToggleFlag,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                          color: isFlagged
+                              ? colorScheme.tertiaryContainer
+                              : colorScheme.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isFlagged
+                                ? colorScheme.tertiary
+                                : colorScheme.outlineVariant,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            PhosphorIcon(
+                              isFlagged
+                                  ? PhosphorIconsFill.bookmarkSimple
+                                  : PhosphorIconsRegular.bookmarkSimple,
+                              size: 14,
+                              color: isFlagged
+                                  ? colorScheme.onTertiaryContainer
+                                  : colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              isFlagged ? 'İşaretli' : 'İşaretle',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: isFlagged
+                                    ? colorScheme.onTertiaryContainer
+                                    : colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            Semantics(
+              button: onOpenPalette != null,
+              label:
+                  'Soru $questionNumber / $totalQuestions. Soru gezinti paletini açmak için dokunun.',
+              child: Tooltip(
+                message: 'Soru Gezinti Paletini Aç (G / O)',
+                child: MouseRegion(
+                  cursor: onOpenPalette != null
+                      ? SystemMouseCursors.click
+                      : SystemMouseCursors.basic,
+                  child: InkWell(
+                    onTap: onOpenPalette,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: colorScheme.outlineVariant),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          PhosphorIcon(
+                            PhosphorIconsBold.squaresFour,
+                            size: 14,
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            'Soru $questionNumber / $totalQuestions',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: colorScheme.onSurface,
+                              fontWeight: FontWeight.bold,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -955,8 +1323,14 @@ class _QuestionMetaBar extends StatelessWidget {
 /// Soru metnini gösteren kart bileşeni.
 class _QuestionCard extends StatelessWidget {
   final String text;
+  final bool highContrast;
+  final bool isCompactDesktop;
 
-  const _QuestionCard({required this.text});
+  const _QuestionCard({
+    required this.text,
+    this.highContrast = false,
+    this.isCompactDesktop = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -965,13 +1339,21 @@ class _QuestionCard extends StatelessWidget {
 
     return TactileCard(
       backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
-      child: Text(
-        text,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          color: colorScheme.onSurface,
-          height: 1.5,
-          fontWeight: FontWeight.w600,
+      borderColor: highContrast
+          ? colorScheme.outline
+          : colorScheme.outlineVariant,
+      borderWidth: highContrast ? 2.0 : 1.5,
+      padding: isCompactDesktop
+          ? const EdgeInsets.symmetric(horizontal: 18, vertical: 12)
+          : const EdgeInsets.all(16),
+      child: SelectionArea(
+        child: Text(
+          text,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: colorScheme.onSurface,
+            height: highContrast ? 1.6 : 1.5,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
@@ -996,33 +1378,34 @@ class _QuestionImageCard extends StatelessWidget {
       borderColor: colorScheme.outlineVariant,
       onTap: () => _showZoomableImageDialog(context, imageUrl),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(10),
         child: Stack(
           alignment: Alignment.bottomRight,
           children: [
-            AspectRatio(aspectRatio: 16 / 9, child: _buildImage(imageUrl)),
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: _buildImage(context, imageUrl),
+            ),
             Container(
               margin: const EdgeInsets.all(8),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: Colors.black.withAlpha(170),
-                borderRadius: BorderRadius.circular(20),
+                color: colorScheme.scrim.withAlpha(180),
+                borderRadius: BorderRadius.circular(6),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   PhosphorIcon(
                     PhosphorIconsRegular.magnifyingGlassPlus,
                     size: 14,
-                    color: Colors.white,
+                    color: colorScheme.onPrimary,
                   ),
-                  SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   Text(
                     'Büyüt',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onPrimary,
                     ),
                   ),
                 ],
@@ -1034,12 +1417,12 @@ class _QuestionImageCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImage(String url) {
+  Widget _buildImage(BuildContext context, String url) {
     if (url.startsWith('assets/')) {
       return Image.asset(
         url,
         fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) => _buildErrorWidget(),
+        errorBuilder: (ctx, error, stackTrace) => _buildErrorWidget(ctx),
       );
     }
     return Image.network(
@@ -1049,26 +1432,30 @@ class _QuestionImageCard extends StatelessWidget {
         if (loadingProgress == null) return child;
         return const Center(child: CircularProgressIndicator(strokeWidth: 2));
       },
-      errorBuilder: (context, error, stackTrace) => _buildErrorWidget(),
+      errorBuilder: (ctx, error, stackTrace) => _buildErrorWidget(ctx),
     );
   }
 
-  Widget _buildErrorWidget() {
+  Widget _buildErrorWidget(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Container(
-      color: Colors.grey.withAlpha(25),
+      color: colorScheme.surfaceContainerLow,
       alignment: Alignment.center,
-      child: const Column(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           PhosphorIcon(
             PhosphorIconsRegular.imageBroken,
             size: 28,
-            color: Colors.grey,
+            color: colorScheme.outline,
           ),
-          SizedBox(height: 6),
+          const SizedBox(height: 6),
           Text(
             'Görsel yüklenemedi',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -1076,13 +1463,15 @@ class _QuestionImageCard extends StatelessWidget {
   }
 
   void _showZoomableImageDialog(BuildContext context, String url) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     showDialog<void>(
       context: context,
-      barrierColor: Colors.black87,
+      barrierColor: colorScheme.scrim.withAlpha(220),
       builder: (dialogContext) {
         return Dialog(
           insetPadding: const EdgeInsets.all(12),
-          backgroundColor: Colors.transparent,
+          backgroundColor: colorScheme.surface.withAlpha(0),
           child: Stack(
             children: [
               InteractiveViewer(
@@ -1090,8 +1479,8 @@ class _QuestionImageCard extends StatelessWidget {
                 maxScale: 4.0,
                 child: Center(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: _buildImage(url),
+                    borderRadius: BorderRadius.circular(10),
+                    child: _buildImage(context, url),
                   ),
                 ),
               ),
@@ -1100,8 +1489,8 @@ class _QuestionImageCard extends StatelessWidget {
                 right: 8,
                 child: IconButton.filled(
                   style: IconButton.styleFrom(
-                    backgroundColor: Colors.black54,
-                    foregroundColor: Colors.white,
+                    backgroundColor: colorScheme.scrim.withAlpha(160),
+                    foregroundColor: colorScheme.onPrimary,
                   ),
                   onPressed: () => Navigator.of(dialogContext).pop(),
                   icon: const PhosphorIcon(PhosphorIconsRegular.x),
@@ -1118,12 +1507,14 @@ class _QuestionImageCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black54,
-                      borderRadius: BorderRadius.circular(20),
+                      color: colorScheme.scrim.withAlpha(160),
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Text(
+                    child: Text(
                       'İki parmağınızla yakınlaştırıp kaydırabilirsiniz',
-                      style: TextStyle(color: Colors.white, fontSize: 12),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onPrimary,
+                      ),
                     ),
                   ),
                 ),
@@ -1214,81 +1605,97 @@ class _ExplanationCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return TactileCard(
-      backgroundColor: colorScheme.primaryContainer.withAlpha(80),
-      borderColor: colorScheme.primary.withAlpha(120),
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.primary.withAlpha(110),
+      lipColor: colorScheme.primary.withAlpha(150),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.lightbulb_outline,
-                color: colorScheme.onPrimaryContainer,
-                size: 20,
+              Container(
+                width: 30,
+                height: 30,
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                alignment: Alignment.center,
+                child: PhosphorIcon(
+                  PhosphorIconsFill.bookOpenText,
+                  color: colorScheme.primary,
+                  size: 16,
+                ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Text(
                 'Çözüm Açıklaması',
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onPrimaryContainer,
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            explanation,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurface,
-              height: 1.4,
-            ),
-          ),
-          if (distractorTrap != null && distractorTrap!.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: colorScheme.tertiaryContainer.withAlpha(90),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: colorScheme.tertiary.withAlpha(150),
-                  width: 1.2,
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      PhosphorIcon(
-                        PhosphorIconsFill.warning,
-                        size: 16,
-                        color: colorScheme.onTertiaryContainer,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        'ÖSYM ÇELDİRİCİ TUZAĞI',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onTertiaryContainer,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
+          const SizedBox(height: 10),
+          SelectionArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  explanation,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                    height: 1.48,
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    distractorTrap!,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onTertiaryContainer,
-                      height: 1.4,
+                ),
+                if (distractorTrap != null && distractorTrap!.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: colorScheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: colorScheme.tertiary.withAlpha(120),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            PhosphorIcon(
+                              PhosphorIconsBold.warningCircle,
+                              size: 15,
+                              color: colorScheme.onTertiaryContainer,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'ÖSYM ÇELDİRİCİ TUZAĞI',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: colorScheme.onTertiaryContainer,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          distractorTrap!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onTertiaryContainer,
+                            height: 1.42,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
-              ),
+              ],
             ),
-          ],
+          ),
         ],
       ),
     );
@@ -1298,8 +1705,12 @@ class _ExplanationCard extends StatelessWidget {
 /// Süreli sınavlarda kalan süreyi MM:SS formatında gösteren sayaç rozeti.
 class _ExamTimerBadge extends StatelessWidget {
   final int remainingSeconds;
+  final int extraMinutes;
 
-  const _ExamTimerBadge({required this.remainingSeconds});
+  const _ExamTimerBadge({
+    required this.remainingSeconds,
+    this.extraMinutes = 0,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1314,12 +1725,12 @@ class _ExamTimerBadge extends StatelessWidget {
       padding: const EdgeInsets.only(right: 16),
       child: Center(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: isCritical
                 ? colorScheme.errorContainer
-                : colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(16),
+                : colorScheme.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isCritical
                   ? colorScheme.error
@@ -1329,9 +1740,9 @@ class _ExamTimerBadge extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.timer_outlined,
-                size: 16,
+              PhosphorIcon(
+                PhosphorIconsRegular.timer,
+                size: 15,
                 color: isCritical
                     ? colorScheme.error
                     : colorScheme.onSurfaceVariant,
@@ -1340,13 +1751,22 @@ class _ExamTimerBadge extends StatelessWidget {
               Text(
                 '$minutes:$seconds',
                 style: theme.textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
                   fontFeatures: const [FontFeature.tabularFigures()],
                   color: isCritical
                       ? colorScheme.onErrorContainer
                       : colorScheme.onSurfaceVariant,
                 ),
               ),
+              if (extraMinutes > 0) ...[
+                const SizedBox(width: 4),
+                Text(
+                  '+$extraMinutes dk',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.primary,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
@@ -1408,6 +1828,314 @@ class _QuizModeBadge extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Optik form ve soru gezinti paleti; mobilde alt sayfa (bottom sheet), masaüstünde
+/// merkezî dialog modalı olarak açılır (`TASK-149`).
+class _QuizQuestionPaletteContent extends StatefulWidget {
+  final List<Question> questions;
+  final List<BlueprintSectionRange> ranges;
+  final int currentIndex;
+  final Map<int, int?> userAnswers;
+  final Set<int> flaggedQuestions;
+  final ValueChanged<int> onSelectQuestion;
+  final VoidCallback onFinishQuiz;
+  final bool showHeaderTitle;
+
+  const _QuizQuestionPaletteContent({
+    required this.questions,
+    required this.ranges,
+    required this.currentIndex,
+    required this.userAnswers,
+    required this.flaggedQuestions,
+    required this.onSelectQuestion,
+    required this.onFinishQuiz,
+    this.showHeaderTitle = false,
+  });
+
+  @override
+  State<_QuizQuestionPaletteContent> createState() =>
+      _QuizQuestionPaletteContentState();
+}
+
+class _QuizQuestionPaletteContentState
+    extends State<_QuizQuestionPaletteContent> {
+  int? _selectedRangeIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final showSectionTabs =
+        widget.ranges.length > 1 || widget.questions.length > 30;
+    final answeredCount = widget.userAnswers.values
+        .where((v) => v != null)
+        .length;
+    final emptyCount = widget.questions.length - answeredCount;
+    final flaggedCount = widget.flaggedQuestions.length;
+    const optionLetters = ['A', 'B', 'C', 'D', 'E'];
+
+    final activeRange =
+        _selectedRangeIndex != null &&
+            _selectedRangeIndex! >= 0 &&
+            _selectedRangeIndex! < widget.ranges.length
+        ? widget.ranges[_selectedRangeIndex!]
+        : null;
+    final visibleStart = activeRange?.startIndex ?? 0;
+    final visibleEnd = activeRange?.endIndex ?? widget.questions.length;
+    final visibleCount = visibleEnd - visibleStart;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (widget.showHeaderTitle)
+                      Text(
+                        'Optik Form & Soru Gezintisi',
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    Text(
+                      flaggedCount > 0
+                          ? '$answeredCount Dolu · $emptyCount Boş · $flaggedCount İşaretli'
+                          : '$answeredCount Dolu · $emptyCount Boş',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TextButton.icon(
+                onPressed: widget.onFinishQuiz,
+                icon: const PhosphorIcon(
+                  PhosphorIconsBold.checkCircle,
+                  size: 16,
+                ),
+                label: const Text('Sınavı Bitir'),
+              ),
+            ],
+          ),
+        ),
+        if (showSectionTabs && widget.ranges.isNotEmpty)
+          SizedBox(
+            height: 42,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              scrollDirection: Axis.horizontal,
+              itemCount: widget.ranges.length + 1,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (_, tabIdx) {
+                if (tabIdx == 0) {
+                  final isSelected = _selectedRangeIndex == null;
+                  return ChoiceChip(
+                    key: const ValueKey('palette_section_all'),
+                    label: Text('Tümü (${widget.questions.length})'),
+                    selected: isSelected,
+                    onSelected: (_) {
+                      setState(() => _selectedRangeIndex = null);
+                    },
+                  );
+                }
+                final rangeIdx = tabIdx - 1;
+                final range = widget.ranges[rangeIdx];
+                final isSelected = _selectedRangeIndex == rangeIdx;
+                return ChoiceChip(
+                  key: ValueKey('palette_section_${range.section.id}'),
+                  label: Text(
+                    '${range.section.title} (${range.startIndex + 1}-${range.endIndex})',
+                  ),
+                  selected: isSelected,
+                  onSelected: (_) {
+                    setState(() => _selectedRangeIndex = rangeIdx);
+                  },
+                );
+              },
+            ),
+          ),
+        const SizedBox(height: 4),
+        const Divider(height: 1),
+        Expanded(
+          child: Scrollbar(
+            child: GridView.builder(
+              padding: const EdgeInsets.all(14),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 6,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                childAspectRatio: 1,
+              ),
+              itemCount: visibleCount,
+              itemBuilder: (context, localIdx) {
+                final idx = visibleStart + localIdx;
+                final isCurrent = idx == widget.currentIndex;
+                final isFlagged = widget.flaggedQuestions.contains(idx);
+                final ansIndex = widget.userAnswers[idx];
+                final isAnswered = ansIndex != null;
+                final letter =
+                    isAnswered &&
+                        ansIndex >= 0 &&
+                        ansIndex < optionLetters.length
+                    ? optionLetters[ansIndex]
+                    : '';
+
+                return InkWell(
+                  onTap: () => widget.onSelectQuestion(idx),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: isCurrent
+                              ? colorScheme.primaryContainer
+                              : isAnswered
+                              ? colorScheme.primary
+                              : colorScheme.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: isCurrent
+                                ? colorScheme.primary
+                                : isAnswered
+                                ? colorScheme.primary
+                                : isFlagged
+                                ? colorScheme.tertiary
+                                : colorScheme.outlineVariant,
+                            width: isCurrent || isFlagged ? 1.5 : 1,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${idx + 1}',
+                              style: theme.textTheme.labelMedium?.copyWith(
+                                color: isCurrent
+                                    ? colorScheme.onPrimaryContainer
+                                    : isAnswered
+                                    ? colorScheme.onPrimary
+                                    : colorScheme.onSurface,
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
+                              ),
+                            ),
+                            if (isAnswered)
+                              Text(
+                                letter,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onPrimary.withValues(
+                                    alpha: 0.9,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      if (isFlagged)
+                        Positioned(
+                          top: 3,
+                          right: 3,
+                          child: Container(
+                            width: 7,
+                            height: 7,
+                            decoration: BoxDecoration(
+                              color: colorScheme.tertiary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _QuizShortcutsHelpBody extends StatelessWidget {
+  const _QuizShortcutsHelpBody();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    const shortcuts = <(String, String)>[
+      ('1–5 veya A–E', 'Şık seç / boş bırak'),
+      ('Shift + 1–5 / A–E', 'Çeldirici şıkkın üstünü çiz (veya sağ tık)'),
+      ('Enter / N / Sağ Ok', 'Cevabı onayla veya sonraki soruya geç'),
+      ('P / Sol Ok', 'Önceki soruya dön'),
+      ('F', 'Soruyu tekrar için işaretle / kaldır'),
+      ('G veya O / F2', 'Soru gezinti ve optik form paletini aç'),
+      ('Ctrl + K / Cmd + K', 'Hızlı arama & Komut paleti'),
+      ('? / F1', 'Klavye kısayolları rehberi'),
+    ];
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Web ve masaüstünde fare kullanmadan hızla test çözebilirsiniz.',
+            style: textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
+          for (final entry in shortcuts)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: colorScheme.outlineVariant),
+                    ),
+                    child: Text(
+                      entry.$1,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      entry.$2,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

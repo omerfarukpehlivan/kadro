@@ -1,32 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/auth/data/auth_notifier.dart';
+import 'package:kadro/features/auth/presentation/auth_screen.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/presentation/widgets/victory_story_card.dart';
-import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Test tamamlandığında net ve başarı oranını gösteren karne ekranı.
-///
-/// Angular'daki `QuizResultComponent` karşılığıdır.
-/// Kullanıcının test performansını özetleyen salt okunur (StatelessWidget) bir ekrandır.
-class QuizResultScreen extends StatelessWidget {
+/// Test tamamlandığında Tuğrul kutlama sahnesi ve net karnesini gösteren ekran.
+class QuizResultScreen extends StatefulWidget {
   final QuizResult result;
   final String? testTitle;
 
   const QuizResultScreen({super.key, required this.result, this.testTitle});
 
+  @override
+  State<QuizResultScreen> createState() => _QuizResultScreenState();
+}
+
+class _QuizResultScreenState extends State<QuizResultScreen> {
+  bool _guestPromptShown = false;
+
+  QuizResult get result => widget.result;
+  String? get testTitle => widget.testTitle;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _maybeShowGuestSaveWarning(),
+    );
+  }
+
+  void _maybeShowGuestSaveWarning() {
+    if (!mounted || _guestPromptShown) return;
+
+    final ProviderContainer container;
+    try {
+      container = ProviderScope.containerOf(context, listen: false);
+    } catch (_) {
+      return;
+    }
+
+    if (container.read(authProvider).isAuthenticated) return;
+    _guestPromptShown = true;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => _GuestSaveWarningDialog(
+        onLoginPressed: () {
+          Navigator.of(dialogContext).pop();
+          final router = GoRouter.maybeOf(context);
+          if (router != null) {
+            router.push('/auth');
+          } else {
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (_) => const AuthScreen()));
+          }
+        },
+        onContinuePressed: () => Navigator.of(dialogContext).pop(),
+      ),
+    );
+  }
+
   void _showShareModal(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     showDialog(
       context: context,
       builder: (dialogContext) {
         return Dialog(
-          backgroundColor: Colors.transparent,
+          backgroundColor: colorScheme.surface.withAlpha(0),
           insetPadding: const EdgeInsets.symmetric(
             horizontal: 24,
             vertical: 24,
@@ -54,20 +104,20 @@ class QuizResultScreen extends StatelessWidget {
                     await Clipboard.setData(
                       ClipboardData(
                         text:
-                            '🦅 Kadro KPSS Genel Kültür testimde ${result.net} NET yaptım! (%${result.successRate} Başarı). Hedef 2026 KPSS Derecesi! Sen de netini test et: https://kadro.app',
+                            'Kadro KPSS Genel Kültür testimde ${result.net} net yaptım (%${result.successRate} başarı). https://kadro.app',
                       ),
                     );
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text(
-                            '📸 Zafer metni panoya kopyalandı! Instagram veya WhatsApp durumunda paylaşabilirsin.',
+                            'Sonuç metni panoya kopyalandı. İstediğin yerde paylaşabilirsin.',
                           ),
                         ),
                       );
                     }
                   },
-                  icon: const PhosphorIcon(PhosphorIconsBold.copy, size: 16),
+                  icon: const PhosphorIcon(PhosphorIconsRegular.copy, size: 16),
                   label: const Text('Skorumu & Metni Kopyala'),
                 ),
                 const SizedBox(height: 8),
@@ -85,171 +135,267 @@ class QuizResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Test Sonucu'),
-        automaticallyImplyLeading: false, // Geri butonunu gizler
-      ),
-      body: SafeArea(
-        child: ResponsiveContentWrapper(
-          maxWidth: 720,
-          padding: EdgeInsets.zero,
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final isStrongResult = result.successRate >= 60;
+    final mood = isStrongResult ? TugrulMood.victory : TugrulMood.coach;
+    final isSplitPane = ResponsiveBreakpoints.usesSplitPane(context);
+
+    final heroRow = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        TugrulAvatar(
+          mood: mood,
+          size: 62,
+          ringColor: isStrongResult
+              ? colorScheme.tertiary
+              : colorScheme.primary,
+          tooltip: 'Karne & Tekrar Notları',
+          onTap: () => TugrulTipsSheet.show(context, mood: TugrulMood.victory),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Zafer modunda Kadro Koçu maskot konuşma balonu
-              MascotCoachBanner(
-                mood: MascotMood.victory,
-                badgeLabel: 'ZAFER KARNESİ',
-                title: 'Test Tamamlandı!',
-                message: result.successRate >= 70
-                    ? 'Muhteşem bir uçuş! Kadro Koçu seninle gurur duyuyor, kadro kapıları açılıyor!'
-                    : 'Güzel mücadele! Yanlış Defteri\'ne düşen soruları birlikte inceleyip nete çevirelim.',
+              Text(
+                'Test Tamamlandı!',
+                style: textTheme.headlineSmall?.copyWith(
+                  color: colorScheme.onSurface,
+                ),
               ),
-              const SizedBox(height: 10),
-
-              // Ana Net & Başarı Oranı 3D Kartı (Kompakt Başarı Şeridi - TASK-70)
-              _NetScoreCard(result: result),
-              const SizedBox(height: 8),
-
-              // Doğru, Yanlış ve Boş istatistikleri (3D Tactile)
-              Row(
-                children: [
-                  Expanded(
-                    child: _ResultStatItem(
-                      label: 'Doğru',
-                      count: result.correctCount,
-                      icon: PhosphorIconsBold.check,
-                      color: Theme.of(context).colorScheme.tertiary,
-                    ),
-                  ),
-                  AppSpacing.gapHorizontalXs,
-                  Expanded(
-                    child: _ResultStatItem(
-                      label: 'Yanlış',
-                      count: result.wrongCount,
-                      icon: PhosphorIconsBold.x,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                  AppSpacing.gapHorizontalXs,
-                  Expanded(
-                    child: _ResultStatItem(
-                      label: 'Boş',
-                      count: result.emptyCount,
-                      icon: PhosphorIconsBold.question,
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 2),
+              Text(
+                result.successRate >= 70
+                    ? 'Güçlü bir performans çıkardın; yanlışlarını inceleyebilirsin.'
+                    : 'Yanlış yaptığın sorular Yanlış Defteri listesine eklendi.',
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
-              const SizedBox(height: 8),
-
-              // Ders bazında detaylı karne (TASK-87)
-              if (result.hasLessonBreakdown) ...[
-                _LessonBreakdownReportCard(
-                  lessonBreakdown: result.lessonBreakdown!,
-                ),
-                const SizedBox(height: 8),
-              ],
-
-              // Zafer Karnesi Paylaşım Butonu (TASK-52 & TASK-70)
-              FilledButton.tonalIcon(
-                onPressed: () => _showShareModal(context),
-                style: FilledButton.styleFrom(
-                  visualDensity: VisualDensity.compact,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 14,
-                  ),
-                ),
-                icon: const PhosphorIcon(
-                  PhosphorIconsBold.shareNetwork,
-                  size: 18,
-                ),
-                label: const Text('Zafer Karneni Paylaş 📸'),
-              ),
-              const SizedBox(height: 8),
-
-              // Akıllı İkili Aksiyon Köprüsü (TASK-50 & TASK-70: Zero Dead-Ends UX)
-              if (result.wrongCount > 0) ...[
-                FilledButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const MistakesScreen()),
-                    );
-                  },
-                  style: FilledButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 14,
-                    ),
-                  ),
-                  icon: const PhosphorIcon(
-                    PhosphorIconsBold.bookmarkSimple,
-                    size: 18,
-                  ),
-                  label: Text(
-                    'Yanlış Defterine Git (${result.wrongCount} Yanlış)',
-                  ),
-                ),
-                const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: OutlinedButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 14,
-                    ),
-                  ),
-                  icon: const PhosphorIcon(PhosphorIconsBold.house, size: 18),
-                  label: const Text('Ana Sayfaya Dön'),
-                ),
-              ] else ...[
-                FilledButton.icon(
-                  onPressed: () => Navigator.of(context).pop(),
-                  style: FilledButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 14,
-                    ),
-                  ),
-                  icon: const PhosphorIcon(PhosphorIconsBold.house, size: 18),
-                  label: const Text('Ana Sayfaya Dön'),
-                ),
-                const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (_) => const FlashcardsScreen(),
-                      ),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 10,
-                      horizontal: 14,
-                    ),
-                  ),
-                  icon: const PhosphorIcon(PhosphorIconsBold.cards, size: 18),
-                  label: const Text('Bilgi Kartlarıyla Hızlı Tekrar'),
-                ),
-              ],
-              const SizedBox(height: 10),
             ],
           ),
         ),
+      ],
+    );
+
+    final statSummaryRow = Row(
+      children: [
+        Expanded(
+          child: _ResultStatItem(
+            label: 'Doğru',
+            count: result.correctCount,
+            icon: PhosphorIconsFill.checkCircle,
+            color: colorScheme.secondary,
+          ),
+        ),
+        AppSpacing.gapHorizontalXs,
+        Expanded(
+          child: _ResultStatItem(
+            label: 'Yanlış',
+            count: result.wrongCount,
+            icon: PhosphorIconsFill.xCircle,
+            color: colorScheme.error,
+          ),
+        ),
+        AppSpacing.gapHorizontalXs,
+        Expanded(
+          child: _ResultStatItem(
+            label: 'Boş',
+            count: result.emptyCount,
+            icon: PhosphorIconsFill.question,
+            color: colorScheme.outline,
+          ),
+        ),
+      ],
+    );
+
+    final actionButtons = <Widget>[
+      FilledButton.tonalIcon(
+        onPressed: () => _showShareModal(context),
+        icon: const PhosphorIcon(PhosphorIconsRegular.shareNetwork, size: 18),
+        label: const Text('Sonucu Paylaş'),
+      ),
+      const SizedBox(height: 8),
+      if (result.wrongCount > 0) ...[
+        FilledButton.icon(
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const MistakesScreen()),
+            );
+          },
+          icon: const PhosphorIcon(
+            PhosphorIconsRegular.bookmarkSimple,
+            size: 18,
+          ),
+          label: Text('Yanlış Defterine Git (${result.wrongCount} Yanlış)'),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const PhosphorIcon(PhosphorIconsRegular.house, size: 18),
+          label: const Text('Ana Sayfaya Dön'),
+        ),
+      ] else ...[
+        FilledButton.icon(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const PhosphorIcon(PhosphorIconsRegular.house, size: 18),
+          label: const Text('Ana Sayfaya Dön'),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          onPressed: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const FlashcardsScreen()),
+            );
+          },
+          icon: const PhosphorIcon(PhosphorIconsRegular.cards, size: 18),
+          label: const Text('Bilgi Kartlarıyla Hızlı Tekrar'),
+        ),
+      ],
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Test Sonucu'),
+        automaticallyImplyLeading: false,
+      ),
+      body: SafeArea(
+        child: isSplitPane
+            ? ResponsiveContentWrapper(
+                maxWidth: 1200,
+                padding: EdgeInsets.zero,
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    padding: AppSpacing.pagePadding(context),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 5,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              heroRow,
+                              AppSpacing.gapMd,
+                              _NetScoreCard(result: result),
+                              AppSpacing.gapSm,
+                              statSummaryRow,
+                              AppSpacing.gapMd,
+                              ...actionButtons,
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 24),
+                        Expanded(
+                          flex: 7,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              if (result.hasLessonBreakdown) ...[
+                                _LessonBreakdownReportCard(
+                                  lessonBreakdown: result.lessonBreakdown!,
+                                ),
+                                AppSpacing.gapMd,
+                              ],
+                              TactileCard(
+                                backgroundColor:
+                                    colorScheme.surfaceContainerLow,
+                                borderColor: colorScheme.outlineVariant,
+                                padding: const EdgeInsets.all(18),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        PhosphorIcon(
+                                          isStrongResult
+                                              ? PhosphorIconsFill.sparkle
+                                              : PhosphorIconsFill.target,
+                                          size: 20,
+                                          color: isStrongResult
+                                              ? colorScheme.secondary
+                                              : colorScheme.primary,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            isStrongResult
+                                                ? 'Sonraki Adım Önerisi'
+                                                : 'Hızlı Toparlanma Planı',
+                                            style: textTheme.titleSmall
+                                                ?.copyWith(
+                                                  color: colorScheme.onSurface,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      result.wrongCount > 0
+                                          ? 'Bu oturumda ${result.wrongCount} yanlış ve ${result.emptyCount} boş soru oluştu. Yanlış Defteri üzerinden hatalı sorularını hemen tekrar çözerek net kaybını kalıcı kazanca çevirebilirsin.'
+                                          : 'Harika gidiyorsun! Sıfır hatayla tamamladığın bu oturumu Bilgi Kartları ile pekiştirerek kalıcılığı artırabilirsin.',
+                                      style: textTheme.bodySmall?.copyWith(
+                                        color: colorScheme.onSurfaceVariant,
+                                        height: 1.45,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 14),
+                                    OutlinedButton.icon(
+                                      onPressed: () => _showShareModal(context),
+                                      icon: const PhosphorIcon(
+                                        PhosphorIconsRegular.trophy,
+                                        size: 16,
+                                      ),
+                                      label: const Text(
+                                        'Zafer Karnesini Görüntüle',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            : ResponsiveContentWrapper(
+                maxWidth: 720,
+                padding: EdgeInsets.zero,
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
+                  children: [
+                    heroRow,
+                    const SizedBox(height: 12),
+                    _NetScoreCard(result: result),
+                    const SizedBox(height: 8),
+                    statSummaryRow,
+                    const SizedBox(height: 10),
+                    if (result.hasLessonBreakdown) ...[
+                      _LessonBreakdownReportCard(
+                        lessonBreakdown: result.lessonBreakdown!,
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                    ...actionButtons,
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
       ),
     );
   }
 }
 
-/// Büyük Net ve Başarı yüzdesini vurgulayan kompakt 3D Tactile Başarı Şeridi (TASK-70).
 class _NetScoreCard extends StatelessWidget {
   final QuizResult result;
 
@@ -262,8 +408,9 @@ class _NetScoreCard extends StatelessWidget {
 
     return TactileCard(
       backgroundColor: colorScheme.primaryContainer,
-      borderColor: colorScheme.primary.withAlpha(120),
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      borderColor: colorScheme.primary.withAlpha(130),
+      lipColor: colorScheme.primary.withAlpha(160),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -277,15 +424,14 @@ class _NetScoreCard extends StatelessWidget {
                   'Net Puanın',
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   result.net.toStringAsFixed(2),
-                  style: theme.textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: colorScheme.onPrimaryContainer,
+                  style: theme.textTheme.displayMedium?.copyWith(
+                    color: colorScheme.primary,
+                    fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
               ],
@@ -295,23 +441,25 @@ class _NetScoreCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: colorScheme.primary.withAlpha(90),
+                width: 1.2,
+              ),
             ),
             child: Text(
               '%${result.successRate} Başarı',
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+              style: theme.textTheme.labelLarge?.copyWith(
                 color: colorScheme.primary,
               ),
             ),
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 200.ms);
+    );
   }
 }
 
-/// Doğru, Yanlış veya Boş sayılarını gösteren kompakt 3D istatistik kutusu (TASK-70).
 class _ResultStatItem extends StatelessWidget {
   final String label;
   final int count;
@@ -330,10 +478,10 @@ class _ResultStatItem extends StatelessWidget {
     final theme = Theme.of(context);
 
     return TactileCard(
-      backgroundColor: theme.colorScheme.surfaceContainerHighest,
-      borderColor: theme.colorScheme.outlineVariant,
+      backgroundColor: theme.colorScheme.surface,
+      borderColor: color.withAlpha(80),
+      lipColor: color.withAlpha(90),
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-      borderRadius: 14,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -341,9 +489,9 @@ class _ResultStatItem extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             '$count',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
+            style: theme.textTheme.titleLarge?.copyWith(
               color: color,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
           const SizedBox(height: 2),
@@ -359,17 +507,16 @@ class _ResultStatItem extends StatelessWidget {
   }
 }
 
-/// 4 Genel Kültür dersinin net ve doğruluk dökümünü gösteren resmi karne kartı (TASK-87).
 class _LessonBreakdownReportCard extends StatelessWidget {
   final Map<String, LessonResult> lessonBreakdown;
 
   const _LessonBreakdownReportCard({required this.lessonBreakdown});
 
   IconData _getLessonIcon(String lesson) {
-    if (lesson == 'Tarih') return PhosphorIconsDuotone.scroll;
-    if (lesson == 'Coğrafya') return PhosphorIconsDuotone.compass;
-    if (lesson == 'Vatandaşlık') return PhosphorIconsDuotone.scales;
-    return PhosphorIconsDuotone.newspaperClipping;
+    if (lesson == 'Tarih') return PhosphorIconsRegular.scroll;
+    if (lesson == 'Coğrafya') return PhosphorIconsRegular.compass;
+    if (lesson == 'Vatandaşlık') return PhosphorIconsRegular.scales;
+    return PhosphorIconsRegular.newspaperClipping;
   }
 
   @override
@@ -385,17 +532,15 @@ class _LessonBreakdownReportCard extends StatelessWidget {
           Row(
             children: [
               PhosphorIcon(
-                PhosphorIconsBold.chartBar,
-                size: 20,
+                PhosphorIconsFill.chartBar,
+                size: 18,
                 color: colorScheme.primary,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Ders Bazlı Net Karnesi',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: theme.textTheme.titleSmall,
                 ),
               ),
               Container(
@@ -407,7 +552,6 @@ class _LessonBreakdownReportCard extends StatelessWidget {
                 child: Text(
                   'ÖSYM Standardı',
                   style: theme.textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
                     color: colorScheme.onPrimaryContainer,
                   ),
                 ),
@@ -436,19 +580,19 @@ class _LessonBreakdownReportCard extends StatelessWidget {
                         child: Text(
                           '${item.lesson} (${item.totalQuestions} Soru)',
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
                       Text(
                         '$netFormatted Net',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
+                        style: theme.textTheme.titleSmall?.copyWith(
                           color: item.net >= (item.totalQuestions * 0.7)
-                              ? colorScheme.tertiary
+                              ? colorScheme.secondary
                               : item.net >= (item.totalQuestions * 0.4)
                               ? colorScheme.primary
                               : colorScheme.error,
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
                     ],
@@ -469,7 +613,7 @@ class _LessonBreakdownReportCard extends StatelessWidget {
                                 colorScheme.surfaceContainerHighest,
                             valueColor: AlwaysStoppedAnimation<Color>(
                               item.net >= (item.totalQuestions * 0.7)
-                                  ? colorScheme.tertiary
+                                  ? colorScheme.secondary
                                   : colorScheme.primary,
                             ),
                           ),
@@ -491,6 +635,86 @@ class _LessonBreakdownReportCard extends StatelessWidget {
           }),
         ],
       ),
-    ).animate().fadeIn(duration: 250.ms);
+    );
+  }
+}
+
+/// Misafir kullanıcı testi bitirdiğinde ilerleme kaydı için açılan bilgilendirme popup'ı.
+class _GuestSaveWarningDialog extends StatelessWidget {
+  final VoidCallback onLoginPressed;
+  final VoidCallback onContinuePressed;
+
+  const _GuestSaveWarningDialog({
+    required this.onLoginPressed,
+    required this.onContinuePressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 420),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: colorScheme.tertiaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: PhosphorIcon(
+                        PhosphorIconsFill.cloudWarning,
+                        color: colorScheme.onTertiaryContainer,
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'İlerlemeniz Kaydedilmiyor',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Giriş yapmazsanız ilerlemeniz kaydedilemez. Şimdi giriş yapmak istemezseniz dilediğiniz zaman Profil sekmesinden giriş yapabilirsiniz.',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 20),
+              FilledButton(
+                onPressed: onLoginPressed,
+                child: const Text('Giriş Yap / Kayıt Ol'),
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: onContinuePressed,
+                child: const Text('Şimdilik Devam Et'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

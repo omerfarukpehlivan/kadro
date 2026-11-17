@@ -1,13 +1,27 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/main.dart';
+
+Widget _onboardedApp() => ProviderScope(
+  overrides: [
+    initialUserPreferencesProvider.overrideWithValue(
+      const UserPreferencesState(
+        hasCompletedOnboarding: true,
+        hasActiveStudyProgram: true,
+      ),
+    ),
+  ],
+  child: const MyApp(),
+);
 
 void main() {
   testWidgets('Alt menüden sayfalar arasında geçiş yapılır', (
     WidgetTester tester,
   ) async {
     // Uygulamayı çiz: ilk açılışta ana sayfa görünür.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(_onboardedApp());
     expect(find.text('Hoş geldin'), findsOneWidget);
 
     // Alt menüde "Dersler"e dokun ve animasyonların bitmesini bekle.
@@ -19,7 +33,7 @@ void main() {
     // "Pratik"e geç.
     await tester.tap(find.text('Pratik'));
     await tester.pumpAndSettle();
-    expect(find.text('ANTRENMAN SAHASI'), findsOneWidget);
+    expect(find.text('Antrenman Sahası'), findsOneWidget);
 
     // "Profil"e geç.
     await tester.tap(find.text('Profil'));
@@ -30,7 +44,7 @@ void main() {
   testWidgets(
     'Dersler sekmesinde Tarih kartına tıklanınca Tarih Konuları ekranı açılır',
     (WidgetTester tester) async {
-      await tester.pumpWidget(const MyApp());
+      await tester.pumpWidget(_onboardedApp());
 
       // Alt menüden Dersler sekmesine geç
       await tester.tap(find.text('Dersler'));

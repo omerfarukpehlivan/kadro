@@ -26,45 +26,32 @@ class MaintenanceScreen extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Bakım Rozeti
-                Container(
-                  width: 88,
-                  height: 88,
-                  decoration: BoxDecoration(
-                    color: colorScheme.errorContainer.withAlpha(120),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Icon(
-                      PhosphorIconsBold.wrench,
-                      size: 44,
-                      color: colorScheme.error,
-                    ),
-                  ),
+                PhosphorIcon(
+                  PhosphorIconsRegular.wrench,
+                  size: 36,
+                  color: colorScheme.error,
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: 20),
 
                 // Başlık
                 Text(
-                  'Kadro Kısa Bir Bakımda 🛠️',
-                  style: textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+                  'Planlı bakım',
+                  style: textTheme.headlineMedium?.copyWith(
                     color: colorScheme.onSurface,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
 
                 // Açıklama Metni
                 Text(
                   config.maintenanceMessage,
                   style: textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onSurfaceVariant,
-                    height: 1.5,
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 36),
+                const SizedBox(height: 32),
 
                 // Yeniden Dene Butonu
                 SizedBox(
@@ -75,14 +62,11 @@ class MaintenanceScreen extends ConsumerWidget {
                       AppConfigService.clearCacheForTest();
                       ref.invalidate(appRemoteConfigProvider);
                     },
-                    icon: const Icon(
+                    icon: const PhosphorIcon(
                       PhosphorIconsBold.arrowsClockwise,
-                      size: 20,
+                      size: 18,
                     ),
-                    label: const Text(
-                      'Tekrar Kontrol Et',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
+                    label: const Text('Tekrar Kontrol Et'),
                   ),
                 ),
               ],

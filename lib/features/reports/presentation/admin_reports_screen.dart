@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/reports/data/models/question_report.dart';
 import 'package:kadro/features/reports/data/question_report_repository.dart';
+import 'package:kadro/shared/widgets/empty_state_view.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// İçerik editörü ve yönetici için bildirilen hatalı soruları inceleme ekranı (TASK-47).
-///
-/// Angular Karşılığı: Admin Dashboard / Moderation Queue bileşenidir.
 class AdminReportsScreen extends StatefulWidget {
   final QuestionReportRepository repository;
 
@@ -46,8 +48,8 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
         actions: [
           IconButton(
             icon: const PhosphorIcon(
-              PhosphorIconsBold.arrowsCounterClockwise,
-              size: 20,
+              PhosphorIconsRegular.arrowsCounterClockwise,
+              size: 18,
             ),
             tooltip: 'Yenile',
             onPressed: _loadReports,
@@ -61,174 +63,151 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final reports = snapshot.data ?? [];
-
-          if (reports.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer,
-                        shape: BoxShape.circle,
-                      ),
-                      child: PhosphorIcon(
-                        PhosphorIconsDuotone.shieldCheck,
-                        size: 48,
-                        color: colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Henüz bildirilmiş soru yok!',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Kullanıcılar test esnasında bayrak butonuna basarak soru bildirdiğinde burada listelenecektir.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
+          if (snapshot.hasError) {
+            return EmptyStateView(
+              mascotMood: TugrulMood.detective,
+              icon: PhosphorIconsRegular.warningCircle,
+              title: 'Raporlar yüklenemedi',
+              description: 'Bağlantı veya sunucu yanıtı alınamadı. Tekrar deneyebilirsin.',
+              actionLabel: 'Tekrar Dene',
+              onAction: _loadReports,
             );
           }
 
-          return RefreshIndicator(
-            onRefresh: () async => _loadReports(),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: reports.length + 1,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: PageHeader(
-                      icon: PhosphorIconsDuotone.shieldWarning,
-                      title: 'Soru Denetim Masası',
-                      subtitle:
-                          'Toplam ${reports.length} adet incelenmeyi bekleyen bildirim bulunuyor.',
-                    ),
-                  );
-                }
+          final reports = snapshot.data ?? [];
 
-                final report = reports[index - 1];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: TactileCard(
-                    backgroundColor: colorScheme.surface,
-                    borderColor: colorScheme.outlineVariant,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Rozetler ve Test Başlığı
-                        Row(
+          if (reports.isEmpty) {
+            return const EmptyStateView(
+              mascotMood: TugrulMood.detective,
+              icon: PhosphorIconsRegular.shieldCheck,
+              title: 'Henüz bildirilmiş soru yok',
+              description: 'Kullanıcılar test esnasında bayrak butonuna basarak soru bildirdiğinde burada listelenir.',
+            );
+          }
+
+          return ResponsiveContentWrapper(
+            maxWidth: 960,
+            padding: EdgeInsets.zero,
+            child: RefreshIndicator(
+              onRefresh: () async => _loadReports(),
+              child: Scrollbar(
+                child: ListView.builder(
+                  padding: AppSpacing.pagePadding(context),
+                  itemCount: reports.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == 0) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: PageHeader(
+                          icon: PhosphorIconsRegular.warningCircle,
+                          title: 'Soru Denetim Masası',
+                          subtitle:
+                              'Toplam ${reports.length} adet incelenmeyi bekleyen bildirim bulunuyor.',
+                        ),
+                      );
+                    }
+
+                    final report = reports[index - 1];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: TactileCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 3,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.errorContainer,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    '${report.lesson} · ${report.topic}',
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: colorScheme.onErrorContainer,
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                Text(
+                                  report.testTitle,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+
                             Container(
+                              width: double.infinity,
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                                horizontal: 10,
+                                vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: colorScheme.errorContainer,
-                                borderRadius: BorderRadius.circular(8),
+                                color: colorScheme.surfaceContainerLow,
+                                borderRadius: BorderRadius.circular(6),
                               ),
-                              child: Text(
-                                '${report.lesson} · ${report.topic}',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.onErrorContainer,
-                                ),
+                              child: Row(
+                                children: [
+                                  PhosphorIcon(
+                                    PhosphorIconsBold.warning,
+                                    size: 15,
+                                    color: colorScheme.error,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      report.reason,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: colorScheme.onSurface,
+                                          ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const Spacer(),
+
+                            if (report.userNote != null &&
+                                report.userNote!.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                'Kullanıcı Notu: "${report.userNote}"',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 10),
+
                             Text(
-                              report.testTitle,
-                              style: theme.textTheme.bodySmall?.copyWith(
+                              'Soru Metni:',
+                              style: theme.textTheme.labelSmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              report.questionText,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurface,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
-
-                        // Bildirilen Sebep
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainerHighest
-                                .withAlpha(120),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              PhosphorIcon(
-                                PhosphorIconsBold.warning,
-                                size: 16,
-                                color: colorScheme.error,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  report.reason,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: colorScheme.onSurface,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Kullanıcı Notu (Varsa)
-                        if (report.userNote != null &&
-                            report.userNote!.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            'Kullanıcı Notu: "${report.userNote}"',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontStyle: FontStyle.italic,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 10),
-
-                        // Soru Metni
-                        Text(
-                          'Soru Metni:',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          report.questionText,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+                      ),
+                    );
+                  },
+                ),
+              ),
             ),
           );
         },

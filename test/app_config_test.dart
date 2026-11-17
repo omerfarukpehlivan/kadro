@@ -42,6 +42,12 @@ void main() {
           'is_maintenance_mode': true,
           'maintenance_message': 'Sunucu yenileniyor...',
           'store_url': 'https://custom-store-url.com',
+          'exam_date_overrides': {
+            'lisans_gk': '2027-09-19T10:15:00',
+            'dhbt_onlisans': '2028-11-12T10:15:00',
+            'bozuk_anahtar': 'not-a-date',
+            '': '2027-01-01',
+          },
         };
 
         final config = AppRemoteConfig.fromMap(json);
@@ -50,8 +56,33 @@ void main() {
         expect(config.isMaintenanceMode, isTrue);
         expect(config.maintenanceMessage, equals('Sunucu yenileniyor...'));
         expect(config.storeUrl, equals('https://custom-store-url.com'));
+        expect(
+          config.examDateOverrides['lisans_gk'],
+          equals(DateTime(2027, 9, 19, 10, 15)),
+        );
+        expect(
+          config.examDateOverrides['dhbt_onlisans'],
+          equals(DateTime(2028, 11, 12, 10, 15)),
+        );
+        expect(config.examDateOverrides.containsKey('bozuk_anahtar'), isFalse);
+        expect(config.examDateOverrides.containsKey(''), isFalse);
       },
     );
+
+    test('AppRemoteConfig.fromMap string JSON veya geçersiz exam_date_overrides verisini güvenle yönetmeli', () {
+      final stringConfig = AppRemoteConfig.fromMap({
+        'exam_date_overrides': '{"ekpss_lisans":"2028-04-30T10:15:00"}',
+      });
+      expect(
+        stringConfig.examDateOverrides['ekpss_lisans'],
+        equals(DateTime(2028, 4, 30, 10, 15)),
+      );
+
+      final malformedConfig = AppRemoteConfig.fromMap({
+        'exam_date_overrides': '{bozuk json',
+      });
+      expect(malformedConfig.examDateOverrides, isEmpty);
+    });
 
     test(
       'AppConfigService çevrimdışı modda güvenli fallback değerini dönmeli',
@@ -82,7 +113,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Güncelleme Gerekli 🚀'), findsOneWidget);
+      expect(find.text('Güncelleme gerekli'), findsOneWidget);
       expect(find.text('Google Play\'den Güncelle'), findsOneWidget);
       expect(
         find.text('Daha Sonra'),
@@ -106,7 +137,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('Kadro Kısa Bir Bakımda 🛠️'), findsOneWidget);
+        expect(find.text('Planlı bakım'), findsOneWidget);
         expect(
           find.text('Kadro sunucuları KPSS güncellemesi için bakımdadır.'),
           findsOneWidget,

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/shared/widgets/climate_chart/climate_chart_models.dart';
 import 'package:kadro/shared/widgets/geo_diagram/geo_diagram_models.dart';
 import 'package:kadro/shared/widgets/population_pyramid/population_pyramid_models.dart';
@@ -49,6 +50,22 @@ class Question {
   /// kaymayan, deterministik sırada oluşmasını sağlar.
   final int? orderIndex;
 
+  /// Sorunun ait olduğu KPSS / MEB-AGS sınav kapsamları (PostgreSQL `exam_scopes`).
+  /// Varsayılan `['lisans_gk']` mevcut Lisans Genel Kültür çekirdek havuzuyla uyumludur.
+  final List<String> examScopes;
+
+  /// Alt branş veya oturum ayrıştırıcısı (`'oabt_tarih'`, `'dhbt_lisans'`, vb.).
+  final String? subBranch;
+
+  /// Hedeflenen öğrenim düzeyi (`'lisans'`, `'onlisans'`, `'ortaogretim'`).
+  final String? educationLevel;
+
+  /// E-KPSS kitapçık uyarlama grubu (`'genel'`, `'gorme'`, `'isitme1'`, `'zihinsel'`).
+  final String? disabilityVariant;
+
+  /// E-KPSS İşitme-1 vb. kaynak metin varyantı (`'standard'`, `'simplified'`).
+  final String? sourceVariant;
+
   const Question({
     required this.id,
     required this.lesson,
@@ -66,10 +83,172 @@ class Question {
     this.pyramidConfig,
     this.sunConfig,
     this.orderIndex,
+    this.examScopes = const ['lisans_gk'],
+    this.subBranch,
+    this.educationLevel,
+    this.disabilityVariant,
+    this.sourceVariant,
   });
 
   /// Kullanıcının seçtiği şıkkın doğru olup olmadığını kontrol eden yardımcı metot.
   bool isCorrect(int? selectedIndex) => selectedIndex == correctIndex;
+
+  /// Kullanıcının seçtiği [selection] sınav profiline bu sorunun kapsam,
+  /// öğrenim düzeyi, alt branş, engel grubu ve metin varyantı açısından uyup
+  /// uymadığını kontrol eden saf alan metodu.
+  bool matchesSelection(
+    ExamSelection selection, {
+    String? preferredSourceVariant,
+  }) {
+    final normalizedScopes = examScopes
+        .map((s) => s.trim().toLowerCase())
+        .where((s) => s.isNotEmpty)
+        .toSet();
+    final effectiveScopes = normalizedScopes.isEmpty
+        ? const {'lisans_gk'}
+        : normalizedScopes;
+
+    final targetScope = selection.scopeKey.toLowerCase();
+    final acceptedScopes = <String>{
+      targetScope,
+      '${selection.family.key}_common',
+      if (selection.family == KpssExamFamily.bGrubu &&
+          selection.bGroupProfile == BGroupProfile.fullGyGk) ...{
+        '${selection.educationLevel.key}_gk',
+        'b_grubu_gygk',
+        'b_grubu_gk',
+      },
+      if (selection.family == KpssExamFamily.bGrubu &&
+          selection.bGroupProfile == BGroupProfile.onlyGk)
+        'b_grubu_gk',
+      if (selection.family == KpssExamFamily.mebAgs &&
+          selection.oabtBranch != OabtBranch.none &&
+          (subBranch == null || subBranch!.trim().isEmpty))
+        'meb_ags',
+      if (selection.family == KpssExamFamily.dhbt) ...{'dhbt_common', 'dhbt_1'},
+    };
+
+    if (effectiveScopes.intersection(acceptedScopes).isEmpty) {
+      return false;
+    }
+
+    final normalizedEdu = _normalizeOptionalTag(educationLevel);
+    if (normalizedEdu != null &&
+        normalizedEdu != selection.educationLevel.key) {
+      return false;
+    }
+
+    final normalizedSubBranch = _normalizeOptionalTag(subBranch);
+    if (normalizedSubBranch != null &&
+        !_matchesSubBranch(normalizedSubBranch, selection)) {
+      return false;
+    }
+
+    final normalizedDisability = _normalizeOptionalTag(disabilityVariant);
+    if (normalizedDisability != null) {
+      if (selection.family != KpssExamFamily.ekpss) {
+        return false;
+      }
+      if (normalizedDisability != selection.disabilityGroup.key.toLowerCase()) {
+        return false;
+      }
+    }
+
+    final normalizedSource = _normalizeOptionalTag(sourceVariant);
+    final normalizedPreferred = _normalizeOptionalTag(preferredSourceVariant);
+    if (normalizedPreferred != null) {
+      if (normalizedSource != null && normalizedSource != normalizedPreferred) {
+        return false;
+      }
+    } else if (normalizedSource == 'simplified') {
+      final isHearingAdapted =
+          selection.family == KpssExamFamily.ekpss &&
+          selection.disabilityGroup == DisabilityGroup.isitme1;
+      if (!isHearingAdapted) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  static bool _matchesSubBranch(
+    String normalizedSubBranch,
+    ExamSelection selection,
+  ) {
+    switch (selection.family) {
+      case KpssExamFamily.mebAgs:
+        if (selection.oabtBranch == OabtBranch.none) {
+          return normalizedSubBranch == 'meb_ags';
+        }
+        if (selection.oabtBranch == OabtBranch.ydsDil) {
+          return normalizedSubBranch == 'yds' ||
+              normalizedSubBranch == 'meb_ags_yds' ||
+              normalizedSubBranch == 'meb_ags';
+        }
+        return normalizedSubBranch == 'oabt_${selection.oabtBranch.key}' ||
+            normalizedSubBranch == 'meb_ags_oabt_${selection.oabtBranch.key}' ||
+            normalizedSubBranch == 'meb_ags';
+      case KpssExamFamily.dhbt:
+        return normalizedSubBranch == 'dhbt_${selection.educationLevel.key}' ||
+            normalizedSubBranch == 'dhbt_1' ||
+            normalizedSubBranch == 'dhbt_common' ||
+            normalizedSubBranch == selection.scopeKey;
+      case KpssExamFamily.aGrubu:
+        final chosenFields = selection.selectedFieldLessons.isEmpty
+            ? ExamSelection.defaultAGroupP48Lessons
+            : selection.selectedFieldLessons;
+        final acceptedFieldSlugs = chosenFields
+            .map((name) {
+              final slug = _asciiTagSlug(name);
+              return slug.startsWith('alan_') ? slug.substring(5) : slug;
+            })
+            .where((s) => s.isNotEmpty)
+            .expand((slug) => {'a_grubu_$slug', 'alan_$slug', slug})
+            .toSet();
+        return normalizedSubBranch == selection.scopeKey ||
+            normalizedSubBranch == 'a_grubu_p48' ||
+            acceptedFieldSlugs.contains(normalizedSubBranch);
+      case KpssExamFamily.bGrubu:
+      case KpssExamFamily.ekpss:
+        return normalizedSubBranch == selection.scopeKey ||
+            normalizedSubBranch == selection.curriculumNamespace;
+    }
+  }
+
+  static String _asciiTagSlug(String raw) {
+    return raw
+        .trim()
+        .toLowerCase()
+        .replaceAll('ç', 'c')
+        .replaceAll('ğ', 'g')
+        .replaceAll('ı', 'i')
+        .replaceAll('ö', 'o')
+        .replaceAll('ş', 's')
+        .replaceAll('ü', 'u')
+        .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
+        .replaceAll(RegExp(r'^_+|_+$'), '');
+  }
+
+  static String? _normalizeOptionalTag(dynamic raw) {
+    if (raw == null) return null;
+    final trimmed = raw.toString().trim();
+    if (trimmed.isEmpty || trimmed == 'null') return null;
+    return trimmed.toLowerCase();
+  }
+
+  static List<String> _parseExamScopes(dynamic raw) {
+    if (raw is List) {
+      final parsed = raw
+          .map((e) => e?.toString().trim() ?? '')
+          .where((s) => s.isNotEmpty)
+          .toList(growable: false);
+      if (parsed.isNotEmpty) return List<String>.unmodifiable(parsed);
+    } else if (raw is String && raw.trim().isNotEmpty) {
+      return List<String>.unmodifiable([raw.trim()]);
+    }
+    return const ['lisans_gk'];
+  }
 
   /// Sayısal zorluk seviyesi (1: Kolay, 2: Orta, 3: Zor).
   int get difficultyLevel {
@@ -96,6 +275,11 @@ class Question {
     PopulationPyramidConfig? pyramidConfig,
     SunDiagramConfig? sunConfig,
     int? orderIndex,
+    List<String>? examScopes,
+    String? subBranch,
+    String? educationLevel,
+    String? disabilityVariant,
+    String? sourceVariant,
   }) {
     return Question(
       id: id ?? this.id,
@@ -114,6 +298,11 @@ class Question {
       pyramidConfig: pyramidConfig ?? this.pyramidConfig,
       sunConfig: sunConfig ?? this.sunConfig,
       orderIndex: orderIndex ?? this.orderIndex,
+      examScopes: examScopes ?? this.examScopes,
+      subBranch: subBranch ?? this.subBranch,
+      educationLevel: educationLevel ?? this.educationLevel,
+      disabilityVariant: disabilityVariant ?? this.disabilityVariant,
+      sourceVariant: sourceVariant ?? this.sourceVariant,
     );
   }
 
@@ -932,6 +1121,17 @@ class Question {
       orderIndex:
           (json['order_index'] as num?)?.toInt() ??
           (json['orderIndex'] as num?)?.toInt(),
+      examScopes: _parseExamScopes(json['exam_scopes'] ?? json['examScopes']),
+      subBranch: _normalizeOptionalTag(json['sub_branch'] ?? json['subBranch']),
+      educationLevel: _normalizeOptionalTag(
+        json['education_level'] ?? json['educationLevel'],
+      ),
+      disabilityVariant: _normalizeOptionalTag(
+        json['disability_variant'] ?? json['disabilityVariant'],
+      ),
+      sourceVariant: _normalizeOptionalTag(
+        json['source_variant'] ?? json['sourceVariant'],
+      ),
     );
   }
 
@@ -1009,6 +1209,17 @@ class Question {
       orderIndex:
           (row['order_index'] as num?)?.toInt() ??
           (row['orderIndex'] as num?)?.toInt(),
+      examScopes: _parseExamScopes(row['exam_scopes'] ?? row['examScopes']),
+      subBranch: _normalizeOptionalTag(row['sub_branch'] ?? row['subBranch']),
+      educationLevel: _normalizeOptionalTag(
+        row['education_level'] ?? row['educationLevel'],
+      ),
+      disabilityVariant: _normalizeOptionalTag(
+        row['disability_variant'] ?? row['disabilityVariant'],
+      ),
+      sourceVariant: _normalizeOptionalTag(
+        row['source_variant'] ?? row['sourceVariant'],
+      ),
     );
   }
 
@@ -1030,6 +1241,21 @@ class Question {
     }
     if (imageUrl != null) {
       map['image_url'] = imageUrl;
+    }
+    if (examScopes.length != 1 || examScopes.first != 'lisans_gk') {
+      map['exam_scopes'] = examScopes;
+    }
+    if (subBranch != null && subBranch!.isNotEmpty) {
+      map['sub_branch'] = subBranch;
+    }
+    if (educationLevel != null && educationLevel!.isNotEmpty) {
+      map['education_level'] = educationLevel;
+    }
+    if (disabilityVariant != null && disabilityVariant!.isNotEmpty) {
+      map['disability_variant'] = disabilityVariant;
+    }
+    if (sourceVariant != null && sourceVariant!.isNotEmpty) {
+      map['source_variant'] = sourceVariant;
     }
     if (mapConfig != null) {
       map['map_config'] = mapConfig!.toJson();

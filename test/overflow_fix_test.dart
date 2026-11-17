@@ -212,7 +212,7 @@ void main() {
         expect(find.text('Test Tamamlandı!'), findsOneWidget);
         expect(find.text('Net Puanın'), findsOneWidget);
         expect(find.text('7.50'), findsOneWidget);
-        expect(find.text('Zafer Karneni Paylaş 📸'), findsOneWidget);
+        expect(find.text('Sonucu Paylaş'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );
@@ -230,7 +230,10 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        expect(find.text('Yanlış defterin tertemiz!'), findsOneWidget);
+        expect(
+          find.text('Yanlış defterinde bekleyen soru yok'),
+          findsOneWidget,
+        );
         expect(find.text('Yeni Test Çöz'), findsOneWidget);
         expect(find.text('Bilgi Kartlarına Git'), findsOneWidget);
         expect(tester.takeException(), isNull);

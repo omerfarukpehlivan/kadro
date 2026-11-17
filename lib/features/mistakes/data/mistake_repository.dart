@@ -60,50 +60,85 @@ class MistakeRepository {
 
   /// Buluttaki çözülmemiş yanlış soruları çeker ve yerel Yanlış Defteri havuzuyla birleştirir.
   ///
-  /// Çoklu Cihaz Senkronizasyonu (Cross-Device Mistake Hydration):
-  /// Kullanıcı Cihaz B'de oturum açtığında Cihaz A'da biriktirdiği yanlış sorular eksiksiz gelir.
+  /// Performans & Egress (`TASK-129`): Tüm soru havuzunu indirmek yerine
+  /// yalnızca eksik `question_id` listesini [QuestionRepository.fetchQuestionsByIds]
+  /// ile nokta atışı çeker; ID bulunamazsa yerel JSON üzerinden `text` eşleşmesine düşer.
   Future<void> hydrateFromCloud([
     QuestionRepository questionRepository = const QuestionRepository(),
+    CloudSyncRepository? cloudSync,
   ]) async {
-    final unresolvedLogs = await _cloudSync.fetchUnresolvedMistakes();
+    final syncRepo = cloudSync ?? _cloudSync;
+    final unresolvedLogs = await syncRepo.fetchUnresolvedMistakes();
     if (unresolvedLogs.isEmpty) return;
 
-    List<Question> questionPool = [];
-    try {
-      questionPool = await questionRepository.fetchQuestions();
-    } catch (_) {}
+    final pendingLogs = <Map<String, dynamic>>[];
+    final missingIds = <String>[];
+    final seenMissingIds = <String>{};
 
     for (final log in unresolvedLogs) {
-      final qId = log['question_id'] as String?;
-      final qText = log['question_text'] as String?;
+      final qId = (log['question_id'] as String?)?.trim();
+      final qText = (log['question_text'] as String?)?.trim();
 
-      // Zaten yerel listede var mı kontrol et
       final alreadyExists = _mistakes.any(
         (m) =>
-            (qId != null && m.id == qId) || (qText != null && m.text == qText),
+            (qId != null && qId.isNotEmpty && m.id == qId) ||
+            (qText != null && qText.isNotEmpty && m.text.trim() == qText),
       );
       if (alreadyExists) continue;
 
-      // Soru havuzundan eşleşeni bul
-      Question? matched;
-      if (qId != null) {
-        for (final q in questionPool) {
-          if (q.id == qId) {
-            matched = q;
-            break;
-          }
-        }
+      pendingLogs.add(log);
+      if (qId != null && qId.isNotEmpty && seenMissingIds.add(qId)) {
+        missingIds.add(qId);
       }
-      if (matched == null && qText != null) {
-        for (final q in questionPool) {
-          if (q.text.trim() == qText.trim()) {
-            matched = q;
-            break;
-          }
-        }
-      }
+    }
 
-      if (matched != null) {
+    if (pendingLogs.isEmpty) return;
+
+    final fetchedById = <String, Question>{};
+    if (missingIds.isNotEmpty) {
+      try {
+        final matchedByIds = await questionRepository.fetchQuestionsByIds(
+          missingIds,
+        );
+        for (final q in matchedByIds) {
+          fetchedById[q.id] = q;
+        }
+      } catch (_) {}
+    }
+
+    final needsTextFallback = pendingLogs.any((log) {
+      final qId = (log['question_id'] as String?)?.trim();
+      final qText = (log['question_text'] as String?)?.trim();
+      final resolvedById = qId != null && fetchedById.containsKey(qId);
+      return !resolvedById && qText != null && qText.isNotEmpty;
+    });
+
+    List<Question> localPool = const <Question>[];
+    if (needsTextFallback) {
+      try {
+        localPool = await questionRepository.loadAllQuestions();
+      } catch (_) {
+        localPool = defaultSampleQuestions;
+      }
+    }
+
+    final localByText = <String, Question>{
+      for (final q in localPool) q.text.trim(): q,
+    };
+
+    for (final log in pendingLogs) {
+      final qId = (log['question_id'] as String?)?.trim();
+      final qText = (log['question_text'] as String?)?.trim();
+
+      final matched =
+          (qId != null ? fetchedById[qId] : null) ??
+          (qText != null ? localByText[qText] : null);
+      if (matched == null) continue;
+
+      final duplicate = _mistakes.any(
+        (m) => m.id == matched.id || m.text.trim() == matched.text.trim(),
+      );
+      if (!duplicate) {
         _mistakes.add(matched);
       }
     }

@@ -6,6 +6,7 @@ import 'package:kadro/features/map_practice/data/map_practice_repository.dart';
 import 'package:kadro/features/map_practice/data/models/map_challenge.dart';
 import 'package:kadro/features/map_practice/presentation/map_challenge_screen.dart';
 import 'package:kadro/features/map_practice/presentation/map_practice_hub_screen.dart';
+import 'package:kadro/shared/widgets/turkey_map/turkey_map.dart';
 
 void main() {
   group('MapPractice Model & Logic Birim Testleri', () {
@@ -185,5 +186,123 @@ void main() {
       expect(find.textContaining('Dünya bor rezervinin %73ü'), findsOneWidget);
       expect(find.text('Sonuçları Gör'), findsOneWidget);
     });
+
+    testWidgets(
+      'MapPracticeHubScreen ve Dilsiz Harita modu 360x640 kompakt mobil ekranda taşma olmadan çizilmeli',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(360, 640));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        await tester.pumpWidget(
+          const ProviderScope(child: MaterialApp(home: MapPracticeHubScreen())),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Dilsiz Harita (81 İl)'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(find.text('Dilsiz Harita (81 İl)'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Dilsiz Harita Antrenman Modu'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(find.text('Haritada İle Dokun (Zor)'));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(MapChallengeScreen), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
+      'MapChallengeScreen 360x640 ekranda minimum kenar boşluğu ile çizilmeli, yakınlaştırma ve tam ekran Büyüt diyaloğunu açmalı',
+      (tester) async {
+        await tester.binding.setSurfaceSize(const Size(360, 640));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
+        const tapChallenges = [
+          MapChallenge(
+            id: 'zoom_test_1',
+            category: MapPracticeCategory.provinces,
+            interactionType: MapInteractionType.tapProvince,
+            title: 'Yalova Bulma',
+            questionText: 'Haritada Yalova ilini bulun ve üzerine dokunun.',
+            targetProvinceId: 'yalova',
+            hint: 'Marmara Bölgesi güney kıyısında küçük bir ilimizdir.',
+            explanation: 'Yalova, Marmara Bölgesi illerindendir.',
+            tag: '81 İl',
+          ),
+        ];
+
+        await tester.pumpWidget(
+          const ProviderScope(
+            child: MaterialApp(
+              home: MapChallengeScreen(
+                challenges: tapChallenges,
+                sessionTitle: 'Dilsiz Harita',
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Kenar boşlukları azaltıldığı için harita genişliği 360px ekranda ~340px'e yaklaşmalı
+        final mapSize = tester.getSize(find.byType(TurkeyMap));
+        expect(mapSize.width, greaterThanOrEqualTo(335));
+        expect(tester.takeException(), isNull);
+
+        // Yakınlaştır (+) butonuna basılınca Sıfırla butonu görünmeli
+        expect(
+          find.byKey(const ValueKey('map_zoom_reset_button')),
+          findsNothing,
+        );
+        await tester.tap(find.byKey(const ValueKey('map_zoom_in_button')));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('map_zoom_reset_button')),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(find.byKey(const ValueKey('map_zoom_reset_button')));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('map_zoom_reset_button')),
+          findsNothing,
+        );
+
+        // Büyüt butonuna basıldığında tam ekran harita diyaloğu taşmasız açılmalı
+        await tester.tap(find.byKey(const ValueKey('map_fullscreen_button')));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text('İki parmakla yakınlaştırıp ili seçin'),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('fullscreen_map_zoom_in_button')),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(
+          find.byKey(const ValueKey('fullscreen_map_zoom_in_button')),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(const ValueKey('fullscreen_map_reset_button')),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+
+        await tester.tap(find.byTooltip('Kapat'));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('fullscreen_map_zoom_in_button')),
+          findsNothing,
+        );
+      },
+    );
   });
 }

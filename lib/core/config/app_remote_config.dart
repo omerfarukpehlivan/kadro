@@ -1,12 +1,18 @@
-/// Kadro Uzaktan Yapılandırma ve Sürüm Modeli (TASK-94).
+import 'dart:convert';
+
+/// Kadro Uzaktan Yapılandırma ve Sürüm Modeli (TASK-94 & TASK-126).
 ///
-/// Angular/Web Karşılığı: `EnvironmentConfig` / Remote Feature Flags.
+/// Angular/Web Karşılığı: `EnvironmentConfig` / Remote Feature Flags & Schedule Overrides.
 class AppRemoteConfig {
   final String minSupportedVersion;
   final String latestVersion;
   final bool isMaintenanceMode;
   final String maintenanceMessage;
   final String storeUrl;
+
+  /// ÖSYM resmî sınav tarihlerini uygulama güncellemesi olmadan ezmek (override)
+  /// için kullanılan anahtar -> tarih haritası (`lisans_gk`, `dhbt_2028`, vb.).
+  final Map<String, DateTime> examDateOverrides;
 
   const AppRemoteConfig({
     this.minSupportedVersion = '1.0.0',
@@ -15,6 +21,7 @@ class AppRemoteConfig {
     this.maintenanceMessage = 'Kadro bakımda! KPSS soru havuzumuzu güncelliyoruz. Çok yakında tekrar yayındayız.',
     this.storeUrl =
         'https://play.google.com/store/apps/details?id=com.omer.kadro',
+    this.examDateOverrides = const {},
   });
 
   /// Çevrimdışı ve hata durumlarında güvenli varsayılan değer.
@@ -33,7 +40,42 @@ class AppRemoteConfig {
           (map['store_url'] ??
                   'https://play.google.com/store/apps/details?id=com.omer.kadro')
               .toString(),
+      examDateOverrides: _parseExamDateOverrides(map['exam_date_overrides']),
     );
+  }
+
+  /// Supabase `jsonb` veya ham JSON string içindeki sınav tarihi geçersiz kılmalarını
+  /// (overrides) bozuk/geçersiz değerlerde çökmeden ayrıştırır.
+  static Map<String, DateTime> _parseExamDateOverrides(dynamic raw) {
+    if (raw == null) return const {};
+
+    Map<dynamic, dynamic>? decodedMap;
+    if (raw is Map) {
+      decodedMap = raw;
+    } else if (raw is String && raw.trim().isNotEmpty) {
+      try {
+        final parsed = jsonDecode(raw);
+        if (parsed is Map) {
+          decodedMap = parsed;
+        }
+      } catch (_) {
+        return const {};
+      }
+    }
+
+    if (decodedMap == null || decodedMap.isEmpty) return const {};
+
+    final result = <String, DateTime>{};
+    for (final entry in decodedMap.entries) {
+      final key = entry.key.toString().trim();
+      if (key.isEmpty || entry.value == null) continue;
+      final parsedDate = DateTime.tryParse(entry.value.toString().trim());
+      if (parsedDate != null) {
+        result[key] = parsedDate;
+      }
+    }
+
+    return result.isEmpty ? const {} : Map.unmodifiable(result);
   }
 
   /// Mevcut uygulama sürümünün zorunlu güncelleme gerektirip gerektirmediğini denetler.

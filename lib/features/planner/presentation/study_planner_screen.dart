@@ -2,44 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
-import 'package:kadro/features/exams/presentation/exams_screen.dart';
-import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
-import 'package:kadro/features/games/presentation/concept_match_screen.dart';
-import 'package:kadro/features/map_practice/presentation/map_practice_hub_screen.dart';
-import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
+import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
+import 'package:kadro/features/planner/presentation/study_task_launcher.dart';
 import 'package:kadro/features/planner/presentation/widgets/auto_study_program_modal.dart';
-import 'package:kadro/features/pomodoro/data/pomodoro_notifier.dart';
+import 'package:kadro/core/utils/exam_calendar_utils.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
-import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
-import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
+import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/shared/widgets/adaptive_overlay.dart';
+import 'package:kadro/shared/widgets/empty_state_view.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Tam Ekran Akıllı KPSS Çalışma Planlayıcı.
+/// Tam ekran KPSS çalışma planlayıcısı.
 ///
-/// Web/Angular karşılığı: Planner/Kanban veya Task Management Component.
+/// Web/Angular karşılığı: Task Management / Study Planner Component.
 class StudyPlannerScreen extends ConsumerWidget {
   const StudyPlannerScreen({super.key});
 
   void _showAddTaskSheet(BuildContext context) {
-    showModalBottomSheet(
+    AdaptiveOverlay.showModal<void>(
       context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      title: 'Yeni Çalışma Görevi',
+      dialogMaxWidth: 520,
       builder: (_) => const _AddTaskBottomSheet(),
     );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colorScheme = Theme.of(context).colorScheme;
     final planner = ref.watch(studyPlannerProvider);
     final notifier = ref.read(studyPlannerProvider.notifier);
+    final stats = ref.watch(studyStatsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -48,85 +45,145 @@ class StudyPlannerScreen extends ConsumerWidget {
           if (planner.completedCount > 0)
             TextButton.icon(
               onPressed: () => notifier.clearCompleted(),
-              icon: const PhosphorIcon(PhosphorIconsBold.trash, size: 16),
+              icon: const PhosphorIcon(PhosphorIconsRegular.trash, size: 16),
               label: const Text('Tamamlananları Sil'),
             ),
         ],
       ),
       body: ResponsiveContentWrapper(
-        maxWidth: 720,
+        maxWidth: ResponsiveBreakpoints.isDesktop(context) ? 1040 : 720,
         padding: EdgeInsets.zero,
-        child: ListView(
-          padding: AppSpacing.pagePadding(context),
-          children: [
-            // 1. Üst Koç Sahnesi
-            const MascotCoachBanner(
-              mood: MascotMood.analyst,
-              badgeLabel: 'GÜNLÜK KAMP PLANI',
-              title: 'Bugünkü Görevlerin',
-              message: 'Planlı çalışan kadroyu kapar! Görevlerini tamamla, netlerini her gün istikrarla artır.',
-            ),
-            AppSpacing.gapMd,
-
-            // 2. Plan İlerleme & Süre Özeti Kartı
-            _PlannerSummaryCard(planner: planner),
-            AppSpacing.gapMd,
-
-            // 2.5. Otomatik Çalışma Programı Komuta Kartı
-            _AutoStudyProgramBanner(
-              prefs: ref.watch(userPreferencesProvider),
-              target: ref.watch(userPreferencesProvider).targetExam,
-            ),
-            AppSpacing.gapMd,
-
-            // 3. Tek Tıkla Hazır KPSS Görev Şablonları
-            const SectionTitle('Hızlı Görev Şablonları (Tek Tıkla Ekle)'),
-            AppSpacing.gapXs,
-            _QuickTemplatesStrip(onAdd: notifier.addTask),
-            AppSpacing.gapMd,
-
-            // 4. Görev Listesi
-            SectionTitle('Görev Listesi (${planner.tasks.length})'),
-            AppSpacing.gapXs,
-            if (planner.tasks.isEmpty)
-              TactileCard(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 24,
-                      horizontal: 16,
-                    ),
+        child: Scrollbar(
+          child: ListView(
+            padding: AppSpacing.pagePadding(context),
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TugrulAvatar(
+                    mood: TugrulMood.streak,
+                    size: 56,
+                    onTap: () =>
+                        TugrulTipsSheet.show(context, mood: TugrulMood.streak),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        PhosphorIcon(
-                          PhosphorIconsDuotone.calendarCheck,
-                          size: 48,
-                          color: colorScheme.primary,
-                        ),
-                        AppSpacing.gapSm,
                         Text(
-                          'Bugün için planlanmış görev kalmadı! Şablonlardan veya + Görev Ekle butonundan yeni hedef ekleyebilirsin.',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: colorScheme.onSurfaceVariant),
+                          'Bugünkü Görevlerin',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Planlanan çalışma görevlerini sırayla tamamla ve süreni takip et.',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
                         ),
                       ],
                     ),
                   ),
+                ],
+              ),
+              AppSpacing.gapMd,
+
+              _PlannerSummaryCard(
+                planner: planner,
+                onAdvanceNextDay: () {
+                  final prefs = ref.read(userPreferencesProvider);
+                  final curriculum = readOrWatchCurriculum(ref);
+                  final success = notifier.advanceToNextDay(
+                    examTarget: prefs.targetExam,
+                    pace: prefs.studyProgramPace,
+                    focusLesson: prefs.focusLesson,
+                    curriculum: curriculum,
+                    examScope: prefs.examSelection.scopeKey,
+                  );
+                  if (!success) {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Sonraki güne geçmek için bugünün tüm görevlerini tamamlamalısın! (Kalan: ${planner.remainingCount} görev)',
+                        ),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
+                },
+                onPreviousDay: planner.hasPreviousDay
+                    ? () {
+                        final prefs = ref.read(userPreferencesProvider);
+                        final curriculum = readOrWatchCurriculum(ref);
+                        notifier.goToPreviousDay(
+                          examTarget: prefs.targetExam,
+                          pace: prefs.studyProgramPace,
+                          focusLesson: prefs.focusLesson,
+                          curriculum: curriculum,
+                          examScope: prefs.examSelection.scopeKey,
+                        );
+                      }
+                    : null,
+              ),
+              AppSpacing.gapMd,
+
+              _AutoStudyProgramBanner(
+                prefs: ref.watch(userPreferencesProvider),
+                target: ref.watch(userPreferencesProvider).targetExam,
+              ),
+              AppSpacing.gapMd,
+
+              if (notifier.previewUpcomingTasks().isNotEmpty) ...[
+                const SectionTitle('Sıradaki Görevlerden Ekle (Tek Tıkla)'),
+                AppSpacing.gapXs,
+                _UpcomingTasksStrip(
+                  tasks: notifier.previewUpcomingTasks(),
+                  onPullTask: notifier.pullUpcomingTaskToToday,
                 ),
-              )
-            else
-              for (final task in planner.tasks)
-                Padding(
-                  padding: AppSpacing.cardMarginBottom,
-                  child: _PlannerTaskTile(
-                    task: task,
-                    onToggle: () => notifier.toggleTask(task.id),
-                    onRemove: () => notifier.removeTask(task.id),
+                AppSpacing.gapMd,
+              ],
+
+              SectionTitle('Görev Listesi (${planner.tasks.length})'),
+              AppSpacing.gapXs,
+              if (planner.tasks.isEmpty)
+                const TactileCard(
+                  child: EmptyStateView(
+                    icon: PhosphorIconsRegular.calendarCheck,
+                    title: 'Planlanmış görev yok',
+                    description: 'Şablonlardan veya Görev Ekle butonundan yeni hedef ekleyebilirsin.',
                   ),
-                ),
-            const SizedBox(height: 64), // FAB için alt boşluk
-          ],
+                )
+              else
+                for (final task in planner.tasks)
+                  Padding(
+                    padding: AppSpacing.cardMarginBottom,
+                    child: _PlannerTaskTile(
+                      task: task,
+                      isPreviouslySolved:
+                          task.actionType == StudyTaskActionType.quiz &&
+                          task.targetTopic != null &&
+                          task.targetTestNumber != null &&
+                          stats.findLatestSessionForTest(
+                                lesson: task.lessonTag,
+                                topic: task.targetTopic!,
+                                testNumber: task.targetTestNumber!,
+                              ) !=
+                              null,
+                      onToggle: () => notifier.toggleTask(task.id),
+                      onStart: () =>
+                          StudyTaskLauncher.launch(context, ref, task),
+                      onRemove: () => notifier.removeTask(task.id),
+                    ),
+                  ),
+              const SizedBox(height: 64),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -138,11 +195,16 @@ class StudyPlannerScreen extends ConsumerWidget {
   }
 }
 
-/// Plan ilerlemesini ve tahmini toplam süreyi gösteren özet kartı.
 class _PlannerSummaryCard extends StatelessWidget {
   final StudyPlannerState planner;
+  final VoidCallback onAdvanceNextDay;
+  final VoidCallback? onPreviousDay;
 
-  const _PlannerSummaryCard({required this.planner});
+  const _PlannerSummaryCard({
+    required this.planner,
+    required this.onAdvanceNextDay,
+    this.onPreviousDay,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -150,35 +212,77 @@ class _PlannerSummaryCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.primary.withAlpha(90),
+      lipColor: colorScheme.primary,
+      borderColor: colorScheme.primary.withAlpha(130),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${planner.completedCount} / ${planner.totalCount} Görev Tamamlandı',
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+              if (onPreviousDay != null) ...[
+                IconButton(
+                  icon: const PhosphorIcon(
+                    PhosphorIconsBold.caretLeft,
+                    size: 14,
+                  ),
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 24,
+                    minHeight: 24,
+                  ),
+                  tooltip: 'Önceki Güne Dön',
+                  onPressed: onPreviousDay,
+                ),
+                const SizedBox(width: 4),
+              ],
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: planner.isViewingPastDay
+                      ? colorScheme.tertiaryContainer
+                      : colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  planner.isViewingPastDay
+                      ? 'Gün ${planner.cycleDay} · Tekrar'
+                      : 'Gün ${planner.cycleDay}',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: planner.isViewingPastDay
+                        ? colorScheme.onTertiaryContainer
+                        : colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '${planner.completedCount} / ${planner.totalCount} Görev Tamamlandı',
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                 decoration: BoxDecoration(
                   color: colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: colorScheme.tertiary.withAlpha(100),
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     PhosphorIcon(
-                      PhosphorIconsBold.clock,
-                      size: 14,
+                      PhosphorIconsFill.clock,
+                      size: 13,
                       color: colorScheme.onTertiaryContainer,
                     ),
                     const SizedBox(width: 4),
@@ -186,7 +290,7 @@ class _PlannerSummaryCard extends StatelessWidget {
                       'Toplam ${planner.totalEstimatedMinutes} dk',
                       style: textTheme.labelSmall?.copyWith(
                         color: colorScheme.onTertiaryContainer,
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
@@ -196,29 +300,75 @@ class _PlannerSummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(999),
             child: LinearProgressIndicator(
               minHeight: 8,
               value: planner.completionProgress,
+              backgroundColor: colorScheme.surfaceContainerHighest,
+              valueColor: AlwaysStoppedAnimation<Color>(colorScheme.primary),
             ),
           ),
+          if (planner.canAdvanceToNextDay) ...[
+            const SizedBox(height: 12),
+            FilledButton.tonalIcon(
+              onPressed: onAdvanceNextDay,
+              style: FilledButton.styleFrom(
+                backgroundColor: colorScheme.secondary,
+                foregroundColor: colorScheme.onSecondary,
+              ),
+              icon: const PhosphorIcon(PhosphorIconsBold.arrowRight, size: 16),
+              label: Text(
+                planner.isViewingPastDay
+                    ? 'Sıradaki Güne Dön (Gün ${planner.cycleDay + 1}) →'
+                    : 'Günü Tamamladın! Sonraki Güne Geç (Gün ${planner.cycleDay + 1}) →',
+              ),
+            ),
+          ],
+          if (onPreviousDay != null) ...[
+            const SizedBox(height: 6),
+            TextButton.icon(
+              onPressed: onPreviousDay,
+              style: TextButton.styleFrom(
+                visualDensity: VisualDensity.compact,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+              ),
+              icon: const PhosphorIcon(
+                PhosphorIconsRegular.arrowLeft,
+                size: 14,
+              ),
+              label: Text(
+                'Önceki Günün Görevlerine Dön (Gün ${planner.cycleDay - 1})',
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
 }
 
-/// Yatay kaydırılabilir tek tıkla eklenebilir hazır görev şablonları.
-class _QuickTemplatesStrip extends StatelessWidget {
-  final void Function({
-    required String title,
-    required String lessonTag,
-    int estimatedMinutes,
-    StudyTaskActionType actionType,
-  })
-  onAdd;
+/// Sıradaki günlerin gerçek [StudyTask] öğelerini tek tıkla bugünün listesine
+/// aktaran yatay hızlı ekleme şeridi.
+class _UpcomingTasksStrip extends StatelessWidget {
+  final List<StudyTask> tasks;
+  final void Function(StudyTask task) onPullTask;
 
-  const _QuickTemplatesStrip({required this.onAdd});
+  const _UpcomingTasksStrip({required this.tasks, required this.onPullTask});
+
+  Color _accentFor(StudyTaskActionType actionType, ColorScheme colorScheme) {
+    switch (actionType) {
+      case StudyTaskActionType.flashcards:
+      case StudyTaskActionType.map:
+      case StudyTaskActionType.game:
+        return colorScheme.tertiary;
+      case StudyTaskActionType.mistakes:
+        return colorScheme.error;
+      case StudyTaskActionType.quiz:
+      case StudyTaskActionType.exam:
+      case StudyTaskActionType.custom:
+        return colorScheme.primary;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -228,125 +378,43 @@ class _QuickTemplatesStrip extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          ActionChip(
-            avatar: PhosphorIcon(
-              PhosphorIconsBold.plus,
-              size: 16,
-              color: colorScheme.primary,
+          for (var i = 0; i < tasks.length; i++) ...[
+            if (i > 0) const SizedBox(width: 8),
+            Tooltip(
+              message:
+                  '${tasks[i].lessonTag} · ${tasks[i].estimatedMinutes} dk',
+              child: ActionChip(
+                key: ValueKey('upcoming_quick_task_$i'),
+                avatar: PhosphorIcon(
+                  PhosphorIconsRegular.plus,
+                  size: 15,
+                  color: _accentFor(tasks[i].actionType, colorScheme),
+                ),
+                label: Text('+ ${tasks[i].title}'),
+                onPressed: () => onPullTask(tasks[i]),
+              ),
             ),
-            label: const Text('+ 20 Tarih Sorusu'),
-            onPressed: () {
-              onAdd(
-                title: '20 Tarih Sorusu Çöz',
-                lessonTag: 'Tarih',
-                estimatedMinutes: 25,
-                actionType: StudyTaskActionType.quiz,
-              );
-            },
-          ),
-          const SizedBox(width: 8),
-          ActionChip(
-            avatar: PhosphorIcon(
-              PhosphorIconsBold.plus,
-              size: 16,
-              color: colorScheme.tertiary,
-            ),
-            label: const Text('+ Coğrafya Hap Kart'),
-            onPressed: () {
-              onAdd(
-                title: 'Coğrafya Hap Bilgi Kartları',
-                lessonTag: 'Coğrafya',
-                estimatedMinutes: 15,
-                actionType: StudyTaskActionType.flashcards,
-              );
-            },
-          ),
-          const SizedBox(width: 8),
-          ActionChip(
-            avatar: PhosphorIcon(
-              PhosphorIconsBold.plus,
-              size: 16,
-              color: colorScheme.primary,
-            ),
-            label: const Text('+ Vatandaşlık Testi'),
-            onPressed: () {
-              onAdd(
-                title: 'Vatandaşlık Konu Testi Çöz',
-                lessonTag: 'Vatandaşlık',
-                estimatedMinutes: 20,
-                actionType: StudyTaskActionType.quiz,
-              );
-            },
-          ),
-          const SizedBox(width: 8),
-          ActionChip(
-            avatar: PhosphorIcon(
-              PhosphorIconsBold.plus,
-              size: 16,
-              color: colorScheme.error,
-            ),
-            label: const Text('+ Yanlışları Temizle'),
-            onPressed: () {
-              onAdd(
-                title: 'Yanlış Defteri Tekrarı Yap',
-                lessonTag: 'Genel',
-                estimatedMinutes: 15,
-                actionType: StudyTaskActionType.mistakes,
-              );
-            },
-          ),
+          ],
         ],
       ),
     );
   }
 }
 
-/// Tek bir çalışma görevini gösteren 3D kart bileşeni.
 class _PlannerTaskTile extends StatelessWidget {
   final StudyTask task;
   final VoidCallback onToggle;
+  final VoidCallback onStart;
   final VoidCallback onRemove;
+  final bool isPreviouslySolved;
 
   const _PlannerTaskTile({
     required this.task,
     required this.onToggle,
+    required this.onStart,
     required this.onRemove,
+    this.isPreviouslySolved = false,
   });
-
-  void _triggerAction(BuildContext context) {
-    switch (task.actionType) {
-      case StudyTaskActionType.quiz:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => const QuizScreen()));
-        break;
-      case StudyTaskActionType.flashcards:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => const FlashcardsScreen()));
-        break;
-      case StudyTaskActionType.mistakes:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => const MistakesScreen()));
-        break;
-      case StudyTaskActionType.exam:
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => const ExamsScreen()));
-        break;
-      case StudyTaskActionType.map:
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const MapPracticeHubScreen()));
-        break;
-      case StudyTaskActionType.game:
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (_) => const ConceptMatchScreen()));
-        break;
-      case StudyTaskActionType.custom:
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Görev: ${task.title}')));
-        break;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -354,8 +422,9 @@ class _PlannerTaskTile extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return TactileCard(
+      onTap: task.actionType != StudyTaskActionType.custom ? onStart : null,
       backgroundColor: task.isCompleted
-          ? colorScheme.surfaceContainerHighest.withAlpha(50)
+          ? colorScheme.surfaceContainerLow
           : colorScheme.surface,
       borderColor: task.isCompleted
           ? colorScheme.outlineVariant
@@ -363,64 +432,61 @@ class _PlannerTaskTile extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Sol Onay İkonu
           InkWell(
             onTap: onToggle,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(8),
             child: Padding(
               padding: const EdgeInsets.all(4),
               child: PhosphorIcon(
                 task.isCompleted
                     ? PhosphorIconsFill.checkCircle
-                    : PhosphorIconsBold.circle,
+                    : PhosphorIconsRegular.circle,
                 color: task.isCompleted
-                    ? colorScheme.primary
+                    ? colorScheme.secondary
                     : colorScheme.outline,
-                size: 24,
+                size: 22,
               ),
             ),
           ),
           const SizedBox(width: 10),
-
-          // Orta: Ders & Süre Rozetleri ve Görev Başlığı
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.secondaryContainer,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        task.lessonTag,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onSecondaryContainer,
-                          fontWeight: FontWeight.w700,
-                        ),
+                    Text(
+                      task.lessonTag,
+                      style: textTheme.labelSmall?.copyWith(
+                        color: colorScheme.primary,
                       ),
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      '${task.estimatedMinutes} dk',
+                      '· ${task.estimatedMinutes} dk',
                       style: textTheme.labelSmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ),
+                    if (isPreviouslySolved) ...[
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          '· Önceden çözüldü',
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 3),
                 Text(
                   task.title,
                   style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
                     decoration: task.isCompleted
                         ? TextDecoration.lineThrough
                         : null,
@@ -433,32 +499,31 @@ class _PlannerTaskTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-
-          // Sağ: "Başla" Aksiyonu ve Silme İkonu
-          if (!task.isCompleted &&
-              task.actionType != StudyTaskActionType.custom)
-            FilledButton.tonal(
-              onPressed: () => _triggerAction(context),
-              style: FilledButton.styleFrom(
+          if (task.actionType != StudyTaskActionType.custom)
+            OutlinedButton.icon(
+              onPressed: onStart,
+              style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
                   vertical: 4,
                 ),
-                minimumSize: Size.zero,
+                minimumSize: const Size(0, 32),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                foregroundColor: task.isCompleted
+                    ? colorScheme.secondary
+                    : null,
               ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  PhosphorIcon(PhosphorIconsBold.play, size: 12),
-                  SizedBox(width: 4),
-                  Text('Başla'),
-                ],
+              icon: PhosphorIcon(
+                task.isCompleted
+                    ? PhosphorIconsRegular.arrowCounterClockwise
+                    : PhosphorIconsRegular.play,
+                size: 14,
               ),
+              label: Text(task.isCompleted ? 'Tekrar Çöz' : 'Başla'),
             ),
           IconButton(
             icon: PhosphorIcon(
-              PhosphorIconsBold.trash,
+              PhosphorIconsRegular.trash,
               size: 18,
               color: colorScheme.error,
             ),
@@ -471,7 +536,6 @@ class _PlannerTaskTile extends StatelessWidget {
   }
 }
 
-/// Yeni Görev Ekleme Alt Formu (Bottom Sheet).
 class _AddTaskBottomSheet extends ConsumerStatefulWidget {
   const _AddTaskBottomSheet();
 
@@ -535,14 +599,9 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Yeni Görev Ekle',
-                style: textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
+              Text('Yeni Görev Ekle', style: textTheme.headlineSmall),
               IconButton(
-                icon: const PhosphorIcon(PhosphorIconsBold.x),
+                icon: const PhosphorIcon(PhosphorIconsBold.x, size: 18),
                 onPressed: () => Navigator.of(context).pop(),
               ),
             ],
@@ -554,7 +613,7 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
             decoration: const InputDecoration(
               labelText: 'Görev Başlığı',
               hintText: 'Örn: Osmanlı Yükselme Dönemi 2 Test',
-              prefixIcon: PhosphorIcon(PhosphorIconsBold.pencilSimple),
+              prefixIcon: PhosphorIcon(PhosphorIconsRegular.pencilSimple),
             ),
             onSubmitted: (_) => _submit(),
           ),
@@ -563,7 +622,6 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
             'Ders Seçimi',
             style: textTheme.labelMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 8),
@@ -584,7 +642,6 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
             'Tahmini Süre',
             style: textTheme.labelMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 8),
@@ -603,7 +660,7 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
           const SizedBox(height: 20),
           FilledButton.icon(
             onPressed: _submit,
-            icon: const PhosphorIcon(PhosphorIconsBold.calendarPlus),
+            icon: const PhosphorIcon(PhosphorIconsRegular.calendarPlus),
             label: const Text('Plana Ekle'),
           ),
         ],
@@ -612,7 +669,6 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
   }
 }
 
-/// Otomatik Çalışma Programı Özet Kartı.
 class _AutoStudyProgramBanner extends StatelessWidget {
   final UserPreferencesState prefs;
   final KpssExamTarget target;
@@ -626,57 +682,46 @@ class _AutoStudyProgramBanner extends StatelessWidget {
     final textTheme = theme.textTheme;
     final pace = prefs.studyProgramPace;
     final remaining = target.detailedRemaining();
+    final advisory = pace.evaluateSchedule(target);
+    final accent = advisory.canFinishInTime
+        ? colorScheme.primary
+        : colorScheme.tertiary;
 
     return TactileCard(
       onTap: () => AutoStudyProgramModal.show(context),
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.primary.withAlpha(100),
+      borderColor: accent.withAlpha(110),
+      lipColor: accent.withAlpha(130),
       padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: PhosphorIcon(
-                  PhosphorIconsDuotone.sparkle,
-                  size: 20,
-                  color: colorScheme.onPrimaryContainer,
-                ),
+              PhosphorIcon(
+                advisory.canFinishInTime
+                    ? PhosphorIconsRegular.slidersHorizontal
+                    : PhosphorIconsFill.warningCircle,
+                size: 20,
+                color: accent,
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            prefs.hasActiveStudyProgram
-                                ? '${pace.label} (${pace.badgeText})'
-                                : 'Otomatik KPSS Programı',
-                            style: textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              color: colorScheme.primary,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      prefs.hasActiveStudyProgram
+                          ? '${pace.label} (${pace.badgeText})'
+                          : 'Otomatik KPSS Programı',
+                      style: textTheme.titleSmall?.copyWith(color: accent),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 1),
                     Text(
-                      '🎯 ${target.shortTitle} · ⏳ ${remaining.formattedRemaining}',
+                      '${target.shortTitle} · ${remaining.formattedRemaining}',
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
-                        fontSize: 11,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -688,29 +733,28 @@ class _AutoStudyProgramBanner extends StatelessWidget {
                 onPressed: () => AutoStudyProgramModal.show(context),
                 style: OutlinedButton.styleFrom(
                   visualDensity: VisualDensity.compact,
+                  minimumSize: const Size(0, 34),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10,
                     vertical: 4,
                   ),
                 ),
                 icon: const PhosphorIcon(
-                  PhosphorIconsBold.slidersHorizontal,
+                  PhosphorIconsRegular.slidersHorizontal,
                   size: 13,
                 ),
                 label: Text(
                   prefs.hasActiveStudyProgram ? 'Düzenle' : 'Program Kur',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
           Text(
-            pace.calculatePacingSummary(target),
+            advisory.message,
             style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.outline,
-              fontSize: 11,
-              height: 1.3,
+              color: colorScheme.onSurfaceVariant,
+              height: 1.35,
             ),
           ),
         ],

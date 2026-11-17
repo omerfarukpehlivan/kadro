@@ -232,7 +232,7 @@ class ClimateChartPainter extends CustomPainter {
       offset: const Offset(leftMargin - 2, 4),
       color: const Color(0xFF2563EB),
       fontSize: 9,
-      fontWeight: FontWeight.w800,
+      fontWeight: FontWeight.w700,
       align: TextAlign.left,
     );
 
@@ -242,7 +242,7 @@ class ClimateChartPainter extends CustomPainter {
       offset: Offset(size.width - rightMargin + 2, 4),
       color: const Color(0xFFDC2626),
       fontSize: 9,
-      fontWeight: FontWeight.w800,
+      fontWeight: FontWeight.w700,
       align: TextAlign.right,
     );
   }

@@ -4,8 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/auth/data/auth_notifier.dart';
 import 'package:kadro/features/auth/presentation/auth_screen.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   group('AuthNotifier ve AuthScreen Testleri', () {
     test(
       'AuthNotifier başlangıç durumu ve demo modunda giriş/çıkış akışı',
@@ -188,7 +195,7 @@ void main() {
         expect(find.text('Şifre Sıfırlama'), findsNothing);
         expect(
           find.text(
-            '✅ Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.',
+            'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.',
           ),
           findsOneWidget,
         );

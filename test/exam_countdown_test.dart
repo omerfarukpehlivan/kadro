@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/home/presentation/home_screen.dart';
-import 'package:kadro/features/pomodoro/data/pomodoro_notifier.dart';
+import 'package:kadro/core/utils/exam_calendar_utils.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/shared/widgets/target_exam_selector_bottom_sheet.dart';
 
@@ -138,7 +138,9 @@ void main() {
         );
 
         // 2028 KPSS Ön Lisans seçeneğine tıkla
-        await tester.tap(find.text('2028 KPSS Ön Lisans'));
+        final onLisansFinder = find.text('2028 KPSS Ön Lisans');
+        await tester.ensureVisible(onLisansFinder);
+        await tester.tap(onLisansFinder);
         await tester.pumpAndSettle();
 
         expect(
@@ -190,7 +192,9 @@ void main() {
         expect(find.text('2028 KPSS Ortaöğretim'), findsOneWidget);
 
         // Ortaöğretim seçelim
-        await tester.tap(find.text('2028 KPSS Ortaöğretim'));
+        final ortaogretimFinder = find.text('2028 KPSS Ortaöğretim');
+        await tester.ensureVisible(ortaogretimFinder);
+        await tester.tap(ortaogretimFinder);
         await tester.pumpAndSettle();
 
         // Modal kapanıp ana ekranda 2028 KPSS Ortaöğretim görünmeli

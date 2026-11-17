@@ -1,19 +1,18 @@
-import 'package:flutter/material.dart'; // Material Design bileşenleri
-import 'package:kadro/core/utils/responsive_layout.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart'; // Karakteristik Phosphor ikon seti (Bold & Fill)
+import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Alttaki havada duran 6 sekmeli dock menüsü (Floating Pill/Dock Bottom Navigation Bar).
-/// Web'deki modern SaaS ve mobil uygulamalardaki floating navigation bar mimarisine karşılık gelir.
-/// Seçili olmayan sekmelerde `PhosphorIconsBold`, seçili sekmelerde tok `PhosphorIconsFill` kullanılır.
+/// 6 sekmeli canlı EdTech alt gezinme çubuğu.
+///
+/// Üstünde net `1.5px` kenarlık, seçili sekmede kobalt kapsül ve dolgun `PhosphorIconsFill`
+/// ikonlarla yüksek dokunsal netlik sağlar.
 class AppNavigationBar extends StatelessWidget {
-  final int
-  selectedIndex; // Şu an hangi sekmenin aktif/seçili olduğu sıra numarası (0-5)
-  final ValueChanged<int> onDestinationSelected; // Kullanıcı bir sekmeye dokunduğunda çalışan bildirim fonksiyonu
+  final int selectedIndex;
+  final ValueChanged<int> onDestinationSelected;
 
   const AppNavigationBar({
-    super.key, // Widget kimlik anahtarı
-    required this.selectedIndex, // Zorunlu parametre: Aktif sekme indeksi
-    required this.onDestinationSelected, // Zorunlu parametre: Tıklama olayı bildirici fonksiyon
+    super.key,
+    required this.selectedIndex,
+    required this.onDestinationSelected,
   });
 
   @override
@@ -21,94 +20,83 @@ class AppNavigationBar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isCompact = screenWidth < 400;
-    final hPadding = isCompact
-        ? 8.0
-        : ResponsiveBreakpoints.horizontalPadding(context);
 
     final labelStyle = WidgetStateProperty.resolveWith<TextStyle?>((states) {
       final base = Theme.of(context).textTheme.labelSmall;
+      final isSelected = states.contains(WidgetState.selected);
       return base?.copyWith(
-        letterSpacing: isCompact ? -0.5 : -0.2,
-        fontWeight: states.contains(WidgetState.selected)
-            ? FontWeight.w800
-            : FontWeight.w600,
+        letterSpacing: isCompact ? -0.3 : 0.0,
+        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+        color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
       );
     });
 
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(hPadding, 4, hPadding, 12),
-        child: Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surface,
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: colorScheme.primary.withAlpha(45),
-              width: 1.5,
+    final iconTheme = WidgetStateProperty.resolveWith<IconThemeData?>((states) {
+      final isSelected = states.contains(WidgetState.selected);
+      return IconThemeData(
+        size: isCompact ? 21 : 23,
+        color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
+      );
+    });
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        border: Border(
+          top: BorderSide(color: colorScheme.outlineVariant, width: 1.5),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: NavigationBarTheme(
+          data: NavigationBarThemeData(
+            labelTextStyle: labelStyle,
+            iconTheme: iconTheme,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            indicatorShape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: colorScheme.primary.withAlpha(28),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+          ),
+          child: NavigationBar(
+            height: 64,
+            elevation: 0,
+            backgroundColor: colorScheme.surface,
+            surfaceTintColor: colorScheme.surface.withAlpha(0),
+            indicatorColor: colorScheme.primaryContainer,
+            selectedIndex: selectedIndex,
+            onDestinationSelected: onDestinationSelected,
+            destinations: const [
+              NavigationDestination(
+                icon: PhosphorIcon(PhosphorIconsRegular.house),
+                selectedIcon: PhosphorIcon(PhosphorIconsFill.house),
+                label: 'Ana Sayfa',
+              ),
+              NavigationDestination(
+                icon: PhosphorIcon(PhosphorIconsRegular.books),
+                selectedIcon: PhosphorIcon(PhosphorIconsFill.books),
+                label: 'Dersler',
+              ),
+              NavigationDestination(
+                icon: PhosphorIcon(PhosphorIconsRegular.target),
+                selectedIcon: PhosphorIcon(PhosphorIconsFill.target),
+                label: 'Pratik',
+              ),
+              NavigationDestination(
+                icon: PhosphorIcon(PhosphorIconsRegular.timer),
+                selectedIcon: PhosphorIcon(PhosphorIconsFill.timer),
+                label: 'Denemeler',
+              ),
+              NavigationDestination(
+                icon: PhosphorIcon(PhosphorIconsRegular.chartBar),
+                selectedIcon: PhosphorIcon(PhosphorIconsFill.chartBar),
+                label: 'İstatistik',
+              ),
+              NavigationDestination(
+                icon: PhosphorIcon(PhosphorIconsRegular.userCircle),
+                selectedIcon: PhosphorIcon(PhosphorIconsFill.userCircle),
+                label: 'Profil',
               ),
             ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(26),
-            child: NavigationBarTheme(
-              data: NavigationBarThemeData(
-                labelTextStyle: labelStyle,
-                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              ),
-              child: NavigationBar(
-                height: 66,
-                elevation: 0,
-                backgroundColor: colorScheme.surface,
-                indicatorColor: colorScheme.primaryContainer,
-                selectedIndex: selectedIndex,
-                onDestinationSelected: onDestinationSelected,
-                destinations: const [
-                  // 0: Ana Sayfa
-                  NavigationDestination(
-                    icon: PhosphorIcon(PhosphorIconsBold.house),
-                    selectedIcon: PhosphorIcon(PhosphorIconsFill.house),
-                    label: 'Ana Sayfa',
-                  ),
-                  // 1: Dersler
-                  NavigationDestination(
-                    icon: PhosphorIcon(PhosphorIconsBold.books),
-                    selectedIcon: PhosphorIcon(PhosphorIconsFill.books),
-                    label: 'Dersler',
-                  ),
-                  // 2: Pratik (Akademik hedef ve antrenman ikonu)
-                  NavigationDestination(
-                    icon: PhosphorIcon(PhosphorIconsBold.target),
-                    selectedIcon: PhosphorIcon(PhosphorIconsFill.target),
-                    label: 'Pratik',
-                  ),
-                  // 3: Denemeler
-                  NavigationDestination(
-                    icon: PhosphorIcon(PhosphorIconsBold.timer),
-                    selectedIcon: PhosphorIcon(PhosphorIconsFill.timer),
-                    label: 'Denemeler',
-                  ),
-                  // 4: İstatistik
-                  NavigationDestination(
-                    icon: PhosphorIcon(PhosphorIconsBold.chartBar),
-                    selectedIcon: PhosphorIcon(PhosphorIconsFill.chartBar),
-                    label: 'İstatistik',
-                  ),
-                  // 5: Profil
-                  NavigationDestination(
-                    icon: PhosphorIcon(PhosphorIconsBold.userCircle),
-                    selectedIcon: PhosphorIcon(PhosphorIconsFill.userCircle),
-                    label: 'Profil',
-                  ),
-                ],
-              ),
-            ),
           ),
         ),
       ),

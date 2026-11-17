@@ -1,5 +1,5 @@
 -- ============================================================================
--- 🎯 KADRO (KPSS Lisans Genel Kültür) — TAM SUPABASE KURULUM SCRİPTİ
+-- 🎯 KADRO (KPSS Ekosistemi) — TAM SUPABASE KURULUM SCRİPTİ
 -- Supabase Dashboard -> SQL Editor -> "New Query" içine yapıştırıp "RUN"a bas.
 -- ============================================================================
 
@@ -8,16 +8,25 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   display_name text not null default 'Memur Adayı',
   daily_goal_questions int not null default 30,
+  daily_solved_count int not null default 0,
+  daily_free_limit int not null default 30,
   current_streak_days int not null default 1,
   longest_streak_days int not null default 1,
   total_xp int not null default 0,
   league_tier text not null default 'Bronz Kadro',
   is_pro boolean not null default false,
   target_exam text not null default 'lisans',
+  exam_selection jsonb not null default '{}'::jsonb
+    constraint chk_profiles_exam_selection_object
+    check (jsonb_typeof(exam_selection) = 'object' and octet_length(exam_selection::text) <= 4096),
+  sub_exam_branch text null
+    constraint chk_profiles_sub_exam_branch_len
+    check (sub_exam_branch is null or char_length(sub_exam_branch) <= 120),
   study_pace text not null default 'orta',
   target_kpss_score int not null default 85,
   focus_lesson text not null default 'Tarih',
   has_active_study_program boolean not null default false,
+  planner_state jsonb not null default '{}'::jsonb,
   last_study_date date default current_date,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -25,10 +34,15 @@ create table if not exists public.profiles (
 
 -- Var olan tablolar için kolon güncellemesi (Geriye dönük uyumluluk)
 alter table public.profiles add column if not exists target_exam text default 'lisans';
+alter table public.profiles add column if not exists exam_selection jsonb not null default '{}'::jsonb;
+alter table public.profiles add column if not exists sub_exam_branch text null;
 alter table public.profiles add column if not exists study_pace text default 'orta';
 alter table public.profiles add column if not exists target_kpss_score int default 85;
 alter table public.profiles add column if not exists focus_lesson text default 'Tarih';
 alter table public.profiles add column if not exists has_active_study_program boolean default false;
+alter table public.profiles add column if not exists planner_state jsonb default '{}'::jsonb;
+alter table public.profiles add column if not exists daily_solved_count int not null default 0;
+alter table public.profiles add column if not exists daily_free_limit int not null default 30;
 
 -- YENİ KAYIT OLAN KULLANICI İÇİN OTOMATİK PROFİL OLUŞTURMA TRIGGER'I
 create or replace function public.handle_new_user()
@@ -55,13 +69,29 @@ create trigger on_auth_user_created
 -- 2. SORU VE ETKİLEŞİMLİ OYUN HAVUZU (5 Şıklı, Doğru/Yanlış, Kavram Eşleştirme)
 create table if not exists public.questions (
   id uuid primary key default gen_random_uuid(),
-  lesson text not null, -- 'Tarih', 'Coğrafya', 'Vatandaşlık', 'Güncel Bilgiler'
+  lesson text not null, -- 'Tarih', 'Coğrafya', 'Vatandaşlık', 'Güncel Bilgiler' vb.
   topic text not null,
   question_type text not null default 'multiple_choice', -- 'multiple_choice', 'true_false', 'matching'
   difficulty int not null default 2, -- 1: Kolay, 2: Orta, 3: Zor
   prompt_text text not null,
   interaction_data jsonb not null,
   explanation text not null,
+  distractor_trap text,
+  image_url text,
+  order_index integer,
+  is_active boolean not null default true,
+  exam_scopes text[] not null default array['lisans_gk']::text[]
+    constraint chk_questions_exam_scopes_nonempty check (cardinality(exam_scopes) >= 1),
+  sub_branch text null,
+  education_level text null
+    constraint chk_questions_education_level
+    check (education_level is null or education_level in ('lisans', 'onlisans', 'ortaogretim')),
+  disability_variant text null
+    constraint chk_questions_disability_variant
+    check (disability_variant is null or disability_variant in ('genel', 'gorme', 'isitme1', 'zihinsel')),
+  source_variant text null
+    constraint chk_questions_source_variant
+    check (source_variant is null or source_variant in ('standard', 'simplified')),
   created_at timestamptz not null default now()
 );
 
@@ -69,6 +99,7 @@ create table if not exists public.questions (
 create table if not exists public.quiz_sessions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
+  exam_scope text not null default 'lisans_gk',
   session_title text not null,
   session_mode text not null, -- 'topic_quiz', 'full_exam_60', 'true_false_blitz', 'concept_match', 'mistake_review'
   lesson text not null default 'Genel Kültür',
@@ -89,6 +120,7 @@ create table if not exists public.question_attempt_logs (
   session_id uuid references public.quiz_sessions(id) on delete cascade,
   user_id uuid not null references public.profiles(id) on delete cascade,
   question_id uuid references public.questions(id) on delete set null,
+  exam_scope text not null default 'lisans_gk',
   question_text text not null,
   lesson text not null,
   topic text not null,
@@ -105,6 +137,8 @@ create table if not exists public.question_attempt_logs (
 create table if not exists public.user_topic_mastery (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
+  exam_scope text not null default 'lisans_gk'
+    constraint chk_topic_mastery_exam_scope_nonempty check (char_length(trim(exam_scope)) > 0),
   lesson text not null,
   topic text not null,
   total_solved int not null default 0,
@@ -112,13 +146,14 @@ create table if not exists public.user_topic_mastery (
   total_time_seconds int not null default 0,
   mastery_percent int not null default 0,
   last_studied_at timestamptz not null default now(),
-  unique(user_id, lesson, topic)
+  constraint user_topic_mastery_user_scope_lesson_topic_key unique(user_id, exam_scope, lesson, topic)
 );
 
 -- 6. GÜNLÜK ÇALIŞMA PLANLAYICI GÖREVLERİ
 create table if not exists public.study_tasks (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles(id) on delete cascade,
+  exam_scope text not null default 'lisans_gk',
   title text not null,
   lesson_tag text not null,
   estimated_minutes int not null default 25,
@@ -128,12 +163,37 @@ create table if not exists public.study_tasks (
   created_at timestamptz not null default now()
 );
 
+-- 6B. UZAKTAN YAPILANDIRMA & ÇOKLU SINAV TAKVİMİ (app_config)
+create table if not exists public.app_config (
+  id text primary key default 'global_config',
+  min_supported_version text not null default '1.0.0',
+  latest_version text not null default '1.0.0',
+  is_maintenance_mode boolean not null default false,
+  maintenance_message text default 'Kadro bakımda! KPSS soru havuzumuzu güncelliyoruz. Çok yakında tekrar yayındayız.',
+  store_url text default 'https://play.google.com/store/apps/details?id=com.omer.kadro',
+  exam_date_overrides jsonb not null default '{}'::jsonb
+    constraint chk_app_config_exam_date_overrides_object
+    check (jsonb_typeof(exam_date_overrides) = 'object' and octet_length(exam_date_overrides::text) <= 16384),
+  updated_at timestamptz default now()
+);
+
 -- 7. PERFORMANS İNDEKSLERİ
 create index if not exists idx_questions_lesson_type on public.questions(lesson, question_type);
+create index if not exists idx_questions_exam_scopes_gin on public.questions using gin (exam_scopes);
+create index if not exists idx_questions_scope_lesson_topic on public.questions (lesson, topic, order_index);
+create index if not exists idx_questions_sub_branch on public.questions (sub_branch) where sub_branch is not null;
+create index if not exists idx_questions_active_lesson_type on public.questions (lesson, question_type) where is_active = true;
 create index if not exists idx_quiz_sessions_user_date on public.quiz_sessions(user_id, completed_at desc);
+create index if not exists idx_quiz_sessions_user_scope_date on public.quiz_sessions(user_id, exam_scope, completed_at desc);
 create index if not exists idx_attempt_logs_user_mistakes on public.question_attempt_logs(user_id, is_correct, is_resolved_in_mistakes);
+create index if not exists idx_attempt_logs_user_scope_mistakes on public.question_attempt_logs(user_id, exam_scope, is_correct, is_resolved_in_mistakes);
+create index if not exists idx_attempt_logs_question_id on public.question_attempt_logs(question_id);
+create index if not exists idx_attempt_logs_session_id on public.question_attempt_logs(session_id);
 create index if not exists idx_topic_mastery_user on public.user_topic_mastery(user_id, lesson);
+create index if not exists idx_topic_mastery_user_scope_lesson on public.user_topic_mastery(user_id, exam_scope, lesson);
 create index if not exists idx_study_tasks_user_date on public.study_tasks(user_id, scheduled_date);
+create index if not exists idx_study_tasks_user_scope_date on public.study_tasks(user_id, exam_scope, scheduled_date);
+create index if not exists idx_question_reports_user_id on public.question_reports(user_id);
 
 -- 8. ROW LEVEL SECURITY (RLS) GÜVENLİK POLİTİKALARI
 alter table public.profiles enable row level security;
@@ -142,20 +202,29 @@ alter table public.quiz_sessions enable row level security;
 alter table public.question_attempt_logs enable row level security;
 alter table public.user_topic_mastery enable row level security;
 alter table public.study_tasks enable row level security;
+alter table public.app_config enable row level security;
 
+drop policy if exists "App config public read" on public.app_config;
+create policy "App config public read" on public.app_config
+  for select using (true);
+
+drop policy if exists "Questions read only" on public.questions;
 drop policy if exists "Herkes aktif soruları okuyabilir" on public.questions;
 create policy "Herkes aktif soruları okuyabilir" on public.questions
-  for select using (true);
+  for select using (is_active = true);
 
 drop policy if exists "Kullanıcı kendi profilini okuyup güncelleyebilir" on public.profiles;
 create policy "Kullanıcı kendi profilini okuyup güncelleyebilir" on public.profiles
-  for all using (auth.uid() = id);
+  for all
+  using ((select auth.uid()) = id)
+  with check ((select auth.uid()) = id);
 
 -- GÜVENLİK: İstemcinin doğrudan `is_pro` alanını true yapmasını önleyen trigger
 create or replace function public.prevent_direct_is_pro_escalation()
 returns trigger
 language plpgsql
 security definer
+set search_path = ''
 as $$
 begin
   -- Eğer istemci (anon veya authenticated rolü) is_pro'yu değiştirmeye çalışırsa reddet
@@ -171,25 +240,62 @@ create trigger trg_prevent_direct_is_pro
   before update on public.profiles
   for each row execute procedure public.prevent_direct_is_pro_escalation();
 
+-- GÜVENLİK: İstemcinin doğrudan PATCH ile XP manipülasyonu yapmasını önleyen trigger
+create or replace function public.prevent_xp_and_league_tampering()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if (current_user not in ('service_role', 'postgres')) then
+    if (coalesce(new.total_xp, 0) - coalesce(old.total_xp, 0)) > 250 then
+      raise exception 'Kadro Güvenlik Kalkanı: Geçersiz XP artışı tespit edildi. İşlem durduruldu.';
+    end if;
+
+    if coalesce(new.total_xp, 0) < coalesce(old.total_xp, 0) then
+      new.total_xp := old.total_xp;
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_prevent_xp_tampering on public.profiles;
+create trigger trg_prevent_xp_tampering
+  before update on public.profiles
+  for each row execute procedure public.prevent_xp_and_league_tampering();
+
 drop policy if exists "Kullanıcı kendi test geçmişini yönetebilir" on public.quiz_sessions;
 create policy "Kullanıcı kendi test geçmişini yönetebilir" on public.quiz_sessions
-  for all using (auth.uid() = user_id);
+  for all
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Kullanıcı kendi soru loglarını yönetebilir" on public.question_attempt_logs;
 create policy "Kullanıcı kendi soru loglarını yönetebilir" on public.question_attempt_logs
-  for all using (auth.uid() = user_id);
+  for all
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Kullanıcı kendi konu ustalığını yönetebilir" on public.user_topic_mastery;
 create policy "Kullanıcı kendi konu ustalığını yönetebilir" on public.user_topic_mastery
-  for all using (auth.uid() = user_id);
+  for all
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 drop policy if exists "Kullanıcı kendi çalışma görevlerini yönetebilir" on public.study_tasks;
 create policy "Kullanıcı kendi çalışma görevlerini yönetebilir" on public.study_tasks
-  for all using (auth.uid() = user_id);
+  for all
+  using ((select auth.uid()) = user_id)
+  with check ((select auth.uid()) = user_id);
 
 -- 9. RPC GÜVENLİK VE RAPORLAMA FONKSİYONLARI
--- Top 10 haftalık aday sıralamasını RLS kısıtlamasına takılmadan sadece anonim/genel alanlarla döndürür.
-create or replace function public.get_weekly_leaderboard()
+-- Top 10 haftalık aday sıralamasını RLS kısıtlamasına takılmadan (opsiyonel sınav ailesiyle) döndürür.
+drop function if exists public.get_weekly_leaderboard();
+create or replace function public.get_weekly_leaderboard(
+  p_exam_family text default null
+)
 returns table (
     display_name text,
     total_xp integer,
@@ -197,15 +303,66 @@ returns table (
 )
 language sql
 security definer
+set search_path = ''
 as $$
     select
-        display_name,
-        coalesce(total_xp, 0) as total_xp,
-        coalesce(league_tier, 'Bronz Kadro') as league_tier
-    from public.profiles
-    order by total_xp desc
+        p.display_name,
+        coalesce(p.total_xp, 0) as total_xp,
+        coalesce(p.league_tier, 'Bronz Kadro') as league_tier
+    from public.profiles as p
+    where
+        p_exam_family is null
+        or trim(p_exam_family) = ''
+        or (p.exam_selection ->> 'family') = p_exam_family
+        or (
+          coalesce(p.exam_selection ->> 'family', '') = ''
+          and (
+            p.target_exam = p_exam_family
+            or (
+              p_exam_family = 'b_grubu'
+              and coalesce(p.target_exam, 'lisans') in (
+                'lisans',
+                'lisans2028',
+                'onlisans',
+                'ortaogretim'
+              )
+            )
+          )
+        )
+    order by coalesce(p.total_xp, 0) desc, p.created_at asc
     limit 10;
 $$;
+
+revoke all on function public.get_weekly_leaderboard(text) from public, anon;
+grant execute on function public.get_weekly_leaderboard(text) to authenticated;
+
+-- Google Play Data Safety & KVKK: Kullanıcının kendi hesabını ve tüm verilerini kalıcı olarak silmesi için RPC.
+create or replace function public.delete_user_account()
+returns void
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+    v_uid uuid := (select auth.uid());
+begin
+    if v_uid is null then
+        raise exception 'Oturum açılmamış.';
+    end if;
+
+    delete from public.subscriptions where user_id = v_uid;
+    delete from public.question_attempt_logs where user_id = v_uid;
+    delete from public.quiz_sessions where user_id = v_uid;
+    delete from public.user_topic_mastery where user_id = v_uid;
+    delete from public.study_tasks where user_id = v_uid;
+    delete from public.question_reports where user_id = v_uid;
+    delete from public.profiles where id = v_uid;
+    delete from auth.users where id = v_uid;
+end;
+$$;
+
+revoke execute on function public.delete_user_account() from public, anon;
+grant execute on function public.delete_user_account() to authenticated;
 
 -- 10. BAŞLANGIÇ KPSS GENEL KÜLTÜR VERİLERİ (SEED DATA)
 insert into public.questions (lesson, topic, question_type, difficulty, prompt_text, interaction_data, explanation)
@@ -2091,10 +2248,85 @@ create policy "Anyone can submit question report"
 -- Raporları sadece kullanıcı kendi raporunu okuyabilir veya admin tümünü okuyabilir
 create policy "Users can read their own reports or admin all"
   on public.question_reports for select
-  using (auth.uid() = user_id or auth.jwt()->>'role' = 'service_role');
+  using ((select auth.uid()) = user_id or (select auth.jwt())->>'role' = 'service_role');
 
 
 -- ==============================================================================
--- 11. Geriye Dönük Uyumluluk Yamaları
+-- 11. Çapraz Platform Abonelikler (subscriptions - Web iyzico / Stripe & Mobil IAP)
+-- ==============================================================================
+create table if not exists public.subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  entitlement_id text not null default 'kadro_pro',
+  plan_id text not null,
+  status text not null check (status in ('active', 'canceled', 'expired', 'past_due')),
+  provider text not null check (provider in ('apple', 'google', 'stripe', 'iyzico')),
+  provider_subscription_id text null,
+  amount_try numeric(10, 2) null,
+  expires_at timestamptz null,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default timezone('utc'::text, now()),
+  updated_at timestamptz not null default timezone('utc'::text, now())
+);
+
+create index if not exists idx_subscriptions_user_status
+  on public.subscriptions (user_id, status, expires_at desc);
+
+create unique index if not exists idx_subscriptions_provider_ref
+  on public.subscriptions (provider, provider_subscription_id)
+  where provider_subscription_id is not null;
+
+alter table public.subscriptions enable row level security;
+
+drop policy if exists "Kullanıcılar yalnızca kendi aboneliklerini okuyabilir" on public.subscriptions;
+create policy "Kullanıcılar yalnızca kendi aboneliklerini okuyabilir"
+  on public.subscriptions
+  for select
+  to authenticated
+  using (user_id = (select auth.uid()));
+
+revoke insert, update, delete on public.subscriptions from anon, authenticated;
+
+create or replace function public.sync_profile_pro_from_subscriptions()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_target_user uuid;
+  v_has_active boolean;
+begin
+  v_target_user := coalesce(new.user_id, old.user_id);
+  if v_target_user is null then
+    return null;
+  end if;
+
+  select exists(
+    select 1
+    from public.subscriptions as s
+    where s.user_id = v_target_user
+      and s.status = 'active'
+      and (s.expires_at is null or s.expires_at > timezone('utc'::text, now()))
+  )
+  into v_has_active;
+
+  update public.profiles
+  set is_pro = v_has_active
+  where id = v_target_user;
+
+  return coalesce(new, old);
+end;
+$$;
+
+drop trigger if exists trg_sync_profile_pro_on_subscription on public.subscriptions;
+create trigger trg_sync_profile_pro_on_subscription
+  after insert or update or delete on public.subscriptions
+  for each row
+  execute function public.sync_profile_pro_from_subscriptions();
+
+
+-- ==============================================================================
+-- 12. Geriye Dönük Uyumluluk Yamaları
 -- ==============================================================================
 alter table if exists public.questions add column if not exists distractor_trap text;

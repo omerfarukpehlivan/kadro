@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
 
-/// Duolingo / Brilliant tarzı 3D alt gölgeli fiziksel basılabilir kart (Tactile Card).
+/// Fiziksel basılabilirlik ve net alt derinlik ("tactile lip") sunan kart bileşeni.
+///
+/// Masaüstü ve Web tarayıcılarda (`onTap != null`) fare imleci değişimi (`click`),
+/// layout kaydırmayan hover renk tepkisi ve WCAG klavye odak halkası sağlar (`TASK-147`).
 ///
 /// Web/CSS karşılığı:
 /// ```css
 /// .tactile-card {
-///   border: 1.5px solid var(--border-color);
-///   box-shadow: 0 3px 0 var(--border-color);
-///   border-radius: 18px;
-///   cursor: pointer;
-///   transition: transform 0.1s;
+///   background: var(--surface);
+///   border: 1.5px solid var(--border);
+///   border-radius: 16px;
+///   box-shadow: 0 3px 0 0 var(--lip);
 /// }
 /// ```
-/// Kullanıcı dokunduğunda InkWell dalgalanması sunar ve katı alt gölgesiyle
-/// basılabilir derinlik hissi sağlar.
-/// Arka plandaki alt dudak gölgesinin yarı saydam zeminlerden sızmasını önlemek için
-/// Color.alphaBlend ile zemin rengi %100 opak harmanlanır.
-class TactileCard extends StatelessWidget {
+/// Yarı saydam arka plan renkleri geçirildiğinde kartı opak `surface` rengiyle harmanlar (`Color.alphaBlend`).
+class TactileCard extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry padding;
   final Color? backgroundColor;
   final Color? borderColor;
+  final Color? lipColor;
   final double borderRadius;
+  final double borderWidth;
+  final bool isElevated;
 
   const TactileCard({
     super.key,
@@ -31,45 +33,107 @@ class TactileCard extends StatelessWidget {
     this.padding = const EdgeInsets.all(16),
     this.backgroundColor,
     this.borderColor,
-    this.borderRadius = 18.0,
+    this.lipColor,
+    this.borderRadius = 16.0,
+    this.borderWidth = 1.5,
+    this.isElevated = true,
   });
+
+  @override
+  State<TactileCard> createState() => _TactileCardState();
+}
+
+class _TactileCardState extends State<TactileCard> {
+  bool _isHovered = false;
+  bool _isFocused = false;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final interactive = widget.onTap != null;
+    final disableAnimations = MediaQuery.disableAnimationsOf(context);
 
-    final rawBg = backgroundColor ?? colorScheme.surface;
-    final effectiveBg = rawBg.a < 1.0
+    final rawBg = widget.backgroundColor ?? colorScheme.surface;
+    final baseBg = rawBg.a < 1.0
         ? Color.alphaBlend(rawBg, colorScheme.surface)
         : rawBg;
 
-    final rawBorder = borderColor ?? colorScheme.outlineVariant;
-    final effectiveBorder = rawBorder.a < 1.0
+    final rawBorder = widget.borderColor ?? colorScheme.outlineVariant;
+    final baseBorder = rawBorder.a < 1.0
         ? Color.alphaBlend(rawBorder, colorScheme.surface)
         : rawBorder;
 
-    return Container(
+    final rawLip = widget.lipColor ?? baseBorder;
+    final baseLip = rawLip.a < 1.0
+        ? Color.alphaBlend(rawLip, colorScheme.surface)
+        : rawLip;
+
+    final effectiveBg = (interactive && (_isHovered || _isFocused))
+        ? Color.alphaBlend(colorScheme.primary.withAlpha(10), baseBg)
+        : baseBg;
+
+    final effectiveBorder = (interactive && _isFocused)
+        ? colorScheme.primary
+        : (interactive && _isHovered)
+        ? Color.alphaBlend(colorScheme.primary.withAlpha(130), baseBorder)
+        : baseBorder;
+
+    final effectiveLip = (interactive && (_isHovered || _isFocused))
+        ? Color.alphaBlend(colorScheme.primary.withAlpha(140), baseLip)
+        : baseLip;
+
+    final effectiveBorderWidth = (interactive && _isFocused)
+        ? widget.borderWidth + 0.5
+        : widget.borderWidth;
+
+    final card = AnimatedContainer(
+      duration: disableAnimations
+          ? Duration.zero
+          : const Duration(milliseconds: 120),
+      curve: Curves.easeOut,
       decoration: BoxDecoration(
         color: effectiveBg,
-        borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(color: effectiveBorder, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: effectiveBorder,
-            offset: const Offset(0, 3.0),
-            blurRadius: 0,
-          ),
-        ],
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        border: Border.all(color: effectiveBorder, width: effectiveBorderWidth),
+        boxShadow: widget.isElevated
+            ? [
+                BoxShadow(
+                  color: effectiveLip,
+                  offset: const Offset(0, 3),
+                  blurRadius: 0,
+                ),
+              ]
+            : null,
       ),
       child: Material(
-        // GEMINI.md kuralı: Sabit Colors.transparent yerine tema rengi alpha=0 kullanılır
         color: colorScheme.surface.withAlpha(0),
+        borderRadius: BorderRadius.circular(widget.borderRadius),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(borderRadius),
-          child: Padding(padding: padding, child: child),
+          onTap: widget.onTap,
+          focusColor: colorScheme.primary.withAlpha(18),
+          hoverColor: colorScheme.primary.withAlpha(8),
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          child: Padding(padding: widget.padding, child: widget.child),
         ),
       ),
+    );
+
+    if (!interactive) return card;
+
+    return FocusableActionDetector(
+      mouseCursor: SystemMouseCursors.click,
+      onShowHoverHighlight: (hovered) {
+        if (_isHovered != hovered) {
+          setState(() => _isHovered = hovered);
+        }
+      },
+      onShowFocusHighlight: (focused) {
+        if (_isFocused != focused) {
+          setState(() => _isFocused = focused);
+        }
+      },
+      child: card,
     );
   }
 }

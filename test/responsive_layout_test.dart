@@ -132,15 +132,15 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Hoş geldin'), findsOneWidget);
-      expect(find.text('Hedef Takibi'), findsOneWidget);
+      expect(find.text('Bugünkü hedefin'), findsOneWidget);
 
-      // Aşağı kaydırarak akıllı hatırlatıcıları görüntüle
+      // Aşağı kaydırarak hatırlatıcıları görüntüle
       await tester.scrollUntilVisible(
         find.text('Çalışma Planı'),
         150,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(find.text('Görev & Durum Hatırlatıcıları'), findsOneWidget);
+      expect(find.text('Hatırlatıcılar'), findsOneWidget);
       expect(find.text('Çalışma Planı'), findsOneWidget);
 
       // RenderFlex overflow hatası olmadığını doğrula
@@ -161,12 +161,11 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('Çalışma Türleri'), findsOneWidget);
-        expect(find.text('ANTRENMAN SAHASI'), findsOneWidget);
+        expect(find.text('Antrenman Sahası'), findsOneWidget);
         expect(find.text('Çalışma türleri'), findsOneWidget);
         expect(find.text('Konu testi'), findsOneWidget);
 
-        // Aşağı kaydırarak çeldirici avı ve mini oyunları görüntüle
+        // Aşağı kaydırarak çeldirici avı ve hızlı tekrar araçlarını görüntüle
         await tester.scrollUntilVisible(
           find.text('ÖSYM Çeldirici Avı'),
           150,
@@ -175,11 +174,11 @@ void main() {
         expect(find.text('ÖSYM Çeldirici Avı'), findsOneWidget);
 
         await tester.scrollUntilVisible(
-          find.text('Hızlı Tekrar & Refleks Antrenmanı'),
+          find.text('Araçlar & Hızlı Tekrar'),
           150,
           scrollable: find.byType(Scrollable).first,
         );
-        expect(find.text('Hızlı Tekrar & Refleks Antrenmanı'), findsOneWidget);
+        expect(find.text('Araçlar & Hızlı Tekrar'), findsOneWidget);
 
         // RenderFlex overflow hatası olmadığını doğrula
         expect(tester.takeException(), isNull);

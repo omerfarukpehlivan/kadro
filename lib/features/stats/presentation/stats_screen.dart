@@ -1,26 +1,257 @@
+import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
+import 'package:kadro/features/lessons/data/curriculum_registry.dart';
+import 'package:kadro/features/lessons/data/models/exam_curriculum.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
-import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/stats/presentation/quiz_history_screen.dart';
 import 'package:kadro/features/stats/presentation/quiz_session_detail_screen.dart';
-import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// İstatistik sayfası: Riverpod üzerinden canlı soru, XP/Lig, Ustalık Haritası,
-/// Başarım Rozetleri (Achievements), Haftalık Kadro Ligi ve Test Geçmişini gösterir.
-class StatsScreen extends ConsumerWidget {
+String _abbreviateLesson(String lessonName) {
+  switch (lessonName) {
+    case 'Tarih':
+      return 'TAR';
+    case 'Coğrafya':
+      return 'COĞ';
+    case 'Vatandaşlık':
+      return 'VAT';
+    case 'Güncel Bilgiler':
+      return 'GÜN';
+    case 'Türkçe':
+      return 'TÜR';
+    case 'Matematik':
+    case 'Matematik & Geometri':
+      return 'MAT';
+    case 'Sözel Yetenek':
+      return 'SÖZ';
+    case 'Sayısal Yetenek':
+      return 'SAY';
+    case 'Mevzuat':
+      return 'MEV';
+    case 'Alan Hukuk':
+      return 'HUK';
+    case 'Alan İktisat':
+      return 'İKT';
+    case 'Alan Maliye':
+      return 'MAL';
+    case 'Alan Muhasebe':
+      return 'MUH';
+    case 'Alan İşletme':
+      return 'İŞL';
+    case 'Alan Kamu Yönetimi':
+      return 'KYÖ';
+    case 'Alan Uluslararası İlişkiler':
+      return 'UİL';
+    case 'Alan ÇEKO':
+      return 'ÇEK';
+    case 'Alan İstatistik':
+      return 'İST';
+    default:
+      final cleaned = lessonName
+          .replaceFirst('Alan ', '')
+          .replaceFirst('ÖABT ', '')
+          .trim();
+      if (cleaned.length <= 3) return cleaned.toUpperCase();
+      return cleaned.substring(0, 3).toUpperCase();
+  }
+}
+
+/// İstatistik sayfası: analist Tuğrul sahnesi, kapsam filtresi, lig/seri özeti,
+/// KPI metrikleri, rozetler, haftalık sıralama, ders başarı grafiği, ustalık durumu ve test arşivi.
+class StatsScreen extends ConsumerStatefulWidget {
   const StatsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<StatsScreen> createState() => _StatsScreenState();
+}
+
+class _StatsScreenState extends ConsumerState<StatsScreen> {
+  bool _onlyActiveScope = true;
+
+  @override
+  Widget build(BuildContext context) {
     final stats = ref.watch(studyStatsProvider);
+    final selection = readOrWatchExamSelection(ref);
+    final curriculum = readOrWatchCurriculum(ref);
+    final activeScope = _onlyActiveScope ? selection.scopeKey : null;
+    final summary = stats.statsSummaryForScope(activeScope);
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final isDesktop = ResponsiveBreakpoints.usesSidebar(context);
+
+    final headerRow = Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'İstatistiklerin',
+                  style: textTheme.headlineMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Ders bazlı doğruluk oranların ve haftalık sıralama gelişimin.',
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          TugrulAvatar(
+            mood: TugrulMood.analyst,
+            size: 62,
+            tooltip: 'İstatistik & Ölçme Notları',
+            onTap: () =>
+                TugrulTipsSheet.show(context, mood: TugrulMood.analyst),
+          ),
+        ],
+      ),
+    );
+
+    final scopeChips = Material(
+      type: MaterialType.transparency,
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 6,
+        children: [
+          ChoiceChip(
+            key: const ValueKey('stats_scope_filter_active'),
+            label: Text('Aktif Sınav · ${selection.family.shortLabel}'),
+            selected: _onlyActiveScope,
+            onSelected: (_) => setState(() => _onlyActiveScope = true),
+          ),
+          ChoiceChip(
+            key: const ValueKey('stats_scope_filter_all'),
+            label: const Text('Tüm Çalışmalar'),
+            selected: !_onlyActiveScope,
+            onSelected: (_) => setState(() => _onlyActiveScope = false),
+          ),
+        ],
+      ),
+    );
+
+    final solvedStatCard = _StatCard(
+      label: 'Çözülen soru',
+      value: '${summary.totalSolved}',
+      icon: PhosphorIconsRegular.check,
+    );
+    final accuracyStatCard = _StatCard(
+      label: 'Doğru oranı',
+      value: summary.totalSolved == 0 ? '–' : '%${summary.accuracyPercent}',
+      icon: PhosphorIconsRegular.target,
+    );
+    final weakStatCard = _StatCard(
+      label: 'En zayıf ders',
+      value: summary.weakestLesson,
+      icon: PhosphorIconsRegular.warningCircle,
+    );
+
+    if (isDesktop) {
+      return ResponsiveContentWrapper(
+        maxWidth: 1240,
+        padding: EdgeInsets.zero,
+        child: Scrollbar(
+          child: ListView(
+            padding: AppSpacing.pagePadding(context),
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(child: headerRow),
+                  const SizedBox(width: 16),
+                  scopeChips,
+                ],
+              ),
+              AppSpacing.gapMd,
+              IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      flex: 5,
+                      child: _LeagueAndStreakCard(stats: stats),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(flex: 2, child: solvedStatCard),
+                    const SizedBox(width: 12),
+                    Expanded(flex: 2, child: accuracyStatCard),
+                    const SizedBox(width: 12),
+                    Expanded(flex: 3, child: weakStatCard),
+                  ],
+                ),
+              ),
+              AppSpacing.gapMd,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 7,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (summary.weakestLesson != 'Henüz veri yok') ...[
+                          _WeakLessonActionCard(
+                            weakestLesson: summary.weakestLesson,
+                            selection: selection,
+                          ),
+                          AppSpacing.gapMd,
+                        ],
+                        _LessonAccuracyChartCard(
+                          summary: summary,
+                          curriculum: curriculum,
+                          includeAllSolvedLessons: !_onlyActiveScope,
+                        ),
+                        AppSpacing.gapMd,
+                        _MasteryHeatmapCard(
+                          summary: summary,
+                          curriculum: curriculum,
+                          includeAllSolvedLessons: !_onlyActiveScope,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    flex: 5,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _AchievementsCard(stats: stats),
+                        AppSpacing.gapMd,
+                        _LeaderboardCard(
+                          stats: stats,
+                          examFamily: selection.family,
+                        ),
+                        AppSpacing.gapMd,
+                        _RecentSessionsCard(stats: stats, summary: summary),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return ResponsiveContentWrapper(
       maxWidth: 720,
@@ -28,79 +259,52 @@ class StatsScreen extends ConsumerWidget {
       child: ListView(
         padding: AppSpacing.pagePadding(context),
         children: [
-          const MascotCoachBanner(
-            mood: MascotMood.analyst,
-            badgeLabel: 'PERFORMANS ANALİZİ',
-            title: 'İstatistiklerin',
-            message: 'Soru çözdükçe ders bazında netlerin ve eksiklerin burada görünecek. Analizini incele ve stratejik çalış!',
-          ),
+          headerRow,
+          const SizedBox(height: 8),
+          scopeChips,
           AppSpacing.gapMd,
-
-          // 1. En Üst: Lig Kademesi ve Seri Kartı
           _LeagueAndStreakCard(stats: stats),
           AppSpacing.gapMd,
-
-          // 2. KPI Kartları (Çözülen Soru, Doğru Oranı)
           Row(
             children: [
-              Expanded(
-                child: _StatCard(
-                  label: 'Çözülen soru',
-                  value: '${stats.totalSolved}',
-                  icon: PhosphorIconsBold.check,
-                ),
-              ),
+              Expanded(child: solvedStatCard),
               AppSpacing.gapHorizontalSm,
-              Expanded(
-                child: _StatCard(
-                  label: 'Doğru oranı',
-                  value: stats.totalSolved == 0
-                      ? '–'
-                      : '%${stats.accuracyPercent}',
-                  icon: PhosphorIconsBold.target,
-                ),
-              ),
+              Expanded(child: accuracyStatCard),
             ],
           ),
           AppSpacing.gapSm,
-
-          // En zayıf ders kartı
-          _StatCard(
-            label: 'En zayıf ders',
-            value: stats.weakestLesson,
-            icon: PhosphorIconsFill.fire,
-          ),
-          if (stats.weakestLesson != 'Henüz veri yok') ...[
+          weakStatCard,
+          if (summary.weakestLesson != 'Henüz veri yok') ...[
             AppSpacing.gapSm,
-            _WeakLessonActionCard(stats: stats),
+            _WeakLessonActionCard(
+              weakestLesson: summary.weakestLesson,
+              selection: selection,
+            ),
           ],
           AppSpacing.gapMd,
-
-          // 3. KPSS Başarım Rozetleri (Achievements)
           _AchievementsCard(stats: stats),
           AppSpacing.gapMd,
-
-          // 4. Haftalık Kadro Lig Sıralaması (Leaderboard)
-          _LeaderboardCard(stats: stats),
+          _LeaderboardCard(stats: stats, examFamily: selection.family),
           AppSpacing.gapMd,
-
-          // 5. Ders Bazlı Başarı Oranı Grafiği (fl_chart BarChart)
-          _LessonAccuracyChartCard(stats: stats),
+          _LessonAccuracyChartCard(
+            summary: summary,
+            curriculum: curriculum,
+            includeAllSolvedLessons: !_onlyActiveScope,
+          ),
           AppSpacing.gapMd,
-
-          // 6. Ders Ustalık Isı Haritası
-          _MasteryHeatmapCard(stats: stats),
+          _MasteryHeatmapCard(
+            summary: summary,
+            curriculum: curriculum,
+            includeAllSolvedLessons: !_onlyActiveScope,
+          ),
           AppSpacing.gapMd,
-
-          // 7. Çözülen Testler Arşivi
-          _RecentSessionsCard(stats: stats),
+          _RecentSessionsCard(stats: stats, summary: summary),
         ],
       ),
     );
   }
 }
 
-/// Lig kademesi, XP puanı, gün serisi ve soru başına ortalama süre kartı.
 class _LeagueAndStreakCard extends StatelessWidget {
   final StudyStatsState stats;
 
@@ -112,25 +316,16 @@ class _LeagueAndStreakCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.primary.withAlpha(90),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             child: Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: colorScheme.tertiaryContainer,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: PhosphorIcon(
-                    PhosphorIconsFill.trophy,
-                    color: colorScheme.onTertiaryContainer,
-                    size: 24,
-                  ),
+                PhosphorIcon(
+                  PhosphorIconsRegular.trophy,
+                  color: colorScheme.tertiary,
+                  size: 24,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -139,9 +334,7 @@ class _LeagueAndStreakCard extends StatelessWidget {
                     children: [
                       Text(
                         stats.leagueTier,
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                        style: textTheme.titleMedium,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -149,7 +342,7 @@ class _LeagueAndStreakCard extends StatelessWidget {
                         '${stats.totalXp} XP',
                         style: textTheme.labelMedium?.copyWith(
                           color: colorScheme.primary,
-                          fontWeight: FontWeight.w700,
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
                     ],
@@ -166,14 +359,14 @@ class _LeagueAndStreakCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(6),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     PhosphorIcon(
                       PhosphorIconsFill.fire,
-                      size: 14,
+                      size: 13,
                       color: colorScheme.onTertiaryContainer,
                     ),
                     const SizedBox(width: 4),
@@ -181,7 +374,6 @@ class _LeagueAndStreakCard extends StatelessWidget {
                       '${stats.streakDays} Gün Seri',
                       style: textTheme.labelSmall?.copyWith(
                         color: colorScheme.onTertiaryContainer,
-                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
@@ -192,6 +384,7 @@ class _LeagueAndStreakCard extends StatelessWidget {
                 'Ort. ${stats.averageSecondsPerQuestion} sn/soru',
                 style: textTheme.labelSmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ],
@@ -202,7 +395,6 @@ class _LeagueAndStreakCard extends StatelessWidget {
   }
 }
 
-/// KPSS Başarım Rozetleri (Achievements) Kartı
 class _AchievementsCard extends StatelessWidget {
   final StudyStatsState stats;
 
@@ -216,27 +408,27 @@ class _AchievementsCard extends StatelessWidget {
 
     final badges = [
       _AchievementData(
-        title: 'İlk Pençe',
+        title: 'İlk Adım',
         description: '1 soru çöz',
-        icon: PhosphorIconsFill.fire,
+        icon: PhosphorIconsRegular.footprints,
         isUnlocked: stats.totalSolved >= 1,
       ),
       _AchievementData(
-        title: 'Keskin Nişancı',
-        description: '%70+ Doğruluk',
-        icon: PhosphorIconsBold.target,
+        title: 'Yüksek İsabet',
+        description: '%70+ doğruluk',
+        icon: PhosphorIconsRegular.target,
         isUnlocked: stats.totalSolved >= 5 && stats.accuracyPercent >= 70,
       ),
       _AchievementData(
-        title: 'Deneme Fatihi',
-        description: '1 Deneme bitir',
-        icon: PhosphorIconsFill.trophy,
+        title: 'Deneme Tamamlandı',
+        description: '1 deneme bitir',
+        icon: PhosphorIconsRegular.trophy,
         isUnlocked: stats.sessionHistory.isNotEmpty,
       ),
       _AchievementData(
-        title: 'Gümüş Kadro Adayı',
+        title: 'Gümüş Kadro',
         description: '250+ XP topla',
-        icon: PhosphorIconsDuotone.shieldCheck,
+        icon: PhosphorIconsRegular.shieldCheck,
         isUnlocked: stats.totalXp >= 250 || stats.leagueTier != 'Bronz Kadro',
       ),
     ];
@@ -244,8 +436,6 @@ class _AchievementsCard extends StatelessWidget {
     final unlockedCount = badges.where((b) => b.isUnlocked).length;
 
     return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -256,17 +446,15 @@ class _AchievementsCard extends StatelessWidget {
                 child: Row(
                   children: [
                     PhosphorIcon(
-                      PhosphorIconsDuotone.medal,
+                      PhosphorIconsRegular.medal,
                       color: colorScheme.tertiary,
-                      size: 20,
+                      size: 18,
                     ),
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
                         'KPSS Başarım Rozetleri',
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                        style: textTheme.titleMedium,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -275,23 +463,15 @@ class _AchievementsCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '$unlockedCount / 4 Açık',
-                  style: textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onTertiaryContainer,
-                  ),
+              Text(
+                '$unlockedCount / 4 Açık',
+                style: textTheme.labelSmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 12),
           Row(
             children: [
               Expanded(child: _BadgeTile(data: badges[0])),
@@ -338,74 +518,76 @@ class _BadgeTile extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     final bgColor = data.isUnlocked
-        ? colorScheme.primaryContainer.withAlpha(90)
-        : colorScheme.surfaceContainerHighest.withAlpha(90);
+        ? colorScheme.primaryContainer.withAlpha(110)
+        : colorScheme.surfaceContainerLow;
     final iconColor = data.isUnlocked
         ? colorScheme.primary
-        : colorScheme.onSurfaceVariant.withAlpha(120);
+        : colorScheme.outline;
     final titleColor = data.isUnlocked
         ? colorScheme.onSurface
         : colorScheme.onSurfaceVariant;
 
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: data.isUnlocked
-              ? colorScheme.primary.withAlpha(100)
-              : colorScheme.outlineVariant.withAlpha(60),
+    return Tooltip(
+      message: '${data.title}: ${data.description}',
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            width: 1.5,
+            color: data.isUnlocked
+                ? colorScheme.primary.withAlpha(130)
+                : colorScheme.outlineVariant,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              PhosphorIcon(data.icon, color: iconColor, size: 20),
-              PhosphorIcon(
-                data.isUnlocked
-                    ? PhosphorIconsFill.checkCircle
-                    : PhosphorIconsBold.lock,
-                size: 14,
-                color: data.isUnlocked
-                    ? colorScheme.primary
-                    : colorScheme.onSurfaceVariant.withAlpha(120),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                PhosphorIcon(data.icon, color: iconColor, size: 18),
+                PhosphorIcon(
+                  data.isUnlocked
+                      ? PhosphorIconsFill.checkCircle
+                      : PhosphorIconsRegular.lock,
+                  size: 13,
+                  color: data.isUnlocked
+                      ? colorScheme.secondary
+                      : colorScheme.outline,
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              data.title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelMedium?.copyWith(color: titleColor),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              data.description,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w400,
               ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            data.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: titleColor,
             ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            data.description,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-/// Haftalık Kadro Lig Sıralaması (Leaderboard) Kartı
 class _LeaderboardCard extends StatefulWidget {
   final StudyStatsState stats;
+  final KpssExamFamily examFamily;
 
-  const _LeaderboardCard({required this.stats});
+  const _LeaderboardCard({required this.stats, required this.examFamily});
 
   @override
   State<_LeaderboardCard> createState() => _LeaderboardCardState();
@@ -418,7 +600,19 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
   @override
   void initState() {
     super.initState();
-    _leaderboardFuture = _cloudSync.fetchLeaderboard();
+    _leaderboardFuture = _cloudSync.fetchLeaderboard(
+      examFamily: widget.examFamily.key,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _LeaderboardCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.examFamily != widget.examFamily) {
+      _leaderboardFuture = _cloudSync.fetchLeaderboard(
+        examFamily: widget.examFamily.key,
+      );
+    }
   }
 
   @override
@@ -428,8 +622,6 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
     final textTheme = theme.textTheme;
 
     return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -440,17 +632,15 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
                 child: Row(
                   children: [
                     PhosphorIcon(
-                      PhosphorIconsFill.crown,
+                      PhosphorIconsRegular.crown,
                       color: colorScheme.tertiary,
-                      size: 20,
+                      size: 18,
                     ),
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
                         'Haftalık Kadro Ligi',
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                        style: textTheme.titleMedium,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -460,16 +650,16 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
               ),
               const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
-                  'Bu Hafta',
+                  '${widget.examFamily.shortLabel} · Bu Hafta',
                   style: textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
                     color: colorScheme.onSecondaryContainer,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -488,9 +678,33 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
                 );
               }
 
+              if (snapshot.hasError) {
+                return Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Sıralama yüklenemedi. Yerel ilerlemen güvende.',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _leaderboardFuture = _cloudSync.fetchLeaderboard(
+                            examFamily: widget.examFamily.key,
+                          );
+                        });
+                      },
+                      child: const Text('Yenile'),
+                    ),
+                  ],
+                );
+              }
+
               final entries = List<LeaderboardEntry>.from(snapshot.data ?? []);
 
-              // Kullanıcının kendi kaydını ekleyip sıralayalım
               final userEntry = LeaderboardEntry(
                 displayName: 'Sen (Kadro Adayı)',
                 totalXp: widget.stats.totalXp,
@@ -500,86 +714,20 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
               final allEntries = [...entries, userEntry];
               allEntries.sort((a, b) => b.totalXp.compareTo(a.totalXp));
 
+              final visibleEntries = allEntries.take(5).toList();
               return Column(
-                children: allEntries.take(5).toList().asMap().entries.map((
-                  entry,
-                ) {
-                  final rank = entry.key + 1;
-                  final item = entry.value;
-                  final isCurrentUser = item.displayName.startsWith('Sen');
-
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 8,
+                children: [
+                  for (var i = 0; i < visibleEntries.length; i++) ...[
+                    if (i > 0) const Divider(height: 1),
+                    _LeaderboardRow(
+                      rank: i + 1,
+                      item: visibleEntries[i],
+                      isCurrentUser: visibleEntries[i].displayName.startsWith(
+                        'Sen',
+                      ),
                     ),
-                    decoration: BoxDecoration(
-                      color: isCurrentUser
-                          ? colorScheme.primaryContainer.withAlpha(80)
-                          : colorScheme.surfaceContainerHighest.withAlpha(50),
-                      borderRadius: BorderRadius.circular(10),
-                      border: isCurrentUser
-                          ? Border.all(
-                              color: colorScheme.primary.withAlpha(120),
-                            )
-                          : null,
-                    ),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 28,
-                          child: Text(
-                            rank == 1
-                                ? '🥇'
-                                : rank == 2
-                                ? '🥈'
-                                : rank == 3
-                                ? '🥉'
-                                : '#$rank',
-                            style: textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.displayName,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: textTheme.bodyMedium?.copyWith(
-                                  fontWeight: isCurrentUser
-                                      ? FontWeight.w800
-                                      : FontWeight.w600,
-                                  color: isCurrentUser
-                                      ? colorScheme.primary
-                                      : colorScheme.onSurface,
-                                ),
-                              ),
-                              Text(
-                                item.leagueTier,
-                                style: textTheme.labelSmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          '${item.totalXp} XP',
-                          style: textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                  ],
+                ],
               );
             },
           ),
@@ -589,44 +737,135 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
   }
 }
 
-/// 4 dersin ustalık durumunu renkli ısı haritası haplarıyla gösteren kart.
-class _MasteryHeatmapCard extends StatelessWidget {
-  final StudyStatsState stats;
+class _LeaderboardRow extends StatelessWidget {
+  final int rank;
+  final LeaderboardEntry item;
+  final bool isCurrentUser;
 
-  const _MasteryHeatmapCard({required this.stats});
+  const _LeaderboardRow({
+    required this.rank,
+    required this.item,
+    required this.isCurrentUser,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    final lessons = [
-      ('TAR · Tarih', 'Tarih'),
-      ('COĞ · Coğrafya', 'Coğrafya'),
-      ('VAT · Vatandaşlık', 'Vatandaşlık'),
-      ('GÜN · Güncel Bilgiler', 'Güncel Bilgiler'),
-    ];
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 9),
+      decoration: BoxDecoration(
+        color: isCurrentUser
+            ? colorScheme.primaryContainer.withAlpha(90)
+            : colorScheme.surface.withAlpha(0),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 28,
+            child: Text(
+              '$rank.',
+              style: textTheme.titleSmall?.copyWith(
+                color: rank <= 3
+                    ? colorScheme.onTertiaryContainer
+                    : colorScheme.onSurfaceVariant,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.displayName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: isCurrentUser
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                    color: isCurrentUser
+                        ? colorScheme.primary
+                        : colorScheme.onSurface,
+                  ),
+                ),
+                Text(
+                  item.leagueTier,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '${item.totalXp} XP',
+            style: textTheme.labelMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MasteryHeatmapCard extends StatelessWidget {
+  final ScopedStatsSummary summary;
+  final ExamCurriculum curriculum;
+  final bool includeAllSolvedLessons;
+
+  const _MasteryHeatmapCard({
+    required this.summary,
+    required this.curriculum,
+    this.includeAllSolvedLessons = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    final seenNames = <String>{};
+    final lessons = <(String, String)>[];
+    for (final spec in curriculum.allLessons) {
+      if (seenNames.add(spec.name)) {
+        lessons.add((
+          '${_abbreviateLesson(spec.name)} · ${spec.name}',
+          spec.name,
+        ));
+      }
+    }
+    if (includeAllSolvedLessons) {
+      for (final name in summary.solvedByLesson.keys) {
+        if (seenNames.add(name)) {
+          lessons.add(('${_abbreviateLesson(name)} · $name', name));
+        }
+      }
+    }
 
     return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               PhosphorIcon(
-                PhosphorIconsDuotone.shieldCheck,
+                PhosphorIconsRegular.shieldCheck,
                 color: colorScheme.primary,
-                size: 20,
+                size: 18,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Ders Ustalık Isı Haritası',
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: textTheme.titleMedium,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -637,13 +876,13 @@ class _MasteryHeatmapCard extends StatelessWidget {
           ...lessons.map((item) {
             final displayName = item.$1;
             final keyName = item.$2;
-            final label = stats.lessonMasteryLabel(keyName);
+            final label = summary.lessonMasteryLabel(keyName);
 
             Color badgeBg;
             Color badgeText;
             if (label.startsWith('Usta')) {
-              badgeBg = colorScheme.tertiaryContainer;
-              badgeText = colorScheme.onTertiaryContainer;
+              badgeBg = colorScheme.secondaryContainer;
+              badgeText = colorScheme.onSecondaryContainer;
             } else if (label.startsWith('Gelişiyor')) {
               badgeBg = colorScheme.primaryContainer;
               badgeText = colorScheme.onPrimaryContainer;
@@ -651,21 +890,19 @@ class _MasteryHeatmapCard extends StatelessWidget {
               badgeBg = colorScheme.errorContainer;
               badgeText = colorScheme.onErrorContainer;
             } else {
-              badgeBg = colorScheme.surfaceContainerHighest;
+              badgeBg = colorScheme.surfaceContainerLow;
               badgeText = colorScheme.onSurfaceVariant;
             }
 
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(vertical: 5),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Text(
                       displayName,
-                      style: textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: textTheme.bodyMedium,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -673,19 +910,16 @@ class _MasteryHeatmapCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
+                      horizontal: 8,
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
                       color: badgeBg,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       label,
-                      style: textTheme.labelSmall?.copyWith(
-                        color: badgeText,
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style: textTheme.labelSmall?.copyWith(color: badgeText),
                     ),
                   ),
                 ],
@@ -698,20 +932,19 @@ class _MasteryHeatmapCard extends StatelessWidget {
   }
 }
 
-/// Son çözülen test oturumlarını gösteren özet kartı.
 class _RecentSessionsCard extends StatelessWidget {
   final StudyStatsState stats;
+  final ScopedStatsSummary summary;
 
-  const _RecentSessionsCard({required this.stats});
+  const _RecentSessionsCard({required this.stats, required this.summary});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final sessions = summary.sessions;
 
     return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -720,10 +953,8 @@ class _RecentSessionsCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Çözülen Testler Arşivi (${stats.sessionHistory.length})',
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+                  'Çözülen Testler Arşivi (${sessions.length})',
+                  style: textTheme.titleMedium,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -741,21 +972,21 @@ class _RecentSessionsCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          if (stats.sessionHistory.isEmpty)
+          const SizedBox(height: 6),
+          if (sessions.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
-                'Henüz tamamlanmış bir test oturumu yok.',
+                'Bu sınav kapsamı için henüz tamamlanmış bir test oturumu yok.',
                 style: textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
             )
           else
-            ...stats.sessionHistory.take(3).map((s) {
+            ...sessions.take(3).map((s) {
               return InkWell(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(6),
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
@@ -765,8 +996,8 @@ class _RecentSessionsCard extends StatelessWidget {
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    vertical: 6,
-                    horizontal: 4,
+                    vertical: 7,
+                    horizontal: 2,
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -777,7 +1008,7 @@ class _RecentSessionsCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -785,7 +1016,7 @@ class _RecentSessionsCard extends StatelessWidget {
                         'Net: ${s.netScore.toStringAsFixed(2)}  (+${s.earnedXp} XP)',
                         style: textTheme.labelSmall?.copyWith(
                           color: colorScheme.primary,
-                          fontWeight: FontWeight.w800,
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
                     ],
@@ -799,7 +1030,6 @@ class _RecentSessionsCard extends StatelessWidget {
   }
 }
 
-/// Bir başlık, opsiyonel bir ikon ve büyük bir değer gösteren küçük kart.
 class _StatCard extends StatelessWidget {
   final String label;
   final String value;
@@ -813,8 +1043,6 @@ class _StatCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -824,7 +1052,7 @@ class _StatCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  style: textTheme.labelLarge?.copyWith(
+                  style: textTheme.labelMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                   maxLines: 1,
@@ -833,16 +1061,29 @@ class _StatCard extends StatelessWidget {
               ),
               if (icon != null) ...[
                 const SizedBox(width: 4),
-                PhosphorIcon(icon!, size: 18, color: colorScheme.primary),
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  alignment: Alignment.center,
+                  child: PhosphorIcon(
+                    icon!,
+                    size: 15,
+                    color: colorScheme.primary,
+                  ),
+                ),
               ],
             ],
           ),
           const SizedBox(height: 8),
           Text(
             value,
-            style: textTheme.headlineSmall?.copyWith(
+            style: textTheme.headlineMedium?.copyWith(
               color: colorScheme.onSurface,
-              fontWeight: FontWeight.w800,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
         ],
@@ -851,155 +1092,241 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-/// 4 KPSS Genel Kültür dersinin başarı oranını gösteren BarChart kartı.
 class _LessonAccuracyChartCard extends StatelessWidget {
-  final StudyStatsState stats;
+  final ScopedStatsSummary summary;
+  final ExamCurriculum curriculum;
+  final bool includeAllSolvedLessons;
 
-  const _LessonAccuracyChartCard({required this.stats});
+  const _LessonAccuracyChartCard({
+    required this.summary,
+    required this.curriculum,
+    this.includeAllSolvedLessons = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
+    final lessonNames = <String>[];
+    final seen = <String>{};
+    for (final spec in curriculum.allLessons) {
+      if (seen.add(spec.name)) {
+        lessonNames.add(spec.name);
+      }
+    }
+    if (includeAllSolvedLessons) {
+      for (final name in summary.solvedByLesson.keys) {
+        if (seen.add(name)) {
+          lessonNames.add(name);
+        }
+      }
+    }
+    if (lessonNames.isEmpty) {
+      lessonNames.addAll(const [
+        'Tarih',
+        'Coğrafya',
+        'Vatandaşlık',
+        'Güncel Bilgiler',
+      ]);
+    }
+
+    final barColors = [
+      colorScheme.tertiary,
+      colorScheme.secondary,
+      colorScheme.primary,
+      colorScheme.error,
+    ];
+
+    final accessibleSummary = summary.totalSolved == 0
+        ? 'Ders bazlı başarı oranı grafiği: Henüz çözülmüş soru bulunmuyor.'
+        : lessonNames
+              .map(
+                (name) => '$name yüzde ${summary.lessonAccuracyPercent(name)}',
+              )
+              .join(', ');
+
     return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Ders Bazlı Başarı Oranı (%)',
-            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 200,
-            child: BarChart(
-              BarChartData(
-                maxY: 100,
-                barTouchData: const BarTouchData(enabled: false),
-                borderData: FlBorderData(show: false),
-                gridData: const FlGridData(show: false),
-                titlesData: FlTitlesData(
-                  leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        final label = switch (value.toInt()) {
-                          0 => 'TAR',
-                          1 => 'COĞ',
-                          2 => 'VAT',
-                          3 => 'GÜN',
-                          _ => '',
-                        };
-                        return SideTitleWidget(
-                          meta: meta,
-                          child: Text(
-                            label,
-                            style: textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Ders Bazlı Başarı Oranı (%)',
+                  style: textTheme.titleMedium,
+                ),
+              ),
+              if (summary.totalSolved == 0)
+                Text(
+                  'Henüz veri yok',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                barGroups: [
-                  BarChartGroupData(
-                    x: 0,
-                    barRods: [
-                      BarChartRodData(
-                        toY: stats.lessonAccuracyPercent('Tarih').toDouble(),
-                        color: colorScheme.primary,
-                        width: 22,
-                        borderRadius: BorderRadius.circular(6),
-                        backDrawRodData: BackgroundBarChartRodData(
-                          show: true,
-                          toY: 100,
-                          color: colorScheme.secondaryContainer,
+            ],
+          ),
+          if (summary.totalSolved == 0) ...[
+            const SizedBox(height: 4),
+            Text(
+              'İlk testini çözdüğünde ders doğruluk sütunları burada görünecek.',
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
+          Semantics(
+            label: accessibleSummary,
+            child: SizedBox(
+              height: 200,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final minWidth = math.max(
+                    constraints.maxWidth,
+                    lessonNames.length * 56.0,
+                  );
+                  final chart = SizedBox(
+                    width: minWidth,
+                    height: 200,
+                    child: BarChart(
+                      BarChartData(
+                        maxY: 100,
+                        barTouchData: BarTouchData(
+                          enabled: true,
+                          handleBuiltInTouches: true,
+                          touchTooltipData: BarTouchTooltipData(
+                            getTooltipColor: (_) => colorScheme.onSurface,
+                            tooltipBorderRadius: BorderRadius.circular(10),
+                            fitInsideHorizontally: true,
+                            fitInsideVertically: true,
+                            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                              if (groupIndex < 0 ||
+                                  groupIndex >= lessonNames.length) {
+                                return null;
+                              }
+                              final lessonName = lessonNames[groupIndex];
+                              final pct = summary.lessonAccuracyPercent(
+                                lessonName,
+                              );
+                              final solved =
+                                  summary.solvedByLesson[lessonName] ?? 0;
+                              return BarTooltipItem(
+                                '$lessonName\n%$pct · $solved soru',
+                                (textTheme.labelSmall ?? const TextStyle())
+                                    .copyWith(
+                                      color: colorScheme.surface,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  BarChartGroupData(
-                    x: 1,
-                    barRods: [
-                      BarChartRodData(
-                        toY: stats.lessonAccuracyPercent('Coğrafya').toDouble(),
-                        color: colorScheme.primary,
-                        width: 22,
-                        borderRadius: BorderRadius.circular(6),
-                        backDrawRodData: BackgroundBarChartRodData(
+                        borderData: FlBorderData(show: false),
+                        gridData: FlGridData(
                           show: true,
-                          toY: 100,
-                          color: colorScheme.secondaryContainer,
+                          drawVerticalLine: false,
+                          horizontalInterval: 25,
+                          getDrawingHorizontalLine: (value) => FlLine(
+                            color: colorScheme.outlineVariant,
+                            strokeWidth: 0.8,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  BarChartGroupData(
-                    x: 2,
-                    barRods: [
-                      BarChartRodData(
-                        toY: stats
-                            .lessonAccuracyPercent('Vatandaşlık')
-                            .toDouble(),
-                        color: colorScheme.primary,
-                        width: 22,
-                        borderRadius: BorderRadius.circular(6),
-                        backDrawRodData: BackgroundBarChartRodData(
-                          show: true,
-                          toY: 100,
-                          color: colorScheme.secondaryContainer,
+                        titlesData: FlTitlesData(
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 32,
+                              interval: 50,
+                              getTitlesWidget: (value, meta) => Text(
+                                '${value.toInt()}',
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                final idx = value.toInt();
+                                final label =
+                                    (idx >= 0 && idx < lessonNames.length)
+                                    ? _abbreviateLesson(lessonNames[idx])
+                                    : '';
+                                return SideTitleWidget(
+                                  meta: meta,
+                                  child: Text(
+                                    label,
+                                    style: textTheme.labelMedium?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ),
+                        barGroups: [
+                          for (var i = 0; i < lessonNames.length; i++)
+                            BarChartGroupData(
+                              x: i,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: summary
+                                      .lessonAccuracyPercent(lessonNames[i])
+                                      .toDouble(),
+                                  color: barColors[i % barColors.length],
+                                  width: 22,
+                                  borderRadius: BorderRadius.circular(6),
+                                  backDrawRodData: BackgroundBarChartRodData(
+                                    show: true,
+                                    toY: 100,
+                                    color: colorScheme.surfaceContainerHighest,
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
                       ),
-                    ],
-                  ),
-                  BarChartGroupData(
-                    x: 3,
-                    barRods: [
-                      BarChartRodData(
-                        toY: stats
-                            .lessonAccuracyPercent('Güncel Bilgiler')
-                            .toDouble(),
-                        color: colorScheme.primary,
-                        width: 22,
-                        borderRadius: BorderRadius.circular(6),
-                        backDrawRodData: BackgroundBarChartRodData(
-                          show: true,
-                          toY: 100,
-                          color: colorScheme.secondaryContainer,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  );
+                  if (lessonNames.length > 5) {
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: chart,
+                    );
+                  }
+                  return chart;
+                },
               ),
             ),
           ),
         ],
       ),
-    ).animate().fadeIn(duration: 200.ms);
+    );
   }
 }
 
-/// Kullanıcının en çok zorlandığı dersten 10 hedef soru çözmesini sağlayan eylem kartı.
 class _WeakLessonActionCard extends StatelessWidget {
-  final StudyStatsState stats;
+  final String weakestLesson;
+  final ExamSelection selection;
 
-  const _WeakLessonActionCard({required this.stats});
+  const _WeakLessonActionCard({
+    required this.weakestLesson,
+    required this.selection,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1007,22 +1334,14 @@ class _WeakLessonActionCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.error.withAlpha(140),
+      borderColor: colorScheme.tertiary.withAlpha(140),
       padding: const EdgeInsets.all(14),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: colorScheme.errorContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: PhosphorIcon(
-              PhosphorIconsFill.fire,
-              color: colorScheme.onErrorContainer,
-              size: 22,
-            ),
+          PhosphorIcon(
+            PhosphorIconsRegular.warningCircle,
+            color: colorScheme.tertiary,
+            size: 20,
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1032,13 +1351,12 @@ class _WeakLessonActionCard extends StatelessWidget {
                 Text(
                   'Zayıf Konuyu Güçlendir (10 Soru)',
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
                     color: colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 2),
                 Text(
-                  '${stats.weakestLesson} dersindeki eksiklerini kapat.',
+                  '$weakestLesson dersindeki eksiklerini kapat.',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -1047,18 +1365,23 @@ class _WeakLessonActionCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          FilledButton.tonal(
+          OutlinedButton(
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => QuizScreen(
-                    lessonFilter: stats.weakestLesson,
-                    customTitle: '${stats.weakestLesson} — Zayıf Konu Testi',
+                    lessonFilter: weakestLesson,
+                    examSelection: selection,
+                    customTitle: '$weakestLesson — Zayıf Konu Testi',
                     limit: 10,
                   ),
                 ),
               );
             },
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(0, 36),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+            ),
             child: const Text('10 Soru'),
           ),
         ],

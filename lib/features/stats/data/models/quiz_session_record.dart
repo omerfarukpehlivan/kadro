@@ -5,6 +5,7 @@ class QuizSessionRecord {
   final String id;
   final String title;
   final String lesson;
+  final String examScope;
   final int totalQuestions;
   final int correctCount;
   final int wrongCount;
@@ -18,6 +19,7 @@ class QuizSessionRecord {
     required this.id,
     required this.title,
     required this.lesson,
+    this.examScope = 'lisans_gk',
     required this.totalQuestions,
     required this.correctCount,
     required this.wrongCount,
@@ -36,6 +38,9 @@ class QuizSessionRecord {
           (map['session_title'] ?? map['title'])?.toString() ??
           'Genel Kültür Testi',
       lesson: map['lesson']?.toString() ?? 'Genel Kültür',
+      examScope: map['exam_scope']?.toString().trim().isNotEmpty == true
+          ? map['exam_scope'].toString()
+          : 'lisans_gk',
       totalQuestions: (map['total_questions'] as num?)?.toInt() ?? 0,
       correctCount: (map['correct_count'] as num?)?.toInt() ?? 0,
       wrongCount: (map['wrong_count'] as num?)?.toInt() ?? 0,
@@ -55,6 +60,7 @@ class QuizSessionRecord {
       'id': id,
       'session_title': title,
       'lesson': lesson,
+      'exam_scope': examScope,
       'total_questions': totalQuestions,
       'correct_count': correctCount,
       'wrong_count': wrongCount,

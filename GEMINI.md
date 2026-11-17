@@ -1,11 +1,19 @@
-# 🎯 Kadro: KPSS Genel Kültür Hazırlık Uygulaması — Antigravity & Gemini Agent Kuralları
+# 🎯 Kadro: KPSS Ekosistemi Hazırlık Uygulaması — Antigravity & Gemini Agent Kuralları
 
-This project (**Kadro**) is a commercial KPSS Lisans Genel Kültür (Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler — Total 60 Questions) preparation app built with **Flutter + Supabase (PostgreSQL + Auth + RLS)**.
+This project (**Kadro**) is a commercial KPSS preparation app built with **Flutter + Supabase (PostgreSQL + Auth + RLS)**, evolving from the **KPSS Lisans Genel Kültür** core into a modular multi-exam architecture supporting all KPSS & MEB-AGS exam families.
 - **Paket adı:** `kadro` (`com.omer.kadro`)
-- **İlk Sürüm (MVP) Kapsamı:** Sadece **KPSS Lisans Genel Kültür** (Tarih: 27, Coğrafya: 18, Vatandaşlık: 9, Güncel Bilgiler: 6 — Toplam 60 soru, 65 dakika). İlk etapta Türkçe ve Matematik yer almayacaktır.
+- **Ürün Kapsamı & Çoklu KPSS Mimarisi:**
+  - **Aktif Çekirdek Veri Havuzu:** KPSS Lisans Genel Kültür (Tarih: 27, Coğrafya: 18, Vatandaşlık: 9, Güncel Bilgiler: 6 — Toplam 60 soru, 65 dakika).
+  - **Desteklenen Hedef Sınav Ekosistemi (Aşamalı Altyapı + Son Faz İçerik Üretimi):**
+    - **KPSS B Grubu (Lisans P1/P2/P3, Ön Lisans P93, Ortaöğretim P94):** Ortak GY-GK (`Türkçe 30, Matematik & Geometri 30, Tarih 27, Coğrafya 18, Vatandaşlık 9, Güncel 6` — Tam 120 soru / 130 dk veya Sadece GK 60 soru / 65 dk).
+    - **E-KPSS (`EKPSSP1 / P2 / P3`):** 30 GY + 30 GK, 4 engel grubu kitapçığı (`Genel`, `Görme`, `İşitme-1`, `Zihinsel`) ve erişilebilirlik/ek süre uyarlamaları.
+    - **KPSS DHBT (`P122 / P123 / P124`):** DHBT-1 (20 soru ortak) + DHBT-2 (20 soru İHL / Ön Lisans / Lisans düzey filtresi).
+    - **MEB-AGS + ÖABT (`AGS-P1 / P2 / P3`):** 1. Oturum (80 soru / 110 dk; Eğitim Bilimleri & TYMM + Mevzuat dahil) + 17 resmî ÖABT branşı (50 soru; 70/90 dk) ve Yabancı Dil (`YDS -> AGS-P3`).
+    - **KPSS A Grubu (`P4–P48`):** 9 Alan Bilgisi testi (Hukuk, İktisat, Maliye, Muhasebe, İşletme, Kamu Yönetimi, Uluslararası İlişkiler, ÇEKO, İstatistik; 40'ar soru).
+  - **Kapsam & Ad Uzayı Kuralı:** Çoklu sınav içerikleri `exam_scopes`, `sub_branch`, `education_level`, `disability_variant` ve `source_variant` alanlarıyla ayrıştırılır; aynı veya ortak dersler ad uzayı çakışması oluşturmadan kanonik isimlerle yönetilir.
 - **Gelir Modeli:** Hibrit Freemium (**Kadro PRO** abonelik + günlük 30 soru limiti sonrası **Ödüllü Reklam** ile +20 soru).
 - **Özgün İçerik Kuralı:** Sorular özgün olmalı; ÖSYM'nin telifli çıkmış sorularını birebir içerik olarak ekleme.
-- **"ÖSYM Çeldirici Tuzağı" (UWorld Modeli) Kuralı:** Hazırlanan soruların açıklamasında adayın en çok düşebileceği yanıltıcı şıkkı deşifre eden ve neden doğru sanıldığını açıklayan `distractorTrap` ("⚠️ ÖSYM Çeldirici Tuzağı") analizi yer almalıdır. Soru çözüm ekranında bu bölüm özel altın/kehribar uyarı rozetiyle öne çıkarılır.
+- **"ÖSYM Çeldirici Tuzağı" (UWorld Modeli) Kuralı:** Hazırlanan tüm sınav türlerindeki soruların açıklamasında adayın en çok düşebileceği yanıltıcı şıkkı deşifre eden ve neden doğru sanıldığını açıklayan `distractorTrap` ("⚠️ ÖSYM Çeldirici Tuzağı") analizi yer almalıdır. Soru çözüm ekranında bu bölüm özel altın/kehribar uyarı rozetiyle öne çıkarılır.
 
 ---
 
@@ -42,12 +50,13 @@ This project (**Kadro**) is a commercial KPSS Lisans Genel Kültür (Tarih, Coğ
 ---
 
 ## 🎨 Arayüz (UI/UX) & Marka Kimliği Kuralları (`ui-ux-pro-max`)
-- **Tasarım Sistemi (`design-system/kadro/MASTER.md`):** Her ekran veya bileşen geliştirilirken öncelikle `design-system/kadro/MASTER.md` (ve varsa `design-system/kadro/pages/<ekran>.md`) kurallarına ve `.agents/skills/ui-ux-pro-max/SKILL.md` disiplinine uyulur.
-- **Onaylı Marka & UI Paketleri:**
-  - `flex_color_scheme`: Kurumsal Academic Indigo (`#4F46E5`) & Achievement Gold (`#D97706`) renk paleti ve global bileşen (`Card`, `FilledButton`, `NavigationBar`, `InputDecoration`) alt temaları.
-  - `google_fonts`: Başlıklarda `Plus Jakarta Sans`, gövde ve soru metinlerinde `Inter` tipografi ailesi.
-  - `lucide_icons_flutter`: Standart Android `Icons.*` yerine modern çizgisel `LucideIcons` ikon seti (testlerde özellikle aranan ikonlar hariç).
-  - `flutter_animate`: Kart geçişleri ve ekran açılışlarında mikro etkileşimler (testlerde `pumpAndSettle` zaman aşımını önlemek için animasyon süreleri `<= 300ms` tutulur ve sonsuz `.repeat()` kullanılmaz).
+- **Tasarım Sistemi (`design-system/kadro/MASTER.md`):** Her ekran veya bileşen geliştirilirken öncelikle `design-system/kadro/MASTER.md` kurallarına ve `.agents/skills/ui-ux-pro-max/SKILL.md` disiplinine uyulur.
+- **Onaylı Marka & UI Paketleri ("Tuğrul Kobaltı & Anadolu Altını"):**
+  - `flex_color_scheme`: Tuğrul Kobaltı (`#2140D4`), Anadolu Zümrüt (`#0E9F6E`) ve Anadolu Altını (`#E28400`) renk paleti ile `16px` kart / `14px` buton (`TactileCard`: `1.5px` kenarlık + `3px` keskin alt dudak) sistemi.
+  - `google_fonts`: Başlıklarda `Outfit` (`w600`/`w700`), soru ve arayüz metinlerinde `DM Sans` (`w400`–`w700`, `FLUTTER_TEST` ortamında `allowRuntimeFetching = false`).
+  - `TugrulAvatar` (`lib/shared/widgets/tugrul_avatar.dart`): `assets/images/mascot/tugrul_*.png` maskot varlıklarını 12 ruh halinde ekran sahnelerine dairesel madalyon olarak entegre eder; üstte tekrarlı dikdörtgen banner şablonu yerine sahne içi yerleşim kullanılır.
+  - `phosphor_flutter`: Tek tutarlı çizgisel ikon sistemi (`PhosphorIconsRegular.*`, seçili/aktif durumda `PhosphorIconsFill.*`). UI'da `Icons.*`, `LucideIcons.*` ve dekoratif emojiler kullanılmaz.
+  - `flutter_animate`: Liste ve kart girişlerinde yapay `.animate().fadeIn().slideY()` efektleri kullanılmaz; yalnızca mikro durum geri bildirimlerinde sade geçişler tercih edilir.
   - `fl_chart`: İstatistik ve karne ekranlarında görsel grafikler (`BarChart` vb.).
 - **Tema Zorunluluğu:** Renk ve yazı stili her zaman `Theme.of(context).colorScheme` ve `.textTheme` üzerinden alınır. Sabit `Color(0xFF...)` ve sabit `fontSize` yalnızca `lib/app/theme.dart` içinde tanımlanabilir.
 - **Taşma (Overflow) Önleme:** `Row`/`Column` içindeki dinamik metin ve listelerde `Expanded`/`Flexible` kullan; kart ve liste içerik alanlarına sabit yükseklik (`height`) verme.

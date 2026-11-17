@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:kadro/core/config/supabase_config.dart';
 import 'package:kadro/core/network/client_rate_limiter.dart';
+import 'package:kadro/features/planner/data/models/planner_sync_snapshot.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show UserAttributes;
@@ -29,22 +30,35 @@ class CloudSyncRepository {
     final userId = client?.auth.currentUser?.id;
     if (client == null || userId == null) return;
 
+    final payload = <String, dynamic>{
+      'user_id': userId,
+      'session_title': session.title,
+      'session_mode': 'topic_quiz',
+      'lesson': session.lesson,
+      'exam_scope': session.examScope,
+      'total_questions': session.totalQuestions,
+      'correct_count': session.correctCount,
+      'wrong_count': session.wrongCount,
+      'empty_count': session.emptyCount,
+      'net_score': session.netScore,
+      'earned_xp': session.earnedXp,
+      'duration_seconds': session.durationSeconds,
+      'completed_at': session.completedAt.toIso8601String(),
+    };
+
     try {
-      await client.from('quiz_sessions').insert({
-        'user_id': userId,
-        'session_title': session.title,
-        'session_mode': 'topic_quiz',
-        'lesson': session.lesson,
-        'total_questions': session.totalQuestions,
-        'correct_count': session.correctCount,
-        'wrong_count': session.wrongCount,
-        'empty_count': session.emptyCount,
-        'net_score': session.netScore,
-        'earned_xp': session.earnedXp,
-        'duration_seconds': session.durationSeconds,
-        'completed_at': session.completedAt.toIso8601String(),
-      });
+      await client.from('quiz_sessions').insert(payload);
     } catch (e) {
+      if (e.toString().contains('exam_scope')) {
+        try {
+          payload.remove('exam_scope');
+          await client.from('quiz_sessions').insert(payload);
+          return;
+        } catch (fallbackErr) {
+          debugPrint('Supabase saveQuizSession fallback hatası: $fallbackErr');
+          return;
+        }
+      }
       debugPrint('Supabase saveQuizSession hatası: $e');
     }
   }
@@ -64,6 +78,7 @@ class CloudSyncRepository {
     String? questionId,
     String? selectedAnswer,
     String? correctAnswer,
+    String examScope = 'lisans_gk',
   }) async {
     final client = SupabaseConfig.clientOrNull;
     final userId = client?.auth.currentUser?.id;
@@ -74,6 +89,7 @@ class CloudSyncRepository {
       'question_text': questionText,
       'lesson': lesson,
       'topic': topic,
+      'exam_scope': examScope,
       'is_correct': isCorrect,
       'time_spent_seconds': timeSpentSeconds,
     };
@@ -106,6 +122,22 @@ class CloudSyncRepository {
         '[CloudSyncRepository] ${batch.length} soru analitiği tek bir toplu (bulk) istek ile gönderildi.',
       );
     } catch (e) {
+      if (e.toString().contains('exam_scope')) {
+        try {
+          final legacyBatch = batch
+              .map(
+                (row) => Map<String, dynamic>.from(row)..remove('exam_scope'),
+              )
+              .toList(growable: false);
+          await client.from('question_attempt_logs').insert(legacyBatch);
+          return;
+        } catch (fallbackErr) {
+          debugPrint(
+            'Supabase flushQuestionAttempts fallback hatası: $fallbackErr',
+          );
+          return;
+        }
+      }
       debugPrint('Supabase flushQuestionAttempts hatası: $e');
     }
   }
@@ -119,6 +151,8 @@ class CloudSyncRepository {
     required String leagueTier,
     required int dailyGoalQuestions,
     int? currentStreakDays,
+    int? dailySolvedCount,
+    int? dailyFreeLimit,
     bool force = false,
   }) async {
     if (!force) {
@@ -146,6 +180,12 @@ class CloudSyncRepository {
       };
       if (currentStreakDays != null && currentStreakDays > 0) {
         payload['current_streak_days'] = currentStreakDays;
+      }
+      if (dailySolvedCount != null) {
+        payload['daily_solved_count'] = dailySolvedCount;
+      }
+      if (dailyFreeLimit != null) {
+        payload['daily_free_limit'] = dailyFreeLimit;
       }
       await client.from('profiles').update(payload).eq('id', userId);
     } catch (e) {
@@ -291,6 +331,85 @@ class CloudSyncRepository {
     }
   }
 
+  /// Çalışma planının gün, kilit ve görev tamamlanma durumunu (snapshot)
+  /// Supabase üzerinde hem Auth `user_metadata` hem de `profiles` tablosuna
+  /// çift katmanlı olarak senkronize eder.
+  ///
+  /// Web/Angular Benzetmesi: Backend'e state senkronizasyonu isteği gönderme.
+  Future<void> syncPlannerSnapshot(PlannerSyncSnapshot snapshot) async {
+    final client = SupabaseConfig.clientOrNull;
+    final user = client?.auth.currentUser;
+    if (client == null || user == null) return;
+
+    final payload = snapshot.toJson();
+
+    // Katman 1: Supabase Auth user_metadata (anında erişilebilir oturum önbelleği)
+    try {
+      await client.auth.updateUser(
+        UserAttributes(data: {'planner_state': payload}),
+      );
+    } catch (e) {
+      debugPrint('Supabase auth planner_state hatası: $e');
+    }
+
+    // Katman 2: public.profiles tablosu (kalıcı veritabanı JSONB kaydı)
+    try {
+      await client
+          .from('profiles')
+          .update({
+            'planner_state': payload,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', user.id);
+    } catch (e) {
+      debugPrint('Supabase profiles planner_state hatası: $e');
+    }
+  }
+
+  /// Kullanıcının bulutta kayıtlı çalışma planı durumunu (snapshot) çeker.
+  ///
+  /// Hem `user_metadata` hem `profiles` tablosunu kontrol eder; her ikisinde de veri varsa
+  /// `mergeWith` ile High-Water Mark prensibine göre birleştirip döndürür.
+  Future<PlannerSyncSnapshot?> fetchPlannerSnapshot() async {
+    final client = SupabaseConfig.clientOrNull;
+    final user = client?.auth.currentUser;
+    if (client == null || user == null) return null;
+
+    PlannerSyncSnapshot? metaSnapshot;
+    final rawMeta = user.userMetadata?['planner_state'];
+    if (rawMeta is Map) {
+      try {
+        metaSnapshot = PlannerSyncSnapshot.fromJson(
+          Map<String, dynamic>.from(rawMeta),
+        );
+      } catch (e) {
+        debugPrint('Meta planner_state parse hatası: $e');
+      }
+    }
+
+    PlannerSyncSnapshot? profileSnapshot;
+    try {
+      final profile = await fetchUserProfile();
+      final rawProfileState = profile?['planner_state'];
+      if (rawProfileState is Map && rawProfileState.isNotEmpty) {
+        final profileMap = Map<String, dynamic>.from(rawProfileState);
+        if (profileMap.containsKey('cycle_day') ||
+            profileMap.containsKey('cycleDay') ||
+            profileMap.containsKey('max_unlocked_day') ||
+            profileMap.containsKey('completed_task_ids')) {
+          profileSnapshot = PlannerSyncSnapshot.fromJson(profileMap);
+        }
+      }
+    } catch (e) {
+      debugPrint('Profile planner_state parse hatası: $e');
+    }
+
+    if (metaSnapshot != null && profileSnapshot != null) {
+      return metaSnapshot.mergeWith(profileSnapshot);
+    }
+    return metaSnapshot ?? profileSnapshot;
+  }
+
   /// Çözülen konu bazlı başarı matrisini `public.user_topic_mastery` tablosuna kaydeder/günceller (upsert).
   Future<void> upsertTopicMastery({
     required String lesson,
@@ -298,27 +417,54 @@ class CloudSyncRepository {
     required int totalSolved,
     required int totalCorrect,
     required int totalTimeSeconds,
+    String examScope = 'lisans_gk',
   }) async {
     final client = SupabaseConfig.clientOrNull;
     final userId = client?.auth.currentUser?.id;
     if (client == null || userId == null) return;
 
-    try {
-      final masteryPercent = totalSolved == 0
-          ? 0
-          : ((totalCorrect / totalSolved) * 100).round();
+    final masteryPercent = totalSolved == 0
+        ? 0
+        : ((totalCorrect / totalSolved) * 100).round();
+    final nowIso = DateTime.now().toIso8601String();
+    final scopedPayload = <String, dynamic>{
+      'user_id': userId,
+      'exam_scope': examScope,
+      'lesson': lesson,
+      'topic': topic,
+      'total_solved': totalSolved,
+      'total_correct': totalCorrect,
+      'total_time_seconds': totalTimeSeconds,
+      'mastery_percent': masteryPercent,
+      'last_studied_at': nowIso,
+    };
 
-      await client.from('user_topic_mastery').upsert({
-        'user_id': userId,
-        'lesson': lesson,
-        'topic': topic,
-        'total_solved': totalSolved,
-        'total_correct': totalCorrect,
-        'total_time_seconds': totalTimeSeconds,
-        'mastery_percent': masteryPercent,
-        'last_studied_at': DateTime.now().toIso8601String(),
-      }, onConflict: 'user_id,lesson,topic');
+    try {
+      await client
+          .from('user_topic_mastery')
+          .upsert(scopedPayload, onConflict: 'user_id,exam_scope,lesson,topic');
     } catch (e) {
+      final err = e.toString().toLowerCase();
+      if (err.contains('exam_scope') ||
+          err.contains('constraint') ||
+          err.contains('conflict') ||
+          err.contains('42p10') ||
+          err.contains('42703') ||
+          err.contains('pgrst204')) {
+        try {
+          final legacyPayload = Map<String, dynamic>.from(scopedPayload)
+            ..remove('exam_scope');
+          await client
+              .from('user_topic_mastery')
+              .upsert(legacyPayload, onConflict: 'user_id,lesson,topic');
+          return;
+        } catch (fallbackErr) {
+          debugPrint(
+            'Supabase upsertTopicMastery fallback hatası: $fallbackErr',
+          );
+          return;
+        }
+      }
       debugPrint('Supabase upsertTopicMastery hatası: $e');
     }
   }
@@ -382,14 +528,18 @@ class CloudSyncRepository {
     }
   }
 
-  /// Kullanıcının hedef sınavını, çalışma temposunu ve tercihlerini buluta senkronize eder.
+  /// Kullanıcının hedef sınavını, çok boyutlu sınav seçimini, çalışma temposunu
+  /// ve tercihlerini buluta senkronize eder.
   Future<void> syncUserPreferences({
     String? targetExam,
+    Map<String, dynamic>? examSelection,
     String? studyPace,
     int? targetKpssScore,
     String? focusLesson,
     bool? hasActiveStudyProgram,
     bool? hasCompletedOnboarding,
+    int? dailyFreeQuestionLimit,
+    String? dailyQuotaDate,
   }) async {
     final client = SupabaseConfig.clientOrNull;
     final user = client?.auth.currentUser;
@@ -397,6 +547,7 @@ class CloudSyncRepository {
 
     final prefMap = <String, dynamic>{};
     if (targetExam != null) prefMap['target_exam'] = targetExam;
+    if (examSelection != null) prefMap['exam_selection'] = examSelection;
     if (studyPace != null) prefMap['study_pace'] = studyPace;
     if (targetKpssScore != null) prefMap['target_kpss_score'] = targetKpssScore;
     if (focusLesson != null) prefMap['focus_lesson'] = focusLesson;
@@ -405,6 +556,12 @@ class CloudSyncRepository {
     }
     if (hasCompletedOnboarding != null) {
       prefMap['has_completed_onboarding'] = hasCompletedOnboarding;
+    }
+    if (dailyFreeQuestionLimit != null) {
+      prefMap['daily_free_limit'] = dailyFreeQuestionLimit;
+    }
+    if (dailyQuotaDate != null) {
+      prefMap['daily_quota_date'] = dailyQuotaDate;
     }
 
     if (prefMap.isEmpty) return;
@@ -417,13 +574,29 @@ class CloudSyncRepository {
     }
 
     // 2. profiles tablosuna güncelleme dene (var olan kolonlar için)
+    final profilePayload = Map<String, dynamic>.from(prefMap)
+      ..remove('has_completed_onboarding')
+      ..remove('daily_quota_date');
+    if (dailyQuotaDate != null) {
+      profilePayload['last_study_date'] = dailyQuotaDate;
+    }
+    if (profilePayload.isEmpty) return;
+
     try {
-      final profilePayload = Map<String, dynamic>.from(prefMap)
-        ..remove('has_completed_onboarding');
-      if (profilePayload.isNotEmpty) {
-        await client.from('profiles').update(profilePayload).eq('id', user.id);
-      }
+      await client.from('profiles').update(profilePayload).eq('id', user.id);
     } catch (e) {
+      if (e.toString().contains('exam_selection')) {
+        try {
+          profilePayload.remove('exam_selection');
+          if (profilePayload.isNotEmpty) {
+            await client
+                .from('profiles')
+                .update(profilePayload)
+                .eq('id', user.id);
+          }
+          return;
+        } catch (_) {}
+      }
       debugPrint('Supabase syncUserPreferences profiles hatası: $e');
     }
   }
@@ -435,18 +608,24 @@ class CloudSyncRepository {
     if (client == null || user == null) return null;
 
     final result = <String, dynamic>{};
+    final meta = user.userMetadata ?? const <String, dynamic>{};
 
     // 1. Önce user_metadata'dan al
-    if (user.userMetadata != null && user.userMetadata!.isNotEmpty) {
-      result.addAll(user.userMetadata!);
+    if (meta.isNotEmpty) {
+      result.addAll(meta);
     }
 
     // 2. profiles tablosundan da al
+    Map<String, dynamic>? profile;
     try {
-      final profile = await fetchUserProfile();
+      profile = await fetchUserProfile();
       if (profile != null) {
         if (profile['target_exam'] != null) {
           result['target_exam'] = profile['target_exam'];
+        }
+        final profileExamSelection = profile['exam_selection'];
+        if (profileExamSelection is Map && profileExamSelection.isNotEmpty) {
+          result['exam_selection'] = profileExamSelection;
         }
         if (profile['study_pace'] != null) {
           result['study_pace'] = profile['study_pace'];
@@ -467,8 +646,49 @@ class CloudSyncRepository {
         if (profile['daily_goal_questions'] != null) {
           result['daily_goal_questions'] = profile['daily_goal_questions'];
         }
+        final profilePlanner = profile['planner_state'];
+        if (profilePlanner is Map && profilePlanner.isNotEmpty) {
+          result['planner_state'] = profilePlanner;
+        }
+        if (profile['daily_free_limit'] != null) {
+          result['daily_free_limit'] = profile['daily_free_limit'];
+        }
       }
     } catch (_) {}
+
+    final resolvedLimit =
+        profile?['daily_free_limit'] ?? meta['daily_free_limit'];
+    if (resolvedLimit != null) {
+      result['dailyFreeQuestionLimit'] = (resolvedLimit as num).toInt();
+      result['daily_free_limit'] = (resolvedLimit).toInt();
+    }
+    final resolvedQuotaDate =
+        meta['daily_quota_date']?.toString() ??
+        profile?['last_study_date']?.toString();
+    if (resolvedQuotaDate != null && resolvedQuotaDate.isNotEmpty) {
+      final dateOnly = resolvedQuotaDate.length >= 10
+          ? resolvedQuotaDate.substring(0, 10)
+          : resolvedQuotaDate;
+      result['dailyQuotaDate'] = dateOnly;
+      result['daily_quota_date'] = dateOnly;
+    }
+
+    final rawPlanner = result['planner_state'];
+    final hasNonEmptyPlanner = rawPlanner is Map && rawPlanner.isNotEmpty;
+    if (!hasNonEmptyPlanner) {
+      result.remove('planner_state');
+    }
+
+    // Yalnızca gerçek anlamda program kurmuş, dolu plan snapshot'ı olan veya
+    // metadata'da açıkça onboarding tamamlamış kullanıcılar kurulum yapmış sayılır.
+    // SQL varsayılan target_exam='lisans' veya boş '{}' planner_state sayılmaz.
+    if (meta['has_completed_onboarding'] == true ||
+        result['has_active_study_program'] == true ||
+        hasNonEmptyPlanner) {
+      result['has_completed_onboarding'] = true;
+    } else {
+      result['has_completed_onboarding'] = false;
+    }
 
     return result.isEmpty ? null : result;
   }
@@ -476,23 +696,40 @@ class CloudSyncRepository {
   /// Haftalık liderlik tablosunu Supabase `get_weekly_leaderboard` RPC fonksiyonu üzerinden çeker.
   ///
   /// Offline veya hata durumunda yüksek motivasyonlu varsayılan aday listesi döner.
-  Future<List<LeaderboardEntry>> fetchLeaderboard() async {
+  Future<List<LeaderboardEntry>> fetchLeaderboard({String? examFamily}) async {
     final client = SupabaseConfig.clientOrNull;
     if (client != null) {
-      try {
-        final response = await client.rpc('get_weekly_leaderboard');
-        if (response is List && response.isNotEmpty) {
-          return response.map((row) {
-            final map = row as Map<String, dynamic>;
-            return LeaderboardEntry(
-              displayName: (map['display_name'] as String?) ?? 'Memur Adayı',
-              totalXp: (map['total_xp'] as num?)?.toInt() ?? 0,
-              leagueTier: (map['league_tier'] as String?) ?? 'Bronz Kadro',
-            );
-          }).toList();
+      dynamic response;
+      if (examFamily != null && examFamily.trim().isNotEmpty) {
+        try {
+          response = await client.rpc(
+            'get_weekly_leaderboard',
+            params: {'p_exam_family': examFamily.trim()},
+          );
+        } catch (e) {
+          debugPrint(
+            'Supabase scoped fetchLeaderboard RPC fallback çalışıyor: $e',
+          );
         }
-      } catch (e) {
-        debugPrint('Supabase fetchLeaderboard RPC hatası: $e');
+      }
+
+      if (response == null) {
+        try {
+          response = await client.rpc('get_weekly_leaderboard');
+        } catch (e) {
+          debugPrint('Supabase fetchLeaderboard RPC hatası: $e');
+        }
+      }
+
+      if (response is List && response.isNotEmpty) {
+        return response.map((row) {
+          final map = row as Map<String, dynamic>;
+          return LeaderboardEntry(
+            displayName: (map['display_name'] as String?) ?? 'Memur Adayı',
+            totalXp: (map['total_xp'] as num?)?.toInt() ?? 0,
+            leagueTier: (map['league_tier'] as String?) ?? 'Bronz Kadro',
+          );
+        }).toList();
       }
     }
 

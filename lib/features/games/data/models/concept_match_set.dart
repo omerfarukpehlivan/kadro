@@ -1,3 +1,5 @@
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
+
 /// Eşleştirme kart çifti modeli.
 class ConceptPair {
   final String id;
@@ -17,13 +19,20 @@ class ConceptMatchSet {
   final String title;
   final String lesson;
   final List<ConceptPair> pairs;
+  final List<String> examScopes;
+  final String? subBranch;
 
   const ConceptMatchSet({
     required this.id,
     required this.title,
     required this.lesson,
     required this.pairs,
+    this.examScopes = const ['lisans_gk'],
+    this.subBranch,
   });
+
+  bool matchesSelection(ExamSelection selection) => selection
+      .matchesContentMetadata(examScopes: examScopes, subBranch: subBranch);
 }
 
 /// 20 adet özgün KPSS Genel Kültür tematik kavram eşleştirme seti.

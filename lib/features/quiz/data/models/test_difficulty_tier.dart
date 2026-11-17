@@ -23,19 +23,8 @@ enum TestDifficultyTier {
 
 /// [TestDifficultyTier] için metin, ikon, renk ve hesaplama yardımcıları.
 extension TestDifficultyTierExtension on TestDifficultyTier {
-  /// Emojili tam rozet başlığı.
-  String get title {
-    switch (this) {
-      case TestDifficultyTier.warmup:
-        return '🌱 Basit Alıştırma';
-      case TestDifficultyTier.standard:
-        return '🏛️ Tam Sınav Ayarı';
-      case TestDifficultyTier.distinction:
-        return '⚡ Net Sıçratan';
-      case TestDifficultyTier.trapMaster:
-        return '🔥 Kurtlar Sofrası';
-    }
-  }
+  /// Emojisiz standart zorluk rozeti başlığı.
+  String get title => cleanTitle;
 
   /// Emojisiz temiz kısa başlık (Quiz ekranı başlığı vb. için).
   String get cleanTitle {

@@ -2,14 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/app/router.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/main.dart';
+
+Widget _onboardedApp() => ProviderScope(
+  overrides: [
+    initialUserPreferencesProvider.overrideWithValue(
+      const UserPreferencesState(
+        hasCompletedOnboarding: true,
+        hasActiveStudyProgram: true,
+      ),
+    ),
+  ],
+  child: const MyApp(),
+);
 
 void main() {
   group('GoRouter Navigasyon Testleri', () {
     testWidgets('Uygulama açılışında rota "/" ve başlık "Kadro" olmalı', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MyApp());
+      await tester.pumpWidget(_onboardedApp());
       await tester.pumpAndSettle();
 
       expect(find.text('Kadro'), findsOneWidget);
@@ -21,7 +34,17 @@ void main() {
       (WidgetTester tester) async {
         final testRouter = createAppRouter(initialLocation: '/');
         await tester.pumpWidget(
-          ProviderScope(child: MaterialApp.router(routerConfig: testRouter)),
+          ProviderScope(
+            overrides: [
+              initialUserPreferencesProvider.overrideWithValue(
+                const UserPreferencesState(
+                  hasCompletedOnboarding: true,
+                  hasActiveStudyProgram: true,
+                ),
+              ),
+            ],
+            child: MaterialApp.router(routerConfig: testRouter),
+          ),
         );
         await tester.pumpAndSettle();
 

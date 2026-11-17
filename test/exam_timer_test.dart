@@ -31,11 +31,13 @@ void main() {
 
         // 3 saniyelik süreli deneme başlat
         await tester.pumpWidget(
-          const MaterialApp(
-            home: QuizScreen(
-              questions: testQuestions,
-              examDuration: Duration(seconds: 3),
-              customTitle: 'Genel Kültür Denemesi',
+          const ProviderScope(
+            child: MaterialApp(
+              home: QuizScreen(
+                questions: testQuestions,
+                examDuration: Duration(seconds: 3),
+                customTitle: 'Genel Kültür Denemesi',
+              ),
             ),
           ),
         );

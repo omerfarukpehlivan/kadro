@@ -7,6 +7,7 @@ import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -46,7 +47,7 @@ void main() {
         const ProviderScope(child: MaterialApp(home: MistakesScreen())),
       );
 
-      expect(find.text('Yanlış defterin tertemiz!'), findsOneWidget);
+      expect(find.text('Yanlış defterinde bekleyen soru yok'), findsOneWidget);
       expect(
         find.text(
           'Testlerde yanlış yaptığın sorular otomatik olarak burada birikir.',
@@ -73,11 +74,14 @@ void main() {
         );
 
         // Silme butonuna bas
-        await tester.tap(find.byIcon(Icons.delete_outline));
+        await tester.tap(find.byIcon(PhosphorIconsRegular.trash));
         await tester.pumpAndSettle();
 
-        // Defterin tekrar tertemiz olduğunu doğrula
-        expect(find.text('Yanlış defterin tertemiz!'), findsOneWidget);
+        // Defterin tekrar boş olduğunu doğrula
+        expect(
+          find.text('Yanlış defterinde bekleyen soru yok'),
+          findsOneWidget,
+        );
         expect(repository.getMistakes(), isEmpty);
       },
     );
@@ -224,7 +228,7 @@ void main() {
         expect(find.byType(PaywallScreen), findsOneWidget);
         expect(
           find.text(
-            'Akıllı Yanlış Defteri Test Üretici: Yanlış yaptığın sorulardan özel akıllı testler üretip çözmek Kadro PRO üyelerine özeldir.',
+            'Akıllı Yanlış Defteri Test Üretici: Yanlış yaptığın sorulardan özel testler üretip çözmek Kadro PRO üyelerine özeldir.',
           ),
           findsOneWidget,
         );

@@ -93,8 +93,8 @@ void main() {
         expect(find.text('Tarih'), findsOneWidget);
         expect(find.text('Coğrafya'), findsOneWidget);
 
-        // Başlangıç durumu rozeti
-        expect(find.textContaining('Hemen Başla ▶'), findsWidgets);
+        // Başlangıç durumu sayacı
+        expect(find.textContaining('0 / '), findsWidgets);
       },
     );
 
@@ -200,7 +200,10 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             lessonTopicTestCountsProvider(
-              'Tarih',
+              const TopicCountQueryKey(
+                scopeKey: 'lisans_gk',
+                lessonName: 'Tarih',
+              ),
             ).overrideWith((ref) async => {'İslamiyet Öncesi Türk Tarihi': 2}),
           ],
         );

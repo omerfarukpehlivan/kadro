@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'geo_diagram.dart';
 
@@ -13,26 +13,25 @@ class GeoDiagramCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16.0),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
-        ),
+        border: Border.all(color: colorScheme.outlineVariant, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: colorScheme.outlineVariant,
+            offset: const Offset(0, 3),
+            blurRadius: 0,
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(14.5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -47,23 +46,23 @@ class GeoDiagramCard extends StatelessWidget {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFD97706).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
+                      color: colorScheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          LucideIcons.mountain,
+                        PhosphorIcon(
+                          PhosphorIconsRegular.mountains,
                           size: 13,
-                          color: Color(0xFFD97706),
+                          color: colorScheme.onTertiaryContainer,
                         ),
                         const SizedBox(width: 5),
                         Text(
                           title ?? 'KPSS Jeomorfoloji & Yer Şekli',
-                          style: theme.textTheme.labelSmall?.copyWith(
+                          style: textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFFD97706),
+                            color: colorScheme.onTertiaryContainer,
                           ),
                         ),
                       ],
@@ -73,7 +72,7 @@ class GeoDiagramCard extends StatelessWidget {
                   // Büyüt Butonu
                   InkWell(
                     onTap: () => _openZoomDialog(context),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(8),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -82,16 +81,16 @@ class GeoDiagramCard extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            LucideIcons.zoomIn,
+                          PhosphorIcon(
+                            PhosphorIconsRegular.magnifyingGlassPlus,
                             size: 14,
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             'Büyüt',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -108,9 +107,8 @@ class GeoDiagramCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
               child: Text(
                 config.title,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.2,
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -125,35 +123,28 @@ class GeoDiagramCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.25)
-                    : Colors.white.withValues(alpha: 0.6),
+                color: colorScheme.surfaceContainer,
                 border: Border(
-                  top: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withValues(
-                      alpha: 0.3,
-                    ),
-                  ),
+                  top: BorderSide(color: colorScheme.outlineVariant),
                 ),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 2, right: 6),
-                    child: Icon(
-                      LucideIcons.sparkles,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2, right: 6),
+                    child: PhosphorIcon(
+                      PhosphorIconsRegular.info,
                       size: 13,
-                      color: Color(0xFFD97706),
+                      color: colorScheme.tertiary,
                     ),
                   ),
                   Expanded(
                     child: Text(
                       config.educationalNote,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontSize: 11,
+                      style: textTheme.bodySmall?.copyWith(
                         height: 1.35,
-                        color: theme.colorScheme.onSurfaceVariant,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -167,26 +158,21 @@ class GeoDiagramCard extends StatelessWidget {
   }
 
   void _openZoomDialog(BuildContext context) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (ctx) {
-        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        final ctxTheme = Theme.of(ctx);
+        final ctxScheme = ctxTheme.colorScheme;
+        final ctxText = ctxTheme.textTheme;
         return Dialog(
-          backgroundColor: Colors.transparent,
+          backgroundColor: ctxScheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(color: ctxScheme.outlineVariant),
+          ),
           insetPadding: const EdgeInsets.all(12),
-          child: Container(
+          child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 580, maxHeight: 480),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0F172A) : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black38,
-                  blurRadius: 24,
-                  offset: Offset(0, 8),
-                ),
-              ],
-            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -195,24 +181,26 @@ class GeoDiagramCard extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
                   child: Row(
                     children: [
-                      const Icon(
-                        LucideIcons.mountain,
+                      PhosphorIcon(
+                        PhosphorIconsRegular.mountains,
                         size: 16,
-                        color: Color(0xFFD97706),
+                        color: ctxScheme.tertiary,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           config.title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                          style: ctxText.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(LucideIcons.x, size: 18),
+                        icon: const PhosphorIcon(
+                          PhosphorIconsRegular.x,
+                          size: 18,
+                        ),
                         onPressed: () => Navigator.of(ctx).pop(),
                         visualDensity: VisualDensity.compact,
                       ),
@@ -241,12 +229,12 @@ class GeoDiagramCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        '💡 Çift parmakla yakınlaştırabilirsiniz',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic,
+                      Expanded(
+                        child: Text(
+                          'Çift parmakla yakınlaştırabilirsiniz',
+                          style: ctxText.bodySmall?.copyWith(
+                            color: ctxScheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
                       TextButton(

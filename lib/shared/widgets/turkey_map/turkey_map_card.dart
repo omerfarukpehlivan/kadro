@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'turkey_map.dart';
 
@@ -7,7 +7,7 @@ import 'turkey_map.dart';
 ///
 /// Angular/Web benzetmesi: Bu bileşen `<app-map-modal>` ve `<app-map-card>`
 /// ikilisinin Flutter karşılığıdır. Kullanıcıya haritayı kart içinde sunar ve
-/// '🔍 Büyüt' butonuna basıldığında çift parmakla yakınlaştırılabilen (pinch-to-zoom)
+/// 'Büyüt' butonuna basıldığında çift parmakla yakınlaştırılabilen (pinch-to-zoom)
 /// tam ekran diyalog açar.
 class TurkeyMapCard extends StatelessWidget {
   final TurkeyMapConfig config;
@@ -26,32 +26,31 @@ class TurkeyMapCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16.0),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
-        ),
+        border: Border.all(color: colorScheme.outlineVariant, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: colorScheme.outlineVariant,
+            offset: const Offset(0, 3),
+            blurRadius: 0,
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(14.5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Üst Başlık ve Büyüt Butonu Çubuğu
             Padding(
-              padding: const EdgeInsets.fromLTRB(14, 10, 10, 6),
+              padding: const EdgeInsets.fromLTRB(10, 8, 8, 4),
               child: Row(
                 children: [
                   Container(
@@ -60,23 +59,23 @@ class TurkeyMapCard extends StatelessWidget {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          LucideIcons.map,
+                        PhosphorIcon(
+                          PhosphorIconsRegular.mapTrifold,
                           size: 13,
-                          color: theme.colorScheme.primary,
+                          color: colorScheme.onPrimaryContainer,
                         ),
                         const SizedBox(width: 5),
                         Text(
                           title ?? 'KPSS Harita İnceleme',
-                          style: theme.textTheme.labelSmall?.copyWith(
+                          style: textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: theme.colorScheme.primary,
+                            color: colorScheme.onPrimaryContainer,
                           ),
                         ),
                       ],
@@ -86,7 +85,7 @@ class TurkeyMapCard extends StatelessWidget {
                   // Büyüt Butonu
                   InkWell(
                     onTap: () => _openZoomDialog(context),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(8),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -95,17 +94,17 @@ class TurkeyMapCard extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            LucideIcons.zoomIn,
+                          PhosphorIcon(
+                            PhosphorIconsRegular.magnifyingGlassPlus,
                             size: 14,
-                            color: theme.colorScheme.primary,
+                            color: colorScheme.primary,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             'Büyüt',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.bold,
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.primary,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
@@ -120,13 +119,8 @@ class TurkeyMapCard extends StatelessWidget {
             GestureDetector(
               onTap: () => _openZoomDialog(context),
               child: Container(
-                color: isDark
-                    ? const Color(0xFF0F172A)
-                    : const Color(0xFFF8FAFC),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 10,
-                ),
+                color: colorScheme.surface,
+                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
                 child: TurkeyMap(
                   config: config,
                   onProvinceTap: onProvinceTap,
@@ -142,63 +136,98 @@ class TurkeyMapCard extends StatelessWidget {
 
   /// Tam ekran inceleme ve pinch-to-zoom modal diyaloğu
   void _openZoomDialog(BuildContext context) {
-    showDialog(
+    showDialog<void>(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.85),
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Üst Bar: Kapat Butonu & İpucu
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      LucideIcons.zoomIn,
-                      color: Colors.white70,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'İki parmağınızla yakınlaştırabilirsiniz',
-                      style: Theme.of(ctx).textTheme.bodySmall
-                          ?.copyWith(color: Colors.white70),
-                    ),
-                  ],
-                ),
-                IconButton(
-                  icon: const Icon(LucideIcons.x, color: Colors.white),
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  tooltip: 'Kapat',
-                ),
-              ],
+      barrierColor: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.72),
+      builder: (ctx) {
+        final ctxTheme = Theme.of(ctx);
+        final ctxScheme = ctxTheme.colorScheme;
+        final ctxText = ctxTheme.textTheme;
+        final viewportHeight = MediaQuery.sizeOf(ctx).height;
+        return Dialog(
+          backgroundColor: ctxScheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(color: ctxScheme.outlineVariant),
+          ),
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 1120,
+              maxHeight: viewportHeight * 0.88,
             ),
-            const SizedBox(height: 8),
-
-            // İnteraktif Yakınlaştırma Alanı (InteractiveViewer)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Container(
-                color: const Color(0xFF0F172A),
-                padding: const EdgeInsets.all(12),
-                child: InteractiveViewer(
-                  minScale: 1.0,
-                  maxScale: 4.5,
-                  child: TurkeyMap(
-                    config: config,
-                    onProvinceTap: onProvinceTap,
-                    onMarkerTap: onMarkerTap,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Üst Bar: Kapat Butonu & İpucu
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Row(
+                          children: [
+                            PhosphorIcon(
+                              PhosphorIconsRegular.magnifyingGlassPlus,
+                              color: ctxScheme.onSurfaceVariant,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                'İki parmağınızla yakınlaştırabilirsiniz',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: ctxText.bodySmall?.copyWith(
+                                  color: ctxScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: PhosphorIcon(
+                          PhosphorIconsRegular.x,
+                          color: ctxScheme.onSurface,
+                        ),
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        tooltip: 'Kapat',
+                      ),
+                    ],
                   ),
-                ),
+                  const Divider(height: 1),
+                  const SizedBox(height: 8),
+
+                  // İnteraktif Yakınlaştırma Alanı (InteractiveViewer)
+                  Flexible(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        color: ctxScheme.surfaceContainerLow,
+                        padding: const EdgeInsets.all(8),
+                        child: InteractiveViewer(
+                          minScale: 1.0,
+                          maxScale: 4.5,
+                          child: TurkeyMap(
+                            config: config,
+                            onProvinceTap: onProvinceTap,
+                            onMarkerTap: onMarkerTap,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

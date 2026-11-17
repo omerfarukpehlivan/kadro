@@ -56,50 +56,38 @@ class ForceUpdateDialog extends StatelessWidget {
     final textTheme = theme.textTheme;
 
     return AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       backgroundColor: colorScheme.surface,
-      surfaceTintColor: Colors.transparent,
+      surfaceTintColor: colorScheme.surface.withAlpha(0),
       contentPadding: const EdgeInsets.fromLTRB(24, 28, 24, 20),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // İkon Rozeti
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: colorScheme.primaryContainer.withAlpha(120),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Icon(
-                PhosphorIconsBold.cloudArrowUp,
-                size: 32,
-                color: colorScheme.primary,
-              ),
-            ),
+          PhosphorIcon(
+            PhosphorIconsRegular.cloudArrowUp,
+            size: 36,
+            color: colorScheme.primary,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
           // Başlık
           Text(
-            isForced ? 'Güncelleme Gerekli 🚀' : 'Yeni Sürüm Yayında! 🌟',
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
+            isForced ? 'Güncelleme gerekli' : 'Yeni sürüm hazır',
+            style: textTheme.headlineSmall?.copyWith(
               color: colorScheme.onSurface,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
 
           // Açıklama
           Text(
             isForced
-                ? 'Kadro\'nun en güncel KPSS soru havuzunu, deneme motorunu ve yeni özelliklerini kullanabilmek için lütfen uygulamanızı güncelleyin.'
-                : 'Kadro için yeni bir sürüm (${config.latestVersion}) yayınlandı. En iyi deneyim için güncellemenizi öneririz.',
+                ? 'Kadro\'nun en güncel KPSS soru havuzunu ve deneme motorunu kullanabilmek için lütfen uygulamanı güncelle.'
+                : 'Kadro için yeni bir sürüm (${config.latestVersion}) yayınlandı. En iyi deneyim için güncellemeni öneririz.',
             style: textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
-              height: 1.45,
+              height: 1.48,
             ),
             textAlign: TextAlign.center,
           ),
@@ -111,11 +99,11 @@ class ForceUpdateDialog extends StatelessWidget {
             height: 48,
             child: FilledButton.icon(
               onPressed: () => _openStore(context),
-              icon: const Icon(PhosphorIconsBold.googlePlayLogo, size: 20),
-              label: const Text(
-                'Google Play\'den Güncelle',
-                style: TextStyle(fontWeight: FontWeight.w600),
+              icon: const PhosphorIcon(
+                PhosphorIconsBold.googlePlayLogo,
+                size: 18,
               ),
+              label: const Text('Google Play\'den Güncelle'),
             ),
           ),
 

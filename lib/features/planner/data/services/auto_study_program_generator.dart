@@ -1,338 +1,545 @@
+import 'package:kadro/features/flashcards/data/sample_flashcards.dart';
+import 'package:kadro/features/lessons/data/kpss_lessons.dart';
+import 'package:kadro/features/lessons/data/models/exam_curriculum.dart';
+import 'package:kadro/features/map_practice/data/map_practice_data.dart';
 import 'package:kadro/features/planner/data/models/study_program_pace.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
-import 'package:kadro/features/pomodoro/data/pomodoro_notifier.dart';
+import 'package:kadro/core/utils/exam_calendar_utils.dart';
 
-/// KPSS sınav tarihine ve seçilen tempoya (Hafif, Orta, Hızlı) göre
-/// müfredatı günlere yayan ve dinamik günlük çalışma görevleri üreten servis.
-///
-/// Web/Angular Karşılığı: Curriculum Schedule Generator & Task Planner Service.
+/// Müfredat içi tek bir 10 soruluk konu testi birimi.
+class CurriculumTestUnit {
+  final String lesson;
+  final String topic;
+  final int testNumber;
+  final int totalTestsInTopic;
+
+  const CurriculumTestUnit({
+    required this.lesson,
+    required this.topic,
+    required this.testNumber,
+    required this.totalTestsInTopic,
+  });
+}
+
+/// Seçilen KPSS sınavı, günlük ayrılan süre (`15–90 dk`) ve odak dersine göre
+/// uygulamadaki gerçek içerikleri (konu testleri, hap bilgi kartları, harita soruları,
+/// kavram oyunları ve denemeler) sıralı günlük çalışma paketlerine dönüştüren servis.
 class AutoStudyProgramGenerator {
-  /// Seçilen hedef sınav, tempo ve odak dersine göre bugünkü görev listesini üretir.
+  static int get totalTopicTestsCount => totalCurriculumTestCount;
+  static int get totalFlashcardsCount => sampleFlashcards.length;
+  static int get totalPredefinedMapCount =>
+      MapPracticeData.predefinedChallenges.length;
+
+  /// Belirtilen odak dersini önceleyen, seçili müfredattaki dersler arasında
+  /// soru ağırlığına göre dengeli dönüşümlü gerçek test kuyruğu üretir.
+  static List<CurriculumTestUnit> buildOrderedCurriculum({
+    String? focusLesson,
+    ExamCurriculum? curriculum,
+  }) {
+    if (curriculum != null) {
+      return _buildFromExamCurriculum(curriculum, focusLesson: focusLesson);
+    }
+
+    final lessonQueues = <String, List<CurriculumTestUnit>>{};
+    for (final lesson in kpssLessons) {
+      final units = <CurriculumTestUnit>[];
+      for (final topic in lesson.topics) {
+        final count = defaultTopicTestCount(lesson.name, topic);
+        for (var i = 1; i <= count; i++) {
+          units.add(
+            CurriculumTestUnit(
+              lesson: lesson.name,
+              topic: topic,
+              testNumber: i,
+              totalTestsInTopic: count,
+            ),
+          );
+        }
+      }
+      lessonQueues[lesson.name] = units;
+    }
+
+    final order = _lessonRotation(focusLesson);
+    final interleaved = <CurriculumTestUnit>[];
+    var added = true;
+    var index = 0;
+
+    while (added) {
+      added = false;
+      for (final lessonName in order) {
+        final list = lessonQueues[lessonName];
+        if (list != null && index < list.length) {
+          interleaved.add(list[index]);
+          added = true;
+        }
+      }
+      index++;
+    }
+
+    return interleaved;
+  }
+
+  static List<CurriculumTestUnit> _buildFromExamCurriculum(
+    ExamCurriculum curriculum, {
+    String? focusLesson,
+  }) {
+    final specs = curriculum.activeLessons.isNotEmpty
+        ? curriculum.activeLessons
+        : curriculum.upcomingLessons;
+    if (specs.isEmpty) return const [];
+
+    final lessonQueues = <String, List<CurriculumTestUnit>>{};
+    final weightedSlots = <String>[];
+
+    final orderedSpecs = <LessonSpec>[
+      if (focusLesson != null) ...specs.where((s) => s.name == focusLesson),
+      ...specs.where((s) => s.name != focusLesson),
+    ];
+
+    for (final spec in orderedSpecs) {
+      final units = <CurriculumTestUnit>[];
+      for (final topic in spec.topics) {
+        final count = spec.testCountForTopic(topic);
+        for (var i = 1; i <= count; i++) {
+          units.add(
+            CurriculumTestUnit(
+              lesson: spec.name,
+              topic: topic,
+              testNumber: i,
+              totalTestsInTopic: count,
+            ),
+          );
+        }
+      }
+      if (units.isEmpty) continue;
+      lessonQueues[spec.name] = units;
+
+      // Dersin soru ağırlığına göre tur içi slot sayısını belirle (1..3).
+      final baseWeight = (spec.questionCount / 15).ceil().clamp(1, 3);
+      final slots = spec.name == focusLesson ? baseWeight + 1 : baseWeight;
+      for (var i = 0; i < slots; i++) {
+        weightedSlots.add(spec.name);
+      }
+    }
+
+    if (lessonQueues.isEmpty) return const [];
+
+    final cursors = <String, int>{for (final k in lessonQueues.keys) k: 0};
+    final interleaved = <CurriculumTestUnit>[];
+    var progressed = true;
+
+    while (progressed) {
+      progressed = false;
+      for (final lessonName in weightedSlots) {
+        final queue = lessonQueues[lessonName];
+        final cursor = cursors[lessonName] ?? 0;
+        if (queue != null && cursor < queue.length) {
+          interleaved.add(queue[cursor]);
+          cursors[lessonName] = cursor + 1;
+          progressed = true;
+        }
+      }
+    }
+
+    return interleaved;
+  }
+
+  static List<String> _lessonRotation(
+    String? focusLesson, {
+    ExamCurriculum? curriculum,
+  }) {
+    final base = curriculum != null
+        ? (curriculum.activeLessons.isNotEmpty
+                  ? curriculum.activeLessons
+                  : curriculum.upcomingLessons)
+              .map((l) => l.name)
+              .toList()
+        : const ['Tarih', 'Coğrafya', 'Vatandaşlık', 'Güncel Bilgiler'];
+    if (base.isEmpty) return const ['Genel'];
+    if (focusLesson == null || !base.contains(focusLesson)) {
+      return base;
+    }
+    return [focusLesson, ...base.where((l) => l != focusLesson)];
+  }
+
+  /// Gün ve seçili günlük süre varyasyonuna göre gerçek hedefli günlük görev paketini üretir.
   static List<StudyTask> generateDailyTasks({
     required KpssExamTarget examTarget,
     required StudyProgramPace pace,
     String? focusLesson,
     int cycleDay = 1,
+    ExamCurriculum? curriculum,
+    String examScope = 'lisans_gk',
+    bool Function(String lesson, String topic, int testNumber)? isTestSolved,
+    bool ignoreOffsetWhenSolvedFiltered = false,
   }) {
-    final effectiveFocus = focusLesson ?? 'Tarih';
+    final safeDay = cycleDay < 1 ? 1 : cycleDay;
+    final effectiveScope = examScope != 'lisans_gk'
+        ? examScope
+        : (curriculum?.scopeKey ?? 'lisans_gk');
+    final idPrefix = effectiveScope == 'lisans_gk'
+        ? 'auto_${pace.name}_d$safeDay'
+        : 'auto_${effectiveScope}_${pace.name}_d$safeDay';
+    final orderedUnits = buildOrderedCurriculum(
+      focusLesson: focusLesson,
+      curriculum: curriculum,
+    );
+    final lessonsOrder = _lessonRotation(focusLesson, curriculum: curriculum);
+    final flashLesson = lessonsOrder[(safeDay - 1) % lessonsOrder.length];
+    final supportsFlashcards = curriculum?.supportsFlashcards ?? true;
+    final supportsMap = curriculum?.supportsTurkeyMapWorkshop ?? true;
+    final supportsGames = curriculum?.supportsMiniGames ?? true;
 
+    // Eğer çözülmüş testleri kontrol eden fonksiyon verilmişse ve çözülmemiş testler varsa
+    // adayın önüne daha önce çözdüğü testleri tekrar çıkarmayıp çözülmemişleri atar.
+    final candidateUnits = (isTestSolved != null)
+        ? orderedUnits
+              .where((u) => !isTestSolved(u.lesson, u.topic, u.testNumber))
+              .toList()
+        : orderedUnits;
+    final activeCurriculum = candidateUnits.isNotEmpty
+        ? candidateUnits
+        : orderedUnits;
+
+    final testsOffset = (isTestSolved != null && ignoreOffsetWhenSolvedFiltered)
+        ? 0
+        : _cumulativeTestsBeforeDay(pace, safeDay);
+    final testsTodayCount = _testsCountForDay(pace, safeDay);
+
+    final tasks = <StudyTask>[];
+
+    // 1. Gerçek 10'ar soruluk Konu Testleri (Müfredat kuyruğundan sıralı)
+    if (activeCurriculum.isNotEmpty) {
+      for (var i = 0; i < testsTodayCount; i++) {
+        final unit =
+            activeCurriculum[(testsOffset + i) % activeCurriculum.length];
+        tasks.add(
+          StudyTask(
+            id: '${idPrefix}_quiz_${i + 1}',
+            title: '${unit.topic} · Test ${unit.testNumber}',
+            lessonTag: unit.lesson,
+            estimatedMinutes: pace == StudyProgramPace.dk15 ? 9 : 13,
+            actionType: StudyTaskActionType.quiz,
+            targetTopic: unit.topic,
+            targetTestNumber: unit.testNumber,
+            targetCount: 10,
+            examScope: effectiveScope,
+          ),
+        );
+      }
+    }
+
+    StudyTask buildSupplementalReviewTask({
+      required String suffix,
+      required int count,
+      required int minutes,
+    }) {
+      if (supportsFlashcards) {
+        return _flashcardTask(
+          id: '${idPrefix}_$suffix',
+          lesson: flashLesson,
+          count: count,
+          day: safeDay,
+          minutes: minutes,
+          examScope: effectiveScope,
+        );
+      }
+      return StudyTask(
+        id: '${idPrefix}_$suffix',
+        title: '$flashLesson · Özet ve Çeldirici Tekrarı',
+        lessonTag: flashLesson,
+        estimatedMinutes: minutes,
+        actionType: StudyTaskActionType.mistakes,
+        targetCount: count,
+        examScope: effectiveScope,
+      );
+    }
+
+    // 2. Süre paketine göre Hap Bilgi Kartı, Harita Sorusu, Oyun / Deneme / Yanlış Defteri
     switch (pace) {
-      case StudyProgramPace.hafif:
-        return _generateLightPaceTasks(effectiveFocus, cycleDay);
-      case StudyProgramPace.orta:
-        return _generateMediumPaceTasks(effectiveFocus, cycleDay);
-      case StudyProgramPace.hizli:
-        return _generateFastPaceTasks(effectiveFocus, cycleDay);
+      case StudyProgramPace.dk15:
+        if (safeDay.isOdd || !supportsMap) {
+          tasks.add(
+            buildSupplementalReviewTask(suffix: 'fc', count: 6, minutes: 6),
+          );
+        } else {
+          tasks.add(
+            _mapTask(
+              id: '${idPrefix}_map',
+              count: 4,
+              day: safeDay,
+              minutes: 6,
+              examScope: effectiveScope,
+            ),
+          );
+        }
+        break;
+
+      case StudyProgramPace.dk30:
+        tasks.add(
+          buildSupplementalReviewTask(suffix: 'fc', count: 10, minutes: 9),
+        );
+        if (safeDay % 2 == 0 && supportsMap) {
+          tasks.add(
+            _mapTask(
+              id: '${idPrefix}_map',
+              count: 4,
+              day: safeDay,
+              minutes: 7,
+              examScope: effectiveScope,
+            ),
+          );
+        } else {
+          tasks.add(
+            StudyTask(
+              id: '${idPrefix}_mistakes',
+              title: 'Yanlış Defteri & Çeldirici Tekrarı',
+              lessonTag: 'Genel',
+              estimatedMinutes: 8,
+              actionType: StudyTaskActionType.mistakes,
+              targetCount: 5,
+              examScope: effectiveScope,
+            ),
+          );
+        }
+        break;
+
+      case StudyProgramPace.dk45:
+        if (safeDay % 2 == 1 || !supportsMap) {
+          tasks.add(
+            buildSupplementalReviewTask(suffix: 'fc', count: 12, minutes: 15),
+          );
+        } else {
+          tasks.add(
+            _mapTask(
+              id: '${idPrefix}_map',
+              count: 5,
+              day: safeDay,
+              minutes: 15,
+              examScope: effectiveScope,
+            ),
+          );
+        }
+        break;
+
+      case StudyProgramPace.dk60:
+        tasks.add(
+          buildSupplementalReviewTask(suffix: 'fc', count: 15, minutes: 14),
+        );
+        if (safeDay % 3 == 0) {
+          tasks.add(
+            StudyTask(
+              id: '${idPrefix}_mistakes',
+              title: 'Yanlış Defterindeki Çeldiricileri Temizle',
+              lessonTag: 'Genel',
+              estimatedMinutes: 14,
+              actionType: StudyTaskActionType.mistakes,
+              targetCount: 10,
+              examScope: effectiveScope,
+            ),
+          );
+        } else if (safeDay % 2 == 0 && supportsGames) {
+          tasks.add(
+            StudyTask(
+              id: '${idPrefix}_game',
+              title: 'Kavram Eşleştirme Hızlı Tekrar Seti',
+              lessonTag: flashLesson,
+              estimatedMinutes: 12,
+              actionType: StudyTaskActionType.game,
+              targetCount: 1,
+              examScope: effectiveScope,
+            ),
+          );
+        } else if (supportsMap) {
+          tasks.add(
+            _mapTask(
+              id: '${idPrefix}_map',
+              count: 5,
+              day: safeDay,
+              minutes: 14,
+              examScope: effectiveScope,
+            ),
+          );
+        } else {
+          tasks.add(
+            StudyTask(
+              id: '${idPrefix}_mistakes',
+              title: '$flashLesson Çeldirici Tekrarı',
+              lessonTag: flashLesson,
+              estimatedMinutes: 14,
+              actionType: StudyTaskActionType.mistakes,
+              targetCount: 8,
+              examScope: effectiveScope,
+            ),
+          );
+        }
+        break;
+
+      case StudyProgramPace.dk90:
+        tasks.add(
+          buildSupplementalReviewTask(suffix: 'fc', count: 20, minutes: 15),
+        );
+        if (safeDay % 4 == 0) {
+          final examCount = curriculum?.totalQuestions ?? 60;
+          final examTitle =
+              (effectiveScope == 'lisans_gk' || curriculum == null)
+              ? '60 Soruluk Genel Kültür Deneme Simülasyonu'
+              : '$examCount Soruluk ${curriculum.title} Denemesi';
+          tasks.add(
+            StudyTask(
+              id: '${idPrefix}_exam',
+              title: examTitle,
+              lessonTag: 'Genel',
+              estimatedMinutes: 30,
+              actionType: StudyTaskActionType.exam,
+              targetExamNumber: 1,
+              targetCount: examCount,
+              examScope: effectiveScope,
+            ),
+          );
+        } else {
+          if (supportsMap) {
+            tasks.add(
+              _mapTask(
+                id: '${idPrefix}_map',
+                count: 6,
+                day: safeDay,
+                minutes: 14,
+                examScope: effectiveScope,
+              ),
+            );
+          } else {
+            tasks.add(
+              buildSupplementalReviewTask(
+                suffix: 'review2',
+                count: 12,
+                minutes: 14,
+              ),
+            );
+          }
+          tasks.add(
+            StudyTask(
+              id: '${idPrefix}_mistakes',
+              title: 'Yanlış Defteri & ÖSYM Tuzakları İncelemesi',
+              lessonTag: 'Genel',
+              estimatedMinutes: 12,
+              actionType: StudyTaskActionType.mistakes,
+              targetCount: 10,
+              examScope: effectiveScope,
+            ),
+          );
+        }
+        break;
+    }
+
+    return tasks;
+  }
+
+  static int _testsCountForDay(StudyProgramPace pace, int cycleDay) {
+    switch (pace) {
+      case StudyProgramPace.dk15:
+        return 1;
+      case StudyProgramPace.dk30:
+        return cycleDay % 3 == 0 ? 2 : 1;
+      case StudyProgramPace.dk45:
+        return 2;
+      case StudyProgramPace.dk60:
+        return cycleDay.isOdd ? 3 : 2;
+      case StudyProgramPace.dk90:
+        return cycleDay % 4 == 0 ? 2 : 3;
     }
   }
 
-  /// 🌿 Hafif Tempo Görevleri (Günde 2 Görev, ~25 Soru, ~35 Dakika)
-  static List<StudyTask> _generateLightPaceTasks(
-    String focusLesson,
-    int cycleDay,
-  ) {
-    final dayMod = (cycleDay - 1) % 5;
+  static int _cumulativeTestsBeforeDay(StudyProgramPace pace, int cycleDay) {
+    var total = 0;
+    for (var d = 1; d < cycleDay; d++) {
+      total += _testsCountForDay(pace, d);
+    }
+    return total;
+  }
 
-    switch (dayMod) {
-      case 0:
-        return [
-          StudyTask(
-            id: 'auto_h_1',
-            title: '$focusLesson: Temel Konu Pekiştirme 15 Soru',
-            lessonTag: focusLesson,
-            estimatedMinutes: 20,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_h_2',
-            title: 'Tarih & Coğrafya Hap Bilgi Kartları Tekrarı',
-            lessonTag: 'Tarih',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.flashcards,
-          ),
-        ];
-      case 1:
-        return [
-          const StudyTask(
-            id: 'auto_h_3',
-            title: 'Türkiye Coğrafi Konumu & Enlem Etkileri 15 Soru',
-            lessonTag: 'Coğrafya',
-            estimatedMinutes: 20,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_h_4',
-            title: 'Türkiye Akarsuları & Gölleri Harita Alıştırması',
-            lessonTag: 'Coğrafya',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.map,
-          ),
-        ];
-      case 2:
-        return [
-          const StudyTask(
-            id: 'auto_h_5',
-            title: 'Temel Hukuk Kavramları & Hak Türleri 12 Soru',
-            lessonTag: 'Vatandaşlık',
-            estimatedMinutes: 20,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_h_6',
-            title: 'Yanlış Defterindeki Soruları ve Çeldiricileri İncele',
-            lessonTag: 'Genel',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.mistakes,
-          ),
-        ];
-      case 3:
-        return [
-          const StudyTask(
-            id: 'auto_h_7',
-            title: 'İlk Türk Devletleri & Selçuklular 15 Soru Çöz',
-            lessonTag: 'Tarih',
-            estimatedMinutes: 20,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_h_8',
-            title: 'Padişah & Islahat Kavram Eşleştirme Pratiği',
-            lessonTag: 'Tarih',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.game,
-          ),
-        ];
-      case 4:
-      default:
-        return [
-          const StudyTask(
-            id: 'auto_h_9',
-            title: 'Uluslararası Kuruluşlar & Güncel Olaylar 12 Soru',
-            lessonTag: 'Güncel Bilgiler',
-            estimatedMinutes: 18,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_h_10',
-            title: 'Genel Kültür Haftalık Mini Tarama Denemesi',
-            lessonTag: 'Genel',
-            estimatedMinutes: 20,
-            actionType: StudyTaskActionType.exam,
-          ),
-        ];
+  /// Belirli bir tempo ve gün sırasına kadar tamamlanan kümülatif konu testi adedini döner.
+  static int cumulativeTestsBeforeDay(StudyProgramPace pace, int cycleDay) {
+    return _cumulativeTestsBeforeDay(pace, cycleDay);
+  }
+
+  /// Belirli bir tempo ve gün numarasına göre o gün çözülecek konu testi sayısını döner.
+  static int testsCountForDay(StudyProgramPace pace, int cycleDay) =>
+      _testsCountForDay(pace, cycleDay);
+
+  /// Verilen tamamlanmış test ofsetine (ör. 7 test çözülmüş) yeni tempoda karşılık gelen
+  /// gün numarasını (1-tabanlı) hesaplar.
+  static int findCycleDayForCurriculumOffset({
+    required StudyProgramPace pace,
+    required int offset,
+  }) {
+    if (offset <= 0) return 1;
+    var accumulated = 0;
+    var day = 1;
+    while (true) {
+      final testsToday = _testsCountForDay(pace, day);
+      if (accumulated + testsToday > offset) {
+        return day;
+      }
+      accumulated += testsToday;
+      day++;
+      if (day > 1000) return day;
     }
   }
 
-  /// ⚡ Orta Tempo Görevleri (Günde 3 Görev, ~45 Soru, ~55 Dakika)
-  static List<StudyTask> _generateMediumPaceTasks(
-    String focusLesson,
-    int cycleDay,
-  ) {
-    final dayMod = (cycleDay - 1) % 5;
-
-    switch (dayMod) {
-      case 0:
-        return [
-          StudyTask(
-            id: 'auto_m_1',
-            title: 'İslamiyet Öncesi Türk Tarihi 20 Soru Çöz',
-            lessonTag: focusLesson == 'Tarih' ? 'Tarih' : focusLesson,
-            estimatedMinutes: 25,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_m_2',
-            title: 'Türkiye Coğrafi Konumu Hap Kart Tekrarı',
-            lessonTag: 'Coğrafya',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.flashcards,
-          ),
-          const StudyTask(
-            id: 'auto_m_3',
-            title: 'Yanlış Defterindeki Soruları Temizle',
-            lessonTag: 'Genel',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.mistakes,
-          ),
-        ];
-      case 1:
-        return [
-          const StudyTask(
-            id: 'auto_m_4',
-            title: 'Türkiye Yer Şekilleri, Dağlar & Ovalar 18 Soru',
-            lessonTag: 'Coğrafya',
-            estimatedMinutes: 25,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_m_5',
-            title: 'Türkiye Akarsu ve Gölleri Harita Alıştırması',
-            lessonTag: 'Coğrafya',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.map,
-          ),
-          const StudyTask(
-            id: 'auto_m_6',
-            title: 'İlk Türk-İslam Devletleri Kavram Kartları',
-            lessonTag: 'Tarih',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.flashcards,
-          ),
-        ];
-      case 2:
-        return [
-          const StudyTask(
-            id: 'auto_m_7',
-            title: 'Osmanlı Kültür & Medeniyeti Divan-ı Hümayun 20 Soru',
-            lessonTag: 'Tarih',
-            estimatedMinutes: 25,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_m_8',
-            title: 'Temel Hukuk Kavramları & Yaptırım Türleri 15 Soru',
-            lessonTag: 'Vatandaşlık',
-            estimatedMinutes: 20,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_m_9',
-            title: 'Padişah & Islahat Kavram Eşleştirme Oyunu',
-            lessonTag: 'Tarih',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.game,
-          ),
-        ];
-      case 3:
-        return [
-          const StudyTask(
-            id: 'auto_m_10',
-            title: 'TBMM Yasama Dönemi & Kanunlaşma Süreci 15 Soru',
-            lessonTag: 'Vatandaşlık',
-            estimatedMinutes: 22,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_m_11',
-            title: 'Uluslararası Kuruluşlar (BM, NATO, ŞİÖ) 12 Soru',
-            lessonTag: 'Güncel Bilgiler',
-            estimatedMinutes: 18,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_m_12',
-            title: 'Haftalık Yanlış Defteri & Çeldirici Analizi',
-            lessonTag: 'Genel',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.mistakes,
-          ),
-        ];
-      case 4:
-      default:
-        return [
-          const StudyTask(
-            id: 'auto_m_13',
-            title: 'Kurtuluş Savaşı Hazırlık & Muharebeler 20 Soru',
-            lessonTag: 'Tarih',
-            estimatedMinutes: 25,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_m_14',
-            title: 'Türkiye İklimi & Yağış Rejimleri 15 Soru Çöz',
-            lessonTag: 'Coğrafya',
-            estimatedMinutes: 20,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_m_15',
-            title: 'KPSS Genel Kültür 30 Soruluk Hızlı Karma Deneme',
-            lessonTag: 'Genel',
-            estimatedMinutes: 25,
-            actionType: StudyTaskActionType.exam,
-          ),
-        ];
-    }
+  /// Verilen tempo değişikliğinde (ör. 30 dk -> 60 dk) kullanıcının mevcut gününü
+  /// çözülen test adedine göre yeni tempodaki eşdeğer güne dönüştürür.
+  static int adaptCycleDayToNewPace({
+    required StudyProgramPace oldPace,
+    required StudyProgramPace newPace,
+    required int currentCycleDay,
+  }) {
+    if (oldPace == newPace) return currentCycleDay;
+    final completedTests = _cumulativeTestsBeforeDay(oldPace, currentCycleDay);
+    return findCycleDayForCurriculumOffset(
+      pace: newPace,
+      offset: completedTests,
+    );
   }
 
-  /// 🔥 Hızlı / Yoğun Tempo Görevleri (Günde 4-5 Görev, ~85 Soru, ~90 Dakika)
-  static List<StudyTask> _generateFastPaceTasks(
-    String focusLesson,
-    int cycleDay,
-  ) {
-    final dayMod = (cycleDay - 1) % 5;
+  static StudyTask _flashcardTask({
+    required String id,
+    required String lesson,
+    required int count,
+    required int day,
+    required int minutes,
+    String examScope = 'lisans_gk',
+  }) {
+    final startIdx = ((day - 1) * count) % 50;
+    return StudyTask(
+      id: id,
+      title: '$lesson: $count Hap Bilgi Kartı Tekrarı',
+      lessonTag: lesson,
+      estimatedMinutes: minutes,
+      actionType: StudyTaskActionType.flashcards,
+      targetCount: count,
+      startIndex: startIdx,
+      examScope: examScope,
+    );
+  }
 
-    switch (dayMod) {
-      case 0:
-        return [
-          StudyTask(
-            id: 'auto_f_1',
-            title: 'İslamiyet Öncesi & Selçuklu Tarihi 25 Soru Çöz',
-            lessonTag: focusLesson == 'Tarih' ? 'Tarih' : focusLesson,
-            estimatedMinutes: 30,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_f_2',
-            title: 'Türkiye Coğrafi Konumu & Yer Şekilleri 20 Soru',
-            lessonTag: 'Coğrafya',
-            estimatedMinutes: 25,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_f_3',
-            title: 'Türkiye Akarsuları & Platoları Harita Alıştırması',
-            lessonTag: 'Coğrafya',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.map,
-          ),
-          const StudyTask(
-            id: 'auto_f_4',
-            title: 'Yanlış Defterindeki Tüm Soru Çeldiricilerini Temizle',
-            lessonTag: 'Genel',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.mistakes,
-          ),
-          const StudyTask(
-            id: 'auto_f_5',
-            title: 'Genel Kültür Gün Sonu Hızlı Tarama Denemesi',
-            lessonTag: 'Genel',
-            estimatedMinutes: 25,
-            actionType: StudyTaskActionType.exam,
-          ),
-        ];
-      case 1:
-      default:
-        return [
-          const StudyTask(
-            id: 'auto_f_6',
-            title: 'Osmanlı Siyasi Tarihi & Islahatlar 25 Soru Çöz',
-            lessonTag: 'Tarih',
-            estimatedMinutes: 30,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_f_7',
-            title: 'Temel Hukuk & Anayasa Süreleri 20 Soru Çöz',
-            lessonTag: 'Vatandaşlık',
-            estimatedMinutes: 25,
-            actionType: StudyTaskActionType.quiz,
-          ),
-          const StudyTask(
-            id: 'auto_f_8',
-            title: 'Madenler & Enerji Kaynakları Flashcards Tekrarı',
-            lessonTag: 'Coğrafya',
-            estimatedMinutes: 15,
-            actionType: StudyTaskActionType.flashcards,
-          ),
-          const StudyTask(
-            id: 'auto_f_9',
-            title: 'Uluslararası Kuruluşlar & Güncel Olaylar 15 Soru',
-            lessonTag: 'Güncel Bilgiler',
-            estimatedMinutes: 20,
-            actionType: StudyTaskActionType.quiz,
-          ),
-        ];
-    }
+  static StudyTask _mapTask({
+    required String id,
+    required int count,
+    required int day,
+    required int minutes,
+    String examScope = 'lisans_gk',
+  }) {
+    final startIdx = ((day - 1) * count) % 52;
+    return StudyTask(
+      id: id,
+      title: 'Türkiye Harita Pratiği · $count Soru',
+      lessonTag: 'Coğrafya',
+      estimatedMinutes: minutes,
+      actionType: StudyTaskActionType.map,
+      targetCount: count,
+      startIndex: startIdx,
+      examScope: examScope,
+    );
   }
 }

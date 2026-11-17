@@ -1,6 +1,8 @@
 import 'package:kadro/features/quiz/presentation/widgets/victory_story_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kadro/features/auth/data/auth_notifier.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
@@ -143,8 +145,8 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // 1. 'Zafer Karneni Paylaş 📸' butonunu doğrula
-        final shareButton = find.text('Zafer Karneni Paylaş 📸');
+        // 1. 'Sonucu Paylaş' butonunu doğrula
+        final shareButton = find.text('Sonucu Paylaş');
         expect(shareButton, findsOneWidget);
 
         // 2. Butona tıkla
@@ -166,5 +168,66 @@ void main() {
         expect(find.byType(VictoryStoryCard), findsNothing);
       },
     );
+
+    testWidgets(
+      'TASK-155: Misafir kullanıcı testi bitirdiğinde ilerleme kayıt uyarı popupı açılır',
+      (WidgetTester tester) async {
+        const result = QuizResult(
+          totalQuestions: 10,
+          correctCount: 8,
+          wrongCount: 2,
+          emptyCount: 0,
+        );
+
+        await tester.pumpWidget(
+          const ProviderScope(
+            child: MaterialApp(home: QuizResultScreen(result: result)),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('İlerlemeniz Kaydedilmiyor'), findsOneWidget);
+        expect(
+          find.textContaining('Profil sekmesinden giriş yapabilirsiniz'),
+          findsOneWidget,
+        );
+        expect(find.text('Giriş Yap / Kayıt Ol'), findsOneWidget);
+        expect(find.text('Şimdilik Devam Et'), findsOneWidget);
+
+        await tester.tap(find.text('Şimdilik Devam Et'));
+        await tester.pumpAndSettle();
+        expect(find.text('İlerlemeniz Kaydedilmiyor'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'TASK-155: Giriş yapmış kullanıcıda misafir kayıt uyarı popupı açılmaz',
+      (WidgetTester tester) async {
+        const result = QuizResult(
+          totalQuestions: 10,
+          correctCount: 8,
+          wrongCount: 2,
+          emptyCount: 0,
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              authProvider.overrideWith(() => _AuthenticatedTestAuthNotifier()),
+            ],
+            child: const MaterialApp(home: QuizResultScreen(result: result)),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('İlerlemeniz Kaydedilmiyor'), findsNothing);
+      },
+    );
   });
+}
+
+class _AuthenticatedTestAuthNotifier extends AuthNotifier {
+  @override
+  AuthUserState build() =>
+      const AuthUserState(isAuthenticated: true, email: 'aday@kadro.app');
 }

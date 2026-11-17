@@ -8,7 +8,8 @@ import 'package:kadro/features/home/presentation/home_screen.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
 import 'package:kadro/features/stats/presentation/stats_screen.dart';
-import 'package:kadro/shared/widgets/mascot_coach_banner.dart';
+import 'package:kadro/shared/widgets/tactile_card.dart';
+import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -150,7 +151,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('KPSS Genel Kültür'), findsOneWidget);
+        expect(find.text('KPSS Genel Kültür (60 Soru)'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );
@@ -204,7 +205,7 @@ void main() {
 
   group('TASK-74 Dikey Hizalama & Kenar Kılavuz Çizgisi Testleri', () {
     testWidgets(
-      'Standart telefonda (390x844) AppTopBar sol avatarı ve sağ PRO rozeti, gövdedeki MascotCoachBanner ile milimetrik hizada (16px) olmalı',
+      'Standart telefonda (390x844) AppTopBar sol TugrulAvatar amblemi ve sağ PRO rozeti, gövdedeki ilk TactileCard ile milimetrik hizada (16px) olmalı',
       (tester) async {
         tester.view.physicalSize = const Size(390, 844);
         tester.view.devicePixelRatio = 1.0;
@@ -222,15 +223,15 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // 1. AppTopBar sol avatar Container'ının sol başlangıç X koordinatı 16.0 olmalı
-        final topBarRowFinder = find
-            .descendant(of: find.byType(AppTopBar), matching: find.byType(Row))
+        // 1. AppTopBar sol TugrulAvatar ambleminin sol başlangıç X koordinatı 16.0 olmalı
+        final emblemFinder = find
+            .descendant(
+              of: find.byType(AppTopBar),
+              matching: find.byType(TugrulAvatar),
+            )
             .first;
-        final avatarContainerFinder = find
-            .descendant(of: topBarRowFinder, matching: find.byType(Container))
-            .first;
-        final avatarTopLeft = tester.getTopLeft(avatarContainerFinder);
-        expect(avatarTopLeft.dx, equals(16.0));
+        final emblemTopLeft = tester.getTopLeft(emblemFinder);
+        expect(emblemTopLeft.dx, equals(16.0));
 
         // 2. AppTopBar sağ PRO rozetinin sağ bitiş X koordinatı 390.0 - 16.0 = 374.0 olmalı
         final proFinder = find.text('PRO');
@@ -241,12 +242,17 @@ void main() {
         final proTopRight = tester.getTopRight(proContainerFinder);
         expect(proTopRight.dx, equals(374.0));
 
-        // 3. Gövdedeki ilk MascotCoachBanner kartının sol başlangıç X koordinatı 16.0 ve sağ bitişi 374.0 olmalı
-        final bannerFinder = find.byType(MascotCoachBanner).first;
-        final bannerTopLeft = tester.getTopLeft(bannerFinder);
-        final bannerTopRight = tester.getTopRight(bannerFinder);
-        expect(bannerTopLeft.dx, equals(16.0));
-        expect(bannerTopRight.dx, equals(374.0));
+        // 3. Gövdedeki ilk ana bloğun sol başlangıç X koordinatı 16.0 ve sağ bitişi 374.0 olmalı
+        final heroFinder = find
+            .descendant(
+              of: find.byType(HomeScreen),
+              matching: find.byType(TactileCard),
+            )
+            .first;
+        final heroTopLeft = tester.getTopLeft(heroFinder);
+        final heroTopRight = tester.getTopRight(heroFinder);
+        expect(heroTopLeft.dx, equals(16.0));
+        expect(heroTopRight.dx, equals(374.0));
 
         expect(tester.takeException(), isNull);
       },

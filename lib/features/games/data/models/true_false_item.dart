@@ -1,3 +1,5 @@
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
+
 /// "60 Saniyede Pençe" Doğru / Yanlış hızlı düello oyunu önerme modeli.
 ///
 /// Web/Angular benzetmesi: Quiz Item / Boolean Fact Statement Model.
@@ -8,6 +10,8 @@ class TrueFalseItem {
   final String statement;
   final bool isTrue;
   final String explanation;
+  final List<String> examScopes;
+  final String? subBranch;
 
   const TrueFalseItem({
     required this.id,
@@ -16,7 +20,12 @@ class TrueFalseItem {
     required this.statement,
     required this.isTrue,
     required this.explanation,
+    this.examScopes = const ['lisans_gk'],
+    this.subBranch,
   });
+
+  bool matchesSelection(ExamSelection selection) => selection
+      .matchesContentMetadata(examScopes: examScopes, subBranch: subBranch);
 }
 
 /// 100 adet özgün KPSS Genel Kültür doğru/yanlış şimşek önerme havuzu.

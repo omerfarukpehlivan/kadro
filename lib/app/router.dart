@@ -1,21 +1,25 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kadro/app/app_shell.dart';
+import 'package:kadro/shared/widgets/empty_state_view.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:kadro/features/auth/presentation/auth_screen.dart';
 import 'package:kadro/features/exams/presentation/exams_screen.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/games/presentation/concept_match_screen.dart';
 import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
 import 'package:kadro/features/home/presentation/home_screen.dart';
+import 'package:kadro/features/lessons/presentation/curriculum_preview_screen.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
-import 'package:kadro/features/pomodoro/presentation/pomodoro_studio_screen.dart';
 import 'package:kadro/features/practice/presentation/practice_hub_screen.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/features/score_calculator/presentation/kpss_score_calculator_screen.dart';
 import 'package:kadro/features/stats/presentation/stats_screen.dart';
 
 /// Test ekranına gönderilebilecek opsiyonel parametreler.
@@ -148,10 +152,6 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
         builder: (context, state) => const StudyPlannerScreen(),
       ),
       GoRoute(
-        path: '/pomodoro',
-        builder: (context, state) => const PomodoroStudioScreen(),
-      ),
-      GoRoute(
         path: '/true-false',
         builder: (context, state) => const TrueFalseBlitzScreen(),
       ),
@@ -164,7 +164,32 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
       ),
+      GoRoute(
+        path: '/calculator',
+        builder: (context, state) => KpssScoreCalculatorScreen(
+          initialExamParam: state.uri.queryParameters['exam'],
+          isGuestMode: true,
+        ),
+      ),
+      GoRoute(
+        path: '/curriculum-preview',
+        builder: (context, state) => CurriculumPreviewScreen(
+          initialScopeParam:
+              state.uri.queryParameters['scope'] ??
+              state.uri.queryParameters['exam'],
+        ),
+      ),
     ],
+    errorBuilder: (context, state) => Scaffold(
+      appBar: AppBar(title: const Text('Sayfa bulunamadı')),
+      body: EmptyStateView(
+        icon: PhosphorIconsRegular.compass,
+        title: 'Aradığın sayfa burada değil',
+        description: 'Bağlantı değişmiş veya kaldırılmış olabilir. Ana sayfaya dönerek çalışmana devam edebilirsin.',
+        actionLabel: 'Ana sayfaya dön',
+        onAction: () => context.go('/'),
+      ),
+    ),
   );
 }
 

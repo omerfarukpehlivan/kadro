@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kadro/core/utils/platform_env.dart';
 
 /// KPSS Günlük Çalışma ve Seri Hatırlatıcı Bildirim Servisi.
 ///
@@ -24,7 +23,7 @@ class NotificationService {
   static Future<void> initializeSafely() async {
     if (_mockMode) return;
     try {
-      if (kIsWeb || (!Platform.isAndroid && !Platform.isIOS)) {
+      if (!PlatformEnv.isMobile) {
         _isInitialized = false;
         return;
       }
@@ -82,8 +81,8 @@ class NotificationService {
       // Her gün tekrarlanan bildirim
       await _notificationsPlugin.periodicallyShow(
         id: 1001,
-        title: 'Kadro Koçun 🦅',
-        body: 'Bugünkü serin bozulmasın! Hedefine ulaşmak için hemen 10 soru çöz.',
+        title: 'Kadro',
+        body: 'Bugünkü serini korumak ve günlük hedefini tamamlamak için birkaç soru çözebilirsin.',
         repeatInterval: RepeatInterval.daily,
         notificationDetails: platformDetails,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -152,8 +151,8 @@ class NotificationService {
 
       await _notificationsPlugin.periodicallyShow(
         id: 1002,
-        title: 'Pazar KPSS Deneme Saati ☕',
-        body: 'Bugün 60 soruluk gerçek KPSS GK deneme günü! Netlerini ölçmek için hemen başla.',
+        title: 'Haftalık KPSS Deneme Vakti',
+        body: 'Bugün 60 soruluk KPSS Genel Kültür denemesiyle netlerini kontrol edebilirsin.',
         repeatInterval: RepeatInterval.weekly,
         notificationDetails: platformDetails,
         androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
@@ -163,12 +162,13 @@ class NotificationService {
     }
   }
 
-  /// Kullanıcının çalışma serisi (streak) tehlikeye girdiğinde anlık motivasyon uyarısı gönderir (TASK-97).
+  /// Kullanıcının çalışma serisi (streak) tehlikeye girdiğinde anlık hatırlatma gönderir (TASK-97).
   static Future<void> triggerStreakProtectionAlert(int streakDays) async {
     await showNotification(
       id: 1003,
-      title: '🔥 $streakDays Günlük Serin Tehlikede!',
-      body: 'Günü kapatmadan birkaç soru çöz, serini koru ve Altın Kadro yarışında öne geç!',
+      title: '$streakDays günlük serini koru',
+      body:
+          'Günü kapatmadan birkaç soru çözerek çalışma serini sürdürebilirsin.',
     );
   }
 

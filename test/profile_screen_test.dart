@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/auth/data/auth_notifier.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/profile/data/models/achievement_badge.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
@@ -72,11 +73,10 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // 1. Hero Card & Countdown Testleri
+        // 1. Hero Card Testleri (En yakın sınav/geri sayım yalnızca Ana Sayfa'da yer alır)
         expect(find.byType(CandidateHeroCard), findsOneWidget);
-        expect(find.textContaining('2027 KPSS Lisans:'), findsOneWidget);
-        expect(find.textContaining('Gün Kaldı'), findsOneWidget);
-        expect(find.text('Hedef Sihirbazını Aç'), findsOneWidget);
+        expect(find.textContaining('Gün Kaldı'), findsNothing);
+        expect(find.text('Hedefi Düzenle'), findsOneWidget);
 
         // 2. Metrik Kartı & Lig Testleri
         expect(find.byType(ProfileMetricsCard), findsOneWidget);
@@ -89,20 +89,20 @@ void main() {
         // 3. Başarı Rozetleri Vitrini Testleri
         expect(find.byType(AchievementShowcase), findsOneWidget);
         expect(find.textContaining('Başarı Madalyaları'), findsOneWidget);
-        expect(find.text('🌱 İlk Pençe'), findsOneWidget);
-        expect(find.text('🏛️ Tarih Fatihi'), findsOneWidget);
-        expect(find.text('🛡️ Mayın Temizleyici'), findsOneWidget);
+        expect(find.text('İlk Adım'), findsOneWidget);
+        expect(find.text('Tarih Uzmanı'), findsOneWidget);
+        expect(find.text('Çeldirici Avcısı'), findsOneWidget);
 
         // 4. Rozete tıklayınca detay BottomSheet açılmalı
-        await tester.tap(find.text('🌱 İlk Pençe'));
+        await tester.tap(find.text('İlk Adım'));
         await tester.pumpAndSettle();
 
-        expect(find.text('✅ Madalya Açıldı'), findsOneWidget);
+        expect(find.text('Madalya Açıldı'), findsOneWidget);
       },
     );
 
     testWidgets(
-      'CandidateHeroCard oturum açmış kullanıcı bilgilerini ve PRO VIP etiketini göstermeli',
+      'CandidateHeroCard oturum açmış kullanıcı bilgilerini ve PRO etiketini göstermeli',
       (WidgetTester tester) async {
         const auth = AuthUserState(
           isAuthenticated: true,
@@ -126,9 +126,89 @@ void main() {
 
         expect(find.text('Ömer Memur'), findsOneWidget);
         expect(find.textContaining('omer@kadro.com'), findsOneWidget);
-        expect(find.text('PRO VIP'), findsOneWidget);
+        expect(find.text('PRO'), findsOneWidget);
         expect(find.text('KPSS Hedefim: 92+ Puan'), findsOneWidget);
         expect(find.textContaining('Odak Ders: Coğrafya'), findsOneWidget);
+        expect(find.textContaining('Gün Kaldı'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'Hedef sınav satırı tüm responsive boyutlarda dikey sıkışmadan tek yatay satırda kalır',
+      (WidgetTester tester) async {
+        const longExam = ExamSelection(
+          family: KpssExamFamily.mebAgs,
+          educationLevel: EducationLevel.lisans,
+          oabtBranch: OabtBranch.sinifOgretmenligi,
+        );
+
+        final sizes = <Size>[
+          const Size(360, 640),
+          const Size(768, 1024),
+          const Size(784, 768), // 1024px ekran - 240px kenar çubuğu
+          const Size(1040, 800), // 1280px ekran - 240px kenar çubuğu
+          const Size(1440, 900),
+        ];
+
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        for (final size in sizes) {
+          tester.view.physicalSize = size;
+          tester.view.devicePixelRatio = 1.0;
+
+          await tester.pumpWidget(
+            ProviderScope(
+              overrides: [
+                initialUserPreferencesProvider.overrideWithValue(
+                  const UserPreferencesState(
+                    hasCompletedOnboarding: true,
+                    examSelection: longExam,
+                  ),
+                ),
+              ],
+              child: const MaterialApp(home: Scaffold(body: ProfileScreen())),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          final targetFinder = find.text('Hedef sınav');
+          if (find.byType(Scrollable).evaluate().isNotEmpty) {
+            await tester.scrollUntilVisible(
+              targetFinder,
+              220,
+              scrollable: find.byType(Scrollable).first,
+            );
+            await tester.pumpAndSettle();
+          }
+
+          expect(targetFinder, findsOneWidget);
+          final labelSize = tester.getSize(targetFinder);
+          expect(
+            labelSize.width,
+            greaterThanOrEqualTo(60),
+            reason: 'Ekran $size üzerinde Hedef sınav genişliği sıkışmamalı',
+          );
+          expect(
+            labelSize.height,
+            lessThanOrEqualTo(36),
+            reason:
+                'Ekran $size üzerinde Hedef sınav dikey harf yığınına kırılmamalı',
+          );
+
+          final dailyGoalSize = tester.getSize(find.text('Günlük hedef'));
+          expect(
+            dailyGoalSize.height,
+            lessThanOrEqualTo(36),
+            reason:
+                'Ekran $size üzerinde Günlük hedef dikey harf yığınına kırılmamalı',
+          );
+
+          expect(find.textContaining('Gün Kaldı'), findsNothing);
+          expect(tester.takeException(), isNull);
+        }
       },
     );
   });

@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/features/profile/data/models/achievement_badge.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/shared/widgets/adaptive_overlay.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Memur adayının kazandığı ve hedeflediği KPSS motivasyon madalyalarını
+/// Memur adayının kazandığı ve hedeflediği KPSS başarı madalyalarını
 /// 3x2 grid düzeninde sergileyen vitrin bileşeni.
-///
-/// Web/Angular Karşılığı: `AchievementsGridComponent`.
 class AchievementShowcase extends StatelessWidget {
   final StudyStatsState stats;
 
@@ -19,19 +18,17 @@ class AchievementShowcase extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    showModalBottomSheet<void>(
+    AdaptiveOverlay.showModal<void>(
       context: context,
-      backgroundColor: colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
+      title: 'Başarı Madalyası',
+      dialogMaxWidth: 420,
       builder: (ctx) => Padding(
         padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 40,
+              width: 36,
               height: 4,
               decoration: BoxDecoration(
                 color: colorScheme.outlineVariant,
@@ -39,36 +36,15 @@ class AchievementShowcase extends StatelessWidget {
               ),
             ),
             AppSpacing.gapMd,
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: badge.isUnlocked
-                    ? colorScheme.primaryContainer
-                    : colorScheme.surfaceContainerHighest,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: badge.isUnlocked
-                      ? colorScheme.primary
-                      : colorScheme.outline,
-                  width: 2,
-                ),
-              ),
-              child: PhosphorIcon(
-                badge.icon,
-                size: 32,
-                color: badge.isUnlocked
-                    ? colorScheme.primary
-                    : colorScheme.outline,
-              ),
+            PhosphorIcon(
+              badge.icon,
+              size: 36,
+              color: badge.isUnlocked
+                  ? colorScheme.primary
+                  : colorScheme.outline,
             ),
             AppSpacing.gapSm,
-            Text(
-              badge.title,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Text(badge.title, style: theme.textTheme.headlineSmall),
             const SizedBox(height: 6),
             Text(
               badge.description,
@@ -79,19 +55,23 @@ class AchievementShowcase extends StatelessWidget {
             ),
             AppSpacing.gapMd,
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: badge.isUnlocked
                     ? colorScheme.secondaryContainer
-                    : colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(12),
+                    : colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: badge.isUnlocked
+                      ? colorScheme.secondary.withAlpha(120)
+                      : colorScheme.outlineVariant,
+                ),
               ),
               child: Text(
                 badge.isUnlocked
-                    ? '✅ Madalya Açıldı'
-                    : '🔒 Kilitli · Hedef: ${badge.progressText}',
+                    ? 'Madalya Açıldı'
+                    : 'Kilitli · Hedef: ${badge.progressText}',
                 style: theme.textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
                   color: badge.isUnlocked
                       ? colorScheme.onSecondaryContainer
                       : colorScheme.onSurfaceVariant,
@@ -150,63 +130,45 @@ class _BadgeTile extends StatelessWidget {
 
     return TactileCard(
       onTap: onTap,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(10),
       backgroundColor: badge.isUnlocked
           ? colorScheme.surface
-          : colorScheme.surfaceContainerHighest.withAlpha(80),
+          : colorScheme.surfaceContainerLow,
       borderColor: badge.isUnlocked
-          ? colorScheme.primary.withAlpha(90)
-          : colorScheme.outlineVariant.withAlpha(60),
+          ? colorScheme.primary.withAlpha(110)
+          : colorScheme.outlineVariant,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: badge.isUnlocked
-                      ? colorScheme.primaryContainer.withAlpha(120)
-                      : colorScheme.surfaceContainerHighest,
-                  shape: BoxShape.circle,
-                ),
-                child: PhosphorIcon(
-                  badge.icon,
-                  size: 20,
-                  color: badge.isUnlocked
-                      ? colorScheme.primary
-                      : colorScheme.outline.withAlpha(140),
-                ),
+              PhosphorIcon(
+                badge.icon,
+                size: 24,
+                color: badge.isUnlocked
+                    ? colorScheme.primary
+                    : colorScheme.outline,
               ),
               if (!badge.isUnlocked)
                 Positioned(
-                  right: -2,
-                  bottom: -2,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surface,
-                      shape: BoxShape.circle,
-                    ),
-                    child: PhosphorIcon(
-                      PhosphorIconsBold.lock,
-                      size: 11,
-                      color: colorScheme.outline,
-                    ),
+                  right: -6,
+                  bottom: -4,
+                  child: PhosphorIcon(
+                    PhosphorIconsBold.lock,
+                    size: 11,
+                    color: colorScheme.outline,
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             badge.title,
             style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w700,
               color: badge.isUnlocked
                   ? colorScheme.onSurface
-                  : colorScheme.onSurfaceVariant.withAlpha(150),
+                  : colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -219,7 +181,7 @@ class _BadgeTile extends StatelessWidget {
               color: badge.isUnlocked
                   ? colorScheme.secondary
                   : colorScheme.outline,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w400,
             ),
             textAlign: TextAlign.center,
             maxLines: 1,

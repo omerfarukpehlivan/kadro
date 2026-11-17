@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/lessons/presentation/topic_tests_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/test_difficulty_tier.dart';
@@ -17,6 +18,10 @@ class MockQuestionRepository extends QuestionRepository {
   Future<List<Question>> fetchQuestions({
     String? lesson,
     String? topic,
+    ExamSelection? selection,
+    String? difficulty,
+    String? preferredSourceVariant,
+    bool strictTopicFilter = false,
     bool forceRefresh = false,
     int limit = 60,
   }) async => mockQuestions;
@@ -117,7 +122,7 @@ void main() {
         expect(find.text('TEST 3'), findsOneWidget);
 
         // İlk test (ortalama 1.1) Basit Alıştırma rozeti taşımalı
-        expect(find.text('🌱 Basit Alıştırma'), findsOneWidget);
+        expect(find.text('Basit Alıştırma'), findsOneWidget);
         expect(
           find.text(
             'Konuyu yeni bitirdiysen özgüven tazeleyen ısınma soruları.',

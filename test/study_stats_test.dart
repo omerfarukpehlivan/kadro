@@ -155,7 +155,7 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.text('1 / 30 soru'), findsOneWidget);
-        expect(find.text('Zayıf Konuyu Güçlendir'), findsOneWidget);
+        expect(find.text('Zayıf Konuyu Güçlendir · 10 Soru'), findsOneWidget);
 
         // 4. İstatistik Ekranını çiz -> Çözülen 1, Doğru oranı %0, En zayıf Tarih olmalı
         await tester.pumpWidget(
@@ -204,10 +204,10 @@ void main() {
 
         // TASK-38: KPSS Başarım Rozetleri ve Haftalık Kadro Ligi
         expect(find.text('KPSS Başarım Rozetleri'), findsOneWidget);
-        expect(find.text('İlk Pençe'), findsOneWidget);
-        expect(find.text('Keskin Nişancı'), findsOneWidget);
-        expect(find.text('Deneme Fatihi'), findsOneWidget);
-        expect(find.text('Gümüş Kadro Adayı'), findsOneWidget);
+        expect(find.text('İlk Adım'), findsOneWidget);
+        expect(find.text('Yüksek İsabet'), findsOneWidget);
+        expect(find.text('Deneme Tamamlandı'), findsOneWidget);
+        expect(find.text('Gümüş Kadro'), findsWidgets);
         expect(find.text('Haftalık Kadro Ligi'), findsOneWidget);
       },
     );

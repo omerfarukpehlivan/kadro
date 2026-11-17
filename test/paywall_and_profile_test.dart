@@ -6,14 +6,21 @@ import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
 import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+  });
+
   group('UserPreferencesNotifier ve Profile/Paywall Testleri', () {
-    test('UserPreferencesNotifier metodları doğru çalışmalı', () {
+    test('UserPreferencesNotifier metodları doğru çalışmalı', () async {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
       final notifier = container.read(userPreferencesProvider.notifier);
+      await Future<void>.delayed(Duration.zero);
 
       expect(container.read(userPreferencesProvider).isPro, isFalse);
       expect(
@@ -77,14 +84,14 @@ void main() {
 
         // Başlangıçta PRO değil, tanıtım kartı görünmeli
         expect(find.text('Kadro PRO\'ya Yükselt'), findsOneWidget);
-        expect(find.text('Kadro PRO Üyesi 👑'), findsNothing);
+        expect(find.text('Kadro PRO Üyesi'), findsNothing);
 
         // Tanıtım kartına tıkla -> PaywallScreen açılmalı
         await tester.tap(find.text('Kadro PRO\'ya Yükselt'));
         await tester.pumpAndSettle();
 
         expect(find.text('Kadro PRO'), findsOneWidget);
-        expect(find.text('KPSS Hazırlığını Zirveye Taşı'), findsOneWidget);
+        expect(find.text('Sınırsız KPSS Hazırlığı'), findsOneWidget);
 
         // 3 Paket seçeneğinin render edildiğini doğrula
         expect(find.text('Aylık Abonelik'), findsOneWidget);
@@ -108,7 +115,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Ekran kapandıktan sonra PRO rozeti görünmeli
-        expect(find.text('Kadro PRO Üyesi 👑'), findsOneWidget);
+        expect(find.text('Kadro PRO Üyesi'), findsOneWidget);
         expect(container.read(userPreferencesProvider).isPro, isTrue);
       },
     );
@@ -183,10 +190,23 @@ void main() {
         expect(find.text('Soru Çözüm Modu'), findsOneWidget);
         expect(find.text('Öğrenme'), findsOneWidget);
 
-        // Satıra dokun -> Diyalog açılsın
+        // Satıra dokun -> Tıklanabilir mod kartları içeren seçici açılsın
         await tester.tap(find.text('Soru Çözüm Modu'));
         await tester.pumpAndSettle();
 
+        expect(
+          find.text('Varsayılan test çözme deneyiminizi seçin:'),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('quiz_mode_option_learning')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const ValueKey('quiz_mode_option_exam')),
+          findsOneWidget,
+        );
+        expect(find.text('Seçili'), findsOneWidget);
         expect(find.text('Sınav Modu (Gizli Çözüm)'), findsOneWidget);
         await tester.tap(find.text('Sınav Modu (Gizli Çözüm)'));
         await tester.pumpAndSettle();
@@ -220,34 +240,36 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // Hedef Sihirbazı kartı görünmeli
-        expect(find.text('Hedef Sihirbazını Aç'), findsOneWidget);
+        // Hedef düzenle butonu görünmeli
+        expect(find.text('Hedefi Düzenle'), findsOneWidget);
         expect(find.text('KPSS Hedefim: 85+ Puan'), findsOneWidget);
 
-        // Sihirbaza tıkla
-        await tester.tap(find.text('Hedef Sihirbazını Aç'));
+        // Hedef düzenlemeye tıkla
+        await tester.tap(find.text('Hedefi Düzenle'));
         await tester.pumpAndSettle();
 
         expect(find.byType(OnboardingScreen), findsOneWidget);
-        expect(find.text('KPSS Hedef Sihirbazı'), findsOneWidget);
-        expect(find.text('Hedef KPSS Puanın Kaç?'), findsOneWidget);
+        expect(find.text('Çalışma Hedefi'), findsOneWidget);
+        expect(find.text('Hangi KPSS Sınavına Gireceksin?'), findsOneWidget);
 
-        // Adım 1: 90+ Puan seç
-        await tester.tap(find.text('90+ Puan · Derece & A Grubu Kadrolar'));
+        // Adım 1: Sınav türü seç
+        await tester.tap(find.text('2028 KPSS Ön Lisans'));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Devam Et'));
         await tester.pumpAndSettle();
 
-        // Adım 2: Odak ders Coğrafya seç
-        expect(find.text('En Çok Hangi Derste Zorlanıyorsun?'), findsOneWidget);
+        // Adım 2: Günlük çalışma süresi (45 dk) seç
+        expect(find.text('Günde Kaç Dakika Ayırabilirsin?'), findsOneWidget);
+        await tester.tap(find.text('45 Dk · Dengeli Tempo'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Devam Et'));
+        await tester.pumpAndSettle();
+
+        // Adım 3: Hedef puan 90+ ve odak ders Coğrafya seç
+        expect(find.text('Hedef Puan & Öncelikli Dersin'), findsOneWidget);
+        await tester.tap(find.text('90+ Puan'));
+        await tester.pumpAndSettle();
         await tester.tap(find.text('Coğrafya · 18 Soru (%30 Ağırlık)'));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Devam Et'));
-        await tester.pumpAndSettle();
-
-        // Adım 3: Günlük 50 soru seç ve rotayı oluştur
-        expect(find.text('Günlük Kaç Soru Çözmek İstiyorsun?'), findsOneWidget);
-        await tester.tap(find.text('50 Soru / Gün · Yoğun Tempo'));
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Rotamı Oluştur'));
@@ -257,7 +279,7 @@ void main() {
         expect(find.byType(OnboardingScreen), findsNothing);
         expect(find.text('KPSS Hedefim: 90+ Puan'), findsOneWidget);
         expect(
-          find.text('Odak Ders: Coğrafya · Günlük Hedef: 50 Soru'),
+          find.text('Odak Ders: Coğrafya · Günlük Hedef: 30 Soru'),
           findsOneWidget,
         );
 
@@ -265,7 +287,11 @@ void main() {
         expect(container.read(userPreferencesProvider).focusLesson, 'Coğrafya');
         expect(
           container.read(userPreferencesProvider).targetDailyStudyGoal,
-          50,
+          30,
+        );
+        expect(
+          container.read(userPreferencesProvider).targetExamKey,
+          'onlisans',
         );
         expect(
           container.read(userPreferencesProvider).dailyFreeQuestionLimit,

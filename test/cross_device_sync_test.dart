@@ -4,7 +4,7 @@ import 'package:kadro/features/auth/data/auth_notifier.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/planner/data/models/study_program_pace.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
-import 'package:kadro/features/pomodoro/data/pomodoro_notifier.dart';
+import 'package:kadro/core/utils/exam_calendar_utils.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
@@ -63,7 +63,7 @@ void main() {
 
         final prefsNotifier = container.read(userPreferencesProvider.notifier);
         prefsNotifier.setTargetExam(KpssExamTarget.onlisans);
-        prefsNotifier.setStudyProgramPace(StudyProgramPace.hizli);
+        prefsNotifier.setStudyProgramPace(StudyProgramPace.dk90);
         prefsNotifier.upgradeToPro();
 
         expect(
@@ -72,7 +72,7 @@ void main() {
         );
         expect(
           container.read(userPreferencesProvider).studyProgramPaceKey,
-          equals('hizli'),
+          equals('dk90'),
         );
         expect(container.read(userPreferencesProvider).isPro, isTrue);
 
@@ -83,7 +83,7 @@ void main() {
         );
         expect(
           container.read(userPreferencesProvider).studyProgramPaceKey,
-          equals('orta'),
+          equals('dk60'),
         );
         expect(container.read(userPreferencesProvider).isPro, isFalse);
       });

@@ -1,11 +1,11 @@
-# 🧠 Kadro (KPSS Lisans Genel Kültür) — Kesinleşmiş Mimari & Alt Ajan Görev Panosu
+# 🧠 Kadro (KPSS Ekosistemi) — Kesinleşmiş Mimari & Alt Ajan Görev Panosu
 
 ## 📌 1. Kesinleşen Mimari ve Ürün Kararları (Anayasamız)
 
 Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md) içinde de kayıtlıdır):
 
-1. **Ürün Odağı (Niş & Yüksek Dönüşüm):**
-   - **Sadece KPSS Lisans Genel Kültür (60 Soru / 65 Dakika):**
+1. **Ürün Odağı & Modüler Çoklu KPSS Mimarisi (`TASK-126` ve sonrası):**
+   - **Aktif Çekirdek (v1 Veri Havuzu) & Çoklu Sınav Genişlemesi:** Mevcut aktif veri seti KPSS Lisans Genel Kültür (60 Soru / 65 Dakika); mimari ise **B Grubu GY-GK, E-KPSS, DHBT, MEB-AGS + 17 ÖABT ve A Grubu (`9 Alan`)** türlerini destekleyecek şekilde genişletilir (toplu soru üretimi son fazdadır):
      - **Tarih:** 27 Soru
      - **Coğrafya:** 18 Soru
      - **Vatandaşlık:** 9 Soru
@@ -124,6 +124,52 @@ Projemizin temel direkleri ([GEMINI.md](file:///d:/projelerim/gunisigi/GEMINI.md
 | **TASK-97** | **Akıllı Yerel Hatırlatıcılar & Alışkanlık Döngüsü (Daily Habit & Streak Notifications)** | İnternetsiz çalışan akşam 20:30 seri koruma ve Pazar 10:00 genel deneme yerel bildirimleri | ✅ **Tamamlandı** |
 | **TASK-98** | **Dopamin Anında 5 Yıldız Puan Toplama Motoru (In-App Review Engine)** | Rekor net, 7 günlük streak veya 10'da 10 yapıldığında uygulama içinden Google Play yıldız penceresini açma | ✅ **Tamamlandı** |
 | **TASK-99** | **Freemium & Kadro PRO Dengesi: Cömert Temel Deneyim + Güçlü 4 PRO Ayrıcalığı** | Tüm soru/kart/harita/açıklamaların ücretsiz sunulması + Sınırsız Soru, Deneme Arşivi, Çevrimdışı İndirme ve Yanlışlardan Test Üretici kapıları | ✅ **Tamamlandı** (`efcf808`) |
+| **TASK-100 - TASK-106** | **Yayın Hazırlığı, Çapraz Cihaz Senkronizasyonu, Sınav Geri Sayımı ve Otomatik Çalışma Programı** | Android release/keystore yapılandırması, Google Sync & Cloud Sync Repository, 3 farklı saat temalı KPSS Pomodoro ve 15-90 dk 5 tempolu otomatik çalışma planı | ✅ **Tamamlandı** (`768655e`) |
+| **TASK-107 - TASK-108** | **Tasarım Sistemi Evrimi: "Tuğrul Kobaltı & Anadolu Altını" EdTech Kimliği** | Lucide ve jenerik AI morunun kaldırılması; Kobalt/Zümrüt/Altın paleti, TactileCard, Outfit/DM Sans ve 12 mood TuğrulAvatar madalyon sistemi | ✅ **Tamamlandı** |
+| **TASK-109** | **Sıralı Çalışma Modu Kilidi & Önceki Günlere Dönüş / Görev Tekrarı** | Günün tüm görevleri tamamlanmadan sonraki güne geçişi engelleme/kilitleme; geçmiş günlere (Gün 1..X) geri dönebilme ve tamamlanmış görevleri `Tekrar Çöz` ile yeniden başlatabilme | ✅ **Tamamlandı** |
+| **TASK-110** | **Çalışma Süresi / Tempo Değişiminde İlerlemenin Korunması & Akıllı Müfredat Adaptasyonu** | Kullanıcı günlük süresini (15-90 dk) değiştirdiğinde ilerlemenin sıfırlanmasını önleme; çözülmüş testleri bilip sıradaki çözülmemiş testten devam eden ve tempoya uyarlanan akıllı program motoru | ✅ **Tamamlandı** |
+| **TASK-111** | **KPSS Genel Yetenek (Türkçe & Matematik) Altyapı Hazırlığı & "Yakında" Modül Vitrini** | Genel Yetenek (Türkçe 30 Soru, Matematik & Geometri 30 Soru) müfredat iskeletinin tanımlanması; `LessonsScreen` üzerinde "Genel Yetenek (Yakında)" rozetli kartlar ve bilgilendirici diyalog entegrasyonu | ✅ **Tamamlandı** |
+| **TASK-112** | **Ana Sayfa "De-AI-Slop" & Renk/Görsel Sadeleştirme (Temiz EdTech & Prestijli Akademi Estetiği)** | Ana sayfadaki gökkuşağı renk kirliliğinin (yıl=mavi, ay=yeşil, gün=turuncu), mükerrer maskotların, aşırı doygun arka plan kutularının ve gereksiz parlak gölgelerin temizlenmesi; saf yüzey, tutarlı tekil vurgu ve sakin tipografi | ✅ **Tamamlandı** |
+| **TASK-113** | **Google Play & KVKK / GDPR Hukuki Uyumluluk Paketi (Gizlilik Politikası, Kullanım Koşulları, Açık Kaynak Lisansları & Hesap Silme Akışı)** | 6698 Sayılı KVKK Aydınlatma Metni, Kullanım Koşulları, ÖSYM Sorumluluk Reddi dokümanları; `ProfileScreen` ve `AuthScreen` hukuk merkezi; Google Play zorunlu "Hesabı ve Verileri Sil" çift onaylı veri tasfiye akışı | ✅ **Tamamlandı** |
+| **TASK-114** | **KPSS Puan Hesaplama Robotu (P3 / P93 / P94) & Son 3 KPSS Sınav Yılı Karşılaştırma Motoru** | Uygulama içi KPSS Lisans (P3), Ön Lisans (P93) ve Ortaöğretim (P94) puan hesaplayıcı (`lib/features/score_calculator/`); 4 yanlış 1 doğru ve 1 net baraj kuralları; son 3 KPSS sınav yılı (2026·2025·2024 / 2026·2024·2022) istatistiksel karşılaştırması; minimalist sade arayüz; `PracticeHubScreen` ve `ExamsScreen` entegrasyonu | ✅ **Tamamlandı** |
+| **TASK-115** | **Çalışma Planı & Günlük Görev İlerlemesinin Çoklu Cihaz ve Oturumlar Arası Kalıcı Bulut Senkronizasyonu (`PlannerSyncSnapshot`)** | Oturum açma/kapatma ve cihaz değişiminde çalışma planı gün ilerlemesinin ve tamamlanan görevlerin korunması; `PlannerSyncSnapshot` veri modeli, `LocalStorageService` hesap bazlı önbellek (`_keyAccountPlannerSnapshot`), Supabase `planner_state` (Auth metadata + `profiles` tablosu) çift katmanlı bulut senkronizasyonu, High-Water Mark birleştirme mantığı (`mergeWith`) ve sıfır veri kaybı | ✅ **Tamamlandı** |
+| **TASK-116** | **Çalışma Planı Snapshot'ında Tam Görev Nesneleri (`tasks_by_day`) ve Kayıpsız Tempo Adaptasyonu (`30 dk -> 60 dk`)** | `PlannerSyncSnapshot` içine `tasksByDay` eklenmesi, `StudyTask.isSameTaskItem` semantik eşleşmesi ve `adaptStudyProgramPace` ile ilerleme sıfırlanmadan tempo güncellemesi | ✅ **Tamamlandı** |
+| **TASK-117** | **Bağımsız Çözülen Konu Testlerinin Günlük Çalışma Planındaki Görevlerle Otomatik Eşleşmesi ve Üstü Çizili Gösterimi** | Dersler/Konu Testleri ekranından bağımsız çözülen testlerin `markMatchingTestCompleted` ve `syncCompletedFromStats` ile aktif/gelecek plan görevlerini otomatik tamamlaması | ✅ **Tamamlandı** |
+| **TASK-118** | **Freemium Günlük Soru Limiti (`dailyFreeQuestionLimit` & `dailySolvedCount`) Çoklu Cihaz, Oturum Kapatma ve Önbellek Silme Koruması** | `profiles.daily_solved_count` / `daily_free_limit`, cihaz günlük kotası (`kadro_device_daily_quota`) ve 5 kaynaktan High-Water Mark kota senkronizasyonu | ✅ **Tamamlandı** |
+| **TASK-119** | **Giriş Öncelikli Açılış Kapısı (Auth-First Gate), İlk Oturumda Tek Seferlik Zorunlu Kurulum (Post-Login Onboarding) ve Çoklu Cihaz Senkronizasyonu** | `AuthScreen(isInitialGate: true)`, `_CloudHydrationScaffold`, sıralı bulut hidrasyonu ve telefon/web birebir plan tutarlılığı | ✅ **Tamamlandı** |
+| **TASK-120** | **Çalışma Türleri (`PracticeHubScreen`) "Konu Testi" Ders/Konu Yol Haritası Bağlantısı & 3 Soruluk Fallback Noktalarının Havuza Bağlanması** | "Konu testi" kartına tıklanınca 4 Genel Kültür dersi seçici Bottom Sheet ile `LessonTopicsScreen` -> `TopicTestsScreen` akışına geçiş; "Deneme sınavı" (60 soru `mockExamNumber: 1`), "ÖSYM Çeldirici Avı" (`fetchAllFromPool: true, limit: 10`) ve Ana Sayfa "Seri & Hedef" hatırlatıcısının gerçek soru havuzuna bağlanması | ✅ **Tamamlandı** |
+| **TASK-121** | **Gelişmiş Antrenman Modları: Özel Çeldirici Avı Motoru, Hızlı Deneme Seçici ve Akıllı Seri Koruma Test Üretici** | `QuestionRepository.fetchDistractorHuntQuestions` ile `distractorTrap` analizli soruları süzen çeldirici avı motoru (`QuizScreen.onlyDistractorTraps`); `PracticeHubScreen` üzerinde 3 tam deneme + 20 soruluk Hızlı Mini Deneme seçici alt çekmecesi; `HomeScreen` "Seri & Hedef" hatırlatıcısının kalan hedefe (`5..20`) ve zayıf derse göre test üretmesi | ✅ **Tamamlandı** |
+| **TASK-122** | **KPSS Puan Hesaplama Ekranı (`KpssScoreCalculatorScreen`) Sıfır Varsayılan Değerler & Kompakt Dropdown Sınav Türü Seçici** | Açılışta GY/GK doğru ve yanlış sayılarının varsayılan olarak `0` gelmesi; 3'lü yatay segment seçici yerine ekran alanını verimli kullanan kompakt `DropdownButton<KpssScoreType>` sınav türü seçicisine geçilmesi ve widget testlerinin güncellenmesi | ✅ **Tamamlandı** |
+| **TASK-123** | **Harita Atölyesi (`MapPracticeHubScreen` & `MapChallengeScreen`) "Dilsiz Harita (81 İl)" Dar Ekran Taşma (RenderFlex Overflow) Düzeltmesi** | `MapPracticeHubScreen` üzerindeki "Dilsiz Harita (81 İl)" + "Sonsuz Pratik" rozet satırının `Wrap` yapısına geçirilmesi, mod seçici alt çekmecenin kaydırılabilir yapılması, `MapChallengeScreen` başlık/etiket satırlarının `Flexible`/`Expanded` ile korunması ve 360x640 mobil taşma testinin eklenmesi | ✅ **Tamamlandı** |
+| **TASK-124** | **Harita Soruları & İl Seçme Ekranında Minimum Kenar Boşluğu, Harita İçi Yakınlaştırma (`+`/Pinch) ve Tam Ekran Büyütme Modalı** | Küçük illerin (`Yalova`, `Kilis`, `Bartın` vb.) kolay seçilebilmesi için `TurkeyMap`, `TurkeyMapCard` ve `MapChallengeScreen` kenar boşluklarının (padding) minimuma indirilerek haritanın ekran genişliğine yayılması; `InteractiveViewer` + hızlı `+`/`Sıfırla` butonları ve soru üstü göstergeli `5x` tam ekran **`Büyüt`** diyaloğunun eklenmesi | ✅ **Tamamlandı** |
+| **TASK-125** | **Ana Sayfa "Bugünün Çalışma Planı" (`HomeDailyPlanCard`) Sadeleştirme & Okunaklı Görsel Hiyerarşi** | Mükerrer `"Planlayıcıyı Aç & Görev Ekle"` ve `<`/`>` oklarının temizlenmesi; sade `Gün X · Tempo` + `Düzenle` satırı, görsel ilerleme çubuğu (`LinearProgressIndicator`) ve çerçeveli tekil görev kutularının (`_DailyPlanTaskItem`: Başlık, Ders alt etiketi ve `Başla`/`Tekrar` rozeti) uygulanması | ✅ **Tamamlandı** |
+| **TASK-126** | **[Çekirdek Mimari · Ön Koşul] Yönetişim Güncellemesi, Çoklu KPSS Alan Modelleri (`KpssExamFamily`, `ExamSelection`) & Dinamik Sınav Takvimi (`AppRemoteConfig`)** | `GEMINI.md` ve `content-specification-guide.md` MVP kilidinin çoklu KPSS mimarisine uyarlanması; geriye dönük uyumlu `KpssExamFamily`, `EducationLevel`, `OabtBranch` (17 branş + YDS), `DisabilityGroup`, `ExamSelection` (kapsam + alt dal değer nesnesi) modellerinin kurulması ve `AppRemoteConfig.examDateOverrides` ile `HomeScreen` / `KpssExamTarget` sabit yıl/tarih (`KPSS 2027`) bağımlılığının kaldırılması | ✅ **Tamamlandı** |
+| **TASK-127** | **[Çekirdek Mimari · Ön Koşul] Merkezi Müfredat Kayıt Motoru (`CurriculumRegistry` & `ExamCurriculum`) — Sabit `kpssLessons` Hardcoding Refaktörü** | `kpss_lessons.dart` içindeki sabit 4-ders / `defaultTopicTestCount` `if-else` yapısının değiştirilerek her `ExamSelection` için ders/konu/ağırlık/test sayısı üreten `CurriculumRegistry` + `activeCurriculumProvider` servisine geçilmesi; `LessonsScreen`, `FlashcardsScreen`, `MistakesScreen` ve `StudyProgramPace` içindeki sabit 4-ders / 60-soru hardcoding'lerinin temizlenmesi | ✅ **Tamamlandı** |
+| **TASK-128** | **[Veritabanı · Güvenlik & İndeksleme] Çoklu Sınav PostgreSQL Şeması (`exam_scopes`), `user_topic_mastery` Çakışma Düzeltmesi & RLS/RPC Zırhı** | `docs/supabase_migrations/05_multi_exam_architecture.sql` (`03`/`04` mevcut olduğu için `05_`): `questions` için `exam_scopes text[]`, `sub_branch`, `education_level`, `disability_variant`, `source_variant` ve **GIN + composite/partial indeksler**; `user_topic_mastery` `unique(user_id, lesson, topic)` çakışmasının `unique(user_id, exam_scope, lesson, topic)` ile çözülmesi; `profiles.exam_selection jsonb` CHECK kısıtı, `is_pro`/XP/rate-limit trigger uyumu, `is_active = true` RLS, `get_weekly_leaderboard(p_exam_family)` RPC güncellemesi, `docs/supabase_schema.sql` senkronizasyonu ve sözleşme testleri *(Not: Canlı `kadroDB` MCP onayı iptal olduğu için SQL Editor'de çalıştırılması bekleniyor)* | ✅ **Tamamlandı** |
+| **TASK-129** | **[Performans · Önbellek & Ad Uzayı] Namespace İzolasyonu, Scope-Sharded Isolate JSON Yükleyici, LRU+TTL Önbellek & `MistakeRepository` Batch Hydration** | `Question` modeline `examScopes`/`subBranch`/`disabilityVariant`/`sourceVariant` alanları; `LocalStorageService` ve `OfflineDownloadService` paket anahtarlarının `'topic_${scopeNamespace}_${lesson}_$topic'` ile izole edilmesi; `QuestionRepository` kapsam bazlı modüler asset + `compute()` Isolate parse + bounded LRU/TTL önbellek; `lessonTopicTestCountsProvider` kapsam anahtarlaması; `MistakeRepository.hydrateFromCloud()` tam havuz çekme anti-pattern'inin `.inFilter('id', ids)` toplu sorgusuna çevrilmesi | ✅ **Tamamlandı** |
+| **TASK-130** | **[Yeniden Kullanılabilir Motor] Dinamik Deneme Şablonu (`MockExamBlueprint`), Bölüm Sekmeli Optik Palet & Veri Güdümlü `PracticeHub` / `ExamsScreen`** | Sabit `60 soru / 65 dk` yerine çoklu bölüm, süre ve ek-süre destekli `MockExamBlueprint` + `QuestionRepository.generateMockExamFromBlueprint` motoru; `QuizScreen` içine uzun/çoklu oturumlar için ders sekmeli optik palet ve erişilebilir ek süre sayacı; `ExamsScreen` ve `PracticeHubScreen` alt çekmecelerinin tamamen `activeCurriculumProvider` üzerinden üretilmesi | ✅ **Tamamlandı** |
+| **TASK-131** | **[UI/UX & Senkronizasyon] Evrensel 2 Kademeli Hiyerarşik Sınav Seçici (`ExamTargetPickerView`), Onboarding Yenilemesi & Çoklu Cihaz `ExamSelection` Senkronu** | `TargetExamSelectorBottomSheet`, `OnboardingScreen`, `AutoStudyProgramModal` ve `PomodoroStudioScreen` içindeki dağınık/kısıtlı seçicilerin tek yeniden kullanılabilir `ExamTargetPickerView` bileşeninde birleştirilmesi (Kademe 1: Sınav Ailesi, Kademe 2: Düzey/Branş/Engel Grubu/Alan Paketi) ve `UserPreferencesNotifier` / `CloudSyncRepository` üzerinden sıralı bulut hidrasyonuna (`TASK-119` korumalı) bağlanması | ✅ **Tamamlandı** |
+| **TASK-132** | **[Planlayıcı · Analitik · Puan Çekirdeği] Dinamik `AutoStudyProgramGenerator`, Kapsam İzole İstatistikler & Strateji Desenli `ScoreFormulaEngine` Çekirdeği** | `AutoStudyProgramGenerator` rotasyonunun aktif müfredattan dinamik okunması ve sınav değişiminde kayıpsız `adaptCurriculumScope` akışı; `StatsScreen` ve `StudyStatsNotifier` üzerinde aktif sınav kapsamına göre ders başarısı/ısı haritası izolasyonu; `KpssScoreCalculator` motorunun genişletilebilir Strategy Pattern (`ScoreFormulaEngine`) mimarisine dönüştürülmesi | ✅ **Tamamlandı** |
+| **TASK-133** | **[Faz A — Altyapı] Ortak GY-GK Genişlemesi (Lisans / Ön Lisans / Ortaöğretim): Türkçe & Matematik Müfredat Kilidi, `120 Soru / 130 dk` Deneme & `P1 / P2 / P3` Hesaplayıcı** | B Grubu için 6 derslik tam GY-GK müfredatı (Türkçe 30, Mat & Geo 30, Tarih 27, Coğrafya 18, Vatandaşlık 9, Güncel 6) + "Sadece GK (60)" / "Tam GY-GK (120)" profil modu; havuz durumuna göre akıllı modül kilidi; `MockExamBlueprint` (`120S/130dk`); `P1`, `P2`, `P3` eş zamanlı puan hesaplama stratejisi *(veri girişi hariç)* | ✅ **Tamamlandı** |
+| **TASK-134** | **[Faz B — Altyapı] E-KPSS Entegrasyonu: 4 Engel Grubu Kitapçığı, Ek Süre & Erişilebilir Okuma Modu, Ek Konular & `EKPSSP1 / P2 / P3` Hesaplayıcısı** | 3 öğrenim düzeyi + 4 kitapçık (`Genel`, `Görme`, `İşitme-1`, `Zihinsel`); *Türk Kültür ve Medeniyetleri* ve *Engelli Hakları Mevzuatı* konu düğümleri; `QuizScreen` büyük punto / yüksek kontrast erişilebilirlik geçişi + `source_variant` metin seçimi + opsiyonel ek süre sayacı; `EKPSSP1/P2/P3` hesaplama stratejisi *(veri girişi hariç)* | ✅ **Tamamlandı** |
+| **TASK-135** | **[Faz C — Altyapı] KPSS DHBT Entegrasyonu: DHBT-1 + DHBT-2 Çift Kademeli Müfredat (Ortaöğretim/Ön Lisans/Lisans) & `P122 / P123 / P124` Hesaplayıcısı** | Menüdeki `dhbt` hedefinin alt düzey seçimiyle (`İHL / İlahiyat Ön Lisans / Lisans`) tamamlanması; DHBT-1 (5 ders / 20 soru) + DHBT-2 (7 ders / 20 soru) müfredat ağaçları; `40 Soru / 60 dk` DHBT denemesi + karma `P122/P123/P124` puan hesaplama stratejisi *(veri girişi hariç)* | ✅ **Tamamlandı** |
+| **TASK-136** | **[Faz D — Altyapı] MEB-AGS + 17 Branş ÖABT Entegrasyonu: Öğretmenlik 1. Oturum (`80 Soru`), Aranabilir 17 Branş + YDS/P3 Seçicisi & `AGS-P1 / P2 / P3` Hesaplayıcısı** | MEB-AGS 1. Oturum (Sözel, Sayısal, Tarih, Coğrafya, *Eğitim Bilimleri & TYMM*, *Mevzuat*) + **17 ÖABT branşının** (Sınıf, Okul Öncesi, Özel Eğitim dahil `30+20` / `50 soru` ve `70`/`90 dk` kuralları) konu ağaçları; aranabilir branş seçici; DKAB/İHL çift puan (`P2-16` / `P2-17`) ve Yabancı Dil `AGS-P3` (%50 YDS) hesaplama motoru *(veri girişi hariç)* | ✅ **Tamamlandı** |
+| **TASK-137** | **[Faz E — Altyapı] KPSS A Grubu (Kariyer Meslekler) Entegrasyonu: 9 Alan Testi Konu Ağacı, Çoklu Alan Seçici (`P48` Paketi), `P4–P48` Puan Simülatörü & `≥1 Net` Kuralı** | Hukuk (7 alt dal), İktisat, Maliye, Muhasebe, İşletme, Kamu Yönetimi, Uluslararası İlişkiler, ÇEKO, İstatistik konu ağaçları; adayın yalnızca hedeflediği alan testlerini planlayıcı/derslere almasını sağlayan çoklu alan filtresi; `40 Soru / 50–60 dk` deneme şablonları ve **"ilgili her alan testinden ≥1 ham net"** baraj doğrulamalı `P4–P48` puan simülatörü *(veri girişi hariç)* | ✅ **Tamamlandı** |
+| **TASK-138** | **[Atölyeler & Oyunlar Uyumu] Harita Atölyesi, 60 Saniyede Pençe, Kavram Eşleştirme & Hap Bilgi Kartlarının Çoklu Sınav Kapsamına Uyarlanması** | `MapPracticeHubScreen`, `TrueFalseBlitzScreen`, `ConceptMatchScreen` ve `FlashcardsScreen` modüllerinin aktif `ExamSelection` kapsamına göre filtrelenmesi; henüz özel havuzu olmayan sınav türlerinde çökmeden `"Ortak Genel Kültür / Alan Yakında"` köprüsüyle güvenli boş durum yönetimi | ✅ **Tamamlandı** |
+| **TASK-139** | **[EN SON FAZ — Veri Girişi Altyapısı] Çoklu Sınav İçerik Doğrulama & Seed Pipeline (`validate_sql.py` + `distractor_trap` & `exam_scopes` Linter)** | Toplu soru üretimine geçmeden önce `tools/validate_sql.py` / parser betiklerinin `exam_scopes`, `sub_branch`, `source_variant`, `distractor_trap` zorunluluğu, mükerrer soru tespiti ve LaTeX temizliği kurallarıyla güncellenmesi | ⏳ **Bekliyor (Veri Fazı Ön Koşulu)** |
+| **TASK-140** | **[EN SON FAZ — Veri Girişi · Faz A] Ortak GY-GK (Türkçe, Matematik & Geometri + Ön Lisans/Ortaöğretim Seviye Varyantları) Soru & Kart Havuzu Üretimi** | Özgün Türkçe (30 soru dağılımı), Matematik & Geometri soru havuzları, ÖSYM çeldirici tuzağı analizleri ve B-Grubu ortak hap bilgi kartlarının SQL/JSON seed üretimi *(Mimari fazlardan sonra uygulanır)* | ⏳ **Bekliyor (En Son Faz)** |
+| **TASK-141** | **[EN SON FAZ — Veri Girişi · Faz B] E-KPSS Özgün Soru, `İşitme-1` / `Zihinsel` Sadeleştirilmiş Varyantlar & Engelli Hakları Havuzu Üretimi** | E-KPSS düzeylerine uygun özgün GY-GK soruları, Engelli Hakları Mevzuatı + Türk Kültür/Medeniyetleri soru/kartları ve erişilebilir sadeleştirilmiş metin varyantlarının üretimi | ⏳ **Bekliyor (En Son Faz)** |
+| **TASK-142** | **[EN SON FAZ — Veri Girişi · Faz C] KPSS DHBT (DHBT-1 Ortak + DHBT-2 3 Öğrenim Düzeyi) Soru, Bilgi Kartı & Eşleştirme Havuzu Üretimi** | DHBT-1 (20 soru dağılımı) ve DHBT-2 (Ortaöğretim İHL / Ön Lisans / Lisans derinlikli 7 ders) özgün soru bankası, fıkıh/kelam/tefsir hap bilgi kartları ve kavram eşleştirme setleri | ⏳ **Bekliyor (En Son Faz)** |
+| **TASK-143** | **[EN SON FAZ — Veri Girişi · Faz D] MEB-AGS (Eğitim Bilimleri + TYMM + Mevzuat) & Öncelikli ÖABT Branşları Özgün Soru Havuzu Üretimi** | MEB-AGS 1. Oturum Eğitim/TYMM/Mevzuat bankası ile kademeli olarak öncelikli ÖABT branşları (Sınıf, Okul Öncesi, Özel Eğitim, Türkçe, İlköğretim Mat, Sosyal Bilgiler, DKAB/İHL, PDR vb.) özgün soru havuzlarının üretimi | ⏳ **Bekliyor (En Son Faz)** |
+| **TASK-144** | **[EN SON FAZ — Veri Girişi · Faz E] KPSS A Grubu (Önce Çekirdek `P48`: Hukuk, İktisat, Maliye, Muhasebe; Sonra 5 Alan) Özgün Soru Havuzu Üretimi** | Cari mevzuat uyumlu Hukuk (7 alt dal), İktisat, Maliye, Muhasebe çekirdek paketi (`P48`) ile devamında İşletme, Kamu Yönetimi, Uluslararası İlişkiler, ÇEKO ve İstatistik özgün soru havuzlarının üretimi | ⏳ **Bekliyor (En Son Faz)** |
+| **TASK-145** | **[Web Faz 1 — Çekirdek & Güvenlik] Web Wasm Koşullu Importlar, `PurchaseService`/`AdService` Web Açığı Kapatma, URL Stratejisi & `web/index.html` SEO/Splash** | `kIsWeb` ortamındaki ücretsiz PRO (`return true`) ve mock reklam açığının kapatılması; `dart:io` koşullu importları (`Wasm` uyumu); `usePathUrlStrategy()` (`#` kaldırma); webde lokal JSON/`OfflineDownloadService` kısıtlaması ve `web/index.html` Türkçe meta + erişilebilir viewport/shimmer yenilemesi | ✅ **Tamamlandı** |
+| **TASK-146** | **[Web Faz 2 — Masaüstü SaaS Kabuğu] `AdaptiveWebShell`, Sabit `KadroSidebar`, `NavigationRail`, Breadcrumb Üst Bar & `Ctrl+K` Komut Paleti** | `ResponsiveBreakpoints` masaüstü kırılımı (`>= 1024px`); mobilde `AppNavigationBar` korunurken tablette `NavigationRail`, masaüstünde `256px` `KadroSidebar` + aktif sınav değiştirici ve `Ctrl+K / Cmd+K` global `KadroCommandPalette` spotlight arama penceresi | ✅ **Tamamlandı** |
+| **TASK-147** | **[Web Faz 2 — Masaüstü Mikro-Etkileşim & Overlay] `TactileCard` / `OptionTile` Hover-İmleç Fiziği, WCAG Odak Halkası & `AdaptiveOverlay`** | `MouseRegion` + `SystemMouseCursors.click` hover yükseltme/renk tepkisi, WCAG `4.5:1` klavye odak halkaları, masaüstü `Scrollbar` / seçilebilir metin (`SelectionArea`) ve `>= 768px` ekranlarda `showModalBottomSheet` yerine `Dialog` / sağ `SideDrawer` açan `AdaptiveOverlay` yardımcısı | ✅ **Tamamlandı** |
+| **TASK-148** | **[Web Faz 3 — Bento Dashboard] 12 Sütunlu `HomeScreen` Bento Kokpiti, Çok Sütunlu Grid Kartları & Master-Detail `LessonTopicsScreen`** | **Awwwards / Brilliant** esintili `1240px` 2 kolonlu `HomeScreen` (*Above the Fold*: plan + seri + geri sayım + mini Pomodoro), `LessonsScreen` / `ExamsScreen` / `PracticeHubScreen` 2–3 sütun kart ızgaraları ve `LessonTopicsScreen` sol konu listesi / sağ test paketi Master-Detail düzeni | ✅ **Tamamlandı** |
+| **TASK-149** | **[Web Faz 3 — Split-Pane Sınav Stüdyosu] UWorld/e-YDS Tarzı 2 Panelli `QuizScreen`, Klavye Kısayolları, Şık Eleme & 2 Kolonlu İstatistik/Karne** | `>= 960px` masaüstünde **Split-Pane `QuizScreen`**: solda soru (`60-75ch`) + 5 şık + şık üstü çizme, sağda anlık **"⚠️ ÖSYM Çeldirici Tuzağı"** / denemede canlı bölüm optik kâğıdı; `1–5`/`A–E`, `Enter`, `F`, `Shift+1..5`, `?` klavye kısayolları ve 2 kolonlu `QuizResultScreen` / `StatsScreen` (`fl_chart` + veri özeti) | ✅ **Tamamlandı** |
+| **TASK-150** | **[Web Faz 4 — Geniş Ekran Atölyeler] Split `TurkeyMap` Harita Stüdyosu, Klavyeli `Flashcards`, Zen Masa Saati `Pomodoro` & Sticky `ScoreCalculator`** | Geniş ekranda sol-harita / sağ-soru bölünmüş `MapChallengeScreen` (hover il vurgusu); `Space`/ok tuşlu `FlashcardsScreen`; tam ekran "Masa Saati Zen" `PomodoroStudioScreen` ve sol sürgü / sağ yapışkan (sticky) puan karneli `KpssScoreCalculatorScreen` | ✅ **Tamamlandı** |
+| **TASK-151** | **[Web Faz 4 — Giriş Vitrini & SEO Köprüsü] Split `AuthScreen` Ürün Vitrini, Misafir `/calculator` & `/curriculum-preview` Rotaları, Deep-Link Akışı** | `AuthScreen` masaüstünde 2 kolonlu ürün tanıtım + giriş sahnesi; misafir kullanıcıların giriş yapmadan erişebileceği `/calculator` ve `/curriculum-preview` public web rotaları + hesap daveti; opsiyonel Astro/Next.js SEO landing (`kadro.com` -> `app.kadro.com`) sözleşmesi | ✅ **Tamamlandı** |
+| **TASK-152** | **[Web Faz 5 — Ödeme Köprüsü, Wasm & Kalite Kapısı] iyzico/RevenueCat Web Billing, `subscriptions` Supabase Senkronu & 4 Kırılımlı Responsive Testleri** | Web için **iyzico / RevenueCat Web Billing + Supabase Edge Function `subscriptions` yetki tablosu** entegrasyonu; `flutter build web --wasm` COOP/COEP header + rewrite config doğrulaması; `1440×900`, `1024×768`, `768×1024`, `360×640` layout, klavye, `Ctrl+K` ve Web güvenlik sözleşme testleri | ✅ **Tamamlandı** |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** |
 
 ---
@@ -4999,3 +5045,1158 @@ ADIM 4: Test ve Doğrulama (`test/pomodoro_studio_test.dart`)
   - Kullanıcı kararıyla şimdilik uygulanmayacak, projenin ileri aşamalarına ertelenmiştir.
   - **Kullanıcıdan kesin onay alınmadan bu göreve başlanmayacaktır.**
   - **Kapsam Özeti:** Her hafta belirlenen gün/saatte tüm KPSS adaylarının aynı anda başladığı, canlı geri sayımlı, süresi bitince otomatik toplanan ve Türkiye geneli canlı sıralama çıkaran eş zamanlı sınav motoru ve etkinlik ekranı.
+
+- [x] **TASK-107 — "Sabah Masası & Sınav Kitapçığı" Editoryal Tasarım Denemesi (v2 — Yürürlükten Kaldırıldı):** İlk anti-slop adımında `lucide_icons_flutter` bağımlılığı kaldırılıp tüm ikonlar `phosphor_flutter` standardında toplandı, dekoratif UI emojileri temizlendi; ancak sıcak kağıt (`#F7F4ED`) + `Newsreader` serif + eyebrow şablonu `TASK-108` ile tamamen yenilendi.
+
+- [x] **TASK-108 — "Tuğrul Kobaltı & Anadolu Altını" Karakterli Modern EdTech Tasarım Sistemi (v3):** Editoryal kağıt şablonu (`#F7F4ED`, `Newsreader`, `EditorialScreenHeader`) kaldırılarak yerine yüksek kontrastlı Kobalt (`#2140D4`) · Zümrüt (`#0E9F6E`) · Anadolu Altını (`#E28400`) paleti, `Outfit` + `DM Sans` tipografisi, `1.5px` kenarlıklı ve keskin `3px` fiziksel alt dudaklı `TactileCard` / `OptionTile` dokunsal yüzeyi ve 12 ruh halinde sahneye entegre `TugrulAvatar` madalyon sistemi devreye alındı (`lib/app/theme.dart`, `lib/shared/widgets/tugrul_avatar.dart`, `design-system/kadro/MASTER.md`).
+
+---
+
+### 📦 TASK-109: Sıralı Çalışma Modu Kilidi & Önceki Günlere Dönüş / Görev Tekrarı
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Sıralı İlerleme Kilidi (Sequential Progress Lock):**
+    - Günlük çalışma paketindeki tüm görevler tamamlanmadan (`allCompleted == false`) sonraki güne (`cycleDay + 1`) geçiş yasaklanır.
+    - `StudyPlannerNotifier.advanceToNextDay` metodu `if (!state.allCompleted) return;` kontrolüyle zırhlanır.
+    - Hem `HomeDailyPlanCard` hem de `StudyPlannerScreen` üzerinde "Sonraki Güne Geç" butonu tüm görevler bitmeden devre dışı (disabled / kilitli) görünür ve tıklandığında bilgilendirici geri bildirim sunar.
+  - **Önceki Günlere Gezinme & Ulaşılan En Yüksek Gün (`unlockedCycleDay`):**
+    - Kullanıcının ulaştığı en yüksek gün (`unlockedCycleDay`) takip edilir ve `LocalStorageService` içine kaydedilir.
+    - Kullanıcı ulaştığı günler arasında (`1..unlockedCycleDay`) serbestçe geriye ve ileriye gidebilir (`goToPreviousDay`, `goToNextDay`, `goToDay(targetDay)`).
+    - Gün seçici / gezinme çubuğu ile önceki günlerin görevleri görüntülenir.
+  - **Geçmiş Görevleri Tekrar Çözebilme (Review & Practice Again):**
+    - Tamamlanmış (`isCompleted: true`) görevlerin yanında `Tekrar Çöz` butonu sunulur.
+    - Tıklandığında `StudyTaskLauncher.launch` ile ilgili test/kart/harita oturumu yeniden başlatılır.
+    - Kullanıcı isterse görevi tekrar tamamlayabilir veya tek tek çözebilir.
+  - **Kalıcı Depolama & Senkronizasyon:**
+    - Günlük görev listeleri ve tamamlama durumları yerel depolamada gün bazında saklanır, böylece önceki günlere dönüldüğünde o günün çözülmüş halleri korunur.
+  - **Birim & Widget Testleri:**
+    - Sıralı kilit kurallarını, önceki güne dönüşü ve tekrar çözüm mekanizmasını doğrulayan testler yazılır.
+
+---
+
+### 📦 TASK-110: Çalışma Süresi / Tempo Değişiminde İlerlemenin Korunması & Akıllı Müfredat Adaptasyonu
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Sıfırlanmayı Önleme & İlerlemeyi Koruma:**
+    - Kullanıcı çalışma süresini değiştirdiğinde (ör. 30 dk'dan 60 dk'ya çıkardığında) program `cycleDay: 1` yapılarak en başa sarılmaz.
+    - Kullanıcının o güne kadar çözdüğü testler (`StudyStatsState.findLatestSessionForTest` ve kümülatif çalışma ofseti) tespit edilir.
+    - Sıradaki çözülmemiş testin indeksi bulunur ve yeni tempoda bu ofsete karşılık gelen mantıksal gün hesaplanır (`AutoStudyProgramGenerator.findCycleDayForCurriculumOffset`).
+  - **Akıllı Müfredat Filtreleme (Daha Önce Çözülen Testleri Atlatma):**
+    - `AutoStudyProgramGenerator.generateDailyTasks` içine çözülmüş testleri bilme (`isTestSolved` kontrol fonksiyonu veya çözülen testler kümesi) yeteneği eklenir.
+    - Görevler atanırken kullanıcının daha önce çözmüş olduğu testler atlanarak, sıradaki ilk çözülmemiş 10 soruluk gerçek konu testleri atanır.
+  - **Tempo Adaptasyonu:**
+    - Kullanıcı süresini 60 dk veya 90 dk'ya çıkardığında, çözmediği sıradaki testlerden günde 2 veya 3 test, daha fazla kart ve harita alıştırması içeren yeni tempo görevleri kaldığı yerden anında devreye girer.
+  - **Depolama & Test:**
+    - `changeStudyProgramPace` metodu ile hem tempo hem ilerleme güncellenir, birim ve widget testleriyle doğrulanır.
+
+---
+
+### 📦 TASK-111: KPSS Genel Yetenek (Türkçe & Matematik) Altyapı Hazırlığı & "Yakında" Modül Vitrini
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Müfredat & Veri Modeli (`kpss_lessons.dart`):**
+    - `Lesson` modeline `isComingSoon` bayrağı eklendi.
+    - KPSS Genel Yetenek (60 Soru): **Türkçe** (30 Soru) ve **Matematik & Geometri** (30 Soru) resmi ÖSYM konu başlıklarıyla `kpssGeneralAbilityLessons` listesi olarak tanımlandı.
+    - `allKpssLessons` birleşik listesi (6 ders) ve izole `kpssLessons` (4 Genel Kültür dersi) ayrımı korundu.
+  - **Arayüz & Vitrin (`LessonsScreen`):**
+    - Dersler ekranı iki bölüme ayrıldı:
+      1. **KPSS Genel Kültür (60 Soru)**: Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler (çözülen test oranları ve konu ağaçları).
+      2. **KPSS Genel Yetenek (60 Soru · Yakında)**: Türkçe ve Matematik & Geometri için kehribar/altın vurgulu `"Yakında"` rozeti, kilit ikonu ve `TactileCard` yapısı.
+    - Genel Yetenek kartına tıklandığında `TugrulAvatar` (Coach mood) eşliğinde bilgilendirici alt çekmece (`_ComingSoonLessonCard._showComingSoonSheet`) açılarak hazırlanan konu modülleri ve yakında geleceği şık çiplerle gösterildi.
+  - **Test & Doğrulama:**
+    - `test/general_ability_coming_soon_test.dart` yazılarak model bütünlüğü, UI bölüm başlıkları, rozetler ve tıklama diyalogu test edildi.
+    - `dart format`, `flutter analyze` (0 issue) ve tüm proje test paketi (304/304 test başarılı) ile %100 doğrulandı.
+
+---
+
+### 📦 TASK-112: Ana Sayfa "De-AI-Slop" & Renk/Görsel Sadeleştirme (Temiz EdTech & Prestijli Akademi Estetiği)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Hero Kartı Sadeleştirmesi (`_HomeHeroStage`):**
+    - Aşırı doygun ve tüm kartı kaplayan `primaryContainer`/`secondaryContainer` cart arka plan rengi kaldırıldı; saf `surface` zemin üzerinde zarif `outlineVariant` kenarlık sistemine geçildi.
+    - İç hedef kapsülü sakin nötr zemine (`surfaceContainerLow`), sade yüzde rozetine ve temiz progress barına kavuşturuldu.
+    - TuğrulAvatar ana sayfada sadece burada tek ve ana koçluk odağı olarak konumlandırıldı.
+  - **Sınav Takvimi & Countdown Kutuları (`_ExamAndPomodoroBanner` + `_CountdownMetricTile`):**
+    - Yıl (mavi), Ay (yeşil), Gün (turuncu) şeklinde yan yana dizilen yapay gökkuşağı renkleri ve renkli neon gölgeler tamamen kaldırıldı.
+    - Bütün takvim sayaç taşları prestijli, sakin, nötr zemin (`surfaceContainerLow`), net `onSurface` tipografi ve nötr kenarlık standardına çekildi.
+    - Kartın sol başındaki mükerrer ikinci minyatür Tuğrul maskotu yerine, kurumsal ve ciddi takvim ikonu (`PhosphorIconsFill.calendarBlank`) yerleştirildi.
+  - **Hatırlatıcılar Kartı (`_SmartRemindersCard` + `_ReminderItem`):**
+    - Mavi, turuncu ve yeşil renkli gökkuşağı ikon kutuları yerine; tutarlı, sade, nötr zeminli (`surfaceContainerLow`) ve sakin çizgisel `PhosphorIconsRegular` ikon stiline geçildi.
+  - **Zayıf Konu Bannerı (`_WeakLessonHomeBanner`):**
+    - Kaba turuncu zemin yerine sakin beyaz/yüzey zemin ve zarif düşüş trendi ikonu (`PhosphorIconsRegular.trendDown`) yerleştirildi.
+  - **Test & Doğrulama:**
+    - `test/home_screen_de_ai_slop_test.dart` yazılarak tek TuğrulAvatar odağı, takvim ikonları ve hatırlatıcılar doğrulandı.
+    - `dart format`, `flutter analyze` (0 issue) ve tüm proje test paketi (305/305 test başarılı) ile %100 doğrulandı.
+
+---
+
+### 📦 TASK-113: Google Play & KVKK / GDPR Hukuki Uyumluluk Paketi (Gizlilik Politikası, Kullanım Koşulları, Açık Kaynak Lisansları & Hesap Silme Akışı)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Hukuki Dokümanlar (`lib/core/legal/legal_documents.dart`):**
+    - 6698 Sayılı KVKK Aydınlatma Metni & Gizlilik Politikası (Veri sorumlusu, toplanan veriler, 3. taraf servisler Supabase/RevenueCat/AdMob/Sentry, veri güvenliği ve haklar).
+    - Kullanım Koşulları & EULA (Hizmet koşulları, Kadro PRO abonelik/iade ilkeleri, fikri mülkiyet).
+    - ÖSYM Sorumluluk Reddi (KPSS telif hakları beyanı ve resmi kurum bağımsızlığı).
+  - **Hukuki Doküman Okuyucu (`LegalDocumentViewerScreen`):**
+    - Uygulama içinde internet gerektirmeden tam metin okunabilen, kopyalanabilir ve şık tipografiye sahip ekran.
+  - **Profil Ekranı Hukuk Merkezi (`ProfileScreen`):**
+    - "Hukuki & Gizlilik" başlığı altında:
+      1. *Gizlilik Politikası & KVKK Aydınlatma Metni*
+      2. *Kullanım Koşulları & ÖSYM Beyanı*
+      3. *Açık Kaynak Lisansları* (`showLicensePage`)
+      4. *Hesabımı ve Verilerimi Sil* (Google Play Account Deletion zorunlu kuralı uyarınca çift onaylı, kırmızı tehlike aksiyonu).
+  - **Giriş / Kayıt Ekranı Bilgilendirmesi (`AuthScreen`):**
+    - Giriş ve kayıt butonlarının altında "Devam ederek Kullanım Koşulları ve Gizlilik Politikası'nı kabul etmiş olursunuz" tıklanabilir yasal bilgilendirme köprüsü.
+  - **Dış Web Gizlilik & Silme Formu (`docs/privacy_policy.html`):**
+    - Google Play Console Data Safety formuna girilmek üzere ÖSYM telif beyanı, AdMob, Sentry ve web hesap silme talep linki eklendi.
+  - **Test & Doğrulama:**
+    - `test/legal_and_privacy_compliance_test.dart` yazılarak tam işlevsellik doğrulandı.
+    - `dart format`, `flutter analyze` (0 issue) ve tüm proje test paketi (309/309 test başarılı) ile %100 doğrulandı.
+
+---
+
+### 📦 TASK-114: KPSS Puan Hesaplama Robotu (P3 / P93 / P94) & Son 3 KPSS Sınav Yılı Karşılaştırma Motoru
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Puan Hesaplama Motoru (`lib/features/score_calculator/data/kpss_score_calculator.dart`):**
+    - `KpssScoreType`: `p3Lisans` (P3), `p93OnLisans` (P93), `p94Ortaogretim` (P94).
+    - ÖSYM kuralları: `Net = Doğru - (Yanlış / 4.0)`, bölüm başı maksimum `60` soru sınırlandırması (`Doğru + Yanlış <= 60`), en az `1.0 ham net` barajı (`gyNet >= 1.0 || gkNet >= 1.0`).
+    - Son 3 KPSS sınav yılı kalibrasyonu (`2026`, `2025`, `2024` for Lisans P3; `2026`, `2024`, `2022` for Ön Lisans P93 & Ortaöğretim P94) ile taban puan, GY/GK net katsayıları, Türkiye ortalamaları ve standart sapma verileri.
+  - **Kullanıcı Arayüzü (`lib/features/score_calculator/presentation/kpss_score_calculator_screen.dart`):**
+    - `MASTER.md` "De-AI-Slop" & `TactileCard` standartlarında minimalist ve sade EdTech arayüzü (sıfır sabit `Color`/`fontSize`, yalnızca `Theme.of(context)`).
+    - AppBar üzerinde `'Sıfırla'` aksiyon butonu, 3'lü sade segment seçici (`Lisans P3`, `Ön Lisans P93`, `Ortaöğretim P94`), düz kahraman puan kartı (büyük puan, GK/GY/Toplam net dağılımı ve baraj uyarısı), kompakt slider ve `[-]` `[+]` butonlu GY & GK net giriş kartları, **"Son 3 KPSS'de Kaç Puan Alırdın?"** sade karşılaştırma kartı (tek renk göstergeler ve TR ortalamaları) ve kutusuz tek satır bilgilendirme dipnotu.
+  - **Erişim Noktaları:**
+    - `PracticeHubScreen` → `Araçlar & Hızlı Tekrar` altında *KPSS Puan Hesaplama* kartı.
+    - `ExamsScreen` → Deneme paketleri altında *KPSS Puan Hesaplama Robotu* kısayolu (`Son 3 KPSS (2026 · 2025 · 2024) katsayılarıyla netlerini puana çevir`).
+  - **Test & Doğrulama:**
+    - `test/kpss_score_calculator_test.dart` birim ve widget testleri güncellendi (2026/2025/2024 Lisans, 2026/2024/2022 Ön Lisans & Ortaöğretim, canlı net artırma ve AppBar Sıfırla etkileşimleri).
+    - `dart format`, `flutter analyze` (`0` issue) ve `flutter test` ile %100 doğrulandı.
+
+---
+
+### 📦 TASK-115: Çalışma Planı & Günlük Görev İlerlemesinin Çoklu Cihaz ve Oturumlar Arası Kalıcı Bulut Senkronizasyonu (`PlannerSyncSnapshot`)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Senkronizasyon Modeli (`lib/features/planner/data/models/planner_sync_snapshot.dart`):**
+    - `PlannerSyncSnapshot` immutable veri modeli (`cycleDay`, `maxUnlockedDay`, `completedTaskIds`, `customTasksByDay`, `updatedAt`).
+    - `mergeWith` High-Water Mark birleştirme mantığı: en yüksek `maxUnlockedDay` kazanır, tamamlanan görev ID'leri küme birleşimi ile korunur, özel görevler id bazlı tekilleştirilir.
+  - **Yerel Depolama & Hesap İzolasyonu (`lib/core/services/local_storage_service.dart`):**
+    - Oturum kapatıldığında kullanıcının ilerlemesini kaybetmemesi için hesap bazlı `_keyAccountPlannerSnapshot(accountKey)` ve `_keyAccountUserPrefs(accountKey)` yerel önbellek katmanı.
+  - **Çift Katmanlı Bulut Senkronizasyonu (`lib/features/stats/data/cloud_sync_repository.dart`):**
+    - `syncPlannerSnapshot` ve `fetchPlannerSnapshot` ile hem `user_metadata` hem `public.profiles` (`planner_state` JSONB) üzerinde yedekli saklama.
+  - **Çalışma Planlayıcı State Motoru (`lib/features/planner/data/study_planner_notifier.dart`):**
+    - `applySnapshot`, `exportSnapshot`, `_persistAndSyncSnapshot` ve `loadTasksFromCloud` ile oturumlar ve cihazlar arası deterministik müfredat hidrasyonu.
+  - **Veritabanı Şeması (`docs/supabase_schema.sql`):**
+    - `public.profiles` tablosuna `planner_state jsonb default '{}'::jsonb` kolonu eklendi.
+  - **Test & Doğrulama:**
+    - `test/planner_cloud_persistence_test.dart` yazılarak 3 gün ilerleme + hesaptan çıkış + aynı hesapla tekrar giriş senaryosu, cold restart simülasyonu ve çapraz cihaz hidrasyonu test edildi.
+    - `dart format`, `flutter analyze` (`0` issue) ve tüm proje test paketi (`325/325` test başarılı) ile %100 doğrulandı.
+
+---
+
+### 📦 TASK-116: Çalışma Planı Snapshot'ında Tam Görev Nesneleri (`tasks_by_day`) ve Kayıpsız Tempo Adaptasyonu (`30 dk -> 60 dk`)
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - `PlannerSyncSnapshot` içine `tasksByDay` (`tasks_by_day` JSON haritası) eklenerek her günün tüm `StudyTask` nesnelerinin tam detaylarıyla yerel ve bulut katmanında saklanması sağlandı.
+  - `StudyTask.isSameTaskItem` semantik eşleşme kontrolü eklendi.
+  - `adaptStudyProgramPace` ile kullanıcı çalışma süresini değiştirdiğinde (örn. 10. günde 30 dk'dan 60 dk'ya geçtiğinde) gün sayacının ve o gün tamamlanmış görevlerin %100 korunması, yalnızca yeni temponun gerektirdiği ek görevlerin eklenmesi sağlandı (`test/study_program_pace_adaptation_test.dart`).
+
+---
+
+### 📦 TASK-117: Bağımsız Çözülen Konu Testlerinin Günlük Çalışma Planındaki Görevlerle Otomatik Eşleşmesi ve Üstü Çizili Gösterimi
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - Kullanıcı çalışma planından değil doğrudan Dersler / Konu Testleri ekranından bağımsız bir test çözdüğünde `markMatchingTestCompleted` ve `syncCompletedFromStats` ile hem aktif gündeki hem de gelecekte oluşturulacak günlerdeki ilgili görevlerin otomatik `isCompleted: true` yapılması sağlandı.
+  - `StudyPlannerScreen` üzerinde daha önce bağımsız çözülmüş görevlerde `'· Önceden çözüldü'` etiketi ve üstü çizili görünüm eklendi (`test/study_planner_independent_solve_test.dart`).
+
+---
+
+### 📦 TASK-118: Freemium Günlük Soru Limiti (`dailyFreeQuestionLimit` & `dailySolvedCount`) Çoklu Cihaz, Oturum Kapatma ve Önbellek Silme Koruması
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - Canlı Supabase `public.profiles` tablosuna `daily_solved_count` ve `daily_free_limit` kolonları eklendi.
+  - `LocalStorageService` içine hesap bazlı istatistik yedeği (`saveAccountStudyStats`) ve oturum kapatılsa bile korunan cihaz günlük kota sayacı (`kadro_device_daily_quota`) eklendi.
+  - `StudyStatsNotifier.loadFromCloud` içinde 5 kaynaktan (yerel, hesap yedeği, cihaz kotası, bulut profil ve bugün çözülen `quiz_sessions` toplamı) High-Water Mark (`math.max`) ile günlük çözülen soru sayısını geri yükleme ve gün dönümünde otomatik sıfırlama kuruldu (`test/daily_quota_anti_tamper_test.dart`).
+
+---
+
+### 📦 TASK-119: Giriş Öncelikli Açılış Kapısı (Auth-First Gate), İlk Oturumda Tek Seferlik Zorunlu Kurulum (Post-Login Onboarding) ve Çoklu Cihaz (Telefon + Web) Birebir Plan Senkronizasyonu
+- **Durum:** ✅ **Tamamlandı**
+- **Tespit Edilen Kök Nedenler (Neden Telefon ve Web Chrome'da Farklı Günlük Plan Çıktı?):**
+  1. **Giriş Yapılmadan Önce Zorunlu Onboarding Çalışması (`lib/app/app_shell.dart` & `lib/main.dart`):**
+     - `AppShell.build` oturum kontrolü yapmadan doğrudan `OnboardingScreen` açtığı ve `main.dart` oturumsuzken yerel önbelleği yüklediği için yeni cihazda giriş öncesi yerel bir plan üretilebiliyordu.
+  2. **SQL Varsayılanlarının Kurulum Sanılması (`lib/features/stats/data/cloud_sync_repository.dart` & `lib/features/profile/data/user_preferences_notifier.dart`):**
+     - `profiles.target_exam = 'lisans'` ve boş `planner_state = {}` değerleri `fetchUserPreferences()` içinde `has_completed_onboarding = true` olarak yorumlanabiliyordu.
+  3. **Dokunulmamış Varsayılan Şablonun Bulut Planını Ezmesi (`lib/features/planner/data/study_planner_notifier.dart`):**
+     - Yeni cihazda henüz dokunulmamış `_defaultTasks` (`task_1..3`), `exportSnapshot()` sırasında `tasksByDay[1]` içine yazıldığı ve güncel `updatedAt` aldığı için buluttaki gerçek planla çakışabiliyordu.
+  4. **Giriş Sonrası Bulut Hidrasyon Sırası ve Bekleme Kapısı (`lib/features/auth/data/auth_notifier.dart`):**
+     - Tercihlerin (`UserPreferencesNotifier`) planlayıcıdan (`StudyPlannerNotifier`) önce sıralı yüklenmemesi ve `AppShell` üzerinde hidrasyon bekleme durumu bulunmaması cihazlar arası tutarsızlık yaratabiliyordu.
+- **Tamamlanan Değişiklikler:**
+  - `lib/features/stats/data/cloud_sync_repository.dart`: `fetchUserPreferences()` boş `{}` `planner_state` ve SQL varsayılan `target_exam = 'lisans'` değerlerinden kurulum tamamlandı çıkarımı yapmayacak biçimde düzeltildi.
+  - `lib/features/auth/data/auth_notifier.dart`: `AuthUserState.isHydrating` eklendi; `_hydrateAllFromCloud()` `_activeHydration` ile serileştirilip önce tercihleri (`userPreferencesProvider`), ardından istatistikleri (`studyStatsProvider`), sonra planlayıcıyı (`studyPlannerProvider`) ve yanlış defterini sıralı yükleyecek biçimde güncellendi; `signIn` / `signUp` / demo Google girişinde yükleme tamamlanana kadar beklendi.
+  - `lib/features/auth/presentation/auth_screen.dart`, `lib/app/app_shell.dart`, `lib/main.dart`: `AuthScreen(isInitialGate: true)` ile geri tuşsuz açılış kapısı kuruldu; `AppShell` içinde `Auth-First` -> `_CloudHydrationScaffold` (`isHydrating`) -> tek seferlik zorunlu `OnboardingScreen(isMandatory: true)` -> `HomeScreen` akışı zorunlu kılındı (widget testlerindeki `isTestPreOnboarded` desteği korunarak); `main.dart` oturumsuzken yerel önbellek yüklemeyecek biçimde korundu.
+  - `lib/features/profile/data/user_preferences_notifier.dart`, `lib/features/planner/data/study_planner_notifier.dart`, `lib/core/services/local_storage_service.dart`: `study_pace` normalizasyonu (`StudyProgramPace.fromKey`), `_isOnlyUntouchedDefaultTasks()` ile şablonun bulutu ezmesinin engellenmesi, bulut `planner_state` boş ama aktif programı olan eski hesaplarda (`hasCompletedOnboarding || hasActiveStudyProgram`) `setupAutoProgram(...)` kurtarması ve `signOut()` sonrası hesaplar arası yerel önbellek izolasyonu (`clearActivePlannerCache()`) eklendi.
+  - Canlı Supabase (`kadroDB` — `axfxciyuvcdbavhzsfwu`): `omerefephlvn2@gmail.com` hesabının `profiles.study_pace`, `daily_goal_questions` ve `auth.users.raw_user_meta_data` kayıtları mevcut `auto_dk90_d1_*` `planner_state` planıyla eşitlendi (`dk90`, `70` soru, `has_completed_onboarding: true`).
+  - Testler: `test/auth_first_onboarding_and_sync_test.dart` (6 senaryo) eklendi, `test/auth_screen_test.dart` ve `test/curriculum_planner_onboarding_test.dart` güncellendi.
+
+---
+
+### 📦 TASK-120: Çalışma Türleri (`PracticeHubScreen`) "Konu Testi" Ders/Konu Yol Haritası Bağlantısı & 3 Soruluk Fallback Noktalarının Havuza Bağlanması
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Kök Neden:** `PracticeHubScreen` üzerindeki "Konu testi" ve "Deneme sınavı" kartları ile Ana Sayfa "Seri & Hedef" hatırlatıcısı `QuizScreen()`'e soru kaynağı parametresi vermediği için (ve "ÖSYM Çeldirici Avı" kartında `fetchAllFromPool: true` eksik olduğu için) `QuizScreen` 3 soruluk `defaultSampleQuestions` yedeğine düşüyordu.
+  - **"Konu Testi" Ders Seçici & Yol Haritası Köprüsü (`lib/features/practice/presentation/practice_hub_screen.dart`):**
+    - "Konu testi" kartına dokunulduğunda 4 KPSS Genel Kültür dersini (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`) sunan `_LessonSelectorBottomSheet` alt çekmecesi açılır.
+    - Ders seçildiğinde doğrudan o dersin Konu Yol Haritası ekranına (`LessonTopicsScreen` → `TopicTestsScreen`, 10'ar soruluk aşamalı konu testleri) geçilir.
+  - **3 Soruluk Demo Fallback Noktalarının Havuza Bağlanması:**
+    - `PracticeHubScreen` → **"Deneme sınavı"**: `QuizScreen(mockExamNumber: 1, examDuration: Duration(minutes: 65), customTitle: 'Genel Kültür Denemesi', mode: QuizMode.exam)` ile 60 soruluk gerçek deneme motoruna bağlandı.
+    - `PracticeHubScreen` → **"ÖSYM Çeldirici Avı"**: `fetchAllFromPool: true` eklenerek havuzdan 10 soruluk test açması sağlandı.
+    - `HomeScreen` → **"Seri & Hedef" hatırlatıcısı**: `QuizScreen(fetchAllFromPool: true, limit: 10, customTitle: 'Günlük Seri & Hedef Testi')` ile gerçek soru havuzuna bağlandı.
+  - **Test & Doğrulama:** `test/practice_hub_and_reminders_test.dart` güncellenerek "Konu testi" ders seçici ve `LessonTopicsScreen` yönlendirmesi widget testiyle doğrulandı.
+
+---
+
+### 📦 TASK-121: Gelişmiş Antrenman Modları: Özel Çeldirici Avı Motoru, Hızlı Deneme Seçici ve Akıllı Seri Koruma Test Üretici
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Özel Çeldirici Avı Motoru (`lib/features/quiz/data/question_repository.dart` & `quiz_screen.dart`):** `fetchDistractorHuntQuestions()` metodu ile `distractorTrap` açıklamasına sahip yüksek çeldiricili sorular filtrelenip eksik kalırsa havuzdan tamamlanır; `QuizScreen(onlyDistractorTraps: true)` bu akışa bağlandı.
+  - **Hızlı Deneme Paketi Seçici (`lib/features/practice/presentation/practice_hub_screen.dart`):** `"Deneme sınavı"` kartına tıklandığında `_MockExamSelectorBottomSheet` açılarak 60 soruluk/65 dakikalık Genel Kültür Denemesi #1, #2, #3 ve 20 soruluk/20 dakikalık Hızlı Mini Deneme arasında seçim yapılması sağlandı.
+  - **Akıllı Seri & Hedef Test Üretici (`lib/features/home/presentation/home_screen.dart`):** `"Seri & Hedef"` hatırlatıcısı adayın günlük kalan sorusuna (`remainingQuestions.clamp(5, 20)`) ve varsa `weakestLesson` bilgisine göre dinamik odak testi başlatacak şekilde güncellendi (`test/practice_hub_and_reminders_test.dart`).
+
+---
+
+### 📦 TASK-122: KPSS Puan Hesaplama Ekranı (`KpssScoreCalculatorScreen`) Sıfır Varsayılan Değerler & Kompakt Dropdown Sınav Türü Seçici
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - `lib/features/score_calculator/presentation/kpss_score_calculator_screen.dart`: Başlangıç netleri (`_gkCorrect`, `_gkWrong`, `_gyCorrect`, `_gyWrong`) `0` olarak başlatıldı ve üstteki 3'lü segment kutu yerine kompakt `DropdownButton<KpssScoreType>` (`key: ValueKey('score_type_dropdown')`) seçici satırı uygulandı.
+  - `test/kpss_score_calculator_test.dart`: İlk açılışta `'0.00'` puan, dropdown ile `P93`/`P94` geçişi ve `+1` doğru ile `1.00 Net` barajının geçilmesi doğrulanacak şekilde güncellendi.
+
+---
+
+### 📦 TASK-123: Harita Atölyesi (`MapPracticeHubScreen` & `MapChallengeScreen`) "Dilsiz Harita (81 İl)" Dar Ekran Taşma (RenderFlex Overflow) Düzeltmesi
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Kök Neden:** `MapPracticeHubScreen` üzerindeki **"Dilsiz Harita (81 İl)"** kartında başlık ve `"Sonsuz Pratik"` rozetinin yatay `Row` içinde sarılmadan yan yana dizilmesi, dar mobil ekranlarda yatay `RenderFlex overflowed` (sarı-siyah taşma şeridi) hatasına yol açıyordu.
+  - **`MapPracticeHubScreen` (`lib/features/map_practice/presentation/map_practice_hub_screen.dart`):**
+    - `"Dilsiz Harita (81 İl)"` + `"Sonsuz Pratik"` ve `"Tarih: Millî Mücadele Haritası"` + `"Kurtuluş Savaşı"` başlık satırları taşmayı önleyen `Wrap` bileşenine dönüştürüldü.
+    - `_showProvinceModeSheet` alt çekmecesi `SingleChildScrollView` ile sarılarak dikey taşmaya karşı korundu.
+  - **`MapChallengeScreen` (`lib/features/map_practice/presentation/map_challenge_screen.dart`):**
+    - Tamamlanma diyaloğu başlığı, üst soru/etiket rozeti (`Flexible` + `TextOverflow.ellipsis`), harita yönerge metni (`Flexible`) ve açıklama kartı başlığı (`Expanded`) dar ekranlara uyumlu hale getirildi.
+  - **Test & Doğrulama:** `test/map_practice_test.dart` içerisine `360x640` kompakt ekran sıfır taşma (`tester.takeException() == null`) testi eklendi ve tüm proje testleriyle doğrulandı.
+
+---
+
+### 📦 TASK-124: Harita Soruları & İl Seçme Ekranında Minimum Kenar Boşluğu, Harita İçi Yakınlaştırma (`+`/Pinch) ve Tam Ekran Büyütme Modalı
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Kenar Boşluklarının Azaltılması & Harita Büyütme:**
+    - `lib/shared/widgets/turkey_map/turkey_map.dart`: `TurkeyMap` varsayılan `padding` değeri `EdgeInsets.all(4.0)` yerine `EdgeInsets.zero` yapılarak harita vektör alanının tam genişlikte çizilmesi sağlandı.
+    - `lib/shared/widgets/turkey_map/turkey_map_card.dart`: Harita çizim alanı dolgusu (`horizontal: 2, vertical: 4`) ve `_openZoomDialog` kenar boşlukları (`insetPadding: horizontal: 6, vertical: 12`, iç dolgu `2px`) daraltıldı; üst çubuk metni `Flexible` ile korundu.
+    - `lib/features/map_practice/presentation/map_challenge_screen.dart`: `ResponsiveContentWrapper` dış yatay dolgusu sıfırlanıp (`padding: EdgeInsets.zero`), harita kartına özel `horizontal: 4` dış ve `fromLTRB(4, 6, 4, 4)` iç dolgu verilerek mobil cihazlarda harita genişliği maksimuma çıkarıldı.
+  - **Harita İçi Yakınlaştırma (`InteractiveViewer`) & Tam Ekran `Büyüt` Modalı:**
+    - `MapChallengeScreen` haritası `InteractiveViewer` (`TransformationController`, `1.0x`–`4.5x`) ile sarılarak kart içinde iki parmakla yakınlaştırma/kaydırma + hızlı `+` (`map_zoom_in_button`) ve `Sıfırla` (`map_zoom_reset_button`) kontrolleri eklendi.
+    - `Büyüt` (`map_fullscreen_button`) butonuyla soruyu üstte gösteren ve `5.0x`'e kadar `+` / `-` / `Sıfırla` butonlarıyla yakınlaştırılabilen tam ekran harita diyaloğu eklendi (`tapProvince` modunda büyütülmüş haritada ile dokunulduğunda seçim kaydedilip diyalog otomatik kapanır).
+  - **Test & Doğrulama:** `test/map_practice_test.dart` içinde `360x640` ekranda minimum kenar boşluğu genişliği (`>= 335px`), yakınlaştırma ve `Büyüt` diyaloğu sıfır taşma testleri eklendi; `test/turkey_map_test.dart` ve tüm proje testleriyle doğrulandı.
+
+---
+
+### 📦 TASK-125: Ana Sayfa "Bugünün Çalışma Planı" (`HomeDailyPlanCard`) Sadeleştirme & Okunaklı Görsel Hiyerarşi
+- **Durum:** ✅ **Tamamlandı**
+- **Açıklama:**
+  - **Tespit Edilen Karmaşıklık Nedenleri:**
+    1. Üstte `'Tümünü Gör'` varken altta ikinci kez tam genişlikli `'Planlayıcıyı Aç & Görev Ekle'` butonu; aynı şekilde gün değiştirme için hem ortadaki şeritte `<`/`>` ikonları hem altta `'Önceki Güne Dön'` butonu bulunması gereksiz görsel kalabalık yaratıyordu.
+    2. Tempo bilgisi (`60 Dk · Tam Ritim (Önerilen) (60 dk/gün)`) süreyi iki kez yazıyor ve `'Düzenle'` ile dar alanda sıkışıyordu.
+    3. Görev satırları çerçevesiz ve tek satıra sığdırıldığı için konu isimleri okunmuyor, dokunulabilir görev kartı hissi zayıf kalıyordu.
+  - **Uygulanan Çözüm (`lib/features/planner/presentation/widgets/home_daily_plan_card.dart`):**
+    - Çift divider, tekrarlı `<`/`>` okları ve alttaki mükerrer `'Planlayıcıyı Aç & Görev Ekle'` butonu kaldırıldı.
+    - Sade `Gün X` (geçmiş günde yanında `Tekrar` etiketi) + temiz program adı (`prefs.studyProgramPace.label`) + `Düzenle` satırı oluşturuldu.
+    - Altına tek bakışta tamamlanma durumunu gösteren `LinearProgressIndicator` ve `${completed}/${total} görev` sayacı eklendi.
+    - Her görev `_DailyPlanTaskItem` olarak kendi çerçeveli kutusuna taşındı (`title` üstte, `lessonTag` altta, sağda net `'Başla'` / `'Tekrar'` durumu).
+  - **Test & Doğrulama:** `test/study_planner_test.dart` güncel sadeleştirilmiş butonlarla (`'Tümünü Gör'`, `'Düzenle'`) uyumlu hale getirildi ve planlayıcı + ana sayfa testleriyle doğrulandı.
+
+---
+
+## 🏗️ 4. Çoklu KPSS Ekosistemi Genişleme Mimarisi & Fazlı Yol Haritası (`TASK-126` – `TASK-144`)
+
+> [!IMPORTANT]
+> **Mimari Öncelik & İçerik Sınırı:** Bu bölümün amacı **ilk olarak projeyi tüm KPSS türlerini** *(B Grubu GY-GK, E-KPSS, DHBT, MEB-AGS + 17 Branş ÖABT ve KPSS A Grubu 9 Alan)* **sorunsuz, güvenli, yüksek performanslı ve yeniden kullanılabilir kodla destekleyecek esnek mimariye ulaştırmaktır.**  
+> **Soru, bilgi kartı, eşleştirme ve harita verisi üretimi (`TASK-140` – `TASK-144`) bilinçli olarak EN SON FAZA bırakılmıştır.** Önce altyapı, veritabanı, önbellek, güvenlik, dinamik motorlar ve UI/UX kurulacak; veri girişi en son yapılacaktır.
+
+### 🔍 Mevcut Kod Tabanı Kıdemli Mimari Denetim (Audit) Özeti
+Yeni sınav türlerini eklemeden önce tespit edilen ve **`TASK-126` – `TASK-132`** içinde çözülecek temel borçlar / darboğazlar:
+1. **Hardcoded Ders/Sınav Sabitleri:** `lib/features/lessons/data/kpss_lessons.dart` (`kpssLessons`, `defaultTopicTestCount` `if-else` zinciri), `AutoStudyProgramGenerator._lessonRotation`, `StudyProgramPace.evaluateSchedule` (`totalCurriculumTestCount`), `LessonsScreen` (`'KPSS Genel Kültür'`, `/ 60`), `ExamsScreen` (`60 Soru / 65 Dk`), `PracticeHubScreen` (`'4 ders'`, `'65 Dakika'`), `FlashcardsScreen` (`_lessonFilters`) ve `MistakesScreen` (`tarihCount` vb.) yalnızca 4 Genel Kültür dersine sabitlidir.
+2. **Ad Uzayı (Namespace) & Veritabanı Çakışmaları:**
+   - `public.user_topic_mastery` tablosundaki `unique(user_id, lesson, topic)` kısıtı farklı sınav türlerinde aynı ders/konu adları kullanıldığında veriyi ezer.
+   - `OfflineDownloadService` ve `LocalStorageService` paket anahtarları (`topic_${lesson}_$topic`) kapsam/sınav ön eki taşımaz.
+   - `lessonTopicTestCountsProvider(lessonName)` yalnızca ders adına göre önbellekler.
+3. **Performans & Ağ Trafiği Darboğazları:**
+   - `MistakeRepository.hydrateFromCloud()` çözülmemiş yanlışları eşleştirmek için tüm havuzu (`questionRepository.fetchQuestions()`) bellekten çekmeye çalışır; 20.000+ soruluk çoklu sınav yapısında ciddi Egress ve RAM maliyetine yol açar.
+   - `QuestionRepository` tek büyük JSON fallback'i UI thread'inde ayrıştırır ve kapsamsız düz haritada tutar.
+4. **Sert Tarih / Başlık Bağımlılığı & Güvenlik:**
+   - `HomeScreen` üzerinde `'KPSS 2027: ${target.shortTitle}'` ifadesi sabittir; `KpssExamTarget` tarihleri `AppRemoteConfig` ile uzaktan güncellenemez.
+   - `public.profiles` üzerinde çoklu sınav seçimi için şema doğrulamalı (`jsonb`) saklama ve `exam_scopes` için `GIN` indeksi yoktur.
+5. **Dağınık Hedef Seçim Arayüzü & Tekil Puan Motoru:**
+   - `TargetExamSelectorBottomSheet`, `OnboardingScreen`, `AutoStudyProgramModal` ve `PomodoroStudioScreen` farklı/dar seçiciler kullanır; `KpssScoreCalculator` yalnızca `P3/P93/P94` formülüne sabitlidir.
+
+---
+
+### 📦 TASK-126: Yönetişim Güncellemesi, Çoklu KPSS Çekirdek Alan Modelleri (`KpssExamFamily`, `ExamSelection`) & Dinamik Uzaktan Takvim (`AppRemoteConfig`)
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 1 — Çekirdek Mimari Temeli)*
+- **Amaç:** Tekil `KpssExamTarget` enumunun geriye dönük uyumu koruyarak hiyerarşik çoklu KPSS ekosistemi değer nesnesine (`ExamSelection`) dönüştürülmesi, dokümantasyon/anayasa kilidinin açılması ve sabit yıl/tarih (`KPSS 2027`) hardcoding'inin kaldırılması.
+
+```text
+GÖREV: TASK-126 — Yönetişim Güncellemesi, Çoklu KPSS Alan Modelleri (KpssExamFamily, ExamSelection) & Dinamik Sınav Takvimi
+ÖNEMLİ: GEMINI.md mimari kurallarına uy. Mevcut KPSS Lisans GK kullanıcı verileri ve widget testleri %100 geriye dönük uyumlu kalmalıdır. Soru verisi üretme.
+
+ADIM 1: Yönetişim & Spesifikasyon Güncellemesi
+1. `GEMINI.md`, `docs/task-board.md` (Bölüm 1) ve `docs/content-specification-guide.md` belgelerindeki "Sadece KPSS Lisans Genel Kültür" kısıtını çoklu KPSS ekosistemi vizyonunu (B Grubu, A Grubu, DHBT, MEB-AGS/ÖABT, E-KPSS) ve `exam_scopes` / `sub_branch` / zorunlu `distractorTrap` taksonomi kurallarını kapsayacak şekilde güncelle.
+
+ADIM 2: Hiyerarşik Çoklu Sınav Değer Nesneleri (`lib/features/exams/data/models/exam_selection.dart`)
+1. `KpssExamFamily` enumunu tanımla:
+   - `bGrubu` (B Grubu Ortak GY-GK)
+   - `aGrubu` (A Grubu Kariyer Alan Bilgisi)
+   - `dhbt` (Din Hizmetleri Alan Bilgisi Testi)
+   - `mebAgs` (Millî Eğitim Bakanlığı Akademi Giriş Sınavı + ÖABT)
+   - `ekpss` (Engelli Kamu Personeli Seçme Sınavı)
+2. Alt boyut enumlarını tanımla:
+   - `EducationLevel` (`lisans`, `onlisans`, `ortaogretim`)
+   - `BGroupProfile` (`onlyGk`, `fullGyGk`) — Mevcut Lisans GK kullanıcılarının akışını korumak için varsayılan `onlyGk` destekli.
+   - `DisabilityGroup` (`genel`, `gorme`, `isitme1`, `zihinsel`)
+   - `OabtBranch` (Resmî 17 ÖABT branşı: `turkce`, `ilkogretimMatematik`, `matematikLise`, `fenBilimleri`, `fizik`, `kimya`, `biyoloji`, `sosyalBilgiler`, `turkDiliEdebiyati`, `tarih`, `cografya`, `dkabIhl`, `pdr`, `sinifOgretmenligi`, `okulOncesi`, `bedenEgitimi`, `ozelEgitim` + AGS-only `none` ve yabancı dil `ydsDil`).
+   - Her `OabtBranch` üzerinde `durationMinutes` (Mat/Fen/Fizik/Kimya/İlkMat: `90`, diğer 12 alan: `70`) ve `hasFieldEducationSplit` (`true` -> Sınıf, Okul Öncesi, Özel Eğitim: 30+20) özellikleri tutulsun.
+3. Immutable `ExamSelection` sınıfını yaz (`const` constructor, `copyWith`, `toJson`, `fromJson`, `==` / `hashCode`):
+   - Alanlar: `family`, `educationLevel`, `bGroupProfile`, `oabtBranch`, `disabilityGroup`, `selectedFieldLessons` (A Grubu için), `examCycleYear` (`int`, örn. `2026`/`2027`/`2028`), `includeExtraTime` (`bool`).
+   - Hesaplanan kanonik özellikler:
+     - `String get scopeKey` (örn: `'lisans_gk'`, `'lisans_gygk'`, `'onlisans_gygk'`, `'ortaogretim_gygk'`, `'ekpss_lisans'`, `'dhbt_onlisans'`, `'meb_ags_oabt_tarih'`, `'a_grubu_p48'`).
+     - `String get curriculumNamespace` (paket ID'leri ve önbellek anahtarları için güvenli slug).
+     - `String get displayTitle` & `String get shortTitle` & `String get subtitle`.
+   - `KpssExamTarget` (`lib/features/pomodoro/data/pomodoro_notifier.dart`) ile çift yönlü köprü (`ExamSelection.fromLegacyTarget(KpssExamTarget)` ve `toLegacyTarget()`) ekle; hiçbir mevcut çağrı noktası kırılmasın.
+
+ADIM 3: Dinamik Uzaktan Sınav Takvimi (`lib/core/config/app_remote_config.dart` & `lib/features/home/presentation/home_screen.dart`)
+1. `AppRemoteConfig` içine `final Map<String, DateTime> examDateOverrides;` (`fromMap` içinde `exam_date_overrides` JSON haritasını güvenli parse et; hatalı tarihlerde sessiz fallback yap) ekle.
+2. `ExamSelection.resolveExamDate(AppRemoteConfig config)` metodu üzerinden resmi ÖSYM takvimi güncellemelerinin mağaza güncellemesi gerektirmeden çekilmesini sağla.
+3. `lib/features/home/presentation/home_screen.dart` içindeki sabit `'KPSS 2027: ${target.shortTitle}'` hardcoding'ini kaldırıp `selection.displayTitle` (dinamik yıl ve tür başlığı) kullan.
+
+ADIM 4: Birim Testleri (`test/exam_selection_test.dart`) & Doğrulama
+1. `toJson`/`fromJson`, eski `KpssExamTarget` (`lisans`, `onlisans`, `ortaogretim`, `dhbt`) göçü, 17 ÖABT branşı süre/yapı özellikleri ve `AppRemoteConfig.examDateOverrides` parse senaryolarını test et.
+2. `.agents/skills/flutter-verify/SKILL.md` adımlarını (`dart format lib test`, `flutter analyze`, `flutter test`) 0 hata ile doğrula.
+```
+
+---
+
+### 📦 TASK-127: Merkezi Müfredat Kayıt Motoru (`CurriculumRegistry` & `ExamCurriculum`) — Sabit `kpssLessons` Hardcoding Refaktörü
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 1 — Çekirdek Mimari Temeli · 361/361 Test)*
+- **Amaç:** Uygulamanın her yerine dağılmış 4 derslik (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Güncel Bilgiler`) ve sabit `if/else` test sayısı/ağırlık kabullerini tek merkezi, genişletilebilir `CurriculumRegistry` mimarisine taşımak.
+
+```text
+GÖREV: TASK-127 — Merkezi Müfredat Kayıt Motoru (CurriculumRegistry & ExamCurriculum) ve Sabit Ders Hardcoding Refaktörü
+ÖNEMLİ: GEMINI.md kurallarına uy. Mevcut KPSS Lisans GK müfredatı, soru sayıları (27/18/9/6) ve konu başlıkları %100 korunmalıdır.
+
+ADIM 1: `ExamCurriculum` & `CurriculumAvailability` Modelleri (`lib/features/lessons/data/models/exam_curriculum.dart`)
+1. `CurriculumAvailability` enumu: `ready`, `partial`, `comingSoon`.
+2. `LessonSpec` immutable sınıfı (mevcut `Lesson` modelini tamamlayan veya genişleten):
+   - `String canonicalName` (örn. `'Tarih'`, `'DHBT-1 Temel Din Bilgisi'`, `'Alan Hukuk'`, `'ÖABT Sınıf Öğretmenliği'`)
+   - `String displayTitle`, `int questionCount`, `List<String> topics`
+   - `Map<String, int> defaultTestCountsByTopic` (artık dev `if/else` zinciri yerine veri tablosu!)
+   - `CurriculumAvailability availability`
+3. `ExamCurriculum` immutable sınıfı:
+   - `String scopeKey`, `String title`, `String summaryLabel` (örn. `'4 ders · 60 Soru · Sınav dağılımı'`)
+   - `int totalQuestions`, `int standardDurationMinutes`
+   - `List<LessonSpec> activeLessons`, `List<LessonSpec> upcomingLessons`
+   - `bool supportsTurkeyMapWorkshop`, `bool supportsMiniGames`, `bool supportsFlashcards`
+   - `int get totalTestCount` (seçili müfredatın dinamik toplam test sayısı!).
+
+ADIM 2: `CurriculumRegistry` & Riverpod Sağlayıcıları (`lib/features/lessons/data/curriculum_registry.dart`)
+1. `CurriculumRegistry.resolve(ExamSelection selection)` saf fonksiyonunu yaz (ilk etapta mevcut B Grubu Lisans GK ile Ön Lisans/Ortaöğretim GK'yı tam, diğer sınav aileleri için temel iskeleti döndürsün; Faz A–E görevlerinde tüm ağaçlar eklenecek).
+2. `final activeCurriculumProvider = Provider<ExamCurriculum>((ref) => ...)` ekle (`userPreferencesProvider` içindeki aktif `ExamSelection` değerini izler).
+3. `lib/features/lessons/data/kpss_lessons.dart` içindeki `defaultTopicTestCount` fonksiyonunu `CurriculumRegistry` tablosuna delege edecek şekilde sadeleştir; eski sabit global listelere `@Deprecated` notu düş (mevcut testleri kırmadan).
+
+ADIM 3: Dağınık 4-Ders Hardcoding'lerinin Dinamikleştirilmesi
+1. `lib/features/lessons/presentation/lessons_screen.dart`: Sabit `'KPSS Genel Kültür'`, `'4 ders · Sınavdaki soru ağırlık dağılımı'`, `'60 Soru'` ve `/ 60` oranı hesaplarını `activeCurriculumProvider` değerinden oku.
+2. `lib/features/flashcards/presentation/flashcards_screen.dart`: Sabit `_lessonFilters = ['Tümü', 'Tarih', 'Coğrafya', ...]` listesini `activeCurriculum.activeLessons` + mevcut kart derslerinin deterministik birleşiminden üret.
+3. `lib/features/mistakes/presentation/mistakes_screen.dart`: Sabit `tarihCount`/`cografyaCount` ve `lessonChips` bloğunu mevcut `mistakes` + aktif derslerden dinamik üreten yardımcıya dönüştür (`Map<String, int>` sayımı; kod tekrarsız tek döngü).
+4. `lib/features/planner/data/models/study_program_pace.dart`: `evaluateSchedule(KpssExamTarget, {ExamCurriculum? curriculum, DateTime? now})` imzasını genişleterek `totalCurriculumTestCount` yerine seçili müfredatın gerçek toplam test sayısını (`curriculum?.totalTestCount ?? totalCurriculumTestCount`) kullansın.
+
+ADIM 4: Birim & Widget Testleri (`test/curriculum_registry_test.dart`) & Doğrulama
+1. `CurriculumRegistry` çözümlemelerini, `LessonsScreen`, `MistakesScreen` (farklı/yeni bir ders adıyla yanlış soru varken chip oluşması) ve `StudyProgramPace` dinamik test sayısı hesabını test et.
+2. `dart format lib test`, `flutter analyze`, `flutter test` ile 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-128: Çoklu Sınav Veritabanı Şeması (`exam_scopes`), `user_topic_mastery` Çakışma Düzeltmesi & RLS/İndeks/RPC Zırhı
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 1 — Veritabanı, Bütünlük & Güvenlik · Not: `05_multi_exam_architecture.sql`, `supabase_schema.sql`, `README_MIGRATION_GUIDE.md` ve `test/supabase_migration_contract_test.dart` tamamlanıp `363/363` testle doğrulandı; canlı `kadroDB` üzerinde `apply_migration` MCP onayı istemci tarafından iptal edildiği için Supabase SQL Editor üzerinden manuel çalıştırılması gerekir)*
+- **Amaç:** Yeni sınav türleri eklendiğinde veri bütünlüğü bozulmasını (`user_topic_mastery` tekil anahtar çakışması), yavaş sorguları (`exam_scopes` dizi taraması) ve istemci manipülasyonunu veritabanı seviyesinde (PostgreSQL + RLS) kalıcı olarak önlemek.
+
+```text
+GÖREV: TASK-128 — Çoklu Sınav PostgreSQL Şeması, İndeksleme, Unique Kısıt Düzeltmesi & RLS/RPC Zırhı
+ÖNEMLİ: Supabase Postgres Best Practices kurallarına uy. Geriye dönük uyumlu (non-breaking) ve idempotent SQL migrasyonu yaz; mevcut canlı verileri bozma.
+
+ADIM 1: Yeni Migrasyon Dosyası (`docs/supabase_migrations/03_multi_exam_architecture.sql`)
+1. `public.questions` tablosuna kapsam sütunlarını güvenli (`IF NOT EXISTS`) ekle:
+   - `exam_scopes text[] not null default array['lisans_gk']::text[]`
+   - `sub_branch text null` (Örn. `'oabt_tarih'`, `'dhbt_lisans'`, `'a_grubu_hukuk'`)
+   - `education_level text null` (`'lisans' | 'onlisans' | 'ortaogretim'`)
+   - `disability_variant text null` (`'genel' | 'gorme' | 'isitme1' | 'zihinsel'`)
+   - `source_variant text null` (`'standard' | 'simplified'`)
+2. Performans indeksleri (`CREATE INDEX IF NOT EXISTS`):
+   - `idx_questions_exam_scopes_gin on public.questions using gin (exam_scopes)` (dizi kapsama `@>` / `&&` sorguları için)
+   - `idx_questions_scope_lesson_topic on public.questions (lesson, topic, order_index)`
+   - `idx_questions_sub_branch on public.questions (sub_branch) where sub_branch is not null` (partial index!)
+3. `public.user_topic_mastery` Çakışma Düzeltmesi:
+   - `exam_scope text not null default 'lisans_gk'` ekle.
+   - Mevcut `unique(user_id, lesson, topic)` kısıtını güvenli blok içinde (`DO $$ ...`) düşürüp `unique(user_id, exam_scope, lesson, topic)` bileşik kısıtına dönüştür.
+4. `public.quiz_sessions`, `public.question_attempt_logs`, `public.study_tasks` tablolarına `exam_scope text not null default 'lisans_gk'` sütunu ve `(user_id, exam_scope, completed_at desc)` / `(user_id, exam_scope)` indeksleri ekle.
+5. `public.profiles` Çoklu Sınav Tercihi & Güvenlik Kısıtları:
+   - `exam_selection jsonb not null default '{}'::jsonb` ve `sub_exam_branch text null` ekle.
+   - `ALTER TABLE public.profiles` içine `exam_selection` için tip ve boyut koruması `CHECK (jsonb_typeof(exam_selection) = 'object' AND octet_length(exam_selection::text) <= 4096)` ekle.
+   - Mevcut `prevent_direct_is_pro_escalation()` ve `prevent_xp_and_league_tampering()` triggerlarının kesintisiz çalıştığını doğrula (anon/authenticated `profiles` update'inde yeni alanların yetkisiz alanları etkilemediğini garantile).
+6. `public.app_config` (TASK-94 tablosu):
+   - `exam_date_overrides jsonb not null default '{}'::jsonb` ekle.
+7. `public.get_weekly_leaderboard(p_exam_family text default null)`:
+   - Varsayılan parametreli overload/güncelleme ile mevcut `get_weekly_leaderboard()` çağrıları kırılmadan sınav ailesi bazlı lig filtresini destekle (`security definer`, `set search_path = public`).
+8. RLS Doğrulama Notları: `public.questions` için salt-okunur (`SELECT` where `is_active = true`) politikasını ve anon scraping sınırını koru.
+
+ADIM 2: Ana Şema Dokümantasyonu Güncellemesi (`docs/supabase_schema.sql`)
+1. Taze kurulumlarda tek seferde aynı şemanın oluşması için `docs/supabase_schema.sql` başındaki tablo tanımlarını `03_multi_exam_architecture.sql` ile senkronize tut.
+
+ADIM 3: Doğrulama
+1. SQL sözdizimi ve idempotentliği kontrol et; varsa `tools/validate_sql.py` betiğiyle kontrol et. `flutter analyze` / `flutter test` 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-129: Ad Uzayı (Namespace) İzolasyonu, Bellek/Önbellek Performansı, Isolate JSON Ayrıştırma & `MistakeRepository` Batch Hydration
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 1 — Performans, Önbellek & Çakışma Önleme)*
+- **Amaç:** Havuz büyüdüğünde UI takılmasını (jank), bellek şişmesini, gereksiz Supabase veri transferini (egress) ve ders/konu çevrimdışı paket çakışmalarını ortadan kaldırmak.
+
+```text
+GÖREV: TASK-129 — Ad Uzayı İzolasyonu, Bounded LRU+TTL Önbellek, Isolate JSON Yükleyici & MistakeRepository Batch Hydration
+ÖNEMLİ: GEMINI.md ve Supabase performans kurallarına uy. Mevcut çevrimdışı kullanıcı paketleri kaybolmamalıdır.
+
+ADIM 1: `Question` Modeli Güncellemesi (`lib/features/quiz/data/models/question.dart`)
+1. `final List<String> examScopes;` (varsayılan `const ['lisans_gk']`), `final String? subBranch;`, `final String? educationLevel;`, `final String? disabilityVariant;`, `final String? sourceVariant;` alanlarını ekle.
+2. `fromJson` ve `fromSupabase` içinde geriye dönük uyumlu parse (`exam_scopes` yoksa `['lisans_gk']` kabul et) ve `Question.cleanText` sanitization'ını koru.
+3. `bool matchesSelection(ExamSelection selection, {String? preferredSourceVariant})` saf yardımcı metodunu ekle.
+
+ADIM 2: Çevrimdışı Paket ve Yerel Depolama Namespace İzolasyonu
+1. `lib/core/services/offline_download_service.dart` ve `lib/core/services/local_storage_service.dart`:
+   - Paket anahtarı üreten tek merkezi yardımcı tanımla: `static String topicPackageId({required String scopeNamespace, required String lesson, required String topic})` -> `'topic_${scopeNamespace}_${lesson}_$topic'`.
+   - `lisans_gk` için eski `'topic_${lesson}_$topic'` anahtarlarından okuma yapabilen geriye dönük geçiş desteği (legacy key fallback) sağla; böylece mevcut PRO kullanıcıların indirdiği paketler silinmez!
+2. `lib/features/lessons/presentation/lesson_topics_screen.dart` ve `lib/features/lessons/presentation/topic_tests_screen.dart`:
+   - Sabit `'topic_${lesson.name}_$topic'` yerine yukarıdaki merkezi `topicPackageId` yardımcısını kullan.
+
+ADIM 3: `QuestionRepository` Skalabilite, Isolate Parse & Bounded LRU/TTL Önbellek (`lib/features/quiz/data/question_repository.dart`)
+1. Sabit `Map<String, List<Question>> _cachedQuestions` yerine **kapasite sınırlı (bounded LRU, max ~24 kapsam/ders dilimi) + 2 saat TTL'li önbellek** yapısına geç; `scopeKey`, `subBranch`, `lesson`, `difficulty`, `sourceVariant` parametreleriyle izole önbellekle.
+2. Modüler yerel asset yükleyici tasarla:
+   - Önce kapsam bazlı dosya varsa (`assets/data/scopes/<scopeNamespace>.json`) yükle, yoksa mevcut `assets/data/sample_questions.json` yedeğine düş.
+   - 50 KB üzeri / büyük JSON parse işlemlerini ana UI thread'ini bloklamamak için Flutter `compute()` (Background Isolate) üzerinden çalıştır (test ortamı güvenli olacak şekilde fallback koruyarak).
+3. `fetchQuestions(...)` ve `fetchTopicTestCounts(...)` imzalarını opsiyonel `ExamSelection? selection` alacak şekilde genişlet; Supabase sorgularında `limit(60)` scraping kalkanını koruyarak `.contains('exam_scopes', [selection.scopeKey])` / `sub_branch` filtreleri uygula.
+4. `lessonTopicTestCountsProvider` family anahtarını tekil `String lessonName` yerine immutable value object `(String scopeKey, String lessonName)` (`TopicCountQueryKey`) yapısına dönüştür ki aynı ders farklı sınav türlerinde birbirinin test sayılarını ezmesin.
+
+ADIM 4: `MistakeRepository.hydrateFromCloud()` Egress & Performans Düzeltmesi (`lib/features/mistakes/data/mistake_repository.dart`)
+1. Tüm havuzu indiren `await questionRepository.fetchQuestions()` çağrısını kaldır.
+2. Bunun yerine yalnızca `unresolvedLogs` içindeki `question_id` listesini toplayıp (chunk'lar halinde, en fazla 50 ID/istek) Supabase'ten `.inFilter('id', ids)` ile nokta atışı çeken `QuestionRepository.fetchQuestionsByIds(List<String> ids)` metodunu yaz ve bağla (ID yoksa yerel asset/fallback'te `text` eşleşmesine düş).
+
+ADIM 5: Test & Doğrulama (`test/question_repository_scope_cache_test.dart`, `test/offline_download_test.dart`)
+1. Scope izolasyonu, eski `topic_*` PRO paket geriye dönük okuması, LRU önbellek, `MistakeRepository` ID-tabanlı hidrasyonu ve `TopicCountQueryKey` eşitliğini birim testleriyle doğrula.
+2. `dart format lib test`, `flutter analyze`, `flutter test` çalıştırıp 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-130: Dinamik Deneme Sınavı Şablon Motoru (`MockExamBlueprint`), Bölüm Sekmeli Optik Palet & Veri Güdümlü `PracticeHub` / `ExamsScreen`
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 1 — Yeniden Kullanılabilir Sınav Motoru & UI/UX · `402/402` test & `0` analyzer hatası ile doğrulandı)*
+- **Amaç:** Sabit `60 soru / 65 dk Genel Kültür` kabulüne gömülü olan deneme motoru, zamanlayıcı ve alt çekmece seçimlerini tamamen şablon güdümlü (`MockExamBlueprint`) hale getirmek.
+
+```text
+GÖREV: TASK-130 — MockExamBlueprint Motoru, Çok Bölümlü Optik Palet & Veri Güdümlü Exams/Practice Ekranları
+ÖNEMLİ: GEMINI.md ve MASTER.md (TactileCard, Theme.of(context), sıfır overflow) kurallarına birebir uy.
+
+ADIM 1: `MockExamBlueprint` Modeli & `ExamBlueprintRegistry` (`lib/features/exams/data/models/mock_exam_blueprint.dart`)
+1. `ExamSectionSpec` immutable modeli: `String lesson`, `int questionCount`, `String? topicFilter`.
+2. `MockExamBlueprint` immutable modeli:
+   - `String id`, `String scopeKey`, `String title`, `String subtitle`
+   - `List<ExamSectionSpec> sections`, `int totalQuestions`, `Duration standardDuration`
+   - `bool allowExtraTime`, `int extraTimeMinutes`, `bool isProOnly`, `int mockNumber`
+   - `List<MockExamBlueprint> splitSessions` (opsiyonel çoklu oturumlar için bölüm metadata'sı).
+3. Mevcut GK deneme paketlerini (`Deneme #1..#3` 60S/65dk ve `20 Soruluk Hızlı Mini Deneme`) bu yeni modele taşı.
+
+ADIM 2: Jenerik Deneme Üreticisi (`lib/features/quiz/data/question_repository.dart`)
+1. `Future<List<Question>> generateMockExamFromBlueprint(MockExamBlueprint blueprint, {required ExamSelection selection, int mockNumber = 1})` metodunu yaz:
+   - Her `ExamSectionSpec` için ilgili `lesson`, `selection` kapsamı ve deterministik offset ile soru çeker; yetersiz soru varsa güvenli fallback uygular ve her soruya section metadata'sı ekler.
+2. Mevcut `generateGeneralCultureMockExam(...)` metodunu geriye dönük uyumu bozmadan bu motoru saracak şekilde bırak.
+
+ADIM 3: `QuizScreen` Çok Bölümlü Optik Palet & Ek Süre Uyarlaması (`lib/features/quiz/presentation/quiz_screen.dart`)
+1. `QuizScreen` opsiyonel `MockExamBlueprint? blueprint` ve `ExamSelection? examSelection` parametreleri alsın (mevcut `mockExamNumber` parametresi korunarak!).
+2. Deneme `sections.length > 1` veya `> 30` soru içeriyorsa Soru Paleti BottomSheet'inde **Bölüm/Ders Hızlı Atlama Sekmeleri** (örn. `Türkçe (1-30)`, `Matematik (31-60)` veya `Tarih`, `Coğrafya`) sun (`Wrap` / yatay kaydırılabilir çip çubuğu; dar ekranda taşmasız).
+3. `blueprint?.allowExtraTime == true` ve kullanıcı tercihi aktifse zamanlayıcıya ek süreyi (`extraTimeMinutes`) otomatik ekle ve AppBar sayacında şeffaf göster.
+4. `CloudSyncRepository.saveQuizSession` çağrısında `exam_scope` bilgisini de kaydet.
+
+ADIM 4: `ExamsScreen` & `PracticeHubScreen` Veri Güdümlü Dönüşümü
+1. `lib/features/exams/presentation/exams_screen.dart`: Kahraman deneme kartındaki ve paket listesindeki sabit `60 soru / 65 dk` değerlerini `activeCurriculumProvider` ve `ExamBlueprintRegistry.forSelection(selection)` listesinden oku.
+2. `lib/features/practice/presentation/practice_hub_screen.dart`:
+   - Sabit `'10–20 SORU'`, `'65 DAKİKA'`, `'60 soruluk gerçek KPSS oturumu'` etiketlerini seçili müfredatın dinamik verisiyle değiştir.
+   - `_LessonSelectorBottomSheet`: Sabit `kpssLessons` yerine `activeCurriculum.activeLessons` (ve `comingSoon` olanları kilit/bilgi rozetiyle) listelesin.
+   - `_MockExamSelectorBottomSheet`: Seçili sınav türüne ait `MockExamBlueprint` paketlerini listelesin.
+
+ADIM 5: Test & Doğrulama (`test/mock_exam_blueprint_test.dart`, `test/practice_hub_and_reminders_test.dart`)
+1. Çok bölümlü blueprint soru dağılımı, optik palet bölüm atlama, ek süre zamanlayıcısı ve dar ekranda zero-overflow widget testlerini yaz.
+2. `dart format lib test`, `flutter analyze`, `flutter test` ile 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-131: Evrensel 2 Kademeli Hiyerarşik Sınav Seçici (`ExamTargetPickerView`), `OnboardingScreen` Yenilemesi & Çoklu Cihaz `ExamSelection` Senkronu
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 1 — UI/UX Pro Max, Yeniden Kullanılabilirlik & Bulut Senkronu · `402/402` test ile doğrulandı)*
+- **Amaç:** 5 ana sınav ailesi, öğrenim düzeyleri, 17 ÖABT branşı ve 4 E-KPSS engel grubunu kullanıcıyı bunaltmadan (**Progressive Disclosure**) seçtiren tek yeniden kullanılabilir UI bileşeni kurmak ve cihazlar arası senkronu `TASK-119` kalitesinde korumak.
+
+```text
+GÖREV: TASK-131 — Evrensel 2 Kademeli ExamTargetPickerView, OnboardingScreen Yenilemesi & ExamSelection Bulut Senkronu
+ÖNEMLİ: GEMINI.md, MASTER.md (TactileCard, PhosphorIcons, sıfır sabit Color/fontSize) ve TASK-119 sıralı hidrasyon kurallarına uy.
+
+ADIM 1: Tek Yeniden Kullanılabilir Seçici Bileşen (`lib/shared/widgets/exam_target_picker_view.dart`)
+1. `TargetExamSelectorBottomSheet`, `OnboardingScreen`, `AutoStudyProgramModal` ve `PomodoroStudioScreen`'de ayrı ayrı duran hedef seçicileri ortak `ExamTargetPickerView` widget'ına delege edecek şekilde yeniden tasarla:
+   - **Kademe 1 (Sınav Ailesi Kartları):** B Grubu (Lisans/Ön Lisans/Ortaöğretim), KPSS DHBT, E-KPSS, MEB-AGS + ÖABT, KPSS A Grubu (Alan Bilgisi). Her kart `TactileCard` ile kısa net özet rozetleri (`GY-GK`, `P122-124`, `ÖABT` vb.) taşır.
+   - **Kademe 2 (Dinamik Detay Paneli — Seçime Göre Açılır):**
+     - *B Grubu:* Düzey (`Lisans`/`Ön Lisans`/`Ortaöğretim`) + Profil (`Sadece Genel Kültür (60)` / `Tam GY-GK (120)`)
+     - *E-KPSS:* Öğrenim Düzeyi (`Ortaöğretim`/`Ön Lisans`/`Lisans`) + Engel Grubu (`Genel`, `Görme`, `İşitme-1`, `Zihinsel`) + `Ek Süre Kullan` anahtarı
+     - *DHBT:* Öğrenim Düzeyi (`Ortaöğretim İHL`/`Ön Lisans`/`Lisans`)
+     - *MEB-AGS:* Branş Seçici (aranabilir modal / filtreli liste: `Sadece AGS (P1)`, 17 `ÖABT` branşı veya `YDS Yabancı Dil (P3)`)
+     - *A Grubu:* Hazır `P48 Çekirdek` paketi veya çoklu alan seçimi (`Hukuk`, `İktisat`, `Maliye`, `Muhasebe`, ...)
+   - İleride yeni sınav türleri geldikçe içerik durumu (`Hazır` / `Yakında · Altyapı Hazır`) şeffaf etiketlensin.
+
+ADIM 2: Ekran Entegrasyonları
+1. `lib/shared/widgets/target_exam_selector_bottom_sheet.dart`: `showSelection(...)` ile tam `ExamSelection` döndürsün (eski `show()` metodu geriye dönük wrapper kalsın).
+2. `lib/features/onboarding/presentation/onboarding_screen.dart`: Adım 1'de `ExamTargetPickerView`, Adım 2'de seçilen sınav ailesinin derslerinden dinamik Odak Ders seçimi (`Tarih` sabit değil!), Adım 3'te dinamik günlük tempo/hedef sunsun.
+3. `lib/features/pomodoro/presentation/pomodoro_studio_screen.dart`: Sabit 3 butonlu `SegmentedButton<KpssExamTarget>` yerine kompakt aktif sınav rozeti + `Değiştir` modal tetikleyicisi koy (dar ekranda sıfır overflow!).
+4. `lib/features/planner/presentation/widgets/auto_study_program_modal.dart`: Seçili `ExamSelection` bilgisini `ExamTargetPickerView` ile düzenlenebilir hale getir.
+
+ADIM 3: Çoklu Cihaz Senkronizasyonu (`UserPreferencesNotifier` & `CloudSyncRepository`)
+1. `UserPreferencesState` içine `final ExamSelection examSelection;` ekle (`targetExamKey` geriye dönük uyumlu setter/getter olarak senkron kalsın).
+2. `CloudSyncRepository.syncUserPreferences` ve `fetchUserPreferences`: `profiles.exam_selection` (`jsonb`) ve `auth.user_metadata` senkronunu `TASK-119` koruma kurallarını (boş `{}` varsayılanını onboarding tamamlandı sanmama + sıralı hidrasyon) ihlal etmeden entegre et.
+
+ADIM 4: Test & Doğrulama (`test/exam_target_picker_test.dart`, `test/auth_first_onboarding_and_sync_test.dart`)
+1. 2 kademeli akışı (`MEB-AGS -> Aranabilir Özel Eğitim`, `E-KPSS -> İşitme-1`), `OnboardingScreen` dinamik odak dersini ve bulut JSON hidrasyonunu test et.
+2. `dart format lib test`, `flutter analyze`, `flutter test` ile 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-132: Kapsam Duyarlı Çalışma Planlayıcısı, Çoklu Sınav İstatistik İzolasyonu & Strateji Desenli `ScoreFormulaEngine` Çekirdeği
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 1 — Planlayıcı, Analitik & Puan Çekirdeği · `402/402` test ile doğrulandı)*
+- **Amaç:** Kullanıcı sınav türünü değiştirdiğinde günlük çalışma planının, istatistik ısı haritasının ve puan hesaplama ekranının yeni sınava akıllıca uyum sağlamasını, eski emeğinin kaybolmamasını ve kod tekrarının önlenmesini sağlamak.
+
+```text
+GÖREV: TASK-132 — Dinamik AutoStudyProgramGenerator, Kapsam İzole İstatistikler & Strategy Pattern ScoreFormulaEngine
+ÖNEMLİ: GEMINI.md ve TASK-115..117 (PlannerSyncSnapshot kayıpsız senkron) kurallarına uy.
+
+ADIM 1: Dinamik Plan Üretimi & Kayıpsız Kapsam Adaptasyonu
+1. `lib/features/planner/data/models/study_task.dart` ve `planner_sync_snapshot.dart`: Görevlere ve snapshot'a opsiyonel `String examScope` alanı ekle (`default: 'lisans_gk'`, geriye dönük JSON uyumuyla).
+2. `lib/features/planner/data/services/auto_study_program_generator.dart`:
+   - Sabit `_lessonRotation` yerine `ExamCurriculum` içindeki `activeLessons` listesini kullanan dinamik soru-ağırlıklı rotasyon (ağırlığı yüksek derse orantılı daha sık görev) kur.
+   - Deneme görevlerinin soru ve dakika değerlerini `curriculum.totalQuestions` / `standardDurationMinutes` üzerinden üret.
+3. `lib/features/planner/data/study_planner_notifier.dart`: `adaptCurriculumScope(ExamSelection newSelection, ExamCurriculum newCurriculum)` metodunu ekle — geçmiş günlerde tamamlanan görevleri ve `maxUnlockedDay` seviyesini koruyarak bugünün çözülmemiş görevlerini yeni sınavın müfredatına uyarlasın.
+
+ADIM 2: Çoklu Sınav İstatistik İzolasyonu (`lib/features/stats/`)
+1. `lib/features/stats/data/models/quiz_session_record.dart`: Opsiyonel `examScope` alanı ekle (eski oturumlar `'lisans_gk'` varsayılsın).
+2. `lib/features/stats/data/study_stats_notifier.dart`: Aktif `examScope` bazlı filtrelenmiş `solvedByLessonForScope(String scopeKey, List<String> curriculumLessons)` ve `weakestLessonForScope(...)` seçicileri sun (`cloud_sync_repository.dart` içinde `user_topic_mastery` upsert ve fetch sorgularına `exam_scope` kolonunu dahil et).
+3. `lib/features/stats/presentation/stats_screen.dart`: İstatistiklerde `"Aktif Sınav / Tüm Çalışmalar"` kompakt kapsam çipi sun; `_MasteryHeatmapCard` ve `_LessonAccuracyChartCard` yalnızca ilgili kapsamdaki derslerle kalabalıksız çizilsin; `get_weekly_leaderboard` çağrısını sınav ailesi filtresini destekleyecek şekilde hazırla.
+
+ADIM 3: Strateji Desenli Puan Hesaplayıcı Çekirdeği (`lib/features/score_calculator/`)
+1. `lib/features/score_calculator/data/kpss_score_calculator.dart`: Monolitik switch'ler yerine ortak soyut arayüz `abstract interface class ScoreFormulaEngine` ve kayıt defteri (`ScoreEngineRegistry`) tasarla:
+   - Ortak `SectionInputSpec` (`key`, `label`, `maxQuestions`, `weightHint`)
+   - Ortak `ScoreOutputRow` (`scoreTypeCode`, `title`, `score`, `isQualified`, `qualificationNote`, `historicalYearScores`)
+   - `>= 1.0 ham net` baraj kuralı, `Net = Doğru - Yanlış / 4.0` ve sınır kırpma tek paylaşılan yardımcıdan çalışsın.
+2. `lib/features/score_calculator/presentation/kpss_score_calculator_screen.dart`: Statik 2 kart (`GY` + `GK`) yerine aktif stratejinin ürettiği `List<SectionInputSpec>` kadar dinamik net giriş kartı ve `List<ScoreOutputRow>` kadar çıktı/yıl karşılaştırma satırı göstersin. Mevcut `P3 / P93 / P94` widget testleri (`score_type_dropdown`, `'0.00'` başlangıç, `+1` net artışı) %100 korunmalıdır!
+
+ADIM 4: Test & Doğrulama (`test/multi_exam_planner_and_stats_test.dart`, `test/kpss_score_calculator_test.dart`)
+1. `adaptCurriculumScope` ile gün/görev kaybı olmadığını, `user_topic_mastery` kapsam izolasyonunu ve jenerik `ScoreFormulaEngine` kontratını test et.
+2. `dart format lib test`, `flutter analyze`, `flutter test` ile 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-133 [Faz A — Altyapı]: Ortak GY-GK Genişlemesi (Lisans / Ön Lisans / Ortaöğretim: Türkçe & Matematik Müfredatı, `120S/130dk` Deneme & `P1 / P2 / P3`)
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 2 — Faz A Altyapı · Soru Verisi Hariç · `402/402` test ile doğrulandı)*
+- **Amaç:** B Grubu adayları (Lisans, Ön Lisans, Ortaöğretim) için Türkçe (30 soru) ve Matematik & Geometri (30 soru) müfredat kilitlerinin mimari olarak açılabilir hale getirilmesi, 120 soruluk tam deneme şablonu ve `P1 / P2 / P3` eş zamanlı puan hesaplayıcısının eklenmesi *(sorular Faz F'de eklenecektir)*.
+
+```text
+GÖREV: TASK-133 — Faz A Altyapı: B Grubu Tam GY-GK Müfredatı (Türkçe + Matematik), 120S/130dk Deneme Blueprint ve P1/P2/P3 Motoru
+ÖNEMLİ: ŞİMDİLİK SORU VERİSİ ÜRETME! Türkçe/Matematik havuzunda henüz soru yoksa UI bunu zarifçe yönetmelidir ("Soru paketi hazırlanıyor" durumu, çökme YOK).
+
+ADIM 1: B Grubu GY-GK Müfredat Ağaçları (`CurriculumRegistry`)
+1. `CurriculumRegistry` içinde `lisans`, `onlisans`, `ortaogretim` için hem `BGroupProfile.onlyGk` (60 soru / 4 ders) hem `BGroupProfile.fullGyGk` (120 soru / 6 ders: Türkçe 30, Matematik & Geometri 30, Tarih 27, Coğrafya 18, Vatandaşlık 9, Güncel Bilgiler 6) tanımlarını tam ÖSYM konu başlıklarıyla (`kpss_sinav_turleri_ve_konu_kapsami.md` Bölüm 2) ekle:
+   - **Türkçe (30 Soru):** Sözcükte Anlam, Cümlede Anlam, Paragraf, Ses/Yazım/Noktalama, Yapı/Ekler/Sözcük Türleri, Cümlenin Ögeleri/Türleri/Çatı, Anlatım Bozuklukları, Sözel Mantık.
+   - **Matematik & Geometri (30 Soru):** Temel Kavramlar & Sayı Basamakları, Bölme-Bölünebilme/EBOB-EKOK, Rasyonel/Üslü/Köklü Sayılar, Mutlak Değer/Eşitsizlikler/Çarpanlara Ayırma, Oran-Orantı & Problemler (Sayı-Kesir, Yaş, İşçi-Havuz, Hareket, Yüzde-Kâr-Zarar-Karışım), Kümeler/Fonksiyonlar/İşlem/Modüler Aritmetik, Permütasyon-Kombinasyon-Olasılık, Sayısal Mantık, Doğruda-Üçgende Açılar & Özel Üçgenler, Çokgenler-Dörtgenler & Çember-Daire, Katı Cisimler & Analitik Geometri.
+2. `LessonsScreen` ve `LessonTopicsScreen` içinde derslerin gerçek havuz durumunu kontrol eden `CurriculumAvailability` köprüsünü ekle: havuzda `>0` soru varsa otomatik aktif, `0` soru varsa düzenli konu ağacı önizlemesi + `"Soru Havuzu Yakında"` kilidi göster.
+
+ADIM 2: `120 Soru / 130 dk` Tam KPSS Deneme Şablonu (`ExamBlueprintRegistry`)
+1. B Grubu `fullGyGk` seçildiğinde `ExamBlueprintRegistry` üzerinden `120 Soru / 130 dk` (`30 TR + 30 MAT + 27 TAR + 18 COĞ + 9 VAT + 6 GÜN`) ve `60 Soru / 65 dk` (Sadece GK) şablonlarını döndür.
+2. Deneme başlatılmadan önce soru havuzu yeterliliğini kontrol et; eksik bölüm varsa kullanıcıya net uyarı ver (sessizce 3 soruya düşme!).
+
+ADIM 3: `P1 / P2 / P3` Eş Zamanlı Puan Stratejisi (`BGroupScoreEngine`)
+1. `KpssScoreCalculator` (`ScoreFormulaEngine`) içinde Lisans seçiliyken `P1 (%70 GY + %30 GK)`, `P2 (%60 GY + %40 GK)` ve `P3 (%50 GY + %50 GK)` puanlarını tek net girişinden eş zamanlı çıktı satırları olarak üret (`P93` Ön Lisans ve `P94` Ortaöğretim ile son 3 yıl karşılaştırması korunarak).
+
+ADIM 4: Test & Doğrulama
+1. `P1/P2/P3` formül doğrulama testleri, `120 Soru` blueprint testleri ve sıfır sorulu Türkçe/Matematik önizleme widget testlerini ekle.
+2. `dart format lib test`, `flutter analyze`, `flutter test` ile 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-134 [Faz B — Altyapı]: E-KPSS Entegrasyonu (3 Öğrenim Düzeyi, 4 Engel Grubu, Erişilebilirlik Modu, Ek Süre & `EKPSSP1 / P2 / P3`)
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 2 — Faz B Altyapı · Soru Verisi Hariç · `402/402` test ile doğrulandı)*
+- **Amaç:** Engelli Kamu Personeli Seçme Sınavı adaylarına özel müfredat kapsamı, erişilebilirlik/ek süre deneme motoru ve `EKPSSP1/P2/P3` puan hesaplama altyapısının kurulması.
+
+```text
+GÖREV: TASK-134 — Faz B Altyapı: E-KPSS Müfredatı, 4 Engel Grubu Erişilebilirlik Modu, Ek Süre & EKPSSP1/P2/P3 Motoru
+ÖNEMLİ: ŞİMDİLİK SORU VERİSİ ÜRETME! Erişilebilirlik ayarları Theme.of(context) standartlarını bozmamalı ve overflow yaratmamalıdır.
+
+ADIM 1: E-KPSS Müfredat & Engel Grubu Kuralları (`CurriculumRegistry` & `ExamBlueprintRegistry`)
+1. `KpssExamFamily.ekpss` için 3 öğrenim düzeyi (`Ortaöğretim -> EKPSSP1`, `Ön Lisans -> EKPSSP2`, `Lisans -> EKPSSP3`) kapsamında `60 Soru` (15 Türkçe, 15 Matematik = 30 GY; 10 Atatürk İlkeleri & İnkılap + 3 Türk Kültür ve Medeniyetleri, 5 Türkiye Coğrafyası, 6 Temel Yurttaşlık, 6 Güncel & Engelli Hakları Mevzuatı = 30 GK) ders/konu dağılımını tanımla.
+2. 4 Engel Grubu (`Genel`, `Görme`, `İşitme-1`, `Zihinsel`) kurallarını modelle:
+   - Standart süre: `60 Dakika`.
+   - Engel/okuyucu-işaretleyici durumuna göre opsiyonel ek süre ön ayarları (`+20 dk = 80 dk`, `+30 dk = 90 dk`, `+40 dk = 100 dk`).
+   - `İşitme-1` / `Zihinsel` seçildiğinde soru sorgularında `source_variant = 'simplified'` tercih önceliği (yoksa standarda düşen güvenli fallback!).
+
+ADIM 2: Erişilebilir Okuma & Deneme Deneyimi (`QuizScreen` & `UserPreferencesState`)
+1. `UserPreferencesState` içine `bool highReadabilityMode` (büyük punto `MediaQuery.textScaler` güvenli artırımı + netleştirilmiş yüksek kontrast kenarlık) tercihi ekle; `Görme` veya E-KPSS seçildiğinde kullanıcıya tek tıkla açılabilir öneri olarak sun.
+2. `QuizScreen` üzerinde büyük punto modunun `OptionTile`, soru metni ve açıklama kartlarında taşma (`RenderFlex overflow`) üretmediğini `360x640` dar ekranda garanti et.
+
+ADIM 3: `EKPSSP1 / EKPSSP2 / EKPSSP3` Puan Hesaplama Stratejisi
+1. `ScoreEngineRegistry` içine 30 GY + 30 GK (`40` taban puan temelli ve ham net ≥ 1 kurallı) `EkpssScoreEngine` ekle.
+
+ADIM 4: Test & Doğrulama
+1. E-KPSS 30+30 blueprint dağılımı, ek süre zamanlayıcı testi, büyük punto `360x640` overflow testi ve `EKPSSP1/P2/P3` hesaplama birim testlerini yaz.
+2. `dart format lib test`, `flutter analyze`, `flutter test` ile 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-135 [Faz C — Altyapı]: KPSS DHBT Entegrasyonu (DHBT-1 + DHBT-2 Çift Kademeli Müfredat, 3 Öğrenim Düzeyi & `P122 / P123 / P124`)
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 2 — Faz C Altyapı · Soru Verisi Hariç · `402/402` test ile doğrulandı)*
+- **Amaç:** Menüde halihazırda mevcut olan `dhbt` hedefinin alt düzey seçimini (`İHL / İlahiyat Ön Lisans / Lisans`), DHBT-1 + DHBT-2 çift bölümlü konu ağacını ve karma `P122/P123/P124` puan motorunu tamamlamak *(mevcut `KpssScoreCalculator.fromExamTarget(dhbt) -> p3Lisans` hatasını düzelterek!)*.
+
+```text
+GÖREV: TASK-135 — Faz C Altyapı: KPSS DHBT Çift Kademeli Müfredat (DHBT-1 & DHBT-2), 3 Öğrenim Düzeyi & P122/P123/P124 Motoru
+ÖNEMLİ: ŞİMDİLİK SORU VERİSİ ÜRETME! Eski kodda dhbt hedefinin P3'e yönlendirildiği bug giderilmelidir.
+
+ADIM 1: DHBT Müfredat Ağacı (`CurriculumRegistry`)
+1. `KpssExamFamily.dhbt` seçildiğinde öğrenim düzeyine göre (`Ortaöğretim İHL`, `Ön Lisans`, `Lisans`) ders ve konu ağaçlarını oluştur:
+   - **Ortak B Grubu Temeli (opsiyonel sekme / GY-GK bağlantısı):** Aday P122/P123/P124 için GK+GY de çözebileceğinden GY-GK dersleri yardımcı/temel grup olarak erişilebilir olsun.
+   - **DHBT-1 (20 Soru — Tüm Düzeyler Ortak):** İslam İnanç Esasları, İslam İbadet Esasları, Kur'an Bilgisi (Kur'an Tarihi, Tecvid, Kıraat), Siyer (Hz. Peygamber'in Hayatı), İslam Ahlakı.
+   - **DHBT-2 (20 Soru — Düzeye Göre Derinlik Filtreli 7 Alan):** Tefsir, Hadis, Fıkıh, Akaid ve Kelam, İslam Tarihi, Dinler ve Mezhepler Tarihi, Hitabet ve Mesleki Uygulama (+ DİB Mevzuatı).
+
+ADIM 2: DHBT Deneme Şablonları (`ExamBlueprintRegistry`)
+1. `DHBT Alan Denemesi (40 Soru / 60 Dk: 20 DHBT-1 + 20 DHBT-2)` şablonunu ve öğrenim düzeyine göre `education_level` filtrelemesini tanımla.
+
+ADIM 3: `P122 / P123 / P124` Puan Hesaplayıcı Stratejisi (`DhbtScoreEngine`)
+1. `ScoreEngineRegistry` içine 4 girişli (`GY 60`, `GK 60`, `DHBT-1 20`, `DHBT-2 20`) `DhbtScoreEngine` ekle; `Ortaöğretim -> KPSSP122`, `Ön Lisans -> KPSSP123`, `Lisans -> KPSSP124` ağırlıklı puan hesaplamasını ve her testte geçerli net doğrulamasını uygula.
+2. `fromExamTarget(KpssExamTarget.dhbt)` yönlendirmesini `P3` yerine `DHBT` stratejisine bağla!
+
+ADIM 4: Test & Doğrulama
+1. DHBT 3 öğrenim düzeyi kapsam filtresi, 20+20 deneme şablonu ve `P122/P123/P124` hesaplama testlerini yaz.
+2. `dart format lib test`, `flutter analyze`, `flutter test` ile 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-136 [Faz D — Altyapı]: MEB-AGS + 17 Branş ÖABT Entegrasyonu (Öğretmenlik 1. Oturum `80 Soru`, Aranabilir 17 Branş + YDS/P3 Seçicisi & `AGS-P1/P2/P3`)
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 2 — Faz D Altyapı · Soru Verisi Hariç · `402/402` test ile doğrulandı)*
+- **Amaç:** Klasik KPSS Eğitim Bilimleri yerine gelen **MEB-AGS** sistemini (1. Oturum 80 soru + 17 branşlı ÖABT + Yabancı Dil `YDS/P3`) tüm konu taksonomisi, branş seçicisi, süre kuralları ve puan formülleriyle mimari olarak desteklemek.
+
+```text
+GÖREV: TASK-136 — Faz D Altyapı: MEB-AGS (80 Soru / 110 dk) + 17 Branş ÖABT (50 Soru · 70/90 dk) & AGS-P1/P2/P3 Puan Motoru
+ÖNEMLİ: ŞİMDİLİK SORU VERİSİ ÜRETME! Resmî 2025-2026 kılavuzundaki 17 ÖABT branşı (İngilizce/yabancı diller ÖABT'de değil YDS/AGS-P3'te) kuralına birebir uy.
+
+ADIM 1: MEB-AGS 1. Oturum Müfredatı (`CurriculumRegistry`)
+1. **AGS Ortak Oturum (80 Soru / 110 dk)** ders ve konu ağaçlarını tanımla:
+   - Sözel Yetenek (15 soru), Sayısal Yetenek (15 soru), Tarih (10 soru), Türkiye Coğrafyası (8 soru), **Eğitim Bilimleri ve Türk Millî Eğitim Sistemi** (24 soru — 2024 **TYMM** dahil eğitim temelleri, öğrenme-öğretme, ölçme-değerlendirme, program/rehberlik), **Mevzuat** (8 soru — T.C. Anayasası, 1739 Sayılı Millî Eğitim Temel Kanunu, 222 Sayılı İlköğretim Kanunu, 7528 Sayılı Öğretmenlik Meslek Kanunu).
+2. İlerideki arşiv veya çalışma modları için klasik Eğitim Bilimleri alt konularını (`Gelişim, Öğrenme, Öğretim İlke ve Yöntemleri, Ölçme ve Değerlendirme, Program Geliştirme, Rehberlik, Sınıf Yönetimi, Öğretim Teknolojileri`) AGS Eğitim Bilimleri modülü altında etiketli tut.
+
+ADIM 2: 17 ÖABT Branşı Tam Konu Ağacı & Aranabilir Branş Seçici UI
+1. 17 branşın tamamı için kanonik `ÖABT <Branş>` ders ve konu ağaçlarını tanımla (`kpss_sinav_turleri_ve_konu_kapsami.md` Bölüm 5.B referansıyla):
+   - 90 dakikalık 5 branş: İlköğretim Matematik, Fen Bilimleri, Matematik (Lise), Fizik, Kimya / Kimya Teknolojisi.
+   - 70 dakikalık 12 branş: Türkçe, Sosyal Bilgiler, Türk Dili ve Edebiyatı, Tarih, Coğrafya, Biyoloji, DKAB / İHL Meslek Dersleri, Rehberlik (PDR), Sınıf Öğretmenliği (`30 Alan + 20 Alan Eğitimi`), Okul Öncesi (`30+20`), Beden Eğitimi, Özel Eğitim (`30+20`).
+   - Yabancı Dil (İngilizce, Almanca, Arapça, Fransızca vb.) seçen kullanıcıya ÖSYM kuralı uyarınca ÖABT yerine **AGS + YDS/e-YDS (`MEB-AGS-P3`)** rotası sunan bilgilendirme kartı.
+2. `ExamTargetPickerView` içine `OabtBranch` aramalı hızlı seçici alt çekmecesi ekle (17 branşı kaydırma yorgunluğu olmadan anlık filtrele).
+
+ADIM 3: MEB-AGS Deneme Şablonları & `AGS-P1 / P2 / P3` Puan Motoru
+1. `ExamBlueprintRegistry`: `MEB-AGS 1. Oturum (80 Soru / 110 dk)` ve seçili branşa göre dinamik süreli `ÖABT Alan Denemesi (50 Soru · 70 veya 90 dk)` şablonları oluştur.
+2. `MebAgsScoreEngine`:
+   - `MEB-AGS-P1`: %100 AGS (80 soru)
+   - `MEB-AGS-P2`: %50 AGS + %50 ÖABT (50 soru; DKAB/İHL için `P2-16` ve `P2-17` iki ayrı çıktı satırı!)
+   - `MEB-AGS-P3`: %50 AGS + %50 YDS (0–100 YDS puan girişiyle!).
+
+ADIM 4: Test & Doğrulama
+1. 17 branş konu ağacı doğrulaması, 90/70 dk süre kuralı testi, DKAB `P2-16`/`P2-17` & YDS `AGS-P3` puan hesaplama birim testleri ve aranabilir branş seçici widget testini yaz.
+2. `dart format lib test`, `flutter analyze`, `flutter test` ile 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-137 [Faz E — Altyapı]: KPSS A Grubu (Kariyer Meslekler) Entegrasyonu (9 Alan Testi Konu Ağacı, Çoklu Alan Seçici `P48`, `P4–P48` Simülatörü & `≥1 Net` Kuralı)
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 2 — Faz E Altyapı · Soru Verisi Hariç · `402/402` test ile doğrulandı)*
+- **Amaç:** Kaymakamlık, Müfettişlik, Uzmanlık ve Sayıştay gibi kariyer kadrolarına hazırlanan **KPSS A Grubu** adayları için 9 alan testinin konu ağacını, seçmeli ders planlamasını ve **"≥1 ham net"** kuralını denetleyen puan simülatörünü kurmak.
+
+```text
+GÖREV: TASK-137 — Faz E Altyapı: KPSS A Grubu 9 Alan Testi, Çoklu Alan Paketi Seçici (P48), 40S Deneme Şablonları & P4–P48 Simülatörü
+ÖNEMLİ: ŞİMDİLİK SORU VERİSİ ÜRETME! Çoklu ders seçimi olmadan A Grubu adayının planlayıcısına kullanmayacağı 9 alanın hepsi zorla doldurulmamalıdır.
+
+ADIM 1: 9 Alan Testinin Tam Konu Ağacı (`CurriculumRegistry`)
+1. Resmî 9 alan dersi için kanonik ders ve eksiksiz konu ağaçlarını ekle (`kpss_sinav_turleri_ve_konu_kapsami.md` Bölüm 3 referansıyla):
+   - **Alan Hukuk (40S):** Anayasa Hukuku, İdare Hukuku & İdari Yargılama, Ceza Hukuku (Genel + CMK), Medeni Hukuk (Başlangıç/Kişiler/Aile/Miras/Eşya), Borçlar Hukuku, Ticaret Hukuku, İcra ve İflas Hukuku.
+   - **Alan İktisat (40S):** İktisadi Doktrinler Tarihi, Mikro İktisat, Makro İktisat, Para-Banka-Kredi, Uluslararası İktisat, Büyüme-Kalkınma ve Türkiye Ekonomisi.
+   - **Alan Maliye (40S):** Kamu Maliyesi & Kamu Ekonomisi, Kamu Harcamaları, Kamu Gelirleri & Vergi Hukuku, Devlet Borçları, Devlet Bütçesi, Maliye Politikası.
+   - **Alan Muhasebe (40S):** Genel Muhasebe (Tekdüzen Hesap Planı/Dönemsonu), Mali Tablolar Analizi, İhtisas Muhasebesi (Şirketler & Maliyet Muhasebesi).
+   - **Alan İşletme (40S)**, **Alan Kamu Yönetimi (40S)**, **Alan Uluslararası İlişkiler (40S)**, **Alan Çalışma Ekonomisi ve Endüstri İlişkileri / ÇEKO (40S)**, **Alan İstatistik (40S)** + ayrıca `Yabancı Dil (İngilizce - YDS)` puan girdisi bağlantısı.
+
+ADIM 2: Çoklu Alan Paketi Seçimi (`ExamTargetPickerView` & `ExamSelection.selectedFieldLessons`)
+1. Kullanıcıya hazır şablonlar (**`P48 Çekirdek: Hukuk + İktisat + Maliye + Muhasebe`**, **`Siyasal/Yönetim: Kamu Yön. + Uİ + Hukuk + İktisat`**, veya **`Özel Ders Seçimi`**) sun.
+2. `CurriculumRegistry` ve `AutoStudyProgramGenerator` yalnızca adayın seçtiği alan derslerini (+ GY/GK temelini) aktif ders ve plan listesine dahil etsin.
+
+ADIM 3: Alan Deneme Şablonları (`40S · 50-60 dk`) & `P4–P48` Puan Simülatörü (`AGroupScoreEngine`)
+1. Her alan dersi için `40 Soru / 50–60 dk` `MockExamBlueprint` üret.
+2. `AGroupScoreEngine`: GY (60), GK (60), isteğe bağlı Yabancı Dil puanı ve adayın girdiği 9 Alan Testi (her biri 40 soru) netlerinden öne çıkan ağırlıklı puan türlerini (`KPSSP4`, `KPSSP12`, `KPSSP13`, `KPSSP14`, `KPSSP19`, `KPSSP20`, `KPSSP21`, `KPSSP24`, `KPSSP29`, `KPSSP34`, `KPSSP35`, `KPSSP48`) hesapla.
+3. ÖSYM **"İlgili puan türünde ağırlığı bulunan alan testlerinin her birinden en az 1.0 ham net çıkarma"** zorunlu şartını canlı kontrol et ve eksik test varsa çıktı kartında uyarı rozetiyle (`"Hesaplanmadı: Maliye < 1 Net"`) göster.
+
+ADIM 4: Test & Doğrulama
+1. A Grubu seçmeli ders filtreleme, P48 net + `≥1 ham net` kuralı geçme/kalma testleri ve 9 alan blueprint testlerini yaz.
+2. `dart format lib test`, `flutter analyze`, `flutter test` ile 0 hata doğrula.
+```
+
+---
+
+### 📦 TASK-138: İnteraktif Atölyeler, Mini Oyunlar & Bilgi Kartlarının Çoklu Sınav Kapsamına Uyarlanması (`MapPractice`, `Games`, `Flashcards`)
+
+- **Durum:** ✅ **Tamamlandı** *(Dalga 2 — Çapraz Modül Uyumu · Soru Verisi Hariç · `402/402` test ile doğrulandı)*
+- **Amaç:** Harita Atölyesi, 60 Saniyede Pençe (D/Y), Kavram Eşleştirme ve Hap Bilgi Kartları modüllerinin yeni KPSS türlerinde boş/ilgisiz içerik göstermeden akıllıca çalışmasını sağlamak.
+
+```text
+GÖREV: TASK-138 — Harita Atölyesi, Mini Oyunlar & Hap Bilgi Kartlarının Aktif Sınav Kapsamına Uyarlanması
+ÖNEMLİ: GEMINI.md ve MASTER.md kurallarına uy. Veri girişi olmadan boş kalan alanlarda uygulama kesinlikle çökmemeli veya hata atmamalıdır.
+
+ADIM 1: Veri Modelleri ve Repository Kapsam Filtrelemesi
+1. `Flashcard`, `TrueFalseItem`, `ConceptMatchSet` modellerine opsiyonel `List<String> examScopes` ve `String? subBranch` alanları ekle (`default: ['lisans_gk']` geriye dönük uyumla).
+2. İlgili repository/sağlayıcıları aktif `ExamSelection` değerine göre filtreleyecek şekilde güncelle; eğer yeni bir sınav türünde (ör. DHBT veya ÖABT) henüz o modüle özel veri yoksa null/empty-crash yerine `"ortak Genel Kültür / Tarih-Coğrafya atölyesiyle pratik yap"` köprüsü sun.
+
+ADIM 2: UI Köprüleri (`MapPracticeHubScreen`, `TrueFalseBlitzScreen`, `ConceptMatchScreen`, `FlashcardsScreen`)
+1. `MapPracticeHubScreen`: Türkiye Coğrafya & Tarih Haritası Atölyesi'ni B Grubu, E-KPSS, MEB-AGS (Coğrafya/Tarih/Sosyal ÖABT) hedeflerinde birincil öneri; diğer hedeflerde "Genel Kültür / Destek Atölyesi" olarak sun.
+2. `TrueFalseBlitzScreen` ve `ConceptMatchScreen`: Başlık altında aktif kapsam çipi göster ve boş havuzda şık `EmptyStateView` (ortak GK havuzuna geçme seçeneğiyle) göster.
+
+ADIM 3: Test & Doğrulama
+1. Boş yeni sınav havuzunda `FlashcardsScreen`, `TrueFalseBlitzScreen` ve `ConceptMatchScreen` ekranlarının sıfır istisna (`tester.takeException() == null`) ile açıldığını widget testiyle doğrula.
+2. `dart format lib test`, `flutter analyze`, `flutter test` ile 0 hata doğrula.
+```
+
+---
+
+### 📚 BÖLÜM 5 — EN SON FAZ: İÇERİK DOĞRULAMA PIPELINE'I & BULK VERİ GİRİŞİ (`TASK-139` – `TASK-144`)
+
+> [!NOTE]
+> **Kullanıcı Kararı Gereği Sıralama:** `TASK-126` – `TASK-138` mimari ve UI/UX görevleri tamamlanıp projede çoklu sınav esnekliği kanıtlanana kadar toplu soru üretimine **başlanmayacaktır**. Tüm içerik/soru veri girişi bu son fazda sırayla yürütülecektir.
+
+### 📦 TASK-139 [Veri Girişi Ön Koşulu]: Çoklu Sınav İçerik Doğrulama & Seed Pipeline (`tools/validate_sql.py` + Şema & `distractor_trap` Linter)
+
+- **Durum:** ⏳ **Bekliyor *(Veri Fazı Ön Koşulu)***
+
+```text
+GÖREV: TASK-139 — Çoklu Sınav Soru Üretim & Otomatik Kalite Doğrulama Pipeline'ı (tools/validate_sql.py & Şema Linter)
+ADIM 1: `tools/` içindeki soru doğrulama ve ayrıştırma betiklerini güncelle:
+1. `exam_scopes` değerlerinin `CurriculumRegistry` içindeki geçerli kanonik scope anahtarlarıyla eşleştiğini doğrula.
+2. `sub_branch`, `education_level`, `disability_variant`, `source_variant` değerlerini beyaz listeyle (allowlist) kontrol et.
+3. Her soru için boş olmayan `distractor_trap` (UWorld çeldirici tuzağı analizi), 5 geçerli şık (veya moduna uygun seçenek), temiz Unicode (`Question.cleanText` uyumu: LaTeX `$`, `**`, `->` yasak!) ve benzerlik/mükerrer kontrolü uygula.
+4. Kapsam bazlı JSON parça dosyalarını (`assets/data/scopes/<scope>.json`) üreten export/build betiğini yaz.
+```
+
+### 📦 TASK-140 [EN SON FAZ — Veri Girişi · Faz A]: Ortak GY-GK (Türkçe, Matematik & Geometri + Ön Lisans/Ortaöğretim Seviye Varyantları) Soru & Kart Havuzu
+
+- **Durum:** ⏳ **Bekliyor *(En Son Faz)***
+- **Kapsam:**
+  - Özgün KPSS Türkçe (30 soru dağılımı: anlam, paragraf, dil bilgisi, sözel mantık) ve Matematik & Geometri (30 soru dağılımı: sayılar, problemler, sayısal mantık, geometri) soru havuzlarının + ÖSYM çeldirici tuzaklarının üretimi.
+  - Mevcut Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler havuzunun SQL UPDATE/seed ile Ön Lisans (`P93`) ve Ortaöğretim (`P94`) hedeflerine uyumlu `exam_scopes` ve seviye varyantlarıyla etiketlenmesi.
+  - `CurriculumAvailability.ready` kilidinin GY modülleri için açılması.
+
+### 📦 TASK-141 [EN SON FAZ — Veri Girişi · Faz B]: E-KPSS Özgün Soru, Sadeleştirilmiş (`İşitme-1` / `Zihinsel`) Metin Varyantları & Engelli Hakları Havuzu
+
+- **Durum:** ⏳ **Bekliyor *(En Son Faz)***
+- **Kapsam:**
+  - Ortaöğretim (`EKPSSP1`), Ön Lisans (`EKPSSP2`), Lisans (`EKPSSP3`) için özgün 30 GY + 30 GK soruları (özellikle **Türk Kültür ve Medeniyetleri** ve **Engelli Hakları Mevzuatı**).
+  - `İşitme-1` ve `Zihinsel` adayları için sadeleştirilmiş/yalın cümle yapılı `source_variant = 'simplified'` soru varyantları ve hap bilgi kartları.
+
+### 📦 TASK-142 [EN SON FAZ — Veri Girişi · Faz C]: KPSS DHBT (DHBT-1 Ortak + DHBT-2 3 Öğrenim Düzeyi) Soru, Bilgi Kartı & Eşleştirme Havuzu
+
+- **Durum:** ⏳ **Bekliyor *(En Son Faz)***
+- **Kapsam:**
+  - DHBT-1 (5 alan: İnanç, İbadet, Kur'an Bilgisi, Siyer, İslam Ahlakı) ortak soru bankası.
+  - DHBT-2 (7 alan: Tefsir, Hadis, Fıkıh, Akaid/Kelam, İslam Tarihi, Dinler/Mezhepler, Hitabet/DİB Mevzuatı) için Ortaöğretim İHL / Ön Lisans / Lisans derinlikli özgün sorular (`distractor_trap` dahil), mezhep/kavram eşleştirme setleri ve hap bilgi kartları.
+
+### 📦 TASK-143 [EN SON FAZ — Veri Girişi · Faz D]: MEB-AGS (Eğitim Bilimleri + TYMM + Mevzuat) & Öncelikli ÖABT Branşları Soru Havuzu
+
+- **Durum:** ⏳ **Bekliyor *(En Son Faz)***
+- **Kapsam:**
+  - **Öncelik 1 (MEB-AGS 1. Oturum):** Sözel, Sayısal, Tarih, Türkiye Coğrafyası, **Eğitim Bilimleri & 2024 TYMM** ve **Mevzuat (Anayasa, 1739, 222, 7528)** soru bankası.
+  - **Öncelik 2 (ÖABT Dalga 1 Branşları):** Aday yoğunluğu en yüksek branşlardan (Sınıf Öğretmenliği, Okul Öncesi, Özel Eğitim, Türkçe, İlköğretim Matematik, Sosyal Bilgiler, DKAB/İHL, PDR) başlayarak 50 soruluk alan paketleri; ardından kalan 9 ÖABT branşının tamamlanması.
+
+### 📦 TASK-144 [EN SON FAZ — Veri Girişi · Faz E]: KPSS A Grubu (Önce Çekirdek `P48`: Hukuk, İktisat, Maliye, Muhasebe; Sonra 5 Alan) Özgün Soru Havuzu
+
+- **Durum:** ⏳ **Bekliyor *(En Son Faz)***
+- **Kapsam:**
+  - **Dalga 1 (`P48` Çekirdek):** Güncel mevzuat uyumlu Hukuk (7 alt hukuk dalı), İktisat, Maliye ve Muhasebe özgün soru bankaları + 40 soruluk alan denemeleri (yargı/mevzuat çeldiricili `distractor_trap` analizleriyle).
+  - **Dalga 2 (Tamamlayıcı 5 Alan):** İşletme, Kamu Yönetimi, Uluslararası İlişkiler, Çalışma Ekonomisi ve Endüstri İlişkileri (ÇEKO) ve İstatistik özgün soru havuzlarının üretilip `tools/validate_sql.py` ile doğrulanarak Supabase'e yüklenmesi.
+
+---
+
+### 🌐 BÖLÜM 6 — ÇOKLU PLATFORM WEB SaaS & ÖDÜL KALİTESİNDE MASAÜSTÜ UX MİMARİSİ (`TASK-145` – `TASK-152`)
+
+> [!IMPORTANT]
+> **Tasarım Tezi & Referans Benchmark:** Mevcut **`"Tuğrul Kobaltı & Anadolu Altını"`** (`MASTER.md`: `Outfit` + `DM Sans`, `#2140D4` / `#0E9F6E` / `#E28400`, `1.5px` keskin sınırlar, `3px` dokunsal alt dudak) kimliği korunur; **Awwwards Bento Dashboard**, **Duolingo Web Sidebar**, **Brilliant Etkileşimli Tuval**, **UWorld Split-Pane Test Stüdyosu** ve **Linear `Ctrl+K` Komut Paleti** standartlarıyla masaüstü web (`>= 1024px`) gerçek bir SaaS platformuna dönüştürülür. Mobil görünüm (`< 600px`) `%100` geriye dönük uyumlu kalır. *(Bu faz toplu veri üretimi olan `TASK-139`–`TASK-144`'ten bağımsız olarak yürütülebilir.)*
+
+---
+
+### 📦 TASK-145 [Web Faz 1 — Çekirdek & Güvenlik]: Web Wasm Uyumluluğu, `PurchaseService`/`AdService` Web Açığı Kapatma, URL Stratejisi & `web/index.html`
+
+- **Durum:** ✅ **Tamamlandı** *(Web SaaS Faz 1 — Koşullu Platform Importları, Güvenlik Zırhı, Path URL & SEO/Splash · `412/412` Test + `flutter build web` Wasm Dry-Run Başarılı)*
+- **Amaç:** Mevcut kod tabanında Web ortamında ücretsiz PRO verilmesine yol açan mock fallback açığını kapatmak, `dart:io` bağımlılıklarını WebAssembly (`--wasm`) uyumlu hale getirmek, `#` işaretini kaldıran temiz URL yapısına geçmek ve tarayıcı `localStorage` / public JSON asset sızıntılarını önlemek.
+
+```text
+GÖREV: TASK-145 — Web Wasm Koşullu Importlar, Ödeme/Reklam Güvenlik Zırhı, Path URL Stratejisi & SEO/Splash Yenilemesi
+ÖNEMLİ: GEMINI.md kurallarına uy. Release Web ortamında PurchaseService ve AdService ASLA ücretsiz return true / bedava kota ödülü vermemelidir!
+
+ADIM 1: Kritik Web Ödeme, Reklam & Güvenlik Korumaları
+1. `lib/core/services/purchase_service.dart`:
+   - `kIsWeb` ortamında RevenueCat native SDK çalışmadığı için mevcut `if (_mockMode || !_isConfigured) return true;` yolunu **yalnızca `enableMockMode()` açıkça çağrılan unit/widget testlerle** sınırla.
+   - `enum PurchaseAvailability { mobileIap, webCheckout, testMock, unavailable }` ekle.
+   - Canlı Web'de `webCheckoutUrl` / Supabase Web Billing tanımlı değilse `purchasePlan()` güvenli şekilde `false` dönsün (veya `PaywallScreen` webde "Web Aboneliği / iyzico Yakında — Mobil Uygulamadan Aktif Edilen PRO Hesaplar Otomatik Eşitlenir" durumunu göstersin; hiçbir şekilde sahte `upgradeToPro()` çalışmasın).
+2. `lib/core/services/ad_service.dart`:
+   - `rewardedAdUnitId` içindeki `Platform.isAndroid` / `Platform.isIOS` çağrısını `kIsWeb` kontrolüyle koru; Web'de `_mockMode` yoksa `isRewardedAdSupported` `false` dönsün ve `PaywallScreen` ödüllü reklam kartı Web'de gizlensin (bedava +20 soru açığı kapanır).
+3. `lib/core/services/offline_download_service.dart` & `lib/features/quiz/data/question_repository.dart`:
+   - `kIsWeb` ortamında `OfflineDownloadService` (tarayıcı ~5MB `localStorage` sınırını ve açık metin kopyalamayı önlemek için) UI ve servis katmanında devre dışı bırakılsın (`isOfflineDownloadsSupported => !kIsWeb`).
+   - Web'de sorular Supabase oturumu aktifse doğrudan RLS korumalı Supabase sorgularından bellek içi LRU+TTL önbelleğe çekilsin; public static JSON fallback yalnızca konuk önizleme havuzu ile sınırlandırılsın.
+
+ADIM 2: Wasm Koşullu Importlar (`dart:io` Temizliği) & Temiz URL Stratejisi
+1. `lib/app/theme.dart`, `lib/core/config/supabase_config.dart`, `lib/core/services/ad_service.dart`, `lib/core/services/purchase_service.dart`, `lib/core/services/notification_service.dart`:
+   - Doğrudan `import 'dart:io';` yerine Dart koşullu ortam yardımcı dosyası (`lib/core/utils/platform_env_stub.dart` + `platform_env_io.dart` -> `if (dart.library.io)`) kurarak `flutter build web --wasm` derlemesinin sorunsuz çalışmasını garanti et.
+2. `lib/main.dart` & `pubspec.yaml` (`flutter_web_plugins`):
+   - `main()` başında `usePathUrlStrategy()` çağırarak `/#/lessons` yerine temiz `/lessons`, `/exams`, `/stats`, `/calculator` URL'lerini etkinleştir.
+
+ADIM 3: `web/index.html`, PWA Manifest & Hosting Yönlendirmesi
+1. `web/index.html`:
+   - `"A new Flutter project."` açıklamasını güncel Türkçe Kadro SEO/Open Graph meta etiketleriyle (`Kadro — Çoklu KPSS & MEB-AGS Hazırlık Platformu`) değiştir.
+   - Erişilebilirlik (`ui-ux-pro-max`) kuralı gereği `user-scalable=no` kilidini kaldır (`width=device-width, initial-scale=1.0`).
+   - Açılışta marka renkli (`#0F172A` / `#2140D4`) modern yükleme göstergesi (`#loading-indicator`) ekle; Flutter ilk frame'i çizdiğinde temiz kaldırılsın.
+2. Hosting SPA Rewrite örneği (`docs/web_deployment.md` içine `index.html` rewrite + Wasm multi-thread COOP/COEP HTTP header konfigürasyonu) ekle.
+```
+
+### 📦 TASK-146 [Web Faz 2 — Masaüstü SaaS Kabuğu]: `AdaptiveWebShell`, Sabit `KadroSidebar`, Tablet `NavigationRail` & `Ctrl+K` Komut Paleti
+
+- **Durum:** ✅ **Tamamlandı** *(Web SaaS Faz 2 — Masaüstü `KadroSidebar`, Ara `NavigationRail`, `DesktopTopUtilityBar` & `Ctrl+K` Komut Paleti · `412/412` Test)*
+- **Amaç:** Uygulamanın büyük ekranda telefon klonu gibi görünmesini bitirip **Duolingo Web + Linear** seviyesinde sol kenar çubuklu, breadcrumb destekli ve `Ctrl+K` spotlight aramalı profesyonel bir çalışma kabuğu oluşturmak.
+
+```text
+GÖREV: TASK-146 — AdaptiveWebShell, KadroSidebar, Üst Çalışma Şeridi & KadroCommandPalette (Ctrl+K)
+ÖNEMLİ: Mobil (< 600px) ekranda mevcut AppTopBar + AppNavigationBar yerleşimi %100 korunmalıdır! GEMINI.md ve MASTER.md kurallarına uy.
+
+ADIM 1: Masaüstü Breakpoint & Yardımcı Araçları (`lib/core/utils/responsive_layout.dart`)
+1. `enum ScreenLayoutTier { compactMobile, standardMobile, tablet, desktop, wideDesktop }`:
+   - `< 380`: `compactMobile` (dolgu 12px)
+   - `380–599`: `standardMobile` (dolgu 16px)
+   - `600–1023`: `tablet` (`NavigationRail` + `maxWidth: 880`, dolgu 24px)
+   - `1024–1439`: `desktop` (`256px` `KadroSidebar` + `maxWidth: 1240`, dolgu 28px)
+   - `>= 1440`: `wideDesktop` (`256px` `KadroSidebar` + `maxWidth: 1320`, dolgu 32px)
+2. `ResponsiveBreakpoints.tierOf(BuildContext)`, `isDesktopOrWider(BuildContext)` ve geniş sayfa konteynerleri için `ResponsiveContentWrapper(maxWidth: ..., expandOnDesktop: ...)` parametrelerini ekle.
+
+ADIM 2: Adaptif Kabuk & Sabit Sol Menü (`lib/app/app_shell.dart` + `lib/app/widgets/kadro_sidebar.dart` + `desktop_top_utility_bar.dart`)
+1. `lib/app/app_shell.dart` içinde ekran kırılımına göre kabuk seçimi kur:
+   - `compactMobile / standardMobile` (`< 768px`): mevcut `Scaffold(appBar: AppTopBar, bottomNavigationBar: AppNavigationBar)`.
+   - `tablet` (`768px–1023px`): Sol dar `NavigationRail` (76px, etiketli/ikonlu, üstte Tuğrul amblemi) + içerik.
+   - `desktop / wideDesktop` (`>= 1024px`): Sol tarafta `KadroSidebar` (`256px`, sağında `1.5px` `outlineVariant` ayırıcı) + sağda `Column(DesktopTopUtilityBar, Expanded(child: content))`.
+2. `KadroSidebar` içeriği:
+   - **Üst Marka & Aktif Sınav Kapsülü:** Tuğrul amblemi + `"Kadro"` + seçili sınav hedefi (`selection.displayTitle` — tıklanınca `TargetExamSelectorBottomSheet` / `AdaptiveOverlay` açılır).
+   - **Ana Gezinti (6 Sekme):** `Ana Sayfa`, `Dersler`, `Pratik`, `Denemeler`, `İstatistik`, `Profil` (`PhosphorIconsRegular` / seçili durumda `PhosphorIconsFill` + kobalt kapsül).
+   - **Hızlı Araçlar Bölümü:** `Yanlış Defteri` (rozet sayacı), `Pomodoro Stüdyosu`, `Puan Hesapla`.
+   - **Alt Durum Kartı:** Günlük hedef mini progress bar + PRO rozeti (`PRO'ya Geç` veya `Kadro PRO Aktif`).
+3. `DesktopTopUtilityBar`:
+   - Sol: Geçerli rota başlığı / breadcrumb.
+   - Orta: Tıklanabilir **`Hızlı Ara & Git (Ctrl + K)`** arama kapsülü.
+   - Sağ: Günlük çözülen/hedef kapsülü (`14 / 30`), Açık/Koyu tema hızlı geçiş ikonu, Tuğrul koçluk ipucu ikonu.
+
+ADIM 3: Global Komut Paleti (`lib/shared/widgets/command_palette_dialog.dart`)
+1. `CallbackShortcuts` ile kök kabukta `Ctrl+K` / `Cmd+K` tuşlarını dinle ve `KadroCommandPalette.show(context, ref)` aç.
+2. Arama kaynakları:
+   - Tüm ana/alt ekranlar (*Deneme Başlat*, *Puan Hesapla*, *Yanlış Defteri*, *Pomodoro*, *Harita Atölyesi*),
+   - `activeCurriculumProvider` içindeki tüm aktif ders ve konular (seçilince doğrudan `LessonTopicsScreen`'e gider),
+   - Sınav değiştirme kısayolları (*KPSS GY-GK*, *E-KPSS*, *DHBT*, *MEB-AGS*, *A Grubu*),
+   - Hızlı tema değiştirme.
+3. Tam klavye desteği (`Yukarı/Aşağı` ok ile seçim, `Enter` ile çalıştırma, `Esc` ile kapatma + sağda kısayol rozetleri).
+```
+
+### 📦 TASK-147 [Web Faz 2 — Masaüstü Mikro-Etkileşim & Overlay]: Hover-İmleç Fiziği (`TactileCard`), Erişilebilir Odak & `AdaptiveOverlay`
+
+- **Durum:** ✅ **Tamamlandı** *(Web SaaS Faz 2 — `TactileCard` / `OptionTile` Hover-Odak Fiziği & `AdaptiveOverlay` Dönüşümü · `412/412` Test)*
+- **Amaç:** Web kullanıcısının fare ile gezerken "cansız mobil ekrana bakıyorum" hissini ortadan kaldırmak: her tıklanabilir bileşende doğru imleç, zarif hover tepkisi, WCAG odak halkası, uzun sayfalarda kaydırma çubuğu ve büyük ekranlarda alt çekmece yerine dialog/yan panel göstermek.
+
+```text
+GÖREV: TASK-147 — TactileCard / OptionTile Web Hover Fiziği, Focus Halkası & AdaptiveOverlay (BottomSheet -> Dialog/SideDrawer)
+ÖNEMLİ: UI'da blurRadius > 0 gölge ekleme (MASTER.md 3px keskin alt dudak kuralı geçerlidir!). Reduced motion tercihlerine saygı göster.
+
+ADIM 1: `TactileCard` & `OptionTile` Web Hover + Focus Etkileşimi
+1. `lib/shared/widgets/tactile_card.dart`:
+   - `onTap != null` olduğunda widget'ı `MouseRegion(cursor: SystemMouseCursors.click)` ve `FocusableActionDetector` ile sarmala.
+   - Hover durumunda (ekran kaydırmadan / layout boyutu değiştirmeden!): kenarlığı ve alt dudak rengini `colorScheme.primary.withAlpha(150)` tonuna yumuşak (`Duration(milliseconds: 120)`) yaklaştır ve arka plana hafif yüzey vurgusu ekle.
+   - Klavye ile `Tab` odağı geldiğinde net `2px` yüksek kontrastlı (`colorScheme.primary`) odak halkası çiz.
+2. `lib/features/quiz/presentation/widgets/option_tile.dart`:
+   - Masaüstü tarayıcı için hover yüzey tonu, klavye kısayol ipucu rozeti (`[A]..[E]` masaüstünde görünür!) ve şık üstü çizme (`isEliminated` — tıklanabilir eleme ikonu + sağ tık menüsü alternatifi) ekle.
+3. Uzun çalışma ekranlarında (ör. İstatistik, Dersler, Konular) masaüstünde görünür ince `Scrollbar` ve açıklamalar için kontrollü `SelectionArea` sarmalayıcısı ekle.
+
+ADIM 2: Evrensel `AdaptiveOverlay` (`lib/shared/widgets/adaptive_overlay.dart`)
+1. `AdaptiveOverlay.showModal<T>(BuildContext context, {required WidgetBuilder builder, String? title, double dialogMaxWidth = 640, bool preferSideDrawerOnDesktop = false})`:
+   - `< 768px`: Standart `showModalBottomSheet` çalıştır (mevcut mobil davranış %100 korunur).
+   - `>= 768px` ve `preferSideDrawerOnDesktop == false`: Ekran ortasında yuvarlatılmış, `1.5px` kenarlıklı, kapatma (`X` / `Esc`) butonlu şık `Dialog` aç.
+   - `>= 768px` ve `preferSideDrawerOnDesktop == true`: Sağ kenardan kayan `420px` **Side Drawer** aç.
+2. Mevcut tüm kritik çekmeceleri bu yardımcıya bağla:
+   - `TargetExamSelectorBottomSheet.showSelection`,
+   - `PracticeHubScreen._showLessonSelectorSheet` ve `_showMockExamSelectorSheet`,
+   - `TugrulTipsSheet`, `ReportQuestionBottomSheet` ve `AutoStudyProgramModal`.
+```
+
+### 📦 TASK-148 [Web Faz 3 — Bento Dashboard]: 12 Sütunlu `HomeScreen` Bento Kokpiti, Çok Sütunlu Grid & Master-Detail `LessonTopicsScreen`
+
+- **Durum:** ✅ **Tamamlandı** *(Web SaaS Faz 3 — Bento `HomeScreen`, Çok Sütunlu Gridler & Master-Detail `LessonTopicsScreen` · `412/412` Test)*
+- **Amaç:** `HomeScreen`, `LessonsScreen`, `ExamsScreen` ve `PracticeHubScreen` ekranlarını masaüstünde 720px dar sütundan çıkarıp **Bento Grid** ve **Master-Detail** web workspace'ine dönüştürmek.
+
+```text
+GÖREV: TASK-148 — Bento Home Kokpiti, Çok Sütunlu Grid Ekranları & Master-Detail LessonTopicsScreen
+ÖNEMLİ: Tüm widget bölünmeleri GEMINI.md'ye uygun StatelessWidget sınıflarıyla yapılmalı, mobil kırılımı bozmamalı ve 360x640 ile 1440x900 arası sıfır overflow vermelidir.
+
+ADIM 1: Bento Kokpit `HomeScreen` (`lib/features/home/presentation/home_screen.dart` & alt widget'lar)
+1. `>= 1024px` ekranlarda tek `ListView` yerine `maxWidth: 1240` içinde 2 ana kolon (`Row(crossAxisAlignment: start)` — Sol `Expanded(flex: 7)` + `SizedBox(width: 20)` + Sağ `Expanded(flex: 5)`):
+   - **Sol Kolon (Ana Öğrenme Akışı):** Tuğrul Karşılama & Günlük Hedef Hero Bento Kartı -> `"Bugünün Çalışma Planı"` (`HomeDailyPlanCard` görev matrisi) -> (varsa) `_WeakLessonHomeBanner` Zayıf Konu Eylem Kartı.
+   - **Sağ Kolon (Kontrol & Hızlı Başlat Bento Modülleri):** Sınav Geri Sayım & Canlı Pomodoro Mini Stüdyosu -> Seri & Lig İlerleme Kartı -> 2x2 Hızlı Antrenman Bento Butonları (*Karışık Soru*, *Yanlış Defteri*, *Puan Hesapla*, *Harita Atölyesi*).
+2. Tablet (`768px–1023px`) ve Mobilde (`< 768px`) mevcut tek sütun akış korunur.
+
+ADIM 2: Çok Sütunlu `LessonsScreen`, `ExamsScreen` & `PracticeHubScreen`
+1. `lib/features/lessons/presentation/lessons_screen.dart`:
+   - Üstte sınav ağırlık dağılımı özeti tam genişlik (`maxWidth: 1240`); altındaki ders kartlarını ekran genişliğine göre `LayoutBuilder` + eşit yükseklikli satırlarla **1 kolon (< 680px), 2 kolon (680–1150px), 3 kolon (> 1150px)** grid düzenine çevir.
+2. `lib/features/exams/presentation/exams_screen.dart` & `practice_hub_screen.dart`:
+   - `ExamsScreen`: Hero Deneme Kartı tam genişlik (masaüstünde solda sınav bilgisi + sağda hemen başlat aksiyonu yatay yerleşim), altındaki deneme şablonu kartları masaüstünde 2–3 sütunlu grid.
+   - `PracticeHubScreen`: Antrenman türleri ve atölyeler masaüstünde **3 sütunlu modüler Bento grid** olarak sergilensin.
+
+ADIM 3: Master-Detail `LessonTopicsScreen` (`lib/features/lessons/presentation/lesson_topics_screen.dart`)
+1. `>= 960px` masaüstü genişlikte 2 panelli Master-Detail layout kur:
+   - **Sol Panel (~%42):** Aktif dersin tüm konu kartları + arama/filtre + konu ustalık göstergesi (`selectedTopic` durumu tutularak tıklanan konu highlight edilir).
+   - **Sağ Panel (~%58):** Seçili konunun test paketleri (`TopicTestsScreen` içeriği `isEmbedded: true` parametresiyle kendi Scaffold/AppBar'ı olmadan doğrudan sağ panelde render edilir!), ilerleme özeti ve tek tıkla **"Testi Başlat"** aksiyonu.
+2. `< 960px` mobilde mevcut tıklayınca `TopicTestsScreen`'e push etme akışı aynen korunur.
+```
+
+### 📦 TASK-149 [Web Faz 3 — Split-Pane Sınav Stüdyosu]: UWorld / e-YDS Tarzı 2 Panelli `QuizScreen`, Klavye Kısayolları & 2 Kolonlu İstatistik/Karne
+
+- **Durum:** ✅ **Tamamlandı** *(Web SaaS Faz 3 — Split-Pane `QuizScreen`, Klavye Kısayolları, Şık Eleme & 2 Kolonlu İstatistik/Karne · `412/412` Test)*
+- **Amaç:** KPSS/MEB-AGS/A Grubu adayının masaüstü tarayıcıda **UWorld & ÖSYM e-Sınav** kalitesinde kesintisiz, klavye hızlı ve iki panelli soru/deneme çözmesini sağlamak.
+
+```text
+GÖREV: TASK-149 — Desktop Split-Pane QuizScreen, Tam Klavye Kısayolları (1-5/A-E/Enter/F/Shift+1..5/?) & 2 Kolonlu Karne/İstatistik
+ÖNEMLİ: Mobil QuizScreen düzeni ve testleri (< 960px) eksiksiz korunmalıdır. E-KPSS Yüksek Okunabilirlik ve textScaleFactor Web'de de sorunsuz çalışmalıdır.
+
+ADIM 1: Masaüstü Split-Pane `QuizScreen` Mimarisi (`lib/features/quiz/presentation/quiz_screen.dart`)
+1. `>= 960px` ekranlarda tam ekran dikkat dağıtmayan sınav çalışma alanı (`Scaffold`):
+   - **Sabit Üst Sınav Şeridi:** Çıkış / geri onayı, ders/deneme adı, dijital sayaç (`tabularFigures`), **"Bayrak Ekle (F)"** toggle, **"Punto (A+/A-)"**, **"Kısayollar (?)"** dialog butonu ve **"Sınavı Bitir"** CTA'sı.
+   - **Ana Bölünmüş Tuval (`Row`):**
+     - **Sol Çalışma Paneli (`Expanded(flex: 58)`):** İçerik `max-width: 720px` (yaklaşık `65–75` karakter okuma ölçüsü) ile ortalanır. Soru kökü, görsel kart (`TurkeyMap`, `ClimateChart`, `GeoDiagram`, `PopulationPyramid`), 5 `OptionTile` ve sol altta sabit önceki/onayla/sonraki aksiyon şeridi.
+     - **Sağ Yardımcı Panel (`Expanded(flex: 42)`, `surfaceContainerLow` + sol `1.5px` border):**
+       - *Öğrenme Modunda:* Cevap henüz onaylanmadıysa hafif konu bilgisi / çalışma ipucu & soru gezgini; cevap onaylandığı anda alt çekmece yerine burada anında açılan **"Doğru/Yanlış Sonucu + ⚠️ ÖSYM Çeldirici Tuzağı + Detaylı Çözüm Analizi"** kartı!
+       - *Deneme Modunda:* Bölüm sekmeli (`GK / ÖABT / DHBT-1..2`) **canlı optik cevap kâğıdı** sürekli görünür (boş, işaretli ve bayraklı soru renk kodları + tek tık atlama).
+
+ADIM 2: Klavye Odaklı Kontrol (`CallbackShortcuts` & Şık Eleme)
+1. `QuizScreen` içine masaüstü/web `CallbackShortcuts` bağla (aktif text input yoksa):
+   - `Digit1..5` / `KeyA..E`: İlgili şıkkı seç.
+   - `Shift + Digit1..5` (veya şıktaki eleme ikonu): Şıkkı üstü çizili (`strikethrough`) olarak ele / geri al.
+   - `Enter` / `ArrowRight` / `KeyN`: Seçiliyse cevabı onayla veya sonraki soruya geç.
+   - `ArrowLeft` / `KeyP`: Önceki soruya dön.
+   - `KeyF`: Soruyu işaretle (bayrakla).
+   - `Slash` (`?`): Klavye kısayolları yardım penceresini aç.
+
+ADIM 3: 2 Kolonlu Masaüstü `QuizResultScreen` & `StatsScreen`
+1. `lib/features/quiz/presentation/quiz_result_screen.dart` & `lib/features/stats/presentation/stats_screen.dart`:
+   - `>= 960px` ekranlarda **Sol Kolon:** Genel skor/net kartı + Tuğrul değerlendirmesi + telafi aksiyonu; **Sağ Kolon:** `fl_chart` ders bar/trend grafikleri + ders bazlı net tablosu (erişilebilir veri özeti & tooltip ile) + son deneme oturumları.
+```
+
+### 📦 TASK-150 [Web Faz 4 — Geniş Ekran Atölyeler]: Split Harita Atölyesi, Klavyeli Kartlar, Zen Masa Saati & Sticky Puan Hesaplayıcı
+
+- **Durum:** ✅ **Tamamlandı** *(Web SaaS Faz 4 — Split Harita & Hover, Klavyeli `FlashcardsScreen`, Split `PomodoroStudioScreen` & Sticky `ScoreCalculator` · `412/412` Test)*
+- **Amaç:** Harita Atölyesi, Bilgi Kartları, Pomodoro Stüdyosu ve Çoklu KPSS Puan Hesaplama ekranlarının geniş ekranda dikey kaydırma yükünü azaltıp yan yana masaüstü çalışma araçlarına dönüşmesi.
+
+```text
+GÖREV: TASK-150 — Geniş Ekran Harita Split-Pane, Klavyeli Flashcards, Zen Masa Saati Pomodoro & Sticky ScoreCalculator
+ADIM 1: `MapPracticeHubScreen` & `MapChallengeScreen` (`lib/features/map_practice/presentation/`)
+- `>= 960px` ekranda solda büyük interaktif `TurkeyMap` (fare hover il isim tooltip + vurgu), sağda soru metni, kombo/puan durumu, ipucu ve il listesi yan yana konumlandır.
+ADIM 2: `FlashcardsScreen` (`lib/features/flashcards/presentation/flashcards_screen.dart`)
+- Masaüstünde büyük ortalanmış kart + klavye kısayolları (`Space`: Kartı Çevir, `ArrowLeft` / `1`: Tekrar Et, `ArrowRight` / `2`: Biliyorum) + sağda ders filtresi ve deste ilerleme paneli.
+ADIM 3: `PomodoroStudioScreen` (`lib/features/pomodoro/presentation/pomodoro_studio_screen.dart`)
+- Masaüstünde solda büyük odak sayacı (`Flip Clock` / `Zen`), sağda seans süresi/ders seçici, hedef halkası ve sade arka planla dikkat dağıtmayan tam ekran **"Masa Saati Zen Modu"** düğmesi.
+ADIM 4: `KpssScoreCalculatorScreen` (`lib/features/score_calculator/presentation/kpss_score_calculator_screen.dart`)
+- `>= 960px` ekranda 2 kolonlu **Sticky Sonuç** düzeni:
+  - **Sol Kolon (~%56):** Sınav türü seçici (B Grubu, E-KPSS, DHBT, MEB-AGS, A Grubu) + test doğruluk/yanlış sürgü kartları.
+  - **Sağ Yapışkan Kolon (~%44):** Hesaplanan ana skor Hero kartı, tüm puan türleri matrisi (`KPSSP1-3`, `P122-124`, `AGS-P1/2/3`, `P4-P48`) ve geçmiş yıl simülasyon kıyaslaması her zaman ekranda görünür kalır.
+```
+
+### 📦 TASK-151 [Web Faz 4 — Giriş Vitrini & SEO Köprüsü]: Split `AuthScreen`, Misafir `/calculator` & `/curriculum-preview` Rotaları
+
+- **Durum:** ✅ **Tamamlandı** *(Web SaaS Faz 4 — Split `AuthScreen`, Misafir `/calculator` & `/curriculum-preview` Rotaları · `412/412` Test)*
+- **Amaç:** Web kullanıcısının ilk karşılaştığı giriş ekranını masaüstüne yakışan bir vitrine dönüştürmek ve ziyaretçilerin üye olmadan puan hesaplayıp müfredat keşfedebilmesini sağlamak.
+
+```text
+GÖREV: TASK-151 — Masaüstü Split AuthScreen, Public Misafir Rotaları (/calculator, /curriculum-preview) & SEO Landing Sözleşmesi
+ADIM 1: 2 Kolonlu Masaüstü `AuthScreen` (`lib/features/auth/presentation/auth_screen.dart`)
+- `>= 960px` ekranlarda solda Tuğrul Kobaltı & Anadolu Altını vitrin paneli (5 sınav ailesi özeti, ÖSYM Çeldirici Tuzağı örneği, çapraz cihaz bulut eşitleme vurgusu ve **"Hemen Puan Hesapla (Misafir)"** kısa yolu), sağda ortalanmış Google / E-posta giriş & kayıt formu.
+ADIM 2: Misafir Erişimli Public Rotalar (`lib/app/router.dart` & `lib/app/app_shell.dart`)
+- `/calculator` (`KpssScoreCalculatorScreen`) ve `/curriculum-preview` (aktif sınav & 17 ÖABT / 9 A Grubu konu ağacı gezgini) rotalarının oturum (`isAuthenticated`) olmadan açılabilmesini sağla; işlem sonrası alt şeritte **"Çalışma Planını ve Puanını Kaydetmek İçin Giriş Yap"** aksiyonu sun.
+- Deep-link query desteği ekle: `/calculator?exam=meb_ags` veya `/curriculum-preview?scope=dhbt_lisans`.
+ADIM 3: Opsiyonel SEO Vitrin Sözleşmesi (`docs/web_deployment.md`)
+- Google SEO / organik arama trafiği için ana domainde (`kadro.com`) statik/SSR landing + puan/konu rehberi (Next.js / Astro) -> `app.kadro.com` Flutter Web SaaS köprü mimarisini ve Pay/OAuth origin kurallarını belgele.
+```
+
+### 📦 TASK-152 [Web Faz 5 — Ödeme Köprüsü, Wasm Build & Çoklu Breakpoint Testleri]: Web Billing (`iyzico` / `RevenueCat Web`), Wasm & Kalite Kapısı
+
+- **Durum:** ✅ **Tamamlandı** *(Web SaaS Faz 5 — `06_web_subscriptions.sql`, `docs/web_deployment.md`, Wasm Dry-Run + `flutter build web` & `web_responsive_saas_test.dart` · `412/412` Test)*
+- **Amaç:** Web'de gerçek ve güvenli PRO abonelik senkronunu tamamlamak, `flutter build web --wasm` derlemesini doğrulamak ve 4 farklı ekran kırılımında sıfır overflow + klavye + güvenlik garantisi almak.
+
+```text
+GÖREV: TASK-152 — Web PRO Ödeme Köprüsü (Supabase `subscriptions` + iyzico/RevenueCat Web), Wasm Derleme & 4-Breakpoint Test Paketi
+ADIM 1: Çapraz Platform PRO Yetki Tablosu & Web Checkout (`docs/supabase_migrations/06_web_subscriptions.sql` & `purchase_service.dart`)
+1. Supabase `public.subscriptions` tablosu ve RLS (`user_id = auth.uid()` okuma; yazma YALNIZCA `service_role` webhook / Edge Function) + `profiles.is_pro` senkron trigger'ını tasarla.
+2. `PurchaseService`: Türkiye hedefinde **iyzico Checkout + Supabase Edge Function** (veya global Stripe + RevenueCat Web Billing) tetikleyicisi için platform soyutlamasını tamamla; işlem sonrası istemcide kör `upgradeToPro()` yerine sunucudan `subscriptions` / `profiles.is_pro` yeniden doğrulaması (`verifyProEntitlement()`) yap.
+
+ADIM 2: Web Release & Wasm Doğrulaması
+1. `flutter analyze`, `dart format lib test` sıfır hata kontrolü ve `flutter build web --wasm` (veya JS fallback ile) temiz derleme doğrulaması.
+
+ADIM 3: Kapsamlı Multi-Breakpoint Web Widget & Güvenlik Testleri (`test/web_responsive_saas_test.dart`)
+1. `Size(1440, 900)` (Masaüstü Web), `Size(1024, 768)` (Küçük Masaüstü), `Size(768, 1024)` (Tablet) ve `Size(360, 640)` (Kompakt Mobil) ekranlarında `AppShell`, `HomeScreen`, `LessonsScreen`, `ExamsScreen`, `QuizScreen`, `StatsScreen` ve `KpssScoreCalculatorScreen` için sıfır overflow doğrulaması.
+2. `>= 1024px` ekranda `KadroSidebar` görünürken `AppNavigationBar`'ın gizlendiğini; `< 600px` ekranda ise `AppNavigationBar`'ın görünür olduğunu doğrula.
+3. `QuizScreen` masaüstü Split-Pane testleri: `1-5`/`A-E` şık seçimi, `Shift+1` şık eleme, `Enter` ile onaylama/ilerleme ve `Ctrl+K` `KadroCommandPalette` açılıp arama yapması.
+4. Güvenlik regresyon testi: Web modunda (`mock` açık değilken) `PurchaseService.purchasePlan` ve `AdService` asla ücretsiz `PRO` veya bedava soru kotası vermemelidir.
+```
+
+---
+
+## 🎨 42. Dalga 42: UI Bileşen Eşlenikliği & Ortak Tasarım Bileşenleri (`TASK-153`)
+
+Proje genelinde geliştirilen ekranların tasarım dili, kod yapısı ve dokunsal (`TactileCard` / `AdaptiveOverlay`) standartlarının tek merkezden yönetilmesi ve tekil/dağınık UI kodlarının ortak bileşenlere (`lib/shared/widgets/`) taşınması amacıyla oluşturulan görev paketidir:
+
+### 📦 TASK-153: Ortak UI Bileşenleri (`KadroDropdown`, `KadroOptionPickerModal`, `KadroConfirmDialog`, `KadroBadge`, `PageHeader` & `AdaptiveOverlay` Eşitlemesi)
+
+- **Durum:** 🟡 **Kısmen Tamamlandı (Adım 1 Done · Adım 2–6 Planlandı)**
+- **Amaç:** Tüm modalların, seçicilerin, onay diyaloglarının, rozetlerin, sayfa başlıklarının ve form alanlarının aynı kod yapısını paylaşmasını sağlayarak hem kod tekrarını önlemek hem de Web/Mobil genelinde tutarlı kullanıcı deneyimi garanti etmek.
+
+```text
+GÖREV: TASK-153 — Proje Geneli UI Bileşen Eşleniklik Denetimi & Ortak Widget Kütüphanesi Standardizasyonu
+ÖNEMLİ: GEMINI.md ve design-system/kadro/MASTER.md kurallarına uy; `lib/shared/` altında `widgets/` dışında klasör açma, sabit Color(0xFF...) ve fontSize kullanma.
+
+ADIM 1: Ortak `KadroDropdown<T>` Bileşeni (✅ TAMAMLANDI)
+- `lib/shared/widgets/kadro_dropdown.dart`: Standart tam genişlik form/satır varyantı (`KadroDropdown`) ve kompakt kart başlığı hapı (`KadroDropdown.compact`) oluşturuldu; hover/odak kenarlığı, PhosphorIcons `caretDown`, `ValueKey` desteği ve tek tip açılır menü stili sağlandı.
+- Entegre edilen yerler:
+  1. `ReportQuestionBottomSheet` (`lib/features/reports/presentation/report_question_bottom_sheet.dart`): 6'lı `ChoiceChip` kalabalığı kaldırılıp hata sebebi seçimi `KadroDropdown<String>` ile değiştirildi.
+  2. `KpssScoreCalculatorScreen` (`lib/features/score_calculator/presentation/kpss_score_calculator_screen.dart`): `_ScoreTypeSelector` içindeki ~85 satırlık özel `DropdownButton` sarımı `KadroDropdown<ScoreEngineMode>` çağrısına indirildi.
+  3. `PomodoroStudioScreen` (`lib/features/pomodoro/presentation/pomodoro_studio_screen.dart`): Farklı menü mantığı kullanan `PopupMenuButton<String>` ders seçicisi `KadroDropdown<String>.compact` bileşenine taşındı.
+
+ADIM 2: Ortak Radyo Kart Seçim Modalı (`KadroOptionPickerModal<T>`)
+- Mevcut Farklılık: `ProfileScreen._showQuizModeDialog` artık `AdaptiveOverlay.showModal` + dokunsal `TactileCard` radyo kartları kullanırken; `ProfileScreen._showDailyGoalDialog` ve `_showThemeDialog` (`lib/features/profile/presentation/profile_screen.dart:82,120`) hâlâ düz metinli `SimpleDialog` + `SimpleDialogOption` kullanmaktadır.
+- Hedef: `lib/shared/widgets/kadro_option_picker_modal.dart` ile tüm tekli tercih seçicilerini (`Günlük Hedef`, `Tema Tercihi`, `Soru Çözüm Modu`) dokunsal kart + radyo göstergeli ortak yapıya kavuştur.
+
+ADIM 3: Ortak Onay / Uyarı Diyaloğu (`KadroConfirmDialog`)
+- Mevcut Farklılık: Doğrudan `showDialog + AlertDialog` çağrıları `blueprint_exam_launcher.dart` (3 ayrı nokta), `lesson_topics_screen.dart`, `map_challenge_screen.dart`, `profile_screen.dart` ve `force_update_dialog.dart` içinde birbirinden farklı başlık/ikon/buton düzenleriyle tekrar edilmektedir.
+- Hedef: `lib/shared/widgets/kadro_confirm_dialog.dart` (`show` / `confirm` metotları; `isDestructive` destekli, tutarlı ikon + başlık + buton yerleşimi) oluştur ve tüm dağınık `AlertDialog` çağrılarını bu bileşene taşı.
+
+ADIM 4: `AdaptiveOverlay.showModal` Mobil Alt Çekmece Başlığı & Tutaç Standardı
+- Mevcut Farklılık: Masaüstünde `_DesktopOverlayHeader` başlık ve kapatma (`X`) butonunu otomatik çizerken mobilde her çağırıcı (`report_question_bottom_sheet.dart:106-143`, `achievement_showcase.dart:30-37`, `profile_screen.dart:192-210`) `36x4` tutamaç çizgisini ve başlığı tek tek elle yazmaktadır.
+- Hedef: `AdaptiveOverlay.showModal` içine opsiyonel tutamaç + mobil başlık şeridi desteği (`showMobileHeader`) ekle ve alt sayfalardaki el yapımı tutamaç/başlık kopyalarını temizle.
+
+ADIM 5: Sayfa Başlığı (`PageHeader`) & Bilgi/Hata Kutusu Eşitlemesi
+- Mevcut Farklılık: `admin_reports_screen.dart:101` ortak `PageHeader` (`lib/shared/widgets/page_header.dart`) kullanırken; `ProfileScreen` (`profile_screen.dart:279`) ve diğer ana sekmeler el yapımı `Column([Text, Text])` başlıkları ve serbest `Container(border: ...)` bilgi kartları kullanmaktadır (`report_question_bottom_sheet.dart:146`, `quiz_screen` / `quiz_result_screen` rozetleri).
+- Hedef:
+  1. `PageHeader` bileşenine ikonsuz/kompakt varyant desteği ekleyip `ProfileScreen` ve ana tab başlıklarını eşitle.
+  2. Ortak `KadroBadge` (`lib/shared/widgets/kadro_badge.dart`) oluşturarak `PRO`, konu/ders etiketi ve mod rozeti gibi dağınık hap (`Container` + `borderRadius`) tanımlarını tek tasarımda birleştir.
+
+ADIM 6: Form Alanları (`InputDecoration`), `ListTile` Kart Dolgusu & Filtre Şeridi Standardı
+- Mevcut Farklılık: `report_question_bottom_sheet.dart`, `study_planner_screen.dart:643`, `command_palette_dialog.dart:379` ve `exam_target_picker_view.dart:595` içinde `TextField` kenarlıkları (`borderRadius: 8` / `12`) ve `TactileCard` içi `ListTile` dolguları yer yer elle geçersiz kılınmaktadır.
+- Hedef: Tema `InputDecorationTheme` kurallarını tüm metin kutularında koru (`borderRadius` elle ezilmesin), `ListTile` grupları için `TactileCard` standart kompakt liste dolgusu (`EdgeInsets.symmetric(horizontal: 4, vertical: 2)`) veya `KadroSettingsCard` sarmalayıcısı kullan ve çoklu ders filtreleri için `KadroFilterChips` sözleşmesini netleştir.
+```
+
+---
+
+## 🎯 43. Dalga 43: Branş Denemeleri Ekosistemi (`TASK-154`)
+
+Adayların tam genel denemeler dışında tek bir derse odaklanarak gerçek sınav soru sayısı, süresi ve konu ağırlık dağılımıyla **Branş Denemeleri** çözebilmesi için planlanan görev paketidir:
+
+### 📦 TASK-154: Her Ders İçin Sınav Formatında Branş Denemeleri (`BranchMockExamGenerator` & Ders Bazlı Net Karnesi)
+
+- **Durum:** ⏳ **Planlandı (Sonraki Aşamalar)**
+- **Amaç:** Her ders için ÖSYM sınav formatına birebir uygun (ör. KPSS Lisans GK'da Tarih 27, Coğrafya 18, Vatandaşlık 9, Güncel Bilgiler 6 soru; diğer KPSS/MEB-AGS kapsamlarında aktif `ExamCurriculum` ders soru sayılarına göre dinamik) süreli ve net hesaplamalı branş denemeleri sunmak.
+
+```text
+GÖREV: TASK-154 — Her Ders İçin Sınav Formatında Branş Denemeleri
+ÖNEMLİ: GEMINI.md kurallarına uy; çoklu sınav kapsamlarında (`ExamCurriculum`) sabit soru sayısı yazmak yerine ilgili dersin `questionCount` ve `topics` dağılımını temel al.
+
+1. Branş Deneme Üretici Motoru (`BranchMockExamGenerator`):
+   - Aktif `ExamSelection` / `ExamCurriculum` içindeki seçili ders için (`lesson.questionCount`) konu ağırlıklarına göre dengeli soru seti üret (ör. Tarih 27, Coğrafya 18, Vatandaşlık 9, Güncel 6).
+   - Ders soru sayısına orantılı gerçekçi sınav süresi hesapla (örn. soru başı ~1.1 dk) ve `QuizMode.exam` kurallarıyla (4 yanlış 1 doğruyu götürür) çalıştır.
+   - Çoklu deneme seti (Branş Denemesi 1, 2, 3...) destekleyerek aynı dersin farklı denemelerinde soru tekrarını en aza indir.
+
+2. Arayüz & Başlatma Noktaları:
+   - `ExamsScreen` içinde "Branş Denemeleri" bölümü ve `LessonTopicsScreen` üstünde "Bu Dersten Branş Denemesi Çöz" hızlı aksiyonu ekle.
+   - Bitiş ekranında (`QuizResultScreen`) ders neti, konu bazlı doğru/yanlış kırılımı ve zayıf konu yönlendirmesi göster.
+
+3. İstatistik & Planlayıcı Entegrasyonu:
+   - Çözülen branş denemelerini `StudyStatsNotifier` oturum geçmişine kaydet ve `StudyPlannerNotifier` görevleriyle uyumlu hale getir.
+
+4. Testler:
+   - `BranchMockExamGenerator` ders soru sayısı/konu dağılımı birim testleri ve `ExamsScreen` / `QuizScreen` branş denemesi widget testlerini yaz.
+```
+
+---
+
+## 🚪 44. Dalga 44: Misafir Öncelikli Açılış & Test Sonu Kayıt Uyarı Popup'ı (`TASK-155`)
+
+Kullanıcıların siteye veya uygulamaya ilk girdiklerinde zorunlu giriş (`AuthScreen`) ekranına yönlendirilmeden doğrudan uygulamayı deneyimleyebilmesi ve yalnızca test bitiminde ilerleme kaydı konusunda bilgilendirilmesi için planlanan görev paketidir:
+
+### 📦 TASK-155: Zorunlu Giriş Yönlendirmesinin Kaldırılması & Test Sonu Misafir Kayıt Uyarı Popup'ı
+
+- **Durum:** ✅ **Tamamlandı**
+- **Amaç:** Siteye/uygulamaya ilk kez giren kullanıcıyı kesinlikle giriş sayfasına (`AuthScreen`) zorla yönlendirmemek; misafir kullanıcının doğrudan ana sayfaya ve testlere erişmesini sağlamak, tamamladığı her testin sonunda ise açılan bir popup ile *"Giriş yapmazsanız ilerlemeniz kaydedilemez. Şimdi giriş yapmak istemezseniz dilediğiniz zaman Profil sekmesinden giriş yapabilirsiniz."* uyarısını göstermek.
+
+```text
+GÖREV: TASK-155 — Misafir Öncelikli Açılış (No Forced Auth Redirect) & Test Sonu İlerleme Kayıt Uyarı Popup'ı
+ÖNEMLİ: GEMINI.md kurallarına uy; ortak diyalog/overlay yapısını (`AdaptiveOverlay` / `KadroConfirmDialog`) ve `Theme.of(context)` renk/tipografi sistemini kullan.
+
+1. Zorunlu Giriş Yönlendirmesinin Kaldırılması (`lib/app/router.dart`):
+   - Kullanıcı siteye veya uygulamaya ilk girdiğinde (`/` veya ana sekmeler) oturum açmamış olsa bile kesinlikle `/auth` (`AuthScreen`) sayfasına otomatik yönlendirme yapma.
+   - Misafir kullanıcılar tüm ana sekmeleri (`Ana Sayfa`, `Dersler`, `Pratik`, `Denemeler`, `İstatistik`, `Profil`) ve soru çözüm ekranlarını doğrudan açabilsin.
+
+2. Test Bitiminde Misafir Uyarı Popup'ı (`QuizResultScreen` / `QuizScreen`):
+   - Kullanıcı misafir modda (`!authState.isAuthenticated` / `isGuest`) bir testi bitirdiğinde, sonuç ekranında (`QuizResultScreen` açılışında) otomatik olarak tek seferlik anlaşılır bir popup (`AdaptiveOverlay` / Dialog) göster:
+     - Başlık: "İlerlemeniz Kaydedilmiyor"
+     - Açıklama: "Giriş yapmazsanız çözdüğünüz testler ve istatistikleriniz kalıcı olarak kaydedilemez. Şimdi giriş yapmak istemiyorsanız daha sonra istediğiniz zaman Profil sekmesinden giriş yapabilirsiniz."
+     - Aksiyonlar:
+       1. Birincil Buton: "Giriş Yap / Kayıt Ol" (`/auth` ekranına yönlendirir).
+       2. İkincil Buton: "Şimdilik Devam Et" (popup'ı kapatır, kullanıcı sonuç ekranını incelemeye devam eder).
+
+3. Profil Sekmesi Giriş Alanı (`ProfileScreen`):
+   - Misafir kullanıcılar için `ProfileScreen` üst kısmında net ve görünür bir "Giriş Yap / Hesap Oluştur (İlerlemeni Buluta Kaydet)" kartı/butonu bulunduğundan emin ol.
+
+4. Testler:
+   - İlk açılışta misafir kullanıcının `/auth` ekranına yönlendirilmeden doğrudan ana ekrana düştüğünü doğrulayan router testi yaz.
+   - Misafir kullanıcı bir testi tamamladığında uyarı popup'ının açıldığını, "Profil sekmesinden giriş yapabilirsiniz" bilgisini içerdiğini ve giriş yapmış kullanıcıda bu popup'ın çıkmadığını doğrulayan widget testi ekle.
+```

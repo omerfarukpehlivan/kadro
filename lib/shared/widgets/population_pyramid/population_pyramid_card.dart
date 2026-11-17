@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'population_pyramid.dart';
 
@@ -13,26 +13,25 @@ class PopulationPyramidCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16.0),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF8FAFC),
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
-        ),
+        border: Border.all(color: colorScheme.outlineVariant, width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: colorScheme.outlineVariant,
+            offset: const Offset(0, 3),
+            blurRadius: 0,
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(14.5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -47,24 +46,23 @@ class PopulationPyramidCard extends StatelessWidget {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF8B5CF6).withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          LucideIcons.users,
+                        PhosphorIcon(
+                          PhosphorIconsRegular.users,
                           size: 13,
-                          color: Color(0xFF8B5CF6),
+                          color: colorScheme.onPrimaryContainer,
                         ),
-                        SizedBox(width: 5),
+                        const SizedBox(width: 5),
                         Text(
-                          'KPSS Demografi & Nüfus Piramidi',
-                          style: TextStyle(
-                            fontSize: 11,
+                          title ?? 'KPSS Demografi & Nüfus Piramidi',
+                          style: textTheme.labelSmall?.copyWith(
                             fontWeight: FontWeight.w700,
-                            color: Color(0xFF8B5CF6),
+                            color: colorScheme.onPrimaryContainer,
                           ),
                         ),
                       ],
@@ -74,7 +72,7 @@ class PopulationPyramidCard extends StatelessWidget {
                   // Büyüt Butonu
                   InkWell(
                     onTap: () => _openZoomDialog(context),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(8),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
@@ -83,16 +81,16 @@ class PopulationPyramidCard extends StatelessWidget {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            LucideIcons.zoomIn,
+                          PhosphorIcon(
+                            PhosphorIconsRegular.magnifyingGlassPlus,
                             size: 14,
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             'Büyüt',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -109,9 +107,8 @@ class PopulationPyramidCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
               child: Text(
                 config.title,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.2,
+                style: textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -131,19 +128,22 @@ class PopulationPyramidCard extends StatelessWidget {
                 alignment: WrapAlignment.center,
                 children: [
                   _buildStatBadge(
-                    icon: LucideIcons.calendar,
+                    context: context,
+                    icon: PhosphorIconsRegular.calendar,
                     label: 'Ortanca Yaş: ${config.medianAge}',
-                    color: const Color(0xFF0284C7),
+                    color: colorScheme.primary,
                   ),
                   _buildStatBadge(
-                    icon: LucideIcons.briefcase,
+                    context: context,
+                    icon: PhosphorIconsRegular.briefcase,
                     label: '15-64 Aktif: %${config.workingAgePercent}',
-                    color: const Color(0xFF059669),
+                    color: colorScheme.secondary,
                   ),
                   _buildStatBadge(
-                    icon: LucideIcons.heartPulse,
+                    context: context,
+                    icon: PhosphorIconsRegular.heartbeat,
                     label: '65+ Yaşlı: %${config.elderlyPercent}',
-                    color: const Color(0xFFDC2626),
+                    color: colorScheme.error,
                   ),
                 ],
               ),
@@ -153,35 +153,28 @@ class PopulationPyramidCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.25)
-                    : Colors.white.withValues(alpha: 0.6),
+                color: colorScheme.surfaceContainer,
                 border: Border(
-                  top: BorderSide(
-                    color: theme.colorScheme.outlineVariant.withValues(
-                      alpha: 0.3,
-                    ),
-                  ),
+                  top: BorderSide(color: colorScheme.outlineVariant),
                 ),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 2, right: 6),
-                    child: Icon(
-                      LucideIcons.sparkles,
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2, right: 6),
+                    child: PhosphorIcon(
+                      PhosphorIconsRegular.info,
                       size: 13,
-                      color: Color(0xFF8B5CF6),
+                      color: colorScheme.primary,
                     ),
                   ),
                   Expanded(
                     child: Text(
                       config.educationalNote,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontSize: 11,
+                      style: textTheme.bodySmall?.copyWith(
                         height: 1.35,
-                        color: theme.colorScheme.onSurfaceVariant,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
@@ -195,10 +188,12 @@ class PopulationPyramidCard extends StatelessWidget {
   }
 
   Widget _buildStatBadge({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required Color color,
   }) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
       decoration: BoxDecoration(
@@ -209,12 +204,11 @@ class PopulationPyramidCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 11, color: color),
+          PhosphorIcon(icon, size: 11, color: color),
           const SizedBox(width: 4),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 10,
+            style: textTheme.labelSmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: color,
             ),
@@ -225,26 +219,21 @@ class PopulationPyramidCard extends StatelessWidget {
   }
 
   void _openZoomDialog(BuildContext context) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (ctx) {
-        final isDark = Theme.of(ctx).brightness == Brightness.dark;
+        final ctxTheme = Theme.of(ctx);
+        final ctxScheme = ctxTheme.colorScheme;
+        final ctxText = ctxTheme.textTheme;
         return Dialog(
-          backgroundColor: Colors.transparent,
+          backgroundColor: ctxScheme.surface,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(color: ctxScheme.outlineVariant),
+          ),
           insetPadding: const EdgeInsets.all(12),
-          child: Container(
+          child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 580, maxHeight: 520),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0F172A) : Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black38,
-                  blurRadius: 24,
-                  offset: Offset(0, 8),
-                ),
-              ],
-            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -253,24 +242,26 @@ class PopulationPyramidCard extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16, 12, 12, 8),
                   child: Row(
                     children: [
-                      const Icon(
-                        LucideIcons.users,
+                      PhosphorIcon(
+                        PhosphorIconsRegular.users,
                         size: 16,
-                        color: Color(0xFF8B5CF6),
+                        color: ctxScheme.primary,
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           config.title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                          style: ctxText.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(LucideIcons.x, size: 18),
+                        icon: const PhosphorIcon(
+                          PhosphorIconsRegular.x,
+                          size: 18,
+                        ),
                         onPressed: () => Navigator.of(ctx).pop(),
                         visualDensity: VisualDensity.compact,
                       ),
@@ -299,12 +290,12 @@ class PopulationPyramidCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        '💡 Çift parmakla yakınlaştırabilirsiniz',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                          fontStyle: FontStyle.italic,
+                      Expanded(
+                        child: Text(
+                          'Çift parmakla yakınlaştırabilirsiniz',
+                          style: ctxText.bodySmall?.copyWith(
+                            color: ctxScheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
                       TextButton(

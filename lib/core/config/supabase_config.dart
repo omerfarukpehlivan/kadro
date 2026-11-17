@@ -1,6 +1,4 @@
-import 'dart:io' show Platform;
-
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:kadro/core/utils/platform_env.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Supabase proje bağlantı yapılandırması.
@@ -19,14 +17,12 @@ class SupabaseConfig {
 
   static bool _initialized = false;
 
-  static bool get _isFlutterTest {
-    if (kIsWeb) return false;
-    try {
-      return Platform.environment.containsKey('FLUTTER_TEST');
-    } catch (_) {
-      return false;
-    }
-  }
+  static bool get _isFlutterTest => PlatformEnv.isFlutterTest;
+
+  /// Test ortamında (`FLUTTER_TEST`) çalışılıp çalışılmadığını döner.
+  ///
+  /// Web/Angular karşılığı: `environment.isTest` bayrağı.
+  static bool get isFlutterTest => _isFlutterTest;
 
   /// URL ve Anon Key tanımlıysa ve Supabase başarıyla başlatıldıysa true döner.
   static bool get isReady =>

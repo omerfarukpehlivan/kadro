@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/main.dart';
 
 void main() {
@@ -27,7 +28,7 @@ void main() {
         expect(state.completedCount, 0);
         expect(state.remainingCount, 3);
         expect(state.completionProgress, 0.0);
-        expect(state.totalEstimatedMinutes, 50); // 20 + 15 + 15
+        expect(state.totalEstimatedMinutes, 35); // 15 + 10 + 10
         expect(
           state.tasks.first.title,
           contains('İslamiyet Öncesi Türk Tarihi'),
@@ -114,7 +115,19 @@ void main() {
     testWidgets(
       'HomeScreen üzerinde Bugünün Çalışma Planı kartı ve StudyPlannerScreen entegrasyonu',
       (WidgetTester tester) async {
-        await tester.pumpWidget(const MyApp());
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              initialUserPreferencesProvider.overrideWithValue(
+                const UserPreferencesState(
+                  hasCompletedOnboarding: true,
+                  hasActiveStudyProgram: true,
+                ),
+              ),
+            ],
+            child: const MyApp(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         // 1. Ana sayfada Bugünün Çalışma Planı kartını doğrula
@@ -125,12 +138,15 @@ void main() {
         );
         expect(find.text('Bugünün Çalışma Planı'), findsOneWidget);
         expect(
-          find.text('İslamiyet Öncesi Türk Tarihi 15 Soru Çöz'),
+          find.text('İslamiyet Öncesi Türk Tarihi · Test 1'),
           findsOneWidget,
         );
-        expect(find.text('Planlayıcıyı Aç & Görev Ekle'), findsOneWidget);
+        expect(find.text('Tümünü Gör'), findsOneWidget);
+        expect(find.text('Düzenle'), findsOneWidget);
 
         // 2. 'Tümünü Gör' butonuna bas ve StudyPlannerScreen ekranına geçişi doğrula
+        await tester.ensureVisible(find.text('Tümünü Gör'));
+        await tester.pumpAndSettle();
         await tester.tap(find.text('Tümünü Gör'));
         await tester.pumpAndSettle();
 
@@ -143,8 +159,20 @@ void main() {
         );
         expect(find.text('Görev Listesi (3)'), findsOneWidget);
 
-        // 3. Hızlı şablonlardan '+ 20 Tarih Sorusu'na tıkla ve görev sayısının 4 olduğunu doğrula
-        await tester.tap(find.text('+ 20 Tarih Sorusu'));
+        // 3. Sıradaki görevlerden ilk hızlı ekleme kartına tıkla ve görev sayısının 4 olduğunu doğrula
+        final firstUpcomingChip = find.byKey(
+          const ValueKey('upcoming_quick_task_0'),
+        );
+        expect(firstUpcomingChip, findsOneWidget);
+        final chipWidget = tester.widget<ActionChip>(firstUpcomingChip);
+        final chipTitle = (chipWidget.label as Text).data!.replaceFirst(
+          '+ ',
+          '',
+        );
+
+        await tester.ensureVisible(firstUpcomingChip);
+        await tester.pumpAndSettle();
+        await tester.tap(firstUpcomingChip);
         await tester.pumpAndSettle();
 
         expect(find.text('Görev Listesi (4)'), findsOneWidget);
@@ -153,8 +181,37 @@ void main() {
           const Offset(0, -400),
         );
         await tester.pumpAndSettle();
-        expect(find.text('20 Tarih Sorusu Çöz'), findsOneWidget);
+        expect(find.text(chipTitle), findsOneWidget);
       },
     );
+
+    test('previewUpcomingTasks ve pullUpcomingTaskToToday sıradaki gerçek görevi id ile aktarır', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final notifier = container.read(studyPlannerProvider.notifier);
+      final upcoming = notifier.previewUpcomingTasks();
+      expect(upcoming, isNotEmpty);
+
+      final targetTask = upcoming.first;
+      final initialCount = container.read(studyPlannerProvider).tasks.length;
+
+      notifier.pullUpcomingTaskToToday(targetTask);
+
+      final updatedTasks = container.read(studyPlannerProvider).tasks;
+      expect(updatedTasks.length, initialCount + 1);
+      expect(updatedTasks.any((t) => t.id == targetTask.id), isTrue);
+
+      // Aynı görev tekrar eklenmez ve önizleme listesinden düşer
+      notifier.pullUpcomingTaskToToday(targetTask);
+      expect(
+        container.read(studyPlannerProvider).tasks.length,
+        initialCount + 1,
+      );
+      expect(
+        notifier.previewUpcomingTasks().any((t) => t.id == targetTask.id),
+        isFalse,
+      );
+    });
   });
 }

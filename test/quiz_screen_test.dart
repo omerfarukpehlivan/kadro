@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
@@ -16,7 +17,9 @@ void main() {
           tester.view.resetDevicePixelRatio();
         });
 
-        await tester.pumpWidget(const MaterialApp(home: QuizScreen()));
+        await tester.pumpWidget(
+          const ProviderScope(child: MaterialApp(home: QuizScreen())),
+        );
 
         final buttonFinder = find.widgetWithText(FilledButton, 'Cevabı Onayla');
         expect(buttonFinder, findsOneWidget);
@@ -38,7 +41,9 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
 
-      await tester.pumpWidget(const MaterialApp(home: QuizScreen()));
+      await tester.pumpWidget(
+        const ProviderScope(child: MaterialApp(home: QuizScreen())),
+      );
 
       final buttonFinder = find.widgetWithText(FilledButton, 'Cevabı Onayla');
       expect(tester.widget<FilledButton>(buttonFinder).onPressed, isNull);
@@ -61,7 +66,9 @@ void main() {
           tester.view.resetDevicePixelRatio();
         });
 
-        await tester.pumpWidget(const MaterialApp(home: QuizScreen()));
+        await tester.pumpWidget(
+          const ProviderScope(child: MaterialApp(home: QuizScreen())),
+        );
 
         // Yanlış şıkkı (A şıkkı - index 0) seç
         await tester.tap(find.text('Tapınak ve saray mimarisinin gelişmesi'));
@@ -95,7 +102,9 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
 
-      await tester.pumpWidget(const MaterialApp(home: QuizScreen()));
+      await tester.pumpWidget(
+        const ProviderScope(child: MaterialApp(home: QuizScreen())),
+      );
 
       expect(find.text('Soru 1 / 3'), findsOneWidget);
 
@@ -158,7 +167,9 @@ void main() {
         ];
 
         await tester.pumpWidget(
-          const MaterialApp(home: QuizScreen(questions: testQuestions)),
+          const ProviderScope(
+            child: MaterialApp(home: QuizScreen(questions: testQuestions)),
+          ),
         );
 
         // 1. Soru (Doğru şıkkı seç: A1)
@@ -210,7 +221,9 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
 
-      await tester.pumpWidget(const MaterialApp(home: QuizScreen()));
+      await tester.pumpWidget(
+        const ProviderScope(child: MaterialApp(home: QuizScreen())),
+      );
 
       // Soru 1: Şık seç ve onayla
       await tester.tap(find.text('Tapınak ve saray mimarisinin gelişmesi'));
@@ -274,8 +287,10 @@ void main() {
         ];
 
         await tester.pumpWidget(
-          const MaterialApp(
-            home: QuizScreen(questions: examQuestions, mode: QuizMode.exam),
+          const ProviderScope(
+            child: MaterialApp(
+              home: QuizScreen(questions: examQuestions, mode: QuizMode.exam),
+            ),
           ),
         );
 
@@ -339,7 +354,9 @@ void main() {
         });
 
         // defaultSampleQuestions 3 sorudur, limit: 1 ile 1 soru olmalı
-        await tester.pumpWidget(const MaterialApp(home: QuizScreen(limit: 1)));
+        await tester.pumpWidget(
+          const ProviderScope(child: MaterialApp(home: QuizScreen(limit: 1))),
+        );
         await tester.pumpAndSettle();
 
         expect(find.text('Soru 1 / 1'), findsOneWidget);
@@ -356,7 +373,7 @@ void main() {
         });
 
         await tester.pumpWidget(
-          const MaterialApp(home: QuizScreen(mode: null)),
+          const ProviderScope(child: MaterialApp(home: QuizScreen(mode: null))),
         );
         await tester.pumpAndSettle();
 
@@ -375,7 +392,9 @@ void main() {
           tester.view.resetDevicePixelRatio();
         });
 
-        await tester.pumpWidget(const MaterialApp(home: QuizScreen()));
+        await tester.pumpWidget(
+          const ProviderScope(child: MaterialApp(home: QuizScreen())),
+        );
         await tester.pumpAndSettle();
 
         // Henüz cevaplanmadan önce çeldirici tuzağı görünmemeli

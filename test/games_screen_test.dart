@@ -6,6 +6,7 @@ import 'package:kadro/features/games/data/models/concept_match_set.dart';
 import 'package:kadro/features/games/data/models/true_false_item.dart';
 import 'package:kadro/features/games/presentation/concept_match_screen.dart';
 import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/main.dart';
 
 void main() {
@@ -141,7 +142,7 @@ void main() {
         await tester.pump();
 
         // 1. İlk açılışta başlık, süre, kombo ve butonları doğrula
-        expect(find.text('60 Saniyede Pençe'), findsOneWidget);
+        expect(find.text('60 Saniyede Doğru / Yanlış'), findsOneWidget);
         expect(find.text('60 sn'), findsOneWidget);
         expect(find.text('0x Kombo'), findsOneWidget);
         expect(find.text('+0 XP'), findsOneWidget);
@@ -153,7 +154,7 @@ void main() {
         await tester.pump();
 
         // Doğru bildi: Kombo 1x, XP +10, açıklama ve 'Sonraki İfade' butonu görünür
-        expect(find.text('Tebrikler, Doğru!'), findsOneWidget);
+        expect(find.text('Doğru'), findsOneWidget);
         expect(find.text('1x Kombo'), findsOneWidget);
         expect(find.text('+10 XP'), findsOneWidget);
         expect(find.text('Sonraki İfade'), findsOneWidget);
@@ -171,13 +172,13 @@ void main() {
         await tester.pump();
 
         // Yanlış bildi: Kombo sıfırlanır, açıklama görünür
-        expect(find.text('Dikkat, Yanlış!'), findsOneWidget);
+        expect(find.text('Yanlış'), findsOneWidget);
         expect(find.text('0x Kombo'), findsOneWidget);
         expect(find.text('Sonraki İfade'), findsOneWidget);
       },
     );
 
-    testWidgets('Süre bittiğinde Düello Tamamlandı özeti gösterilir', (
+    testWidgets('Süre bittiğinde Oturum Tamamlandı özeti gösterilir', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(
@@ -197,7 +198,7 @@ void main() {
       await tester.pump();
 
       // Bitiş ekranı doğrulaması
-      expect(find.text('Düello Tamamlandı!'), findsOneWidget);
+      expect(find.text('Oturum Tamamlandı'), findsOneWidget);
       expect(find.text('Tekrar Oyna'), findsOneWidget);
       expect(find.text('Ana Sayfaya Dön'), findsOneWidget);
     });
@@ -236,23 +237,35 @@ void main() {
     testWidgets(
       'PracticeHubScreen üzerinde Hızlı Tekrar & Refleks Antrenmanı vitrini görüntülenir',
       (WidgetTester tester) async {
-        await tester.pumpWidget(const MyApp());
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              initialUserPreferencesProvider.overrideWithValue(
+                const UserPreferencesState(
+                  hasCompletedOnboarding: true,
+                  hasActiveStudyProgram: true,
+                ),
+              ),
+            ],
+            child: const MyApp(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Alt menüden Pratik sekmesine geçelim
         await tester.tap(find.text('Pratik'));
         await tester.pumpAndSettle();
 
-        // Sayfayı aşağı kaydırıp refleks antrenmanı vitrinini bulalım
+        // Kavram Eşleştir kartını kontrol et ve aşağı kaydırıp hızlı tekrar araçlarını doğrula
+        expect(find.text('Kavram Eşleştir'), findsOneWidget);
         await tester.scrollUntilVisible(
-          find.text('Hızlı Tekrar & Refleks Antrenmanı'),
+          find.text('60 Saniyede Doğru / Yanlış'),
           200,
           scrollable: find.byType(Scrollable).first,
         );
 
-        expect(find.text('Hızlı Tekrar & Refleks Antrenmanı'), findsOneWidget);
-        expect(find.text('60 Saniyede Pençe'), findsOneWidget);
-        expect(find.text('Kavram Eşleştir'), findsOneWidget);
+        expect(find.text('Araçlar & Hızlı Tekrar'), findsOneWidget);
+        expect(find.text('60 Saniyede Doğru / Yanlış'), findsOneWidget);
       },
     );
   });
