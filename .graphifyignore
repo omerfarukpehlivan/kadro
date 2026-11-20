@@ -1,0 +1,22 @@
+# graphify'ın taramayacağı yollar (.gitignore'a ek olarak).
+# Amaç: grafiği uygulama koduna (lib/, test/) ve şemaya odaklamak.
+
+# Flutter platform iskeletleri (üretilmiş / native kabuk kodu)
+android/
+ios/
+linux/
+macos/
+windows/
+web/
+
+# Soru havuzu ve seed SQL'leri: binlerce INSERT satırı, kod ilişkisi taşımaz
+docs/soru_havuzu/
+docs/supabase_migrations/*seed*.sql
+
+# Tek seferlik soru üretim betikleri ve yerel soru JSON'u
+tools/*.py
+assets/data/
+
+# Agent skill klasörleri (projeye ait olmayan yardımcı betikler)
+.agents/
+.claude/

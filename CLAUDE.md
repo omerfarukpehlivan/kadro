@@ -19,5 +19,18 @@ Tüm mimari, UI, paket ve **Mobil ↔ Web eşleniklik** kuralları `GEMINI.md` i
 - **Eşleniklik:** Ortak iş kuralı (puan, net, kota, Leitner) değişirse `docs/parity_fixtures/*.json` güncellenir; `test/parity_fixtures_test.dart` ve web'de `npm run test:parity` yeşil olmalı.
 
 ## ⚙️ Ortam Notları
-- Python kurulu değil; yardımcı betikler Node ile yazılır (`node` v26).
+- Yardımcı betikler Node ile yazılır (`node` v26). Python yalnızca graphify için var: python.org Python 3.12 + `uv` (`uv tool install graphifyy`); `graphify` komutu `~/.local/bin` altında.
+- **Claude masaüstü uygulaması içinden `%APPDATA%`'ya kurulum yapma:** Paketli uygulama olduğu için bu yazımlar `AppData\Local\Packages\Claude_*\LocalCache` sanal klasörüne gider ve dışarıda çalışmaz. Ayrıca Akıllı Uygulama Denetimi açık: imzasız Python/DLL'ler engellenir. Yeni araç kurulumlarını kullanıcıya kendi terminalinde (cmd sözdizimi) çalıştıracağı komutlar olarak ver.
 - Supabase MCP salt okuma (`read_only=true`) ve yalnızca `kadroDB` projesine bağlı; şema değişikliği `docs/supabase_migrations/` altında migration olarak yazılır.
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- When graphify-out/graph.json exists, run `graphify query "<question>"` before your first grep, search or source-file read for a codebase question, and put this rule in every subagent prompt that explores code. Read raw files only for lines the graph or an earlier read already located. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. When the answer is under a Markdown heading, `graphify section "<heading>"` prints that section's text, so the .md need not be opened. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+- At the start of a task, if `graphify-out/graph.json` is older than the latest change under `lib/` or `test/` (e.g. the user or Gemini edited code since), run `graphify update .` first (~30 s) so the graph is not stale. Quick check: `find lib test -name '*.dart' -newer graphify-out/graph.json | head -1` — any output means stale.
+- In this repo `graphify-out/` is git-ignored (local, rebuildable); do not commit it. Project hooks are intentionally not installed.
