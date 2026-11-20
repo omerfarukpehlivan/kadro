@@ -28,6 +28,15 @@ This project (**Kadro**) is a commercial KPSS preparation app built with **Flutt
 
 ---
 
+## 🔀 Mobil ↔ Web Eşleniklik Kuralları (Zorunlu)
+Bu depo (`gunisigi`) Kadro'nun **Mobil & Tablet** istemcisidir. **Web** istemcisi ayrı depodadır: `../kadro-web` (Next.js — SEO nedeniyle Flutter Web yerine seçildi). Bu depoda web'e özel kod (`kIsWeb` dalları, URL strategy, masaüstü sidebar) yazılmaz. İki istemci **aynı Supabase projesini, aynı tabloları ve aynı iş kurallarını** paylaşır; ayrı ayrı kodlanır ama aynı davranmalıdır.
+1. **Tek görev panosu:** `docs/task-board.md` iki projenin de tek kaynağıdır. Kurallar ve şablon: panodaki *"Mobil ↔ Web Eşleniklik Kuralları"* ve *"Eşlenik Görev Şablonu"* bölümleri.
+2. **Görev yapısı:** Her görevin `🔗 Ortak Sözleşme`, `📱 Mobil Kapsamı` ve `🌐 Web Kapsamı` bölümleri vardır. Mobilde yalnızca `📱 Mobil Kapsamı`nı uygula; `🔗 Ortak Sözleşme`ye **birebir** uy.
+3. **Ortak sözleşmeye dokunma = diğer platform için kayıt:** Supabase şeması, `docs/web_sync_prompt.md` veri formatı veya ortak iş kuralı (kota, XP, net/puan, Leitner, müfredat sayıları) değişirse görevde Web kolonunu `❌` bırak; ortak hesap kuralları değiştiyse `docs/parity_fixtures/*.json` örneklerini güncelle (`test/parity_fixtures_test.dart` ve web'deki `npm run test:parity` bu dosyaları okur).
+4. **Görev bitince:** Task board'da **yalnızca** `Mobil de Yapıldı` kolonunu `✅` yap ve `Durum` kolonunu yeniden hesapla (Web `❌` ise 🟡 **Kısmi (Web bekliyor)**). Platforma özgü işlerde (AdMob, bildirim, `FLAG_SECURE`, mağaza) Web kolonu `🚫` işaretlenir.
+
+---
+
 ## 🏗️ Mimari & Teknoloji Kararları (Kesinleşmiş Kurallar)
 - **Veri ve Backend Stratejisi (Supabase BaaS):**
   - **Aşama 1:** Veriler yerel JSON dosyalarından ve Repository sınıflarından (`QuestionRepository` vb.) okunur.

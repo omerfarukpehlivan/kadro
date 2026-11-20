@@ -1,0 +1,128 @@
+{
+  "$comment": "Leitner 4 kutu (1·3·7·14 gün) aralıklı tekrar kuralının mobil ve web için ortak beklenen çıktıları. Mezuniyet: Kutu 4te art arda 2 doğru.",
+  "boxIntervalDays": [
+    1,
+    3,
+    7,
+    14
+  ],
+  "cases": [
+    {
+      "input": {
+        "currentBox": 1,
+        "box4Streak": 0,
+        "isCorrect": true
+      },
+      "expected": {
+        "nextBox": 2,
+        "nextBox4Streak": 0,
+        "intervalDays": 3,
+        "graduated": false
+      }
+    },
+    {
+      "input": {
+        "currentBox": 2,
+        "box4Streak": 0,
+        "isCorrect": true
+      },
+      "expected": {
+        "nextBox": 3,
+        "nextBox4Streak": 0,
+        "intervalDays": 7,
+        "graduated": false
+      }
+    },
+    {
+      "input": {
+        "currentBox": 3,
+        "box4Streak": 0,
+        "isCorrect": true
+      },
+      "expected": {
+        "nextBox": 4,
+        "nextBox4Streak": 0,
+        "intervalDays": 14,
+        "graduated": false
+      }
+    },
+    {
+      "input": {
+        "currentBox": 4,
+        "box4Streak": 0,
+        "isCorrect": true
+      },
+      "expected": {
+        "nextBox": 4,
+        "nextBox4Streak": 1,
+        "intervalDays": 14,
+        "graduated": false
+      }
+    },
+    {
+      "input": {
+        "currentBox": 4,
+        "box4Streak": 1,
+        "isCorrect": true
+      },
+      "expected": {
+        "nextBox": 4,
+        "nextBox4Streak": 2,
+        "intervalDays": 14,
+        "graduated": true
+      }
+    },
+    {
+      "input": {
+        "currentBox": 3,
+        "box4Streak": 0,
+        "isCorrect": false
+      },
+      "expected": {
+        "nextBox": 1,
+        "nextBox4Streak": 0,
+        "intervalDays": 1,
+        "graduated": false
+      }
+    },
+    {
+      "input": {
+        "currentBox": 4,
+        "box4Streak": 1,
+        "isCorrect": false
+      },
+      "expected": {
+        "nextBox": 1,
+        "nextBox4Streak": 0,
+        "intervalDays": 1,
+        "graduated": false
+      }
+    },
+    {
+      "input": {
+        "currentBox": 0,
+        "box4Streak": 0,
+        "isCorrect": true
+      },
+      "expected": {
+        "nextBox": 2,
+        "nextBox4Streak": 0,
+        "intervalDays": 3,
+        "graduated": false
+      }
+    },
+    {
+      "input": {
+        "currentBox": 9,
+        "box4Streak": 0,
+        "isCorrect": true
+      },
+      "expected": {
+        "nextBox": 4,
+        "nextBox4Streak": 1,
+        "intervalDays": 14,
+        "graduated": false
+      }
+    }
+  ]
+}

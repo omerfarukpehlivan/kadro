@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
@@ -273,5 +274,78 @@ void main() {
       // İlk konu hiç çözülmediğinde 0/8 Test görünmeli
       expect(find.text('0/8 Test'), findsWidgets);
     });
+
+    testWidgets(
+      'Gerçek QuestionRepository ile 60 sorudan fazla olan derslerde (Tarih 620 soru) tüm konuların gerçek test sayısı yüklenmeli ve hepsi çözülünce numara yerine tik (✓) görünmeli',
+      (WidgetTester tester) async {
+        QuestionRepository.clearCacheForTest();
+        // Aynı dosyadaki önceki widget testleri asset okumasını sahte zamanda
+        // başlatıp hiç bitmeyen bir Future'ı `rootBundle` önbelleğinde bırakır;
+        // temizlemezsek bu test o Future'ı sonsuza kadar bekler.
+        rootBundle.clear();
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        final tarihLesson = kpssLessons.firstWhere((l) => l.name == 'Tarih');
+        final firstTopic = tarihLesson
+            .topics
+            .first; // İslamiyet Öncesi Türk Tarihi (8 test = 80 soru)
+
+        // Gerçek repository üzerinden test sayılarını yükle.
+        // `testWidgets` sahte zamanda (FakeAsync) çalışır; gerçek asset/JSON
+        // okuması orada hiç tamamlanmaz ve test 10 dk zaman aşımına kadar asılı
+        // kalır. Gerçek I/O bu yüzden `tester.runAsync` içinde yapılır.
+        // Angular/Web Karşılığı: `fakeAsync` içinde gerçek HTTP beklemek yerine
+        // `waitForAsync` kullanmak.
+        final counts = (await tester.runAsync(
+          () => container.read(
+            lessonTopicTestCountsProvider(
+              const TopicCountQueryKey(
+                scopeKey: 'lisans_gk',
+                lessonName: 'Tarih',
+              ),
+            ).future,
+          ),
+        ))!;
+
+        // 60 soru limitine takılmadan 8 testin tamamı ve tüm 7 konu gelmeli
+        expect(counts[firstTopic], equals(8));
+        expect(counts.length, equals(tarihLesson.topics.length));
+
+        final totalTestsForFirstTopic = counts[firstTopic]!;
+        final now = DateTime.now();
+        for (int i = 1; i <= totalTestsForFirstTopic; i++) {
+          container
+              .read(studyStatsProvider.notifier)
+              .recordQuizSession(
+                QuizSessionRecord(
+                  id: 'real_tarih_$i',
+                  title: 'Tarih · $firstTopic · Test $i (Basit Alıştırma)',
+                  lesson: 'Tarih',
+                  totalQuestions: 10,
+                  correctCount: 9,
+                  wrongCount: 1,
+                  emptyCount: 0,
+                  netScore: 8.75,
+                  earnedXp: 135,
+                  durationSeconds: 180,
+                  completedAt: now,
+                ),
+              );
+        }
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(home: LessonTopicsScreen(lesson: tarihLesson)),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // 1. Konunun tüm 8 testi çözüldüğü için '8/8 Test' rozeti ve sol yuvarlakta tik (✓) görünmeli
+        expect(find.text('8/8 Test'), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsBold.check), findsOneWidget);
+      },
+    );
   });
 }

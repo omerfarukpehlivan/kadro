@@ -1148,9 +1148,13 @@ class QuestionRepository {
     ExamSelection? selection,
   }) async {
     try {
+      // Bir derste (örn. Tarih: 620 soru, Coğrafya: 364 soru) 60'tan çok daha fazla
+      // soru bulunduğu için varsayılan `limit: 60` yerine yüksek limit (`1000`) ile
+      // tüm konuların gerçek test sayısını hesaplıyoruz.
       final questions = await fetchQuestions(
         lesson: lessonName,
         selection: selection,
+        limit: 1000,
       );
       final counts = <String, int>{};
       for (final q in questions) {
