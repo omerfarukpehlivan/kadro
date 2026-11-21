@@ -208,6 +208,8 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-161** | **Yazdırılabilir A4 Test PDF Oluşturucu — Kadro PRO (`TestPdfExportService`)** | Türkçe karakter uyumlu A4 kitapçık + kodlamalı optik form + cevap anahtarı PDF çıktısı ve `PaywallScreen` PRO kapısı | ⏳ **Planlandı** | ❌ | ❌ |
 | **TASK-162** | **Çalışma Planlayıcı Sayfası ve Manuel Görev Düzenlemenin Kaldırılması & Ana Sayfada Tüm Günlük Görevlerin Eksiksiz Gösterimi** | Ayrı `StudyPlannerScreen` (`/planner`) sayfasının ve manuel görev ekleme/çıkarma diyaloglarının kaldırılması, planlayıcının doğrudan `HomeScreen` üzerindeki `HomeDailyPlanCard` widget'ına indirgenmesi; başlangıç kurulumundaki otomatik program akışının korunması; karttaki `.take(4)` / `.slice(0, 4)` kısıtlamasının kaldırılarak o günkü tüm görevlerin (örn. 5/5) eksiksiz listelenmesi; görev tamamlandığında anında üzeri çizilme (`line-through`) ve yeşil onay ikonu eşlenmesi | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-163** | **Test Sonu Karnesinde Günlük Görev Akışı & Sıradaki Göreve Kesintisiz Geçiş (`QuizResultScreen` / Flow State)** | Günlük plandan bir görev çözülüp bittiğinde test karnesi başlığında `✓ Günlük Görev Tamamlandı · X/Y` onay rozeti ve yeşil akış bandı gösterilmesi; günün sıradaki görevi varsa tek tıkla doğrudan sıradaki testi başlatan **"Sıradaki Göreve Geç: [Görev] →"** birincil butonu ve **"Ana Sayfaya Dön"** ikincil butonu; günün tüm görevleri bittiğinde ise **"Günü Tamamladın! Ana Sayfaya Dön"** kutlama aksiyonu sunulması | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
+| **TASK-164** | **🚀 Yayın Öncesi Mağaza Uyumluluk Kapısı (`app-store-compliance` skill denetimi)** | Play Store'a çıkmadan önce zorunlu: canlı `/gizlilik` + `/hesap-silme` sayfaları, hesap silme hatasının kullanıcıya gösterilmesi, AdMob UMP rıza formu, gerçek AdMob/RevenueCat kimliklerinin `--dart-define` ile verilmesi, `POST_NOTIFICATIONS` izni ve izin akışı, Veri Güvenliği formu, 12 test kullanıcısı / 14 gün kapalı test; sonunda `/app-store-audit` yeniden çalıştırılıp kritik bulgu sıfırlanır | ⏳ **Planlandı** | ❌ | ❌ |
+| **TASK-165** | **GY Türkçe Dersinin Aktifleştirilmesi ("Yakında" → Hazır) & GY-GK Kapsam Sorgusu Düzeltmesi** | Canlıdaki 710 Türkçe sorusu (`lisans_gygk`, 11 konu) ile Türkçe'nin KPSS Lisans GY-GK müfredatında diğer dersler gibi açılması (konu testleri, branş denemesi, planlayıcı, pratik merkezi); Matematik "Yakında" kalır; GY-GK modunda GK sorularının buluttan gelmemesine yol açan `contains(exam_scopes)` filtresinin kabul edilen kapsam kümesiyle `overlaps` olarak düzeltilmesi | 🟡 **Kısmi (Web bekliyor)** | ❌ | ✅ |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** | ❌ | ❌ |
 
 ### 📊 Aktif Mobil & Web Eşleniklik Özeti
@@ -6623,3 +6625,177 @@ ADIM 4: Doğrulama & Testler
 1. `flutter analyze` çalıştır ➔ 0 hata / 0 uyarı doğrula.
 2. `flutter test` çalıştır ➔ Testlerin yeşil olduğunu ve `QuizResultScreen` akış butonlarının doğru çalıştığını doğrula.
 ```
+
+---
+
+## 🚀 51. Dalga 51 [Yayın Kapısı]: Mağaza Uyumluluk Denetimi (`TASK-164`)
+
+### 📦 TASK-164: Yayın Öncesi Mağaza Uyumluluk Kapısı (`app-store-compliance` skill denetimi)
+
+- **Durum:** ⏳ Planlandı · 🌐 Web ❌ · 📱 Mobil ❌
+- **Amaç:** Google Play (ve ileride App Store) gönderiminde ret yememek. 2026-11-21 tarihli `/app-store-audit` denetiminde çıkan engelleyici bulguları kapatmak; bu görev bitmeden **yayına çıkılmaz**.
+- **Platform Uygulanabilirliği:** Ortak — yasal sayfalar web'de, uygulama içi düzeltmeler mobilde.
+- **Denetim aracı:** `.claude/skills/app-store-compliance/` (mjmirza/app-store-compliance v2.4.0) ve `/app-store-audit` komutu. Tarayıcı `.claude/`, `.agents/` klasörlerini de taradığı için yalnızca gönderilen dosyalar (`lib`, `android`, `ios`, `assets`, `pubspec.*`) geçici bir kopyaya alınıp taranır.
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Supabase:** Değişiklik yok. `delete_user_account()` RPC'si mevcut (`docs/supabase_schema.sql:343`); hata dönerse istemci bunu başarı saymaz.
+- **Yasal URL'ler (kesin):** `https://kadro.app/gizlilik` ve `https://kadro.app/hesap-silme` (`lib/core/legal/legal_documents.dart`). İkisi de oturum açmadan, uygulama dışından erişilebilir olmalı ve 200 dönmeli (denetim tarihinde 404).
+- **Hesap silme kuralı:** Silme yalnızca RPC başarılı olursa "tamamlandı" sayılır; başarısızsa kullanıcı oturumda kalır ve hata mesajı görür. Web'deki silme akışı da aynı kurala uyar.
+- **Eşleniklik örnekleri:** Gerekmez.
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-164 — Yayın Öncesi Mağaza Uyumluluk Kapısı (Mobil / Flutter)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma. Bitince flutter-verify adımlarını çalıştır ve task-board'da yalnızca "Mobil de Yapıldı" kolonunu güncelle.
+
+ADIM 1: Hesap silme hatasını yutma
+- lib/features/auth/data/auth_notifier.dart `deleteAccountAndData()`: `client.rpc('delete_user_account')` hatasını `catch (_) {}` ile yutma. Hata olursa yerel veriyi silme, oturumu kapatma; `errorMessage` ile false dön. Profil ekranı hatayı göstersin. Widget/birim testi ekle.
+
+ADIM 2: AdMob rıza formu (UMP)
+- lib/core/services/ad_service.dart: ilk reklam yüklenmeden önce `ConsentInformation.instance.requestConsentInfoUpdate` + gerekirse `ConsentForm.loadAndShowConsentFormIfRequired` (google_mobile_ads içinde, yeni paket gerekmez). `canRequestAds()` false ise reklam yükleme. Profil > Gizlilik altına "Reklam tercihlerini değiştir" (privacy options form) girişi ekle.
+
+ADIM 3: Gerçek kimlikleri koddan çıkar
+- AdMob App ID (AndroidManifest `com.google.android.gms.ads.APPLICATION_ID`, şu an Google örnek ID'si) → Gradle `manifestPlaceholders` + `--dart-define`/ortam değişkeni. Reklam birimi ID'leri ve RevenueCat `goog_` anahtarı `--dart-define` ile gelsin; debug'da test ID'leri kalsın. Gizli değer depoya yazılmaz.
+
+ADIM 4: Bildirim izni (Android 13+)
+- AndroidManifest'e `android.permission.POST_NOTIFICATIONS` ekle. lib/core/services/notification_service.dart: `AndroidFlutterLocalNotificationsPlugin.requestNotificationsPermission()` çağrısını, kullanıcı hatırlatıcıyı açtığı anda (soğuk açılışta değil) yap; reddedilirse ayarı kapalı göster.
+
+ADIM 5: Yeniden denetim
+- `/app-store-audit` çalıştır; Android tarafında CRITICAL = 0 olmalı. Kalan HIGH/MEDIUM bulguları bu görevin altına not düş.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-164 — Yayın Öncesi Mağaza Uyumluluk Kapısı (Web / Next.js)
+ÖNEMLİ: kadro-web/AGENTS.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma. Bitince lint/test adımlarını çalıştır ve ../gunisigi/docs/task-board.md içinde yalnızca "Web de Yapıldı" kolonunu güncelle.
+
+ADIM 1: `/gizlilik` sayfası — mobildeki legal_documents.dart gizlilik metniyle aynı içerik (AdMob, Sentry, Supabase, RevenueCat açıkça adlandırılır), oturumsuz erişilebilir, SEO indexlenebilir.
+ADIM 2: `/hesap-silme` sayfası — uygulama adı + geliştirici adı, silme adımları (uygulama içi yol: Profil > Hukuki & Gizlilik > Hesabımı ve Verilerimi Sil), silinen/saklanan veri türleri ve saklama süresi; oturum açıksa doğrudan silme butonu (`delete_user_account` RPC, hata durumunda başarı gösterilmez).
+ADIM 3: `kadro.app` alan adında iki sayfanın 200 döndüğünü doğrula; `app-ads.txt` dosyasını kök dizinde yayınla (AdMob yayıncı kimliğiyle).
+```
+
+#### 👤 Kullanıcının (Ömer) Elle Yapacakları — Play Console
+- [ ] Veri Güvenliği formu: AdMob (reklam kimliği, cihaz bilgisi), Sentry (çökme kayıtları), Supabase (e-posta, ad, test sonuçları), RevenueCat (satın alma geçmişi) — toplama/paylaşım/şifreleme/silme talebi alanları eksiksiz.
+- [ ] Reklam kimliği beyanı: "Evet, reklam için kullanılıyor".
+- [ ] Gizlilik politikası ve hesap silme URL'lerini Console'a gir.
+- [ ] Kapalı test: 12 test kullanıcısı, 14 gün kesintisiz.
+- [ ] İçerik derecelendirme anketi ve hedef kitle (çocuklara yönelik değil) beyanı.
+- [ ] İnceleme için çalışan bir demo hesap (2FA'sız) ve canlı Supabase arka ucu.
+
+#### 🍎 iOS'a çıkılırsa (şimdilik kapsam dışı)
+- Sign in with Apple (Google girişi olduğu için zorunlu, Apple 4.8), `ios/Runner/PrivacyInfo.xcprivacy`, Info.plist'e `ITSAppUsesNonExemptEncryption=false`, ATT istemi (`NSUserTrackingUsageDescription`).
+
+#### ✅ Kabul Kriterleri
+- [ ] `https://kadro.app/gizlilik` ve `https://kadro.app/hesap-silme` 200 dönüyor
+- [ ] RPC hatasında uygulama "silindi" demiyor (testle doğrulandı)
+- [ ] AB kullanıcısında ilk açılışta UMP rıza formu çıkıyor, rıza yoksa reklam yüklenmiyor
+- [ ] Release derlemede test AdMob/RevenueCat kimliği yok
+- [ ] Android 13+ cihazda bildirim izni isteniyor ve hatırlatıcı bildirimi geliyor
+- [ ] `/app-store-audit` Android tarafında CRITICAL = 0
+
+---
+
+## 📖 52. Dalga 52 [İçerik Açılışı]: GY Türkçe Dersinin Aktifleştirilmesi (`TASK-165`)
+
+### 📦 TASK-165: GY Türkçe Dersinin Aktifleştirilmesi ("Yakında" → Hazır) & GY-GK Kapsam Sorgusu Düzeltmesi
+
+- **Durum:** 🟡 Kısmi (Web bekliyor) · 🌐 Web ❌ · 📱 Mobil ✅ (Gemini uyguladı, Claude inceledi 2026-11-22: analyze 0, 467 test yeşil)
+- **Amaç:** Claude + Gemini ile üretilip canlı Supabase'e yüklenen **710 Türkçe sorusunu** kullanıcıya açmak. KPSS Lisans GY-GK seçen aday Türkçe'yi Tarih/Coğrafya gibi konu konu çözebilsin; "Yakında" rozeti kalksın.
+- **Platform Uygulanabilirliği:** Ortak (iki platform).
+- **Uygulayıcı:** Gemini (mobil kodu yazar) → Claude (inceler). İnceleme bitmeden Mobil kolonu ✅ yapılmaz.
+
+#### 📊 Canlı Veri Durumu (2026-11-21, `kadroDB`)
+| Konu | Soru | Test (÷10, yukarı) |
+|---|---|---|
+| Sözcükte Anlam | 50 | 5 |
+| Cümlede Anlam | 90 | 9 |
+| Paragrafta Anlam ve Yapı | 310 | 31 |
+| Sözcükte Yapı ve Ekler | 20 | 2 |
+| Sözcük Türleri (İsim, Sıfat, Zamir, Zarf, Edat, Fiil) | 30 | 3 |
+| Ses Bilgisi ve Ses Olayları | 20 | 2 |
+| Yazım Kuralları | 30 | 3 |
+| Noktalama İşaretleri | 30 | 3 |
+| Cümlenin Ögeleri ve Cümle Türleri | 30 | 3 |
+| Anlatım Bozuklukları | 30 | 3 |
+| Sözel Mantık ve Muhakeme | 70 | 7 |
+| **Toplam** | **710** | **71** |
+
+- Tüm Türkçe soruları `lesson = 'Türkçe'`, `exam_scopes = {lisans_gygk}`. GK soruları (Tarih 697, Coğrafya 390, Vatandaşlık 634, Güncel 512) yalnızca `{lisans_gk}`.
+- Konu adları `lib/features/lessons/data/kpss_lessons.dart` içindeki 11 Türkçe konusuyla **birebir aynı** (değiştirme).
+- Kaynak SQL'ler: `docs/soru_havuzu/turkce/` (zaten canlıda; yeniden çalıştırma).
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Supabase:** Şema değişikliği yok. Yeni migration yok.
+- **Kapsam kuralı (kesin):**
+  - Türkçe yalnızca `lisans_gygk` seçiminde **hazır**. `lisans_gk` (yalnız GK) modunda Türkçe görünmez (bugünkü gibi).
+  - `onlisans_gygk`, `ortaogretim_gygk` ve E-KPSS GY Türkçe **"Yakında" kalır**. Bu sorular Lisans düzeyine göre yazıldı; diğer düzeylere açmak ayrı bir içerik kararı (ileride `exam_scopes` genişletme migration'ı).
+  - Matematik & Geometri her yerde "Yakında" kalır.
+- **Soru sorgusu kuralı (hata düzeltmesi):** Bir seçim için buluttan soru çekilirken `exam_scopes`, seçimin **kabul ettiği kapsam kümesiyle kesişmeli** (`overlaps`), yalnızca `scopeKey` içermesi (`contains`) yetmez. Kabul kümesi bugünkü `Question.matchesSelection` mantığıyla aynıdır; ör. `lisans_gygk` → `{lisans_gygk, lisans_gk, b_grubu_gygk, b_grubu_gk, b_grubu_common}`. Bugün bu yüzden GY-GK modunda GK dersleri buluttan boş dönüp yalnızca yerel JSON'a düşüyor.
+- **Test sayısı:** Konu başına `ceil(soru / 10)` (mevcut `fetchTopicTestCounts` kuralı). Varsayılan (çevrimdışı) değerler yukarıdaki tablodaki test sayılarıdır.
+- **Sınav ağırlığı:** Türkçe 30 soru (GY-GK 120 soruluk dağılım değişmez). Tam GY-GK denemesi Matematik gelene kadar açılmaz; Türkçe **branş denemesi** (30 soru) açılır.
+- **Eşleniklik örnekleri:** Gerekmez (puan/net kuralı değişmiyor).
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-165 — GY Türkçe Dersinin Aktifleştirilmesi & GY-GK Kapsam Sorgusu Düzeltmesi (Mobil / Flutter)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma. Yeni paket ekleme, şema/migration yazma, soru SQL'lerine dokunma. Bitince flutter-verify adımlarını çalıştır; task-board'da Mobil kolonunu Claude incelemesi onaylanana kadar ❌ bırak.
+
+ADIM 1: Kabul edilen kapsam kümesini tek yere taşı
+1. lib/features/exams/data/models/exam_selection.dart: `Set<String> get acceptedQuestionScopes` getter'ı ekle. İçeriği bugün lib/features/quiz/data/models/question.dart `matchesSelection` içindeki `acceptedScopes` kümesiyle BİREBİR aynı olsun (scopeKey, `${family.key}_common`, fullGyGk ise `${educationLevel.key}_gk` + b_grubu_gygk + b_grubu_gk, onlyGk ise b_grubu_gk, DHBT kuralları).
+   Not: MEB-AGS'deki `meb_ags` kuralı sorunun `subBranch` alanına bağlı olduğu için getter'a girmez; o koşul matchesSelection'da kalır. Bulut sorgusu için MEB-AGS ÖABT seçiminde 'meb_ags' de kümeye eklenebilir (istemci süzgeci zaten eler).
+2. `Question.matchesSelection` bu getter'ı kullansın (davranış değişmesin).
+
+ADIM 2: Bulut sorgusunu düzelt
+1. lib/features/quiz/data/question_repository.dart `fetchQuestions` içinde:
+   `filterQuery.contains('exam_scopes', [selection.scopeKey])` yerine `filterQuery.overlaps('exam_scopes', selection.acceptedQuestionScopes.toList())`.
+2. Sonrasındaki `matchesSelection` istemci süzgeci kalsın.
+3. Aynı `contains('exam_scopes'` kalıbı başka yerde varsa (grep) aynı şekilde düzelt.
+
+ADIM 3: Türkçe'yi yalnız Lisans GY-GK'da hazır yap
+1. lib/features/lessons/data/curriculum_registry.dart:
+   - `_tarihTopicTestCounts` benzeri `_turkceTopicTestCounts` sabitini ekle (Canlı Veri Durumu tablosundaki test sayıları).
+   - Türkçe için `LessonSpec.fromLegacyLesson(..., availabilityOverride: CurriculumAvailability.ready, defaultTestCountsByTopic: _turkceTopicTestCounts)` üreten ve `badgeText`'i kaldıran (gerekirse `copyWith`) bir yardımcı yaz.
+   - `_resolveBGrubu`: `fullGyGk` VE `educationLevel == EducationLevel.lisans` ise Türkçe `activeLessons` listesine (GK derslerinden sonra) girsin; Matematik `upcomingLessons`'ta kalsın. Bölüm başlıkları: activeSectionTitle 'KPSS Genel Kültür + GY Türkçe (90 Soru)', upcomingSectionTitle 'KPSS Genel Yetenek · Matematik (30 Soru · Yakında)'. summaryLabel ve `availability: partial` korunur.
+   - Ön Lisans/Ortaöğretim GY-GK ve E-KPSS değişmez (Türkçe "Yakında").
+2. lib/features/lessons/data/kpss_lessons.dart: legacy `kpssGeneralAbilityLessons` Türkçe kaydına DOKUNMA (Yakında kalsın). Hazır olma kararı yalnızca registry'de verilir; böylece diğer düzeyler etkilenmez.
+
+ADIM 4: Akışların Türkçe'yi gördüğünü doğrula (kod değişikliği gerekirse minimal)
+- lessons_screen.dart: aktif dersler listesinde Türkçe kartı, rozet yok.
+- lesson_topics_screen.dart: 11 konu ve test sayıları.
+- topic_tests_screen.dart ve quiz ekranı: paragraf soruları uzun; soru metninde sabit yükseklik yok, taşma yok.
+- practice_hub_screen.dart:941 civarındaki `isComingSoon` dalı Türkçe için kilit göstermesin.
+- branch_mock_exam_generator.dart: Türkçe branş denemesi (30 soru) üretilsin.
+- planner/data/services/auto_study_program_generator.dart: Lisans GY-GK planında Türkçe görevleri gelsin (activeLessons'tan).
+- onboarding_screen.dart:795 civarı ders önizlemesi Türkçe'yi aktif göstersin.
+- Çevrimdışı: Türkçe yerel JSON'da yok; bulut yoksa Türkçe konu ekranı boş durum mesajı göstersin, çökmesin.
+
+ADIM 5: Testler
+1. test/ altına (veya mevcut curriculum/lessons testlerine) ekle:
+   - `CurriculumRegistry.resolve(lisans fullGyGk)`: activeLessons Türkçe içerir, isComingSoon false, 11 konu, Türkçe varsayılan test toplamı 71; Matematik upcoming.
+   - onlisans fullGyGk ve ekpss: Türkçe hâlâ upcoming ve comingSoon.
+   - lisans onlyGk: Türkçe hiç yok.
+   - `ExamSelection(bGroupProfile: BGroupProfile.fullGyGk).acceptedQuestionScopes` içinde 'lisans_gk' ve 'lisans_gygk' var; `examScopes: ['lisans_gk']` olan bir sorunun matchesSelection sonucu eski davranışla aynı.
+2. Sabit sayı kullanan mevcut testler (ör. toplam ders/test sayısı) kırılırsa beklentiyi yeni sözleşmeye göre güncelle; testi silme.
+3. `dart format` (değişen dosyalar), `flutter analyze` 0 sorun, `node tools/affected_tests.mjs --run`, sonra tam `flutter test`.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-165 — GY Türkçe Dersinin Aktifleştirilmesi & GY-GK Kapsam Sorgusu Düzeltmesi (Web / Next.js)
+ÖNEMLİ: kadro-web/AGENTS.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma. Bitince lint/test adımlarını çalıştır ve ../gunisigi/docs/task-board.md içinde yalnızca "Web de Yapıldı" kolonunu güncelle.
+
+ADIM 1: Müfredat kaydında Türkçe'yi yalnız Lisans GY-GK için hazır yap (11 konu, varsayılan test sayıları Ortak Sözleşme tablosundaki gibi); diğer düzeyler ve E-KPSS "Yakında" kalsın; Matematik "Yakında".
+ADIM 2: Supabase soru sorgusunda `exam_scopes` filtresini kabul kümesiyle `.overlaps(...)` yap (GY-GK modunda GK soruları buluttan gelsin).
+ADIM 3: Ders, konu, branş denemesi ve planlayıcı ekranlarında Türkçe'nin açıldığını doğrula; paragraf sorularında taşma olmasın.
+```
+
+#### ✅ Kabul Kriterleri
+- [ ] Lisans GY-GK seçen kullanıcı Dersler ekranında Türkçe'yi "Yakında" rozeti olmadan görüyor; 11 konu ve konu başına doğru test sayısı (toplam 71) çıkıyor
+- [ ] Türkçe konu testi buluttan 10 soru getiriyor; ÖSYM Çeldirici Tuzağı (`distractorTrap`) bölümü görünüyor
+- [ ] GY-GK modunda Tarih/Coğrafya/Vatandaşlık/Güncel soruları da buluttan geliyor (yerel JSON'a düşmüyor)
+- [ ] Ön Lisans/Ortaöğretim GY-GK ve E-KPSS'de Türkçe hâlâ "Yakında"; yalnız GK modunda Türkçe yok
+- [ ] Türkçe branş denemesi (30 soru) üretiliyor
+- [ ] `flutter analyze` 0 sorun, tam `flutter test` yeşil
+- [x] Claude incelemesi onaylandı (mobil)
+
+> 📝 **Sonraya bırakıldı (bu görevin kapsamı dışı):** Tam 120 soruluk GY-GK denemesi kartları (`mock_exam_blueprint.dart` `b_gygk_tam_1/2`) Matematik soruları gelene kadar "Yakında" gösterilmeli; şu an açık ve 30 Matematik sorusu eksik gelir. Matematik içerik görevinde ele alınacak.
