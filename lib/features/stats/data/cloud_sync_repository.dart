@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:kadro/core/config/supabase_config.dart';
 import 'package:kadro/core/network/client_rate_limiter.dart';
+import 'package:kadro/features/flashcards/data/models/flashcard_review_progress.dart';
 import 'package:kadro/features/planner/data/models/planner_sync_snapshot.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
@@ -505,6 +506,91 @@ class CloudSyncRepository {
     }
   }
 
+  /// Yanlış defterindeki sorunun Leitner (`review_box`, `next_review_at`,
+  /// `box4_streak`) ve çözüm durumunu bulutta günceller.
+  Future<void> syncMistakeReviewState({
+    required String questionText,
+    required int reviewBox,
+    required DateTime nextReviewAt,
+    required int box4Streak,
+    bool isResolved = false,
+  }) async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return;
+
+    try {
+      await client
+          .from('question_attempt_logs')
+          .update({
+            'review_box': reviewBox,
+            'next_review_at': nextReviewAt.toIso8601String(),
+            'box4_streak': box4Streak,
+            'is_resolved_in_mistakes': isResolved,
+          })
+          .eq('user_id', userId)
+          .eq('question_text', questionText);
+    } catch (e) {
+      debugPrint('Supabase syncMistakeReviewState (eski şema fallback): $e');
+      if (isResolved) {
+        await markMistakeResolved(questionText: questionText);
+      }
+    }
+  }
+
+  /// Hap bilgi kartının Leitner tekrar durumunu `public.user_flashcard_reviews`
+  /// tablosuna kaydeder (`TASK-158`).
+  Future<void> upsertFlashcardReview(FlashcardReviewProgress progress) async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return;
+
+    try {
+      await client.from('user_flashcard_reviews').upsert({
+        'user_id': userId,
+        'exam_scope': progress.examScope,
+        'card_id': progress.cardId,
+        'review_box': progress.reviewBox,
+        'next_review_at': progress.nextReviewAt.toIso8601String(),
+        if (progress.lastReviewedAt != null)
+          'last_reviewed_at': progress.lastReviewedAt!.toIso8601String(),
+        'box4_streak': progress.box4ConsecutiveCorrect,
+        'is_graduated': progress.isGraduated,
+      }, onConflict: 'user_id,exam_scope,card_id');
+    } catch (e) {
+      debugPrint('Supabase upsertFlashcardReview hatası: $e');
+    }
+  }
+
+  /// Seçili sınav kapsamındaki bilgi kartı Leitner ilerlemelerini buluttan çeker.
+  Future<List<FlashcardReviewProgress>> fetchFlashcardReviews({
+    required String examScope,
+  }) async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return const [];
+
+    try {
+      final List<dynamic> response = await client
+          .from('user_flashcard_reviews')
+          .select(
+            'card_id, exam_scope, review_box, next_review_at, last_reviewed_at, box4_streak, is_graduated',
+          )
+          .eq('user_id', userId)
+          .eq('exam_scope', examScope);
+
+      return response.whereType<Map<String, dynamic>>().map((row) {
+        return FlashcardReviewProgress.fromJson({
+          ...row,
+          'box4_consecutive_correct': row['box4_streak'],
+        });
+      }).toList();
+    } catch (e) {
+      debugPrint('Supabase fetchFlashcardReviews hatası: $e');
+      return const [];
+    }
+  }
+
   /// Giriş yapmış kullanıcının çözülmemiş yanlış soru kayıtlarını çeker.
   Future<List<Map<String, dynamic>>> fetchUnresolvedMistakes() async {
     final client = SupabaseConfig.clientOrNull;
@@ -514,7 +600,9 @@ class CloudSyncRepository {
     try {
       final List<dynamic> response = await client
           .from('question_attempt_logs')
-          .select('question_id, question_text, lesson, topic')
+          .select(
+            'question_id, question_text, lesson, topic, exam_scope, review_box, next_review_at, box4_streak',
+          )
           .eq('user_id', userId)
           .eq('is_correct', false)
           .eq('is_resolved_in_mistakes', false)
@@ -522,9 +610,22 @@ class CloudSyncRepository {
           .limit(100);
 
       return response.cast<Map<String, dynamic>>();
-    } catch (e) {
-      debugPrint('Supabase fetchUnresolvedMistakes hatası: $e');
-      return const [];
+    } catch (_) {
+      try {
+        final List<dynamic> response = await client
+            .from('question_attempt_logs')
+            .select('question_id, question_text, lesson, topic')
+            .eq('user_id', userId)
+            .eq('is_correct', false)
+            .eq('is_resolved_in_mistakes', false)
+            .order('attempted_at', ascending: false)
+            .limit(100);
+
+        return response.cast<Map<String, dynamic>>();
+      } catch (e) {
+        debugPrint('Supabase fetchUnresolvedMistakes hatası: $e');
+        return const [];
+      }
     }
   }
 

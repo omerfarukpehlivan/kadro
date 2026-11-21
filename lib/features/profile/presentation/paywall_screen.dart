@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/ad_service.dart';
-import 'package:kadro/core/services/offline_download_service.dart';
 import 'package:kadro/core/services/purchase_service.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
@@ -13,8 +12,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Kadro PRO abonelik seçenekleri ve ödüllü soru hakkı ekranı (Paywall).
 ///
-/// Mobilde uygulama içi satın alma (`mobileIap`), Web'de güvenli `webCheckout` veya
-/// salt-okunur mobil senkronu (`unavailable`) gösterir; masaüstünde 2 kolonlu vitrin düzeni kullanır.
+/// Telefon ve tablet için uygulama içi satın alma ve abonelik geri yükleme sunar.
 class PaywallScreen extends ConsumerStatefulWidget {
   final String? reasonMessage;
 
@@ -29,12 +27,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   bool _isLoading = false;
 
   Future<void> _handlePurchase() async {
-    final availability = PurchaseService.availability;
-    if (availability == PurchaseAvailability.unavailable) {
-      await _handleRestore();
-      return;
-    }
-
     setState(() => _isLoading = true);
     final auth = ref.read(authProvider);
 
@@ -56,15 +48,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         ),
       );
       Navigator.of(context).pop();
-    } else if (result.launchedExternalCheckout) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Ödeme sayfası açıldı. Tamamladıktan sonra "Aboneliği Doğrula" butonuna dokun.',
-          ),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -109,8 +92,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final availability = PurchaseService.availability;
-    final isWebUnavailable = availability == PurchaseAvailability.unavailable;
     final supportsAds = AdService.isRewardedAdSupported;
 
     final heroCard = TactileCard(
@@ -275,35 +256,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     final benefitsAndActions = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (isWebUnavailable) ...[
-          TactileCard(
-            isElevated: false,
-            backgroundColor: colorScheme.surfaceContainerLow,
-            borderColor: colorScheme.primary.withAlpha(110),
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                PhosphorIcon(
-                  PhosphorIconsFill.shieldCheck,
-                  color: colorScheme.primary,
-                  size: 18,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Web kart ödemesi (iyzico) hazırlanıyor. Mobil uygulamadan aldığın Kadro PRO aboneliği aynı hesapla burada otomatik geçerlidir.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurface,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          AppSpacing.gapMd,
-        ],
         TactileCard(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -319,11 +271,10 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 title: 'Tüm Türkiye Geneli Deneme Arşivi',
                 description: 'Tüm çoklu KPSS, MEB-AGS, DHBT, E-KPSS ve A Grubu deneme simülasyonları.',
               ),
-              if (OfflineDownloadService.isSupported)
-                const _ProFeatureRow(
-                  title: 'Çevrimdışı Soru & Deneme İndirme',
-                  description: 'İnternet olmayan ortamlarda test ve denemeleri cihazından çöz.',
-                ),
+              const _ProFeatureRow(
+                title: 'Çevrimdışı Soru & Deneme İndirme',
+                description: 'İnternet olmayan ortamlarda test ve denemeleri cihazından çöz.',
+              ),
               const _ProFeatureRow(
                 title: 'Akıllı Yanlış Defteri Test Üretici',
                 description: 'Yaptığın yanlışlardan tek tıkla 10 veya 20 soruluk tekrar testleri üret.',
@@ -341,28 +292,17 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   height: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : PhosphorIcon(
-                  isWebUnavailable
-                      ? PhosphorIconsRegular.arrowsClockwise
-                      : PhosphorIconsFill.crown,
-                  size: 18,
-                ),
+              : const PhosphorIcon(PhosphorIconsFill.crown, size: 18),
           label: Text(
             _isLoading
                 ? 'İşlem yapılıyor...'
-                : isWebUnavailable
-                ? 'PRO Üyeliğimi Doğrula'
                 : "Kadro PRO'ya Geç (${_selectedPlan.priceText})",
           ),
         ),
         const SizedBox(height: 6),
         TextButton(
           onPressed: _isLoading ? null : _handleRestore,
-          child: Text(
-            isWebUnavailable
-                ? 'Web / Mobil Aboneliği Eşitle'
-                : 'Satın Almaları Geri Yükle',
-          ),
+          child: const Text('Satın Almaları Geri Yükle'),
         ),
         if (supportsAds) ...[
           const SizedBox(height: 4),
@@ -392,9 +332,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         ],
         const SizedBox(height: 12),
         Text(
-          availability == PurchaseAvailability.webCheckout
-              ? 'Ödemeler güvenli iyzico / Web Checkout altyapısı üzerinden işlenir ve Supabase hesabınla eşitlenir.'
-              : 'Abonelikler Google Play / App Store üzerinden yönetilir. İstediğin zaman iptal edebilirsin.',
+          'Abonelikler Google Play / App Store üzerinden yönetilir. İstediğin zaman iptal edebilirsin.',
           textAlign: TextAlign.center,
           style: theme.textTheme.labelSmall?.copyWith(
             color: colorScheme.onSurfaceVariant,

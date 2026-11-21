@@ -46,7 +46,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
 
     if (!context.mounted) return;
 
-    Navigator.of(context).push(
+    Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => MapChallengeScreen(
           challenges: challenges,
@@ -57,45 +57,20 @@ class MapPracticeHubScreen extends ConsumerWidget {
   }
 
   void _showProvinceModeSheet(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-
     AdaptiveOverlay.showModal<void>(
       context: context,
       title: 'Dilsiz Harita Antrenman Modu',
+      subtitle: 'Nasıl pratik yapmak istersin?',
       dialogMaxWidth: 500,
+      showMobileHeader: true,
       builder: (ctx) {
         return SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.outlineVariant,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Dilsiz Harita Antrenman Modu',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Nasıl pratik yapmak istersin?',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 16),
                 _buildModeTile(
                   context: ctx,
                   icon: PhosphorIconsRegular.handPointing,
@@ -214,7 +189,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Harita Atölyesi')),
       body: ResponsiveContentWrapper(
-        maxWidth: ResponsiveBreakpoints.isDesktop(context) ? 1160 : 720,
+        maxWidth: ResponsiveBreakpoints.isLargeTablet(context) ? 1160 : 720,
         padding: EdgeInsets.zero,
         child: Scrollbar(
           child: ListView(

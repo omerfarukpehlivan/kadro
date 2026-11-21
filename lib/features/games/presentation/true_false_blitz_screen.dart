@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kadro/app/router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
@@ -183,6 +185,26 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
     }
   }
 
+  void _goToHome() {
+    popBranchToRoot();
+
+    final rootNav = Navigator.maybeOf(context, rootNavigator: true);
+    final branchNav = Navigator.maybeOf(context);
+
+    if (branchNav != null && branchNav != rootNav && branchNav.canPop()) {
+      branchNav.popUntil((route) => route.isFirst);
+    }
+
+    if (rootNav != null && rootNav.canPop()) {
+      rootNav.popUntil((route) => route.isFirst);
+    }
+
+    final router = GoRouter.maybeOf(context);
+    if (router != null) {
+      router.go('/');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -207,6 +229,7 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
 
     final safeIndex = _currentIndex.clamp(0, items.length - 1);
     final currentItem = items[safeIndex];
+    final isLargeTablet = ResponsiveBreakpoints.isLargeTablet(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -215,7 +238,7 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
       ),
       body: SafeArea(
         child: ResponsiveContentWrapper(
-          maxWidth: 820,
+          maxWidth: isLargeTablet ? 920 : 720,
           padding: EdgeInsets.zero,
           child: _isFinished
               ? _BlitzSummaryView(
@@ -224,6 +247,7 @@ class _TrueFalseBlitzScreenState extends ConsumerState<TrueFalseBlitzScreen> {
                   correctCount: _correctCount,
                   wrongCount: _wrongCount,
                   onRestart: _restartGame,
+                  onGoHome: _goToHome,
                 )
               : Padding(
                   padding: AppSpacing.pagePadding(context),
@@ -586,6 +610,7 @@ class _BlitzSummaryView extends StatelessWidget {
   final int correctCount;
   final int wrongCount;
   final VoidCallback onRestart;
+  final VoidCallback onGoHome;
 
   const _BlitzSummaryView({
     required this.earnedXp,
@@ -593,6 +618,7 @@ class _BlitzSummaryView extends StatelessWidget {
     required this.correctCount,
     required this.wrongCount,
     required this.onRestart,
+    required this.onGoHome,
   });
 
   @override
@@ -803,7 +829,7 @@ class _BlitzSummaryView extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: onGoHome,
                 icon: const PhosphorIcon(PhosphorIconsBold.house, size: 18),
                 label: const Text('Ana Sayfaya Dön'),
                 style: OutlinedButton.styleFrom(

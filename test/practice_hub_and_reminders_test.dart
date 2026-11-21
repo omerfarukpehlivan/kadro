@@ -216,7 +216,7 @@ void main() {
     );
 
     testWidgets(
-      'Çalışma Planı hatırlatıcısına tıklandığında StudyPlannerScreen açılır',
+      'TASK-162: Çalışma Planı hatırlatıcısına tıklandığında bilgilendirici SnackBar gösterilir',
       (tester) async {
         tester.view.physicalSize = const Size(800, 1600);
         tester.view.devicePixelRatio = 1.0;
@@ -233,9 +233,10 @@ void main() {
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Çalışma Planı'));
-        await tester.pumpAndSettle();
+        await tester.pump();
 
-        expect(find.byType(StudyPlannerScreen), findsOneWidget);
+        expect(find.byType(SnackBar), findsOneWidget);
+        expect(find.byType(StudyPlannerScreen), findsNothing);
       },
     );
   });

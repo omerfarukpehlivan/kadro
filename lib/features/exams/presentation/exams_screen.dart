@@ -3,15 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/exams/data/branch_mock_exam_generator.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/exams/data/models/mock_exam_blueprint.dart';
 import 'package:kadro/features/exams/presentation/widgets/blueprint_exam_launcher.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
+import 'package:kadro/features/lessons/data/models/exam_curriculum.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/score_calculator/presentation/kpss_score_calculator_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
+import 'package:kadro/shared/widgets/kadro_filter_chips.dart';
 import 'package:kadro/shared/widgets/responsive_grid.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
@@ -53,7 +57,7 @@ class ExamsScreen extends ConsumerWidget {
         ? 'Genel Kültür Denemesi #1'
         : primaryBlueprint.title;
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final isDesktop = ResponsiveBreakpoints.isDesktop(context);
+    final isLargeTablet = ResponsiveBreakpoints.isLargeTablet(context);
     final isWideHero = ResponsiveBreakpoints.usesDialogOverlay(context);
     final gridColumns = screenWidth >= 1200 ? 3 : (screenWidth >= 760 ? 2 : 1);
 
@@ -162,7 +166,7 @@ class ExamsScreen extends ConsumerWidget {
     );
 
     return ResponsiveContentWrapper(
-      maxWidth: isDesktop ? 1240 : 720,
+      maxWidth: isLargeTablet ? 1240 : 720,
       padding: EdgeInsets.zero,
       child: Scrollbar(
         child: ListView(
@@ -313,6 +317,12 @@ class ExamsScreen extends ConsumerWidget {
                   _ExamPackCard(blueprint: blueprint, selection: selection),
               ],
             ),
+            AppSpacing.gapXl,
+            _BranchExamsSection(
+              selection: selection,
+              curriculum: curriculum,
+              gridColumns: gridColumns,
+            ),
             AppSpacing.gapLg,
             const SectionTitle('Puan & Analiz'),
             const _ScoreCalculatorShortcutCard(),
@@ -374,7 +384,7 @@ class _ExamPackCard extends ConsumerWidget {
   Future<void> _handleDownload(BuildContext context, WidgetRef ref) async {
     final isPro = ref.read(userPreferencesProvider).isPro;
     if (!isPro) {
-      Navigator.of(context).push(
+      Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
           builder: (_) => const PaywallScreen(
             reasonMessage: 'Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
@@ -482,44 +492,42 @@ class _ExamPackCard extends ConsumerWidget {
                   ],
                 ),
               ),
-              if (OfflineDownloadService.isSupported) ...[
-                const SizedBox(width: 8),
-                isDownloaded
-                    ? Tooltip(
-                        message: 'Cihazda Hazır',
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 7,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.secondaryContainer,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'Cihazda',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSecondaryContainer,
-                            ),
-                          ),
+              const SizedBox(width: 8),
+              isDownloaded
+                  ? Tooltip(
+                      message: 'Cihazda Hazır',
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 3,
                         ),
-                      )
-                    : Tooltip(
-                        message: 'Çevrimdışı İndir',
-                        child: InkWell(
+                        decoration: BoxDecoration(
+                          color: colorScheme.secondaryContainer,
                           borderRadius: BorderRadius.circular(8),
-                          onTap: () => _handleDownload(context, ref),
-                          child: Padding(
-                            padding: const EdgeInsets.all(6),
-                            child: PhosphorIcon(
-                              PhosphorIconsRegular.downloadSimple,
-                              size: 18,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
+                        ),
+                        child: Text(
+                          'Cihazda',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSecondaryContainer,
                           ),
                         ),
                       ),
-              ],
+                    )
+                  : Tooltip(
+                      message: 'Çevrimdışı İndir',
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () => _handleDownload(context, ref),
+                        child: Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: PhosphorIcon(
+                            PhosphorIconsRegular.downloadSimple,
+                            size: 18,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
             ],
           ),
           const SizedBox(height: 10),
@@ -609,9 +617,7 @@ class _ExamPackCard extends ConsumerWidget {
                 child: Text(
                   isDownloaded
                       ? 'Çevrimdışı Kullanıma Hazır'
-                      : (OfflineDownloadService.isSupported
-                            ? 'Kadro PRO Çevrimdışı Desteği'
-                            : 'Çevrimiçi Deneme Paketi'),
+                      : 'Kadro PRO Çevrimdışı Desteği',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.labelSmall?.copyWith(
@@ -662,7 +668,7 @@ class _ScoreCalculatorShortcutCard extends StatelessWidget {
 
     return TactileCard(
       onTap: () {
-        Navigator.of(context).push(
+        Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(builder: (_) => const KpssScoreCalculatorScreen()),
         );
       },
@@ -711,6 +717,233 @@ class _ScoreCalculatorShortcutCard extends StatelessWidget {
             PhosphorIconsRegular.caretRight,
             size: 16,
             color: colorScheme.primary,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Aktif müfredattaki hazır dersler için set seçicili (Deneme #1–#3)
+/// branş denemeleri sunan bölüm (`TASK-154`).
+class _BranchExamsSection extends ConsumerStatefulWidget {
+  final ExamSelection selection;
+  final ExamCurriculum curriculum;
+  final int gridColumns;
+
+  const _BranchExamsSection({
+    required this.selection,
+    required this.curriculum,
+    required this.gridColumns,
+  });
+
+  @override
+  ConsumerState<_BranchExamsSection> createState() =>
+      _BranchExamsSectionState();
+}
+
+class _BranchExamsSectionState extends ConsumerState<_BranchExamsSection> {
+  int _selectedSetNumber = 1;
+
+  @override
+  Widget build(BuildContext context) {
+    final blueprints = BranchMockExamGenerator.blueprintsForCurriculum(
+      selection: widget.selection,
+      curriculum: widget.curriculum,
+      branchMockNumber: _selectedSetNumber,
+    );
+    if (blueprints.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SectionTitle('Branş Denemeleri'),
+        KadroFilterChips<int>(
+          wrap: true,
+          selectedValue: _selectedSetNumber,
+          options: const [
+            KadroFilterOption(
+              key: ValueKey('branch_set_chip_1'),
+              value: 1,
+              label: 'Branş #1 · Ücretsiz',
+            ),
+            KadroFilterOption(
+              key: ValueKey('branch_set_chip_2'),
+              value: 2,
+              label: 'Branş #2 · PRO',
+            ),
+            KadroFilterOption(
+              key: ValueKey('branch_set_chip_3'),
+              value: 3,
+              label: 'Branş #3 · PRO',
+            ),
+          ],
+          onSelected: (setNum) => setState(() => _selectedSetNumber = setNum),
+        ),
+        AppSpacing.gapMd,
+        ResponsiveGrid(
+          columns: widget.gridColumns,
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            for (final blueprint in blueprints)
+              _BranchExamCard(
+                blueprint: blueprint,
+                selection: widget.selection,
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _BranchExamCard extends ConsumerWidget {
+  final MockExamBlueprint blueprint;
+  final ExamSelection selection;
+
+  const _BranchExamCard({required this.blueprint, required this.selection});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final lessonName = blueprint.sections.isNotEmpty
+        ? blueprint.sections.first.lesson
+        : blueprint.title;
+    final mood = TugrulMoodExtension.fromLesson(lessonName);
+    final accent = mood.accentColor(colorScheme);
+    final isUserPro = ref.watch(userPreferencesProvider).isPro;
+    final solvedSession = ref
+        .watch(studyStatsProvider)
+        .findLatestSessionForTitle(blueprint.title);
+    final totalMinutes =
+        blueprint.standardDurationMinutes +
+        blueprint.extraMinutesFor(selection);
+
+    return TactileCard(
+      key: ValueKey('branch_exam_card_${blueprint.id}'),
+      onTap: () => launchBlueprintExamWithGuard(
+        context: context,
+        ref: ref,
+        blueprint: blueprint,
+        selection: selection,
+        isBranchMock: true,
+      ),
+      backgroundColor: solvedSession != null
+          ? colorScheme.secondaryContainer.withAlpha(45)
+          : colorScheme.surface,
+      borderColor: solvedSession != null
+          ? colorScheme.secondary.withAlpha(150)
+          : accent.withAlpha(90),
+      lipColor: solvedSession != null
+          ? colorScheme.secondary.withAlpha(160)
+          : accent.withAlpha(105),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: accent.withAlpha(24),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: accent.withAlpha(80)),
+                ),
+                child: PhosphorIcon(
+                  blueprint.isProOnly
+                      ? PhosphorIconsFill.crown
+                      : PhosphorIconsFill.exam,
+                  color: accent,
+                  size: 19,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      blueprint.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.titleSmall?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$totalMinutes Dakika · ${blueprint.totalQuestionCount} Soru',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              KadroBadge(
+                label: blueprint.badgeLabel,
+                tone: blueprint.isProOnly
+                    ? KadroBadgeTone.tertiary
+                    : KadroBadgeTone.primary,
+              ),
+              if (solvedSession != null)
+                KadroBadge(
+                  label:
+                      'Çözüldü (${solvedSession.netScore.toStringAsFixed(1)} Net)',
+                  tone: KadroBadgeTone.secondary,
+                  icon: PhosphorIconsFill.checkCircle,
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '4 yanlış 1 doğru · Konu kırılımlı karne',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    blueprint.isProOnly && !isUserPro
+                        ? 'PRO ile Çöz'
+                        : 'Branşı Başlat',
+                    style: textTheme.labelLarge?.copyWith(color: accent),
+                  ),
+                  const SizedBox(width: 4),
+                  PhosphorIcon(
+                    blueprint.isProOnly && !isUserPro
+                        ? PhosphorIconsFill.crown
+                        : PhosphorIconsBold.arrowRight,
+                    size: 15,
+                    color: accent,
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),

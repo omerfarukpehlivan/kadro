@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/auth/data/auth_notifier.dart';
-import 'package:kadro/features/lessons/presentation/curriculum_preview_screen.dart';
 import 'package:kadro/features/score_calculator/presentation/kpss_score_calculator_screen.dart';
 import 'package:kadro/shared/widgets/adaptive_overlay.dart';
 import 'package:kadro/shared/widgets/legal_document_viewer_screen.dart';
@@ -81,26 +80,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       return;
     }
     Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => const KpssScoreCalculatorScreen(isGuestMode: true),
-      ),
+      MaterialPageRoute(builder: (_) => const KpssScoreCalculatorScreen()),
     );
-  }
-
-  void _openCurriculumPreview(BuildContext context) {
-    final router = GoRouter.maybeOf(context);
-    if (router != null) {
-      router.push('/curriculum-preview');
-      return;
-    }
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => const CurriculumPreviewScreen()));
   }
 
   void _showForgotPasswordModal(BuildContext context) {
     AdaptiveOverlay.showModal<void>(
       context: context,
+      title: 'Şifre Sıfırlama',
+      headerIcon: PhosphorIconsRegular.key,
+      showMobileHeader: true,
       dialogMaxWidth: 460,
       builder: (modalCtx) => _ForgotPasswordModalContent(
         initialEmail: _emailController.text.contains('@')
@@ -133,7 +122,6 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final authState = ref.watch(authProvider);
-    final isSplitPane = ResponsiveBreakpoints.usesSplitPane(context);
 
     final authHeader = Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -362,24 +350,13 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       ),
     );
 
-    final guestShortcutButtons = Wrap(
-      alignment: WrapAlignment.center,
-      spacing: 10,
-      runSpacing: 8,
-      children: [
-        OutlinedButton.icon(
-          key: const ValueKey('auth_guest_calculator_button'),
-          onPressed: () => _openGuestCalculator(context),
-          icon: const PhosphorIcon(PhosphorIconsRegular.calculator, size: 16),
-          label: const Text('Hemen Puan Hesapla'),
-        ),
-        OutlinedButton.icon(
-          key: const ValueKey('auth_guest_curriculum_button'),
-          onPressed: () => _openCurriculumPreview(context),
-          icon: const PhosphorIcon(PhosphorIconsRegular.books, size: 16),
-          label: const Text('Müfredatı İncele'),
-        ),
-      ],
+    final calculatorShortcutButton = Center(
+      child: OutlinedButton.icon(
+        key: const ValueKey('auth_guest_calculator_button'),
+        onPressed: () => _openGuestCalculator(context),
+        icon: const PhosphorIcon(PhosphorIconsRegular.calculator, size: 16),
+        label: const Text('Hemen Puan Hesapla'),
+      ),
     );
 
     final continueWithoutLogin = Center(
@@ -458,266 +435,28 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
         title: const Text('Giriş Yap / Kayıt Ol'),
       ),
       body: SafeArea(
-        child: isSplitPane
-            ? ResponsiveContentWrapper(
-                maxWidth: 1200,
-                padding: EdgeInsets.zero,
-                child: Scrollbar(
-                  child: SingleChildScrollView(
-                    padding: AppSpacing.pagePadding(context),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          flex: 6,
-                          child: _DesktopAuthShowcasePanel(
-                            onOpenCalculator: () =>
-                                _openGuestCalculator(context),
-                            onOpenCurriculum: () =>
-                                _openCurriculumPreview(context),
-                          ),
-                        ),
-                        const SizedBox(width: 28),
-                        Expanded(
-                          flex: 5,
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                authHeader,
-                                AppSpacing.gapMd,
-                                authCard,
-                                const SizedBox(height: 10),
-                                if (!widget.isInitialGate) ...[
-                                  continueWithoutLogin,
-                                  const SizedBox(height: 10),
-                                ],
-                                legalFooter,
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              )
-            : ResponsiveContentWrapper(
-                maxWidth: 720,
-                padding: EdgeInsets.zero,
-                child: Form(
-                  key: _formKey,
-                  child: ListView(
-                    padding: AppSpacing.pagePadding(context),
-                    children: [
-                      authHeader,
-                      AppSpacing.gapLg,
-                      authCard,
-                      const SizedBox(height: 14),
-                      guestShortcutButtons,
-                      const SizedBox(height: 10),
-                      continueWithoutLogin,
-                      const SizedBox(height: 16),
-                      legalFooter,
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-              ),
-      ),
-    );
-  }
-}
-
-/// Masaüstü giriş kapısında (`>= 960px`) Kadro'nun çoklu KPSS ekosistemini
-/// tanıtan ve oturum açmadan misafir araçlara geçiş sunan sol vitrin paneli (`TASK-151`).
-class _DesktopAuthShowcasePanel extends StatelessWidget {
-  final VoidCallback onOpenCalculator;
-  final VoidCallback onOpenCurriculum;
-
-  const _DesktopAuthShowcasePanel({
-    required this.onOpenCalculator,
-    required this.onOpenCurriculum,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        TactileCard(
-          backgroundColor: colorScheme.primaryContainer.withAlpha(110),
-          borderColor: colorScheme.primary.withAlpha(120),
-          lipColor: colorScheme.primary.withAlpha(150),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  TugrulAvatar(
-                    mood: TugrulMood.victory,
-                    size: 74,
-                    ringColor: colorScheme.primary,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: colorScheme.primary.withAlpha(80),
-                            ),
-                          ),
-                          child: Text(
-                            'KPSS · E-KPSS · DHBT · MEB-AGS',
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Kadro Masaüstü Çalışma Stüdyosu',
-                          style: textTheme.headlineSmall?.copyWith(
-                            color: colorScheme.onSurface,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              Text(
-                'Sınav hazırlığını telefon, tablet ve masaüstü tarayıcında kesintisiz sürdür; ÖSYM çeldirici tuzaklarını anında analiz et.',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  height: 1.45,
-                ),
-              ),
-              const SizedBox(height: 18),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: [
-                  FilledButton.tonalIcon(
-                    key: const ValueKey('auth_desktop_guest_calculator_button'),
-                    onPressed: onOpenCalculator,
-                    icon: const PhosphorIcon(
-                      PhosphorIconsRegular.calculator,
-                      size: 16,
-                    ),
-                    label: const Text('Hemen Puan Hesapla (Misafir)'),
-                  ),
-                  OutlinedButton.icon(
-                    key: const ValueKey('auth_desktop_guest_curriculum_button'),
-                    onPressed: onOpenCurriculum,
-                    icon: const PhosphorIcon(
-                      PhosphorIconsRegular.books,
-                      size: 16,
-                    ),
-                    label: const Text('Müfredatı İncele'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        AppSpacing.gapMd,
-        const _ShowcaseFeatureTile(
-          icon: PhosphorIconsFill.warningCircle,
-          title: 'UWorld Modeli ÖSYM Çeldirici Analizi',
-          description: 'Her soruda adayı tuzağa düşüren çeldirici şıkkın nedeni sağ panelde anında açıklanır.',
-        ),
-        AppSpacing.gapSm,
-        const _ShowcaseFeatureTile(
-          icon: PhosphorIconsFill.mapTrifold,
-          title: 'Dilsiz 81 İl Harita & Pratik Atölyesi',
-          description: 'Coğrafya, Millî Mücadele haritaları, bilgi kartları ve puan hesaplama tek çatı altında.',
-        ),
-        AppSpacing.gapSm,
-        const _ShowcaseFeatureTile(
-          icon: PhosphorIconsFill.keyboard,
-          title: 'Klavye Kısayollarıyla Hızlı Çözüm',
-          description: 'A–E seçimi, Shift+A–E şık eleme ve Ctrl+K komut paletiyle tarayıcıda akıcı pratik.',
-        ),
-      ],
-    );
-  }
-}
-
-class _ShowcaseFeatureTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-
-  const _ShowcaseFeatureTile({
-    required this.icon,
-    required this.title,
-    required this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return TactileCard(
-      backgroundColor: colorScheme.surface,
-      borderColor: colorScheme.outlineVariant,
-      padding: const EdgeInsets.all(14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: colorScheme.outlineVariant),
-            ),
-            alignment: Alignment.center,
-            child: PhosphorIcon(icon, size: 18, color: colorScheme.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: ResponsiveContentWrapper(
+          maxWidth: ResponsiveBreakpoints.isTablet(context) ? 560 : 720,
+          padding: EdgeInsets.zero,
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: AppSpacing.pagePadding(context),
               children: [
-                Text(
-                  title,
-                  style: textTheme.titleSmall?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  description,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+                authHeader,
+                AppSpacing.gapLg,
+                authCard,
+                const SizedBox(height: 14),
+                calculatorShortcutButton,
+                const SizedBox(height: 10),
+                continueWithoutLogin,
+                const SizedBox(height: 16),
+                legalFooter,
+                const SizedBox(height: 24),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -787,29 +526,6 @@ class _ForgotPasswordModalContentState
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  PhosphorIcon(
-                    PhosphorIconsRegular.key,
-                    color: colorScheme.primary,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 10),
-                  Text('Şifre Sıfırlama', style: textTheme.titleMedium),
-                ],
-              ),
-              const SizedBox(height: 8),
               Text(
                 'Kayıtlı e-posta adresinizi girin, şifre sıfırlama bağlantısını gönderelim.',
                 style: textTheme.bodyMedium?.copyWith(

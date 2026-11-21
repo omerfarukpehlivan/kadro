@@ -119,59 +119,56 @@ class AppTopBar extends ConsumerWidget implements PreferredSizeWidget {
             label: prefs.isPro ? 'Kadro PRO Üyeliği Aktif' : "Kadro PRO'ya Geç",
             child: Tooltip(
               message: prefs.isPro ? 'Kadro PRO Aktif' : "Kadro PRO'ya Geç",
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const PaywallScreen()),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(10),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isCompact ? 8 : 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(builder: (_) => const PaywallScreen()),
+                  );
+                },
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isCompact ? 8 : 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: prefs.isPro
+                        ? colorScheme.tertiaryContainer
+                        : colorScheme.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
                       color: prefs.isPro
-                          ? colorScheme.tertiaryContainer
-                          : colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: prefs.isPro
-                            ? colorScheme.tertiary
-                            : colorScheme.tertiary.withAlpha(140),
-                        width: 1.2,
+                          ? colorScheme.tertiary
+                          : colorScheme.tertiary.withAlpha(140),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colorScheme.tertiary.withAlpha(65),
+                        offset: const Offset(0, 2),
+                        blurRadius: 0,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: colorScheme.tertiary.withAlpha(65),
-                          offset: const Offset(0, 2),
-                          blurRadius: 0,
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      PhosphorIcon(
+                        PhosphorIconsFill.crown,
+                        size: 13,
+                        color: colorScheme.tertiary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'PRO',
+                        style: textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: prefs.isPro
+                              ? colorScheme.onTertiaryContainer
+                              : colorScheme.onSurface,
                         ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        PhosphorIcon(
-                          PhosphorIconsFill.crown,
-                          size: 13,
-                          color: colorScheme.tertiary,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'PRO',
-                          style: textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: prefs.isPro
-                                ? colorScheme.onTertiaryContainer
-                                : colorScheme.onSurface,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),

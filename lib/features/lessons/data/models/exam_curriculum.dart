@@ -68,7 +68,11 @@ class LessonSpec {
       topics: lesson.topics,
       defaultTestCountsByTopic: defaultTestCountsByTopic,
       fallbackTestCount: fallbackTestCount,
-      badgeText: lesson.badgeText,
+      badgeText:
+          effectiveAvailability == CurriculumAvailability.ready &&
+              lesson.badgeText == 'Yakında'
+          ? null
+          : lesson.badgeText,
       availability: effectiveAvailability,
     );
   }

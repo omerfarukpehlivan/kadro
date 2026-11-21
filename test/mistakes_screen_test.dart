@@ -117,7 +117,7 @@ void main() {
     );
 
     testWidgets(
-      'QuizScreen içinde yanlış defterindeki soru doğru çözüldüğünde depodan silinmeli',
+      'QuizScreen içinde yanlış defterindeki soru doğru çözüldüğünde Kutu 2ye terfi etmeli ve bugünkü kuyruktan çıkmalı',
       (WidgetTester tester) async {
         tester.view.physicalSize = const Size(1080, 2400);
         tester.view.devicePixelRatio = 1.0;
@@ -126,9 +126,11 @@ void main() {
           tester.view.resetDevicePixelRatio();
         });
 
-        // Önceden yanlış defterine ekle
+        // Önceden yanlış defterine ekle (Kutu 1, bugün vadesi gelmiş)
         repository.addMistake(sampleQuestion);
         expect(repository.getMistakes().length, equals(1));
+        expect(repository.getDueMistakes().length, equals(1));
+        expect(repository.entryFor(sampleQuestion.id)?.reviewBox, equals(1));
 
         await tester.pumpWidget(
           const ProviderScope(
@@ -144,8 +146,11 @@ void main() {
         await tester.tap(find.widgetWithText(FilledButton, 'Cevabı Onayla'));
         await tester.pumpAndSettle();
 
-        // Doğru çözüldüğü için defterden silindiğini doğrula
-        expect(repository.getMistakes(), isEmpty);
+        // Leitner kuralı: 1. doğruda Kutu 2'ye (+3 gün) yükselir ve bugünkü kuyruktan düşer
+        final promoted = repository.entryFor(sampleQuestion.id);
+        expect(promoted, isNotNull);
+        expect(promoted!.reviewBox, equals(2));
+        expect(repository.getDueMistakes(), isEmpty);
       },
     );
 

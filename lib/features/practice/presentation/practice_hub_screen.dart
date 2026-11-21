@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/current_affairs/presentation/current_affairs_screen.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/exams/data/models/mock_exam_blueprint.dart';
 import 'package:kadro/features/exams/presentation/widgets/blueprint_exam_launcher.dart';
@@ -94,7 +95,7 @@ class PracticeHubScreen extends ConsumerWidget {
       curriculum: curriculum,
     );
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final isDesktop = ResponsiveBreakpoints.isDesktop(context);
+    final isLargeTablet = ResponsiveBreakpoints.isLargeTablet(context);
     final toolColumns = screenWidth >= 900 ? 2 : 1;
 
     final primaryTilesRow = IntrinsicHeight(
@@ -127,7 +128,7 @@ class PracticeHubScreen extends ConsumerWidget {
 
     final distractorBanner = _DistractorHuntBanner(
       onTap: () {
-        Navigator.of(context).push(
+        Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
             builder: (_) => const QuizScreen(
               customTitle: 'ÖSYM Çeldirici Avı (Tuzak Sorular)',
@@ -150,7 +151,7 @@ class PracticeHubScreen extends ConsumerWidget {
             title: 'Bilgi kartları',
             subtitle: 'Önünde soru, arkasında kısa cevap.',
             onTap: () {
-              Navigator.of(context).push(
+              Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(builder: (_) => const FlashcardsScreen()),
               );
             },
@@ -164,6 +165,7 @@ class PracticeHubScreen extends ConsumerWidget {
             onTap: () {
               Navigator.of(
                 context,
+                rootNavigator: true,
               ).push(MaterialPageRoute(builder: (_) => const MistakesScreen()));
             },
           ),
@@ -174,7 +176,7 @@ class PracticeHubScreen extends ConsumerWidget {
             title: 'Kavram Eşleştir',
             subtitle: 'Tarih, Coğrafya ve Vatandaşlık terimlerini eşleştir.',
             onTap: () {
-              Navigator.of(context).push(
+              Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(builder: (_) => const ConceptMatchScreen()),
               );
             },
@@ -191,7 +193,7 @@ class PracticeHubScreen extends ConsumerWidget {
         meta: '81 İl & Havzalar',
         description: 'İlleri, maden havzalarını ve tarım bölgelerini haritada dokunarak bul.',
         onTap: () {
-          Navigator.of(context).push(
+          Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute(builder: (_) => const MapPracticeHubScreen()),
           );
         },
@@ -203,7 +205,7 @@ class PracticeHubScreen extends ConsumerWidget {
         meta: 'Hızlı Tekrar',
         description: 'Süreli doğru/yanlış alıştırmasıyla refleks geliştir.',
         onTap: () {
-          Navigator.of(context).push(
+          Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute(builder: (_) => const TrueFalseBlitzScreen()),
           );
         },
@@ -215,17 +217,29 @@ class PracticeHubScreen extends ConsumerWidget {
         meta: 'P3 · P93 · P94 & Son 3 Yıl',
         description: 'Netlerini gir; P3, P93, P94 puanını ve son 3 KPSS sınavında kaç puan alacağını karşılaştır.',
         onTap: () {
-          Navigator.of(context).push(
+          Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute(
               builder: (_) => const KpssScoreCalculatorScreen(),
             ),
           );
         },
       ),
+      _PracticeToolCard(
+        mood: TugrulMood.current,
+        accentColor: colorScheme.error,
+        title: 'Aylık Güncel Bülten',
+        meta: 'Mayıs · Haziran · Temmuz',
+        description: 'Ay ay güncel gelişmeleri, ÖSYM soru ipuçlarını oku ve 10 soruluk mini testle pekiştir.',
+        onTap: () {
+          Navigator.of(context, rootNavigator: true).push(
+            MaterialPageRoute(builder: (_) => const CurrentAffairsScreen()),
+          );
+        },
+      ),
     ];
 
     return ResponsiveContentWrapper(
-      maxWidth: isDesktop ? 1240 : 720,
+      maxWidth: isLargeTablet ? 1240 : 720,
       padding: EdgeInsets.zero,
       child: Scrollbar(
         child: ListView(
@@ -260,7 +274,7 @@ class PracticeHubScreen extends ConsumerWidget {
                   const SizedBox(width: 12),
                   TugrulAvatar(
                     mood: TugrulMood.practice,
-                    size: isDesktop ? 82 : 64,
+                    size: isLargeTablet ? 82 : 64,
                     tooltip: 'Çalışma Modu İpuçları',
                     onTap: () => TugrulTipsSheet.show(
                       context,
@@ -272,7 +286,7 @@ class PracticeHubScreen extends ConsumerWidget {
             ),
             AppSpacing.gapSm,
 
-            if (isDesktop)
+            if (isLargeTablet)
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -320,7 +334,7 @@ class PracticeHubScreen extends ConsumerWidget {
               SectionTitle('Özel Antrenman', accentColor: colorScheme.tertiary),
               distractorBanner,
             ],
-            if (isDesktop) ...[
+            if (isLargeTablet) ...[
               AppSpacing.gapMd,
               SectionTitle(
                 'Tekrar ve kavramlar',
@@ -540,7 +554,7 @@ class _DistractorHuntBanner extends StatelessWidget {
         children: [
           TugrulAvatar(
             mood: TugrulMood.detective,
-            size: ResponsiveBreakpoints.isDesktop(context) ? 72 : 56,
+            size: ResponsiveBreakpoints.isLargeTablet(context) ? 72 : 56,
             ringWidth: 2,
             hasShadow: false,
             ringColor: colorScheme.tertiary,
@@ -618,7 +632,7 @@ class _PracticeToolCard extends StatelessWidget {
         children: [
           TugrulAvatar(
             mood: mood,
-            size: ResponsiveBreakpoints.isDesktop(context) ? 60 : 46,
+            size: ResponsiveBreakpoints.isLargeTablet(context) ? 60 : 46,
             ringWidth: 2,
             ringColor: accentColor,
             hasShadow: false,
@@ -704,17 +718,10 @@ class _SelectorBottomSheetScaffold extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
+            if (!ResponsiveBreakpoints.usesDialogOverlay(context)) ...[
+              const KadroSheetHandle(),
+              const SizedBox(height: 16),
+            ],
             Text(
               title,
               style: textTheme.titleMedium?.copyWith(

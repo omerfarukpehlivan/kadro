@@ -85,6 +85,46 @@ void main() {
         expect(sql, contains('exam_date_overrides jsonb not null default'));
         expect(sql, contains('p_exam_family text default null'));
       });
+
+      test('07_leitner_and_current_affairs.sql ve supabase_schema.sql Leitner sütun, tablo ve RLS kurallarını içerir', () {
+        final migrationFile = File(
+          'docs/supabase_migrations/07_leitner_and_current_affairs.sql',
+        );
+        expect(migrationFile.existsSync(), isTrue);
+
+        final migrationSql = migrationFile.readAsStringSync().toLowerCase();
+        expect(migrationSql, contains('review_box int not null default 1'));
+        expect(migrationSql, contains('next_review_at timestamptz'));
+        expect(migrationSql, contains('box4_streak int not null default 0'));
+        expect(migrationSql, contains('idx_attempt_logs_leitner_due'));
+        expect(
+          migrationSql,
+          contains('create table if not exists public.user_flashcard_reviews'),
+        );
+        expect(migrationSql, contains('enable row level security'));
+        expect(migrationSql, contains('(select auth.uid())'));
+        expect(
+          migrationSql,
+          contains(
+            'create table if not exists public.current_affairs_bulletins',
+          ),
+        );
+        expect(migrationSql, contains('idx_current_affairs_active_month'));
+        expect(
+          migrationSql,
+          contains(
+            'revoke insert, update, delete on public.current_affairs_bulletins from anon, authenticated',
+          ),
+        );
+
+        final schemaSql = File('docs/supabase_schema.sql')
+            .readAsStringSync()
+            .toLowerCase();
+        expect(schemaSql, contains('idx_attempt_logs_leitner_due'));
+        expect(schemaSql, contains('user_flashcard_reviews'));
+        expect(schemaSql, contains('current_affairs_bulletins'));
+        expect(schemaSql, contains('idx_current_affairs_active_month'));
+      });
     },
   );
 }

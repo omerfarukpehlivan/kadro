@@ -127,20 +127,34 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('KPSS Sınav Hedefini Seç'), findsOneWidget);
-        expect(find.text('2027 KPSS Lisans (GY-GK)'), findsOneWidget);
-        expect(find.text('2028 KPSS Lisans (B Grubu)'), findsOneWidget);
-        expect(find.text('2028 KPSS Ön Lisans'), findsOneWidget);
-        expect(find.text('2028 KPSS Ortaöğretim'), findsOneWidget);
-        expect(find.text('2028 KPSS DHBT'), findsOneWidget);
+        expect(find.text('1. Sınav Ailesi'), findsOneWidget);
+        expect(find.text('Lisans 2027'), findsOneWidget);
         expect(
           find.textContaining('ÖSYM geçmiş sınav takvimi baz alınarak'),
           findsOneWidget,
         );
 
-        // 2028 KPSS Ön Lisans seçeneğine tıkla
-        final onLisansFinder = find.text('2028 KPSS Ön Lisans');
-        await tester.ensureVisible(onLisansFinder);
-        await tester.tap(onLisansFinder);
+        // Sınav ailesi dropdown'ını aç ve 5 sınav ailesinin listelendiğini doğrula
+        await tester.tap(find.byKey(const ValueKey('picker_family_dropdown')));
+        await tester.pumpAndSettle();
+        expect(find.text('A Grubu'), findsOneWidget);
+        expect(find.text('DHBT'), findsOneWidget);
+        expect(find.text('MEB-AGS'), findsOneWidget);
+        expect(find.text('E-KPSS'), findsOneWidget);
+
+        // Tekrar B Grubu seçerek dropdown menüsünü kapat
+        await tester.tap(find.byKey(const ValueKey('picker_family_b_grubu')));
+        await tester.pumpAndSettle();
+
+        // Öğrenim düzeyini Ön Lisans yap ve onayla
+        await tester.tap(find.byKey(const ValueKey('b_level_dropdown')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Ön Lisans').last);
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.byKey(const ValueKey('exam_selector_confirm_button')),
+        );
         await tester.pumpAndSettle();
 
         expect(
@@ -189,12 +203,17 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(TargetExamSelectorBottomSheet), findsOneWidget);
-        expect(find.text('2028 KPSS Ortaöğretim'), findsOneWidget);
+        expect(find.byKey(const ValueKey('b_level_dropdown')), findsOneWidget);
 
-        // Ortaöğretim seçelim
-        final ortaogretimFinder = find.text('2028 KPSS Ortaöğretim');
-        await tester.ensureVisible(ortaogretimFinder);
-        await tester.tap(ortaogretimFinder);
+        // Öğrenim Düzeyi ve Dönem dropdown'ından Ortaöğretim seçip uygula
+        await tester.tap(find.byKey(const ValueKey('b_level_dropdown')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Ortaöğretim').last);
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.byKey(const ValueKey('exam_selector_confirm_button')),
+        );
         await tester.pumpAndSettle();
 
         // Modal kapanıp ana ekranda 2028 KPSS Ortaöğretim görünmeli

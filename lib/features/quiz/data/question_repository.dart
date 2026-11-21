@@ -365,6 +365,19 @@ class QuestionRepository {
       ('UNESCO Miras Listesi', 1),
       ('Önemli Günler ve Zirveler', 1),
     ],
+    'Türkçe': [
+      ('Sözcükte Anlam', 2),
+      ('Cümlede Anlam', 4),
+      ('Paragrafta Anlam ve Yapı', 13),
+      ('Sözcükte Yapı ve Ekler', 1),
+      ('Sözcük Türleri (İsim, Sıfat, Zamir, Zarf, Edat, Fiil)', 1),
+      ('Ses Bilgisi ve Ses Olayları', 1),
+      ('Yazım Kuralları', 1),
+      ('Noktalama İşaretleri', 1),
+      ('Cümlenin Ögeleri ve Cümle Türleri', 1),
+      ('Anlatım Bozuklukları', 1),
+      ('Sözel Mantık ve Muhakeme', 4),
+    ],
   };
 
   /// E-KPSS İşitme-1 ve Zihinsel kitapçıklarında sadeleştirilmiş metin varyantını döndürür.
@@ -747,9 +760,16 @@ class QuestionRepository {
           filterQuery = filterQuery.eq('difficulty', difficulty);
         }
         if (selection != null) {
-          filterQuery = filterQuery.contains('exam_scopes', [
-            selection.scopeKey,
-          ]);
+          final cloudScopes = <String>{
+            ...selection.acceptedQuestionScopes,
+            if (selection.family == KpssExamFamily.mebAgs &&
+                selection.oabtBranch != OabtBranch.none)
+              'meb_ags',
+          };
+          filterQuery = filterQuery.overlaps(
+            'exam_scopes',
+            cloudScopes.toList(),
+          );
           final subBranch = _resolveSubBranchForSelection(selection);
           if (subBranch != null) {
             filterQuery = filterQuery.or(

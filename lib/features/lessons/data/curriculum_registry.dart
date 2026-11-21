@@ -71,11 +71,27 @@ abstract final class CurriculumRegistry {
     'Çağdaş Türk ve Dünya Tarihi': 8,
   };
 
+  /// KPSS GY Türkçe 710 soruluk havuzunun 11 konuya göre 10'ar soruluk gerçek test dağılımı (Toplam 71 Test).
+  static const Map<String, int> _turkceTopicTestCounts = {
+    'Sözcükte Anlam': 5,
+    'Cümlede Anlam': 9,
+    'Paragrafta Anlam ve Yapı': 31,
+    'Sözcükte Yapı ve Ekler': 2,
+    'Sözcük Türleri (İsim, Sıfat, Zamir, Zarf, Edat, Fiil)': 3,
+    'Ses Bilgisi ve Ses Olayları': 2,
+    'Yazım Kuralları': 3,
+    'Noktalama İşaretleri': 3,
+    'Cümlenin Ögeleri ve Cümle Türleri': 3,
+    'Anlatım Bozuklukları': 3,
+    'Sözel Mantık ve Muhakeme': 7,
+  };
+
   static const Map<String, int> _gkFallbackCountsByLessonId = {
     'tarih': 5,
     'cografya': 6,
     'vatandaslik': 5,
     'guncel': 4,
+    'turkce': 5,
   };
 
   static const Map<String, int> _ekpssGkQuestionOverrides = {
@@ -314,6 +330,9 @@ abstract final class CurriculumRegistry {
         normalizedLesson == 'guncel bilgiler') {
       return 4;
     }
+    if (normalizedLesson == 'türkçe' || normalizedLesson == 'turkce') {
+      return _turkceTopicTestCounts[topic] ?? 5;
+    }
     return 5;
   }
 
@@ -334,10 +353,24 @@ abstract final class CurriculumRegistry {
         .toList(growable: false);
   }
 
+  static LessonSpec _buildReadyLisansTurkceSpec() {
+    final legacyTurkce = kpssGeneralAbilityLessons.firstWhere(
+      (lesson) => lesson.id == 'turkce',
+    );
+    return LessonSpec.fromLegacyLesson(
+      legacyTurkce,
+      availabilityOverride: CurriculumAvailability.ready,
+      defaultTestCountsByTopic: _turkceTopicTestCounts,
+      fallbackTestCount: _gkFallbackCountsByLessonId['turkce'] ?? 5,
+    );
+  }
+
   static List<LessonSpec> _buildGyUpcomingLessons({
     Map<String, int>? questionCountOverrides,
+    bool excludeTurkce = false,
   }) {
     return kpssGeneralAbilityLessons
+        .where((lesson) => !excludeTurkce || lesson.id != 'turkce')
         .map(
           (lesson) => LessonSpec.fromLegacyLesson(
             lesson,
@@ -349,9 +382,28 @@ abstract final class CurriculumRegistry {
 
   static ExamCurriculum _resolveBGrubu(ExamSelection selection) {
     final gkLessons = _buildGkLessons();
-    final gyLessons = _buildGyUpcomingLessons();
 
     if (selection.bGroupProfile == BGroupProfile.fullGyGk) {
+      final isLisans = selection.educationLevel == EducationLevel.lisans;
+      if (isLisans) {
+        final activeLessons = [...gkLessons, _buildReadyLisansTurkceSpec()];
+        final upcomingLessons = _buildGyUpcomingLessons(excludeTurkce: true);
+        return ExamCurriculum(
+          scopeKey: selection.scopeKey,
+          title: 'KPSS ${selection.educationLevel.label} (GY-GK)',
+          summaryLabel: '6 ders · Genel Yetenek & Genel Kültür (120 Soru)',
+          totalQuestions: 120,
+          standardDurationMinutes: 130,
+          availability: CurriculumAvailability.partial,
+          activeSectionTitle: 'KPSS Genel Kültür + GY Türkçe (90 Soru)',
+          upcomingSectionTitle:
+              'KPSS Genel Yetenek · Matematik (30 Soru · Yakında)',
+          activeLessons: activeLessons,
+          upcomingLessons: upcomingLessons,
+        );
+      }
+
+      final gyLessons = _buildGyUpcomingLessons();
       return ExamCurriculum(
         scopeKey: selection.scopeKey,
         title: 'KPSS ${selection.educationLevel.label} (GY-GK)',
@@ -366,6 +418,7 @@ abstract final class CurriculumRegistry {
       );
     }
 
+    final gyLessons = _buildGyUpcomingLessons();
     final titlePrefix = selection.educationLevel == EducationLevel.lisans
         ? 'KPSS Genel Kültür'
         : 'KPSS ${selection.educationLevel.label} · Genel Kültür';

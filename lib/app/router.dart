@@ -4,16 +4,15 @@ import 'package:kadro/app/app_shell.dart';
 import 'package:kadro/shared/widgets/empty_state_view.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:kadro/features/auth/presentation/auth_screen.dart';
+import 'package:kadro/features/current_affairs/presentation/current_affairs_screen.dart';
 import 'package:kadro/features/exams/presentation/exams_screen.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/games/presentation/concept_match_screen.dart';
 import 'package:kadro/features/games/presentation/true_false_blitz_screen.dart';
 import 'package:kadro/features/home/presentation/home_screen.dart';
-import 'package:kadro/features/lessons/presentation/curriculum_preview_screen.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/onboarding/presentation/onboarding_screen.dart';
-import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
 import 'package:kadro/features/practice/presentation/practice_hub_screen.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
@@ -43,12 +42,46 @@ class QuizRouteArgs {
   });
 }
 
+/// Aktif `GoRouter` örneğinin 6 alt sekme dalına (`StatefulShellBranch`) ait
+/// navigator anahtarları. Her `createAppRouter()` çağrısında taze anahtarlar
+/// üretilir ve `popBranchToRoot` bu aktif anahtarları sıfırlar.
+List<GlobalKey<NavigatorState>> _activeBranchNavigatorKeys = List.generate(
+  6,
+  (index) => GlobalKey<NavigatorState>(debugLabel: 'branch_nav_$index'),
+);
+
+/// Belirtilen sekme dalındaki (veya tüm dallardaki) imperatif alt sayfaları
+/// (`LessonTopicsScreen`, `TopicTestsScreen`, `QuizHistoryScreen` vb.) kök sayfaya döndürür.
+void popBranchToRoot([int? branchIndex]) {
+  if (branchIndex != null &&
+      branchIndex >= 0 &&
+      branchIndex < _activeBranchNavigatorKeys.length) {
+    final nav = _activeBranchNavigatorKeys[branchIndex].currentState;
+    if (nav != null && nav.canPop()) {
+      nav.popUntil((route) => route.isFirst);
+    }
+    return;
+  }
+  for (final key in _activeBranchNavigatorKeys) {
+    final nav = key.currentState;
+    if (nav != null && nav.canPop()) {
+      nav.popUntil((route) => route.isFirst);
+    }
+  }
+}
+
 /// Uygulamanın merkezi yönlendirme (routing) tablosu.
 ///
 /// Angular'daki `app.routes.ts` ve `<router-outlet>` mimarisinin karşılığıdır.
 /// `StatefulShellRoute.indexedStack` kullanarak 6 alt menü sekmesinin (branches)
 /// durumunu (state) kaybetmeden korunmasını sağlar (Angular tabs / nested routes gibi).
 GoRouter createAppRouter({String initialLocation = '/'}) {
+  final branchKeys = List.generate(
+    6,
+    (index) => GlobalKey<NavigatorState>(debugLabel: 'branch_nav_$index'),
+  );
+  _activeBranchNavigatorKeys = branchKeys;
+
   return GoRouter(
     initialLocation: initialLocation,
     routes: [
@@ -60,6 +93,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
         branches: [
           // 0: Ana Sayfa
           StatefulShellBranch(
+            navigatorKey: branchKeys[0],
             routes: [
               GoRoute(
                 path: '/',
@@ -69,6 +103,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
           ),
           // 1: Dersler
           StatefulShellBranch(
+            navigatorKey: branchKeys[1],
             routes: [
               GoRoute(
                 path: '/lessons',
@@ -78,6 +113,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
           ),
           // 2: Pratik
           StatefulShellBranch(
+            navigatorKey: branchKeys[2],
             routes: [
               GoRoute(
                 path: '/practice',
@@ -87,6 +123,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
           ),
           // 3: Denemeler
           StatefulShellBranch(
+            navigatorKey: branchKeys[3],
             routes: [
               GoRoute(
                 path: '/exams',
@@ -96,6 +133,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
           ),
           // 4: İstatistik
           StatefulShellBranch(
+            navigatorKey: branchKeys[4],
             routes: [
               GoRoute(
                 path: '/stats',
@@ -105,6 +143,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
           ),
           // 5: Profil
           StatefulShellBranch(
+            navigatorKey: branchKeys[5],
             routes: [
               GoRoute(
                 path: '/profile',
@@ -147,10 +186,7 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
         path: '/paywall',
         builder: (context, state) => const PaywallScreen(),
       ),
-      GoRoute(
-        path: '/planner',
-        builder: (context, state) => const StudyPlannerScreen(),
-      ),
+      GoRoute(path: '/planner', redirect: (context, state) => '/'),
       GoRoute(
         path: '/true-false',
         builder: (context, state) => const TrueFalseBlitzScreen(),
@@ -168,15 +204,12 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
         path: '/calculator',
         builder: (context, state) => KpssScoreCalculatorScreen(
           initialExamParam: state.uri.queryParameters['exam'],
-          isGuestMode: true,
         ),
       ),
       GoRoute(
-        path: '/curriculum-preview',
-        builder: (context, state) => CurriculumPreviewScreen(
-          initialScopeParam:
-              state.uri.queryParameters['scope'] ??
-              state.uri.queryParameters['exam'],
+        path: '/current-affairs',
+        builder: (context, state) => CurrentAffairsScreen(
+          initialMonthParam: state.uri.queryParameters['ay'],
         ),
       ),
     ],

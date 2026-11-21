@@ -1,64 +1,222 @@
 import 'dart:async';
 
 import 'package:kadro/core/services/local_storage_service.dart';
+import 'package:kadro/core/utils/leitner_scheduler.dart';
+import 'package:kadro/features/mistakes/data/models/mistake_review_entry.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 
-/// Testlerde yanlış çözülen soruları bellekte (in-memory) ve yerel depoda (LocalStorage)
-/// tutan repository sınıfı.
+/// Testlerde yanlış çözülen soruları Leitner (`1·3·7·14 gün`) kutu durumlarıyla
+/// bellekte, yerel depoda ([LocalStorageService]) ve Supabase'de yöneten repository.
 ///
 /// Angular'daki `@Injectable({ providedIn: 'root' })` singleton servis yapısının
 /// saf Dart karşılığıdır.
 class MistakeRepository {
-  static final List<Question> _mistakes = [];
+  static final List<MistakeReviewEntry> _entries = [];
   static final LocalStorageService _storage = LocalStorageService();
   static const CloudSyncRepository _cloudSync = CloudSyncRepository();
 
   const MistakeRepository();
 
-  /// Yanlış defterindeki soruların değiştirilemez (unmodifiable) kopyasını döner.
-  List<Question> getMistakes() => List.unmodifiable(_mistakes);
+  /// Yanlış defterindeki soruların değiştirilemez (unmodifiable) listesini döner.
+  List<Question> getMistakes() =>
+      List.unmodifiable(_entries.map((entry) => entry.question));
 
-  /// Soru daha önce eklenmemişse (aynı id yoksa) listeye ekler ve yerel depoya kaydeder.
-  void addMistake(Question question) {
-    if (!_mistakes.any((q) => q.id == question.id)) {
-      _mistakes.add(question);
-      unawaited(_storage.saveMistakes(_mistakes));
-    }
+  /// Leitner kutu ve vade meta verilerini içeren tüm yanlış defteri kayıtlarını döner.
+  List<MistakeReviewEntry> getReviewEntries({String? examScope}) {
+    final Iterable<MistakeReviewEntry> source = examScope == null
+        ? _entries
+        : _entries.where(
+            (e) =>
+                e.examScope == examScope ||
+                e.question.examScopes.contains(examScope),
+          );
+    return List.unmodifiable(source);
   }
 
-  /// Soru doğru çözüldüğünde veya kullanıcı sildiğinde listeden çıkarır
+  /// Vadesi gelmiş ("Bugün Tekrar Edilecek") kayıtları en acilden başa sıralı döner.
+  List<MistakeReviewEntry> getDueEntries({String? examScope, DateTime? now}) {
+    final reference = now ?? DateTime.now();
+    final due =
+        getReviewEntries(examScope: examScope)
+            .where((entry) => entry.isDue(now: reference))
+            .toList()
+          ..sort((a, b) {
+            final dateOrder = a.nextReviewAt.compareTo(b.nextReviewAt);
+            if (dateOrder != 0) return dateOrder;
+            return a.reviewBox.compareTo(b.reviewBox);
+          });
+    return List.unmodifiable(due);
+  }
+
+  /// Vadesi gelmiş yanlış soruların yalnızca [Question] listesini döner.
+  List<Question> getDueMistakes({String? examScope, DateTime? now}) =>
+      List.unmodifiable(
+        getDueEntries(examScope: examScope, now: now).map((e) => e.question),
+      );
+
+  /// Belirli bir soru ID'si için varsa aktif Leitner kaydını döner.
+  MistakeReviewEntry? entryFor(String questionId) {
+    for (final entry in _entries) {
+      if (entry.question.id == questionId) return entry;
+    }
+    return null;
+  }
+
+  /// Yanlış çözülen bir soruyu deftere ekler (zaten varsa Kutu 1'e geri düşürür).
+  void addMistake(
+    Question question, {
+    String examScope = 'lisans_gk',
+    DateTime? now,
+  }) {
+    final effectiveNow = now ?? DateTime.now();
+    final existingIdx = _entries.indexWhere(
+      (entry) => entry.question.id == question.id,
+    );
+
+    if (existingIdx == -1) {
+      final entry = MistakeReviewEntry.initial(
+        question: question,
+        examScope: examScope,
+        now: effectiveNow,
+      );
+      _entries.add(entry);
+      unawaited(_storage.saveMistakeEntries(_entries));
+      unawaited(
+        _cloudSync.syncMistakeReviewState(
+          questionText: question.text,
+          reviewBox: entry.reviewBox,
+          nextReviewAt: entry.nextReviewAt,
+          box4Streak: entry.box4ConsecutiveCorrect,
+          isResolved: false,
+        ),
+      );
+      return;
+    }
+
+    final existing = _entries[existingIdx];
+    final transition = LeitnerScheduler.advance(
+      currentBox: existing.reviewBox,
+      currentBox4Streak: existing.box4ConsecutiveCorrect,
+      isCorrect: false,
+      now: effectiveNow,
+    );
+    final updated = existing.copyWith(
+      question: question,
+      reviewBox: transition.reviewBox,
+      nextReviewAt: transition.nextReviewAt,
+      lastReviewedAt: transition.lastReviewedAt,
+      box4ConsecutiveCorrect: transition.box4ConsecutiveCorrect,
+    );
+    _entries[existingIdx] = updated;
+    unawaited(_storage.saveMistakeEntries(_entries));
+    unawaited(
+      _cloudSync.syncMistakeReviewState(
+        questionText: updated.question.text,
+        reviewBox: updated.reviewBox,
+        nextReviewAt: updated.nextReviewAt,
+        box4Streak: updated.box4ConsecutiveCorrect,
+        isResolved: false,
+      ),
+    );
+  }
+
+  /// Soru tekrar çözüldüğünde Leitner kutusunu (`1·3·7·14 gün`) ilerletir veya
+  /// yanlışta Kutu 1'e düşürür; Kutu 4'te 2 doğru tamamlanınca mezun eder.
+  LeitnerTransition? recordReviewOutcome(
+    String questionId, {
+    required bool isCorrect,
+    String examScope = 'lisans_gk',
+    DateTime? now,
+    Question? fallbackQuestion,
+  }) {
+    final effectiveNow = now ?? DateTime.now();
+    final idx = _entries.indexWhere((entry) => entry.question.id == questionId);
+    if (idx == -1) {
+      if (!isCorrect && fallbackQuestion != null) {
+        addMistake(fallbackQuestion, examScope: examScope, now: effectiveNow);
+      }
+      return null;
+    }
+
+    final existing = _entries[idx];
+    final transition = LeitnerScheduler.advance(
+      currentBox: existing.reviewBox,
+      currentBox4Streak: existing.box4ConsecutiveCorrect,
+      isCorrect: isCorrect,
+      now: effectiveNow,
+    );
+
+    if (transition.isGraduated) {
+      _entries.removeAt(idx);
+      unawaited(_storage.saveMistakeEntries(_entries));
+      unawaited(
+        _cloudSync.syncMistakeReviewState(
+          questionText: existing.question.text,
+          reviewBox: transition.reviewBox,
+          nextReviewAt: transition.nextReviewAt,
+          box4Streak: transition.box4ConsecutiveCorrect,
+          isResolved: true,
+        ),
+      );
+      return transition;
+    }
+
+    final updated = existing.copyWith(
+      reviewBox: transition.reviewBox,
+      nextReviewAt: transition.nextReviewAt,
+      lastReviewedAt: transition.lastReviewedAt,
+      box4ConsecutiveCorrect: transition.box4ConsecutiveCorrect,
+    );
+    _entries[idx] = updated;
+    unawaited(_storage.saveMistakeEntries(_entries));
+    unawaited(
+      _cloudSync.syncMistakeReviewState(
+        questionText: updated.question.text,
+        reviewBox: updated.reviewBox,
+        nextReviewAt: updated.nextReviewAt,
+        box4Streak: updated.box4ConsecutiveCorrect,
+        isResolved: false,
+      ),
+    );
+    return transition;
+  }
+
+  /// Kullanıcı çöp kutusu ikonuyla manuel sildiğinde soruyu kalıcı olarak çıkarır
   /// ve Supabase üzerinde `is_resolved_in_mistakes = true` yapar.
   void removeMistake(String questionId) {
-    Question? resolvedQuestion;
-    for (final q in _mistakes) {
-      if (q.id == questionId) {
-        resolvedQuestion = q;
+    MistakeReviewEntry? resolvedEntry;
+    for (final entry in _entries) {
+      if (entry.question.id == questionId) {
+        resolvedEntry = entry;
         break;
       }
     }
 
-    _mistakes.removeWhere((q) => q.id == questionId);
-    unawaited(_storage.saveMistakes(_mistakes));
+    _entries.removeWhere((entry) => entry.question.id == questionId);
+    unawaited(_storage.saveMistakeEntries(_entries));
 
-    if (resolvedQuestion != null) {
+    if (resolvedEntry != null) {
       unawaited(
-        _cloudSync.markMistakeResolved(questionText: resolvedQuestion.text),
+        _cloudSync.markMistakeResolved(
+          questionText: resolvedEntry.question.text,
+        ),
       );
     }
   }
 
-  /// Yerel depodan kaydedilmiş yanlış soruları belleğe yükler.
+  /// Yerel depodan kaydedilmiş Leitner yanlış defteri kayıtlarını yükler.
   Future<void> loadFromStorage() async {
-    final saved = await _storage.loadMistakes();
+    final saved = await _storage.loadMistakeEntries();
     if (saved.isNotEmpty) {
-      _mistakes.clear();
-      _mistakes.addAll(saved);
+      _entries
+        ..clear()
+        ..addAll(saved);
     }
   }
 
-  /// Buluttaki çözülmemiş yanlış soruları çeker ve yerel Yanlış Defteri havuzuyla birleştirir.
+  /// Buluttaki çözülmemiş yanlış soruları ve Leitner kutu/vade alanlarını çeker.
   ///
   /// Performans & Egress (`TASK-129`): Tüm soru havuzunu indirmek yerine
   /// yalnızca eksik `question_id` listesini [QuestionRepository.fetchQuestionsByIds]
@@ -79,10 +237,12 @@ class MistakeRepository {
       final qId = (log['question_id'] as String?)?.trim();
       final qText = (log['question_text'] as String?)?.trim();
 
-      final alreadyExists = _mistakes.any(
+      final alreadyExists = _entries.any(
         (m) =>
-            (qId != null && qId.isNotEmpty && m.id == qId) ||
-            (qText != null && qText.isNotEmpty && m.text.trim() == qText),
+            (qId != null && qId.isNotEmpty && m.question.id == qId) ||
+            (qText != null &&
+                qText.isNotEmpty &&
+                m.question.text.trim() == qText),
       );
       if (alreadyExists) continue;
 
@@ -126,6 +286,7 @@ class MistakeRepository {
       for (final q in localPool) q.text.trim(): q,
     };
 
+    final now = DateTime.now();
     for (final log in pendingLogs) {
       final qId = (log['question_id'] as String?)?.trim();
       final qText = (log['question_text'] as String?)?.trim();
@@ -135,25 +296,51 @@ class MistakeRepository {
           (qText != null ? localByText[qText] : null);
       if (matched == null) continue;
 
-      final duplicate = _mistakes.any(
-        (m) => m.id == matched.id || m.text.trim() == matched.text.trim(),
+      final duplicate = _entries.any(
+        (m) =>
+            m.question.id == matched.id ||
+            m.question.text.trim() == matched.text.trim(),
       );
       if (!duplicate) {
-        _mistakes.add(matched);
+        final rawScope = (log['exam_scope'] as String?)?.trim();
+        final reviewBox = ((log['review_box'] as num?)?.toInt() ?? 1).clamp(
+          LeitnerScheduler.minBox,
+          LeitnerScheduler.maxBox,
+        );
+        final nextReview = log['next_review_at'] is String
+            ? (DateTime.tryParse(log['next_review_at'] as String) ?? now)
+            : now;
+        final streak = ((log['box4_streak'] as num?)?.toInt() ?? 0).clamp(
+          0,
+          10,
+        );
+        _entries.add(
+          MistakeReviewEntry(
+            question: matched,
+            examScope: (rawScope != null && rawScope.isNotEmpty)
+                ? rawScope
+                : (matched.examScopes.isNotEmpty
+                      ? matched.examScopes.first
+                      : 'lisans_gk'),
+            reviewBox: reviewBox,
+            nextReviewAt: nextReview,
+            box4ConsecutiveCorrect: streak,
+          ),
+        );
       }
     }
 
-    unawaited(_storage.saveMistakes(_mistakes));
+    unawaited(_storage.saveMistakeEntries(_entries));
   }
 
   /// Oturum kapatıldığında veya kullanıcı değiştiğinde yerel yanlış defterini temizler.
   void clearLocal() {
-    _mistakes.clear();
-    unawaited(_storage.saveMistakes([]));
+    _entries.clear();
+    unawaited(_storage.saveMistakeEntries([]));
   }
 
   /// Birim ve widget testlerinde state izolasyonu sağlamak için listeyi temizler.
   void clearForTest() {
-    _mistakes.clear();
+    _entries.clear();
   }
 }

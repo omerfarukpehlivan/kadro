@@ -1,4 +1,6 @@
-import 'package:kadro/core/utils/platform_env.dart';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Supabase proje bağlantı yapılandırması.
@@ -17,7 +19,8 @@ class SupabaseConfig {
 
   static bool _initialized = false;
 
-  static bool get _isFlutterTest => PlatformEnv.isFlutterTest;
+  static bool get _isFlutterTest =>
+      !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
 
   /// Test ortamında (`FLUTTER_TEST`) çalışılıp çalışılmadığını döner.
   ///
@@ -29,13 +32,16 @@ class SupabaseConfig {
       !_isFlutterTest && _initialized && url.isNotEmpty && anonKey.isNotEmpty;
 
   /// Uygulama açılışında (`main.dart`) güvenli şekilde Supabase'i başlatır.
-  /// Test ortamında hata fırlatmadan yerel modda devam eder.
+  /// Test ortamında veya ağ/depolama gecikmelerinde zaman aşımıyla yerel modda devam eder.
   static Future<void> initializeSafely() async {
     if (_isFlutterTest || url.isEmpty || anonKey.isEmpty || _initialized) {
       return;
     }
     try {
-      await Supabase.initialize(url: url, publishableKey: anonKey);
+      await Supabase.initialize(
+        url: url,
+        publishableKey: anonKey,
+      ).timeout(const Duration(seconds: 4));
       _initialized = true;
     } catch (_) {
       _initialized = false;

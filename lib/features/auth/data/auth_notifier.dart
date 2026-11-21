@@ -1,9 +1,9 @@
 import 'dart:async' show StreamSubscription, unawaited;
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/config/supabase_config.dart';
 import 'package:kadro/core/services/local_storage_service.dart';
+import 'package:kadro/features/flashcards/data/flashcard_review_repository.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
@@ -120,9 +120,14 @@ class AuthNotifier extends Notifier<AuthUserState> {
       } catch (_) {}
       if (!ref.mounted) return;
 
-      // 4. Hata defteri buluttan eşitlenir.
+      // 4. Hata defteri & bilgi kartı Leitner tekrarları buluttan eşitlenir.
       try {
         await const MistakeRepository().hydrateFromCloud();
+        final activeScope = ref
+            .read(userPreferencesProvider)
+            .examSelection
+            .scopeKey;
+        await const FlashcardReviewRepository().hydrateFromCloud(activeScope);
       } catch (_) {}
     } finally {
       _activeHydration = null;
@@ -166,6 +171,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
           ref.read(userPreferencesProvider.notifier).reset();
           ref.read(studyPlannerProvider.notifier).reset();
           const MistakeRepository().clearLocal();
+          const FlashcardReviewRepository().clearLocal();
         }
       });
 
@@ -369,16 +375,9 @@ class AuthNotifier extends Notifier<AuthUserState> {
       return true;
     }
     try {
-      final String? effectiveRedirectTo;
-      if (kIsWeb) {
-        effectiveRedirectTo = Uri.base.origin;
-      } else {
-        effectiveRedirectTo = 'com.omer.kadro://login-callback';
-      }
-
       final res = await client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: effectiveRedirectTo,
+        redirectTo: 'com.omer.kadro://login-callback',
       );
       if (!ref.mounted) return res;
       state = state.copyWith(isLoading: false);
@@ -450,6 +449,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
     ref.read(userPreferencesProvider.notifier).reset();
     ref.read(studyPlannerProvider.notifier).reset();
     const MistakeRepository().clearLocal();
+    const FlashcardReviewRepository().clearLocal();
   }
 
   /// Google Play Data Safety & KVKK: Hesabı ve ilişkili tüm sınav verilerini kalıcı olarak siler.
@@ -473,6 +473,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
       ref.read(userPreferencesProvider.notifier).reset();
       ref.read(studyPlannerProvider.notifier).reset();
       const MistakeRepository().clearLocal();
+      const FlashcardReviewRepository().clearLocal();
 
       try {
         final prefs = await SharedPreferences.getInstance();

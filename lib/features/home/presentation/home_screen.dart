@@ -4,11 +4,13 @@ import 'package:kadro/core/config/app_config_service.dart';
 import 'package:kadro/core/config/app_remote_config.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/exam_calendar_utils.dart';
+import 'package:kadro/core/utils/leitner_queue_summary.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
+import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
+import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/mistakes/presentation/mistakes_screen.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
-import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
 import 'package:kadro/features/planner/presentation/widgets/home_daily_plan_card.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
@@ -36,9 +38,13 @@ class HomeScreen extends ConsumerWidget {
     );
     final isGoalMet =
         stats.dailySolvedCount >= stats.dailyGoal && stats.dailyGoal > 0;
-    final showDesktopBento = ResponsiveBreakpoints.usesSidebar(context);
+    final showTabletBento = ResponsiveBreakpoints.isLargeTablet(context);
+    final activeSelection = readOrWatchExamSelection(ref);
+    final leitnerSummary = LeitnerQueueSummary.compute(
+      selection: activeSelection,
+    );
 
-    if (showDesktopBento) {
+    if (showTabletBento) {
       return ResponsiveContentWrapper(
         maxWidth: 1240,
         padding: EdgeInsets.zero,
@@ -53,6 +59,7 @@ class HomeScreen extends ConsumerWidget {
               remaining: remaining,
               pendingCount: pendingCount,
               weakestLesson: stats.weakestLesson,
+              leitnerSummary: leitnerSummary,
             ),
           ),
         ),
@@ -78,6 +85,12 @@ class HomeScreen extends ConsumerWidget {
           // 2. Sınav Takvimi (ana kontrol paneli)
           const _ExamCountdownBanner(),
           AppSpacing.gapMd,
+
+          // 2B. Leitner Akıllı Aralıklı Tekrar Kuyruğu
+          if (leitnerSummary.hasDueItems) ...[
+            _LeitnerQueueHomeBanner(summary: leitnerSummary),
+            AppSpacing.gapMd,
+          ],
 
           // 3. Zayıf Konu Önerisi (yanlış verisi oluştuğunda öne çıkar)
           if (stats.weakestLesson.isNotEmpty &&
@@ -118,6 +131,7 @@ class _DesktopHomeBentoLayout extends StatelessWidget {
   final int remaining;
   final int pendingCount;
   final String weakestLesson;
+  final LeitnerQueueSummary leitnerSummary;
 
   const _DesktopHomeBentoLayout({
     required this.solved,
@@ -127,6 +141,7 @@ class _DesktopHomeBentoLayout extends StatelessWidget {
     required this.remaining,
     required this.pendingCount,
     required this.weakestLesson,
+    required this.leitnerSummary,
   });
 
   @override
@@ -149,6 +164,10 @@ class _DesktopHomeBentoLayout extends StatelessWidget {
                 isGoalMet: isGoalMet,
                 remaining: remaining,
               ),
+              if (leitnerSummary.hasDueItems) ...[
+                AppSpacing.gapMd,
+                _LeitnerQueueHomeBanner(summary: leitnerSummary),
+              ],
               if (hasWeakLesson) ...[
                 AppSpacing.gapMd,
                 _WeakLessonHomeBanner(weakestLesson: weakestLesson),
@@ -281,7 +300,7 @@ class _HomeHeroStage extends StatelessWidget {
               const SizedBox(width: 14),
               TugrulAvatar(
                 mood: mood,
-                size: ResponsiveBreakpoints.isDesktop(context) ? 88 : 70,
+                size: ResponsiveBreakpoints.isLargeTablet(context) ? 88 : 70,
                 ringColor: isGoalMet
                     ? colorScheme.secondary
                     : colorScheme.primary,
@@ -401,8 +420,15 @@ class _SmartRemindersCard extends StatelessWidget {
                 ? 'Bugün tamamlanmayı bekleyen $pendingCount çalışma görevin var'
                 : 'Bugünkü çalışma planı görevlerinin tamamı bitti',
             onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const StudyPlannerScreen()),
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    pendingCount > 0
+                        ? 'Bugün tamamlanmayı bekleyen $pendingCount görevin var, yukarıdaki çalışma planından hemen başlayabilirsin.'
+                        : 'Bugünkü çalışma planı görevlerinin tamamını bitirdin!',
+                  ),
+                  duration: const Duration(seconds: 2),
+                ),
               );
             },
           ),
@@ -422,7 +448,7 @@ class _SmartRemindersCard extends StatelessWidget {
                       weakestLesson != 'Henüz veri yok')
                   ? weakestLesson
                   : null;
-              Navigator.of(context).push(
+              Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(
                   builder: (_) => QuizScreen(
                     fetchAllFromPool: true,
@@ -442,6 +468,7 @@ class _SmartRemindersCard extends StatelessWidget {
             onTap: () {
               Navigator.of(
                 context,
+                rootNavigator: true,
               ).push(MaterialPageRoute(builder: (_) => const MistakesScreen()));
             },
           ),
@@ -528,6 +555,122 @@ class _ReminderItem extends StatelessWidget {
   }
 }
 
+/// Ana sayfada bugünkü Leitner (`1·3·7·14 gün`) tekrar kuyruğunu gösterir (`TASK-158`).
+class _LeitnerQueueHomeBanner extends StatelessWidget {
+  final LeitnerQueueSummary summary;
+
+  const _LeitnerQueueHomeBanner({required this.summary});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return TactileCard(
+      backgroundColor: Color.alphaBlend(
+        colorScheme.tertiaryContainer.withAlpha(90),
+        colorScheme.surface,
+      ),
+      borderColor: colorScheme.tertiary,
+      lipColor: colorScheme.tertiary,
+      padding: const EdgeInsets.all(14),
+      onTap: () {
+        if (summary.dueMistakesCount > 0) {
+          Navigator.of(
+            context,
+            rootNavigator: true,
+          ).push(MaterialPageRoute(builder: (_) => const MistakesScreen()));
+        } else {
+          Navigator.of(context, rootNavigator: true).push(
+            MaterialPageRoute(
+              builder: (_) => const FlashcardsScreen(startInDueMode: true),
+            ),
+          );
+        }
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: colorScheme.tertiaryContainer,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: PhosphorIcon(
+                  PhosphorIconsFill.repeat,
+                  size: 18,
+                  color: colorScheme.onTertiaryContainer,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Bugün Tekrar Etmen Gereken ${summary.totalDueCount} Öğe',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      '${summary.dueMistakesCount} Yanlış Soru · ${summary.dueFlashcardsCount} Bilgi Kartı vadesi geldi',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (summary.dueMistakesCount > 0)
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: true).push(
+                      MaterialPageRoute(builder: (_) => const MistakesScreen()),
+                    );
+                  },
+                  icon: const PhosphorIcon(
+                    PhosphorIconsRegular.bookmarks,
+                    size: 15,
+                  ),
+                  label: Text('Sorular (${summary.dueMistakesCount})'),
+                ),
+              if (summary.dueFlashcardsCount > 0)
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context, rootNavigator: true).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const FlashcardsScreen(startInDueMode: true),
+                      ),
+                    );
+                  },
+                  icon: const PhosphorIcon(
+                    PhosphorIconsRegular.cards,
+                    size: 15,
+                  ),
+                  label: Text('Kartlar (${summary.dueFlashcardsCount})'),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Ana sayfada en zayıf derse özel 10 soruluk güçlendirme önerisi.
 class _WeakLessonHomeBanner extends StatelessWidget {
   final String weakestLesson;
@@ -545,7 +688,7 @@ class _WeakLessonHomeBanner extends StatelessWidget {
       lipColor: colorScheme.outlineVariant.withAlpha(180),
       padding: const EdgeInsets.all(14),
       onTap: () {
-        Navigator.of(context).push(
+        Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
             builder: (_) => QuizScreen(
               lessonFilter: weakestLesson,

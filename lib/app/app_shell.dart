@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kadro/app/router.dart';
 import 'package:kadro/app/widgets/app_navigation_bar.dart';
 import 'package:kadro/app/widgets/app_top_bar.dart';
-import 'package:kadro/app/widgets/desktop_top_utility_bar.dart';
-import 'package:kadro/app/widgets/kadro_sidebar.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/auth/data/auth_notifier.dart';
 import 'package:kadro/features/exams/presentation/exams_screen.dart';
@@ -16,10 +14,9 @@ import 'package:kadro/features/practice/presentation/practice_hub_screen.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
 import 'package:kadro/features/stats/presentation/stats_screen.dart';
-import 'package:kadro/shared/widgets/command_palette_dialog.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Uygulama kabuğu (shell): ilk açılışta zorunlu kurulum, ardından 6 sekmeli ana düzen.
+/// Uygulama kabuğu (shell): ilk açılışta zorunlu kurulum, ardından 6 sekmeli telefon & tablet düzeni.
 class AppShell extends ConsumerStatefulWidget {
   final StatefulNavigationShell? navigationShell;
 
@@ -78,10 +75,12 @@ class _AppShellState extends ConsumerState<AppShell> {
 
     void selectTab(int newIndex) {
       if (widget.navigationShell != null) {
-        widget.navigationShell!.goBranch(
-          newIndex,
-          initialLocation: newIndex == widget.navigationShell!.currentIndex,
-        );
+        final currentIndex = widget.navigationShell!.currentIndex;
+        // Hem çıkılan hem de gidilen sekmenin içindeki imperatif alt sayfaları
+        // (LessonTopicsScreen, TopicTestsScreen, QuizHistoryScreen vb.) kök sayfaya sıfırla.
+        popBranchToRoot(currentIndex);
+        popBranchToRoot(newIndex);
+        widget.navigationShell!.goBranch(newIndex, initialLocation: true);
       } else {
         setState(() {
           _fallbackIndex = newIndex;
@@ -89,14 +88,9 @@ class _AppShellState extends ConsumerState<AppShell> {
       }
     }
 
-    void openCommandPalette() {
-      KadroCommandPalette.show(context, onSelectShellTab: selectTab);
-    }
-
-    final useSidebar = ResponsiveBreakpoints.usesSidebar(context);
     final useRail = ResponsiveBreakpoints.usesNavigationRail(context);
 
-    if (!useSidebar && !useRail) {
+    if (!useRail) {
       return Scaffold(
         appBar: AppTopBar(title: _titles[index]),
         body: content,
@@ -109,85 +103,62 @@ class _AppShellState extends ConsumerState<AppShell> {
 
     final colorScheme = Theme.of(context).colorScheme;
 
-    return CallbackShortcuts(
-      bindings: <ShortcutActivator, VoidCallback>{
-        const SingleActivator(LogicalKeyboardKey.keyK, control: true):
-            openCommandPalette,
-        const SingleActivator(LogicalKeyboardKey.keyK, meta: true):
-            openCommandPalette,
-      },
-      child: Scaffold(
-        body: Row(
-          children: [
-            if (useSidebar)
-              KadroSidebar(
-                selectedIndex: index,
-                onDestinationSelected: selectTab,
-              )
-            else
-              Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.surface,
-                  border: Border(
-                    right: BorderSide(
-                      color: colorScheme.outlineVariant,
-                      width: 1.5,
-                    ),
-                  ),
+    return Scaffold(
+      appBar: AppTopBar(title: _titles[index]),
+      body: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              border: Border(
+                right: BorderSide(
+                  color: colorScheme.outlineVariant,
+                  width: 1.5,
                 ),
-                child: NavigationRail(
-                  selectedIndex: index,
-                  onDestinationSelected: selectTab,
-                  labelType: NavigationRailLabelType.all,
-                  backgroundColor: colorScheme.surface,
-                  indicatorColor: colorScheme.primaryContainer,
-                  destinations: const [
-                    NavigationRailDestination(
-                      icon: PhosphorIcon(PhosphorIconsRegular.house),
-                      selectedIcon: PhosphorIcon(PhosphorIconsFill.house),
-                      label: Text('Ana Sayfa'),
-                    ),
-                    NavigationRailDestination(
-                      icon: PhosphorIcon(PhosphorIconsRegular.books),
-                      selectedIcon: PhosphorIcon(PhosphorIconsFill.books),
-                      label: Text('Dersler'),
-                    ),
-                    NavigationRailDestination(
-                      icon: PhosphorIcon(PhosphorIconsRegular.target),
-                      selectedIcon: PhosphorIcon(PhosphorIconsFill.target),
-                      label: Text('Pratik'),
-                    ),
-                    NavigationRailDestination(
-                      icon: PhosphorIcon(PhosphorIconsRegular.timer),
-                      selectedIcon: PhosphorIcon(PhosphorIconsFill.timer),
-                      label: Text('Denemeler'),
-                    ),
-                    NavigationRailDestination(
-                      icon: PhosphorIcon(PhosphorIconsRegular.chartBar),
-                      selectedIcon: PhosphorIcon(PhosphorIconsFill.chartBar),
-                      label: Text('İstatistik'),
-                    ),
-                    NavigationRailDestination(
-                      icon: PhosphorIcon(PhosphorIconsRegular.userCircle),
-                      selectedIcon: PhosphorIcon(PhosphorIconsFill.userCircle),
-                      label: Text('Profil'),
-                    ),
-                  ],
-                ),
-              ),
-            Expanded(
-              child: Column(
-                children: [
-                  DesktopTopUtilityBar(
-                    title: _titles[index],
-                    onOpenCommandPalette: openCommandPalette,
-                  ),
-                  Expanded(child: content),
-                ],
               ),
             ),
-          ],
-        ),
+            child: NavigationRail(
+              selectedIndex: index,
+              onDestinationSelected: selectTab,
+              labelType: NavigationRailLabelType.all,
+              backgroundColor: colorScheme.surface,
+              indicatorColor: colorScheme.primaryContainer,
+              destinations: const [
+                NavigationRailDestination(
+                  icon: PhosphorIcon(PhosphorIconsRegular.house),
+                  selectedIcon: PhosphorIcon(PhosphorIconsFill.house),
+                  label: Text('Ana Sayfa'),
+                ),
+                NavigationRailDestination(
+                  icon: PhosphorIcon(PhosphorIconsRegular.books),
+                  selectedIcon: PhosphorIcon(PhosphorIconsFill.books),
+                  label: Text('Dersler'),
+                ),
+                NavigationRailDestination(
+                  icon: PhosphorIcon(PhosphorIconsRegular.target),
+                  selectedIcon: PhosphorIcon(PhosphorIconsFill.target),
+                  label: Text('Pratik'),
+                ),
+                NavigationRailDestination(
+                  icon: PhosphorIcon(PhosphorIconsRegular.timer),
+                  selectedIcon: PhosphorIcon(PhosphorIconsFill.timer),
+                  label: Text('Denemeler'),
+                ),
+                NavigationRailDestination(
+                  icon: PhosphorIcon(PhosphorIconsRegular.chartBar),
+                  selectedIcon: PhosphorIcon(PhosphorIconsFill.chartBar),
+                  label: Text('İstatistik'),
+                ),
+                NavigationRailDestination(
+                  icon: PhosphorIcon(PhosphorIconsRegular.userCircle),
+                  selectedIcon: PhosphorIcon(PhosphorIconsFill.userCircle),
+                  label: Text('Profil'),
+                ),
+              ],
+            ),
+          ),
+          Expanded(child: content),
+        ],
       ),
     );
   }

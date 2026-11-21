@@ -1,17 +1,21 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:kadro/core/utils/platform_env.dart';
 
 /// Google AdMob Ödüllü Video Reklam (Rewarded Ad) Servisi.
 ///
 /// Günlük 30 soru limiti bittiğinde kullanıcıya +20 soru hakkı kazandırır.
-/// Web canlı ortamında ödüllü reklam SDK'sı olmadığından ücretsiz kota suistimalini
-/// önlemek amacıyla gizlenir; yalnızca test/mobil ortamlarda etkinleşir (`TASK-145`).
 class AdService {
   static bool _isInitialized = false;
   static bool _mockMode = false;
   static RewardedAd? _rewardedAd;
   static bool _isLoading = false;
+
+  static bool get _isMobilePlatform =>
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  static bool get _isFlutterTest =>
+      !kIsWeb && Platform.environment.containsKey('FLUTTER_TEST');
 
   /// Test senaryolarında mock modu etkinleştirir.
   static void enableMockMode() {
@@ -27,33 +31,31 @@ class AdService {
     _isLoading = false;
   }
 
-  /// Web tarayıcısında (mock açık değilse) sahte ödüllü reklam butonunun
-  /// gösterilip gösterilmeyeceğini belirler (`TASK-145`).
+  /// Ödüllü reklamların mevcut ortamda desteklenip desteklenmediğini döner.
   static bool get isRewardedAdSupported {
     if (_mockMode) return true;
-    if (PlatformEnv.isWeb) return false;
-    return PlatformEnv.isMobile || PlatformEnv.isFlutterTest || _isInitialized;
+    return _isMobilePlatform || _isFlutterTest || _isInitialized;
   }
 
   /// Google resmi test reklam birim kimlikleri
   static String get rewardedAdUnitId {
-    if (PlatformEnv.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       return 'ca-app-pub-3940256099942544/5224354917';
-    } else if (PlatformEnv.isIos) {
+    } else if (!kIsWeb && Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/1712485313';
     }
     return '';
   }
 
-  /// Mobile Ads SDK'yı güvenli şekilde başlatır.
+  /// Mobile Ads SDK'yı zaman aşımı korumasıyla güvenli şekilde başlatır.
   static Future<void> initializeSafely() async {
     if (_mockMode) return;
     try {
-      if (!PlatformEnv.isMobile) {
+      if (!_isMobilePlatform) {
         _isInitialized = false;
         return;
       }
-      await MobileAds.instance.initialize();
+      await MobileAds.instance.initialize().timeout(const Duration(seconds: 5));
       _isInitialized = true;
       loadRewardedAd();
     } catch (e) {
@@ -64,7 +66,7 @@ class AdService {
 
   /// Bir sonraki ödüllü video reklamı önceden belleğe yükler.
   static void loadRewardedAd() {
-    if (_mockMode || !_isInitialized || _isLoading || !PlatformEnv.isMobile) {
+    if (_mockMode || !_isInitialized || _isLoading || !_isMobilePlatform) {
       return;
     }
     _isLoading = true;
@@ -88,19 +90,13 @@ class AdService {
 
   /// Ödüllü reklamı gösterir.
   /// Reklam izlendiğinde [onUserEarnedReward] geri çağrılır.
-  /// Canlı Web tarayıcısında ücretsiz +20 soru açığı oluşmaması için ödül verilmez.
   static Future<void> showRewardedAd({
     required VoidCallback onUserEarnedReward,
     VoidCallback? onAdDismissed,
   }) async {
-    if (!_mockMode && PlatformEnv.isWeb) {
-      onAdDismissed?.call();
-      return;
-    }
-
     if (_mockMode ||
-        (!_isInitialized && PlatformEnv.isFlutterTest) ||
-        (_isInitialized && _rewardedAd == null && PlatformEnv.isFlutterTest)) {
+        (!_isInitialized && _isFlutterTest) ||
+        (_isInitialized && _rewardedAd == null && _isFlutterTest)) {
       // Test simülasyonu: 100ms sonra ödülü ver
       await Future<void>.delayed(const Duration(milliseconds: 100));
       onUserEarnedReward();

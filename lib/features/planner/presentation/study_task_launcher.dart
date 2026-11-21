@@ -38,13 +38,14 @@ class StudyTaskLauncher {
 
       case StudyTaskActionType.flashcards:
         if (!context.mounted) return;
-        await Navigator.of(context).push(
+        await Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
             builder: (_) => FlashcardsScreen(
               initialLesson: task.lessonTag == 'Genel' ? null : task.lessonTag,
               startIndex: task.startIndex ?? 0,
               sessionLimit: task.targetCount ?? 10,
               onCompleted: markDone,
+              taskId: task.id,
             ),
           ),
         );
@@ -66,10 +67,11 @@ class StudyTaskLauncher {
             blueprint: blueprint,
             selection: selection,
             onCompleted: markDone,
+            taskId: task.id,
           );
           break;
         }
-        await Navigator.of(context).push(
+        await Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
             builder: (_) => task.targetExamNumber != null
                 ? QuizScreen(
@@ -79,6 +81,7 @@ class StudyTaskLauncher {
                     mode: QuizMode.exam,
                     customTitle: task.title,
                     onCompleted: markDone,
+                    taskId: task.id,
                   )
                 : const ExamsScreen(),
           ),
@@ -87,11 +90,12 @@ class StudyTaskLauncher {
 
       case StudyTaskActionType.game:
         if (!context.mounted) return;
-        await Navigator.of(context).push(
+        await Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
             builder: (_) => ConceptMatchScreen(
               initialSetIndex: task.startIndex ?? 0,
               onCompleted: markDone,
+              taskId: task.id,
             ),
           ),
         );
@@ -99,9 +103,10 @@ class StudyTaskLauncher {
 
       case StudyTaskActionType.mistakes:
         if (!context.mounted) return;
-        await Navigator.of(context).push(
+        await Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
-            builder: (_) => MistakesScreen(onCompleted: markDone),
+            builder: (_) =>
+                MistakesScreen(onCompleted: markDone, taskId: task.id),
           ),
         );
         break;
@@ -126,7 +131,7 @@ class StudyTaskLauncher {
     final selection = readOrWatchExamSelection(ref);
 
     if (!context.mounted) return;
-    await Navigator.of(context).push(
+    await Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => QuizScreen(
           lessonFilter: lesson,
@@ -136,6 +141,7 @@ class StudyTaskLauncher {
           limit: testNo == null ? (task.targetCount ?? 10) : null,
           customTitle: lesson != null ? '$lesson · ${task.title}' : task.title,
           onCompleted: markDone,
+          taskId: task.id,
         ),
       ),
     );
@@ -153,7 +159,7 @@ class StudyTaskLauncher {
         count: task.targetCount ?? 5,
       );
       if (challenges.isNotEmpty && context.mounted) {
-        await Navigator.of(context).push(
+        await Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(
             builder: (_) => MapChallengeScreen(
               challenges: challenges,
@@ -169,7 +175,9 @@ class StudyTaskLauncher {
     }
 
     if (!context.mounted) return;
-    await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (_) => const MapPracticeHubScreen()));
+    await Navigator.of(
+      context,
+      rootNavigator: true,
+    ).push(MaterialPageRoute(builder: (_) => const MapPracticeHubScreen()));
   }
 }

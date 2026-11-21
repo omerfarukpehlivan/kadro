@@ -1,12 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kadro/app/router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/leitner_scheduler.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
+import 'package:kadro/features/flashcards/data/flashcard_review_repository.dart';
 import 'package:kadro/features/flashcards/data/models/flashcard.dart';
 import 'package:kadro/features/flashcards/data/sample_flashcards.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
+import 'package:kadro/features/planner/data/models/study_task.dart';
+import 'package:kadro/features/planner/data/study_planner_notifier.dart';
+import 'package:kadro/features/planner/presentation/study_task_launcher.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/empty_state_view.dart';
@@ -22,6 +30,9 @@ class FlashcardsScreen extends ConsumerStatefulWidget {
   final int startIndex;
   final int? sessionLimit;
   final VoidCallback? onCompleted;
+  final String? taskId;
+  final FlashcardReviewRepository reviewRepository;
+  final bool startInDueMode;
 
   const FlashcardsScreen({
     super.key,
@@ -30,6 +41,9 @@ class FlashcardsScreen extends ConsumerStatefulWidget {
     this.startIndex = 0,
     this.sessionLimit,
     this.onCompleted,
+    this.taskId,
+    this.reviewRepository = const FlashcardReviewRepository(),
+    this.startInDueMode = false,
   });
 
   @override
@@ -43,6 +57,24 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   int _learnedCount = 0;
   int _repeatCount = 0;
   bool _hasNotifiedCompletion = false;
+  late bool _showDueOnly;
+  List<String>? _dueSessionIds;
+  String? _loadedScopeKey;
+
+  Future<void> _ensureScopeReviewsLoaded(String scopeKey) async {
+    if (_loadedScopeKey == scopeKey) return;
+    _loadedScopeKey = scopeKey;
+    await widget.reviewRepository.loadFromStorage(scopeKey);
+    if (!mounted) return;
+    if (_showDueOnly) {
+      final scoped = _resolveScopedCards(watch: false).items;
+      _dueSessionIds = widget.reviewRepository
+          .dueCardsFrom(scoped, examScope: scopeKey)
+          .map((c) => c.id)
+          .toList();
+    }
+    setState(() {});
+  }
 
   WorkshopScopeResolution<Flashcard> _resolveScopedCards({bool watch = true}) {
     final selection = readOrWatchExamSelection(ref, watch: watch);
@@ -69,18 +101,52 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   @override
   void initState() {
     super.initState();
+    _showDueOnly = widget.startInDueMode;
     final initialFilters = _resolveLessonFilters(watch: false);
     _selectedLesson =
         (widget.initialLesson != null &&
             initialFilters.contains(widget.initialLesson))
         ? widget.initialLesson!
         : 'Tümü';
+    final initialScope = readOrWatchExamSelection(ref, watch: false).scopeKey;
+    if (_showDueOnly) {
+      final scoped = _resolveScopedCards(watch: false).items;
+      _dueSessionIds = widget.reviewRepository
+          .dueCardsFrom(scoped, examScope: initialScope)
+          .map((c) => c.id)
+          .toList();
+    }
+    unawaited(_ensureScopeReviewsLoaded(initialScope));
   }
 
-  List<Flashcard> _filteredCardsFor(List<Flashcard> scopedCards) {
-    final pool = _selectedLesson == 'Tümü'
+  List<Flashcard> _filteredCardsFor(
+    List<Flashcard> scopedCards, {
+    String? examScope,
+  }) {
+    final lessonPool = _selectedLesson == 'Tümü'
         ? scopedCards
         : scopedCards.where((card) => card.lesson == _selectedLesson).toList();
+
+    final List<Flashcard> pool;
+    if (_showDueOnly) {
+      final effectiveScope =
+          examScope ?? readOrWatchExamSelection(ref, watch: false).scopeKey;
+      final dueSnapshotIds = _dueSessionIds;
+      if (dueSnapshotIds != null) {
+        final byId = {for (final c in lessonPool) c.id: c};
+        pool = [
+          for (final id in dueSnapshotIds)
+            if (byId.containsKey(id)) byId[id]!,
+        ];
+      } else {
+        pool = widget.reviewRepository.dueCardsFrom(
+          lessonPool,
+          examScope: effectiveScope,
+        );
+      }
+    } else {
+      pool = lessonPool;
+    }
 
     final limit = widget.sessionLimit;
     final matchesInitialLesson =
@@ -98,8 +164,13 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     return sliced;
   }
 
-  List<Flashcard> get _filteredCards =>
-      _filteredCardsFor(_resolveScopedCards(watch: false).items);
+  List<Flashcard> get _filteredCards {
+    final scope = readOrWatchExamSelection(ref, watch: false).scopeKey;
+    return _filteredCardsFor(
+      _resolveScopedCards(watch: false).items,
+      examScope: scope,
+    );
+  }
 
   bool get _isCompleted =>
       _filteredCards.isNotEmpty && _currentIndex >= _filteredCards.length;
@@ -110,6 +181,27 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     if (_selectedLesson == lesson) return;
     setState(() {
       _selectedLesson = lesson;
+      _currentIndex = 0;
+      _isBackVisible = false;
+      _learnedCount = 0;
+      _repeatCount = 0;
+      _hasNotifiedCompletion = false;
+    });
+  }
+
+  void _toggleDueOnly(
+    bool showDue,
+    List<Flashcard> scopedCards,
+    String scopeKey,
+  ) {
+    setState(() {
+      _showDueOnly = showDue;
+      _dueSessionIds = showDue
+          ? widget.reviewRepository
+                .dueCardsFrom(scopedCards, examScope: scopeKey)
+                .map((c) => c.id)
+                .toList()
+          : null;
       _currentIndex = 0;
       _isBackVisible = false;
       _learnedCount = 0;
@@ -134,6 +226,16 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   }
 
   void _onRepeat() {
+    final activeDeck = _filteredCards;
+    if (activeDeck.isEmpty || _currentIndex >= activeDeck.length) return;
+    final card = activeDeck[_currentIndex];
+    final scopeKey = readOrWatchExamSelection(ref, watch: false).scopeKey;
+    widget.reviewRepository.recordOutcome(
+      card,
+      isLearned: false,
+      examScope: scopeKey,
+    );
+
     setState(() {
       _repeatCount++;
       _currentIndex++;
@@ -143,13 +245,19 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   }
 
   void _onLearned() {
-    if (_filteredCards.isEmpty || _currentIndex >= _filteredCards.length) {
+    final activeDeck = _filteredCards;
+    if (activeDeck.isEmpty || _currentIndex >= activeDeck.length) {
       return;
     }
-    final card = _currentCard;
+    final card = activeDeck[_currentIndex];
+    final scopeKey = readOrWatchExamSelection(ref, watch: false).scopeKey;
+    widget.reviewRepository.recordOutcome(
+      card,
+      isLearned: true,
+      examScope: scopeKey,
+    );
 
     try {
-      final scopeKey = readOrWatchExamSelection(ref, watch: false).scopeKey;
       ref
           .read(studyStatsProvider.notifier)
           .recordAnswer(
@@ -172,7 +280,15 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
   }
 
   void _restart() {
+    final scopeKey = readOrWatchExamSelection(ref, watch: false).scopeKey;
+    final scoped = _resolveScopedCards(watch: false).items;
     setState(() {
+      if (_showDueOnly) {
+        _dueSessionIds = widget.reviewRepository
+            .dueCardsFrom(scoped, examScope: scopeKey)
+            .map((c) => c.id)
+            .toList();
+      }
       _currentIndex = 0;
       _isBackVisible = false;
       _learnedCount = 0;
@@ -181,319 +297,403 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen> {
     });
   }
 
+  void _goToHome() {
+    popBranchToRoot();
+
+    final rootNav = Navigator.maybeOf(context, rootNavigator: true);
+    final branchNav = Navigator.maybeOf(context);
+
+    if (branchNav != null && branchNav != rootNav && branchNav.canPop()) {
+      branchNav.popUntil((route) => route.isFirst);
+    }
+
+    if (rootNav != null && rootNav.canPop()) {
+      rootNav.popUntil((route) => route.isFirst);
+    }
+
+    final router = GoRouter.maybeOf(context);
+    if (router != null) {
+      router.go('/');
+    }
+  }
+
+  StudyTask? _resolveNextDailyTask() {
+    if (widget.taskId == null && widget.onCompleted == null) return null;
+    try {
+      final planner = ref.watch(studyPlannerProvider);
+      return planner.tasks
+          .where((t) => !t.isCompleted && t.id != widget.taskId)
+          .firstOrNull;
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final selection = readOrWatchExamSelection(ref);
+    final nextTask = _resolveNextDailyTask();
+    final isDailyFlow = widget.taskId != null || widget.onCompleted != null;
+    if (_loadedScopeKey != selection.scopeKey) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) unawaited(_ensureScopeReviewsLoaded(selection.scopeKey));
+      });
+    }
     final scopeResolution = _resolveScopedCards();
     final lessonFilters = _resolveLessonFilters(
       scopedCards: scopeResolution.items,
     );
-    final filtered = _filteredCardsFor(scopeResolution.items);
-
-    final activeShortcuts = filtered.isEmpty || _isCompleted
-        ? const <ShortcutActivator, VoidCallback>{}
-        : <ShortcutActivator, VoidCallback>{
-            const SingleActivator(LogicalKeyboardKey.space): _flipCard,
-            const SingleActivator(LogicalKeyboardKey.enter): _flipCard,
-            const SingleActivator(LogicalKeyboardKey.arrowLeft): _onRepeat,
-            const SingleActivator(LogicalKeyboardKey.keyR): _onRepeat,
-            const SingleActivator(LogicalKeyboardKey.arrowRight): _onLearned,
-            const SingleActivator(LogicalKeyboardKey.keyB): _onLearned,
-          };
+    final dueCards = widget.reviewRepository.dueCardsFrom(
+      scopeResolution.items,
+      examScope: selection.scopeKey,
+    );
+    final filtered = _filteredCardsFor(
+      scopeResolution.items,
+      examScope: selection.scopeKey,
+    );
+    final currentBox = (filtered.isEmpty || _isCompleted)
+        ? 1
+        : widget.reviewRepository.boxFor(
+            _currentCard.id,
+            examScope: selection.scopeKey,
+          );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Hap Bilgi Kartları')),
       body: SafeArea(
-        child: CallbackShortcuts(
-          bindings: activeShortcuts,
-          child: Focus(
-            autofocus: true,
-            child: Builder(
-              builder: (layoutCtx) {
-                final isSplitPane = ResponsiveBreakpoints.usesSplitPane(
-                  layoutCtx,
-                );
-                final hPad = ResponsiveBreakpoints.horizontalPadding(layoutCtx);
-                final animDuration = MediaQuery.disableAnimationsOf(layoutCtx)
-                    ? Duration.zero
-                    : const Duration(milliseconds: 200);
+        child: Builder(
+          builder: (layoutCtx) {
+            final isSplitPane = ResponsiveBreakpoints.usesSplitPane(layoutCtx);
+            final hPad = ResponsiveBreakpoints.horizontalPadding(layoutCtx);
+            final animDuration = MediaQuery.disableAnimationsOf(layoutCtx)
+                ? Duration.zero
+                : const Duration(milliseconds: 200);
 
-                final Widget activeContent;
-                if (filtered.isEmpty) {
-                  activeContent = EmptyStateView(
-                    mascotMood: TugrulMood.practice,
-                    icon: PhosphorIconsRegular.info,
-                    title: '$_selectedLesson için henüz kart bulunmuyor',
-                    description: 'Farklı bir ders seçerek kart çalışmasına devam edebilirsin.',
-                  );
-                } else if (_isCompleted) {
-                  activeContent = _FlashcardsSummaryView(
-                    totalCards: filtered.length,
-                    learnedCount: _learnedCount,
-                    repeatCount: _repeatCount,
-                    selectedLesson: _selectedLesson,
-                    onRestart: _restart,
-                  );
-                } else if (isSplitPane) {
-                  final deckColumn = Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+            final Widget activeContent;
+            if (filtered.isEmpty) {
+              activeContent = EmptyStateView(
+                mascotMood: TugrulMood.practice,
+                icon: PhosphorIconsRegular.info,
+                title: _showDueOnly
+                    ? 'Bugün tekrar edilmesi gereken kart kalmadı'
+                    : '$_selectedLesson için henüz kart bulunmuyor',
+                description: _showDueOnly
+                    ? 'Tüm vadesi gelen kartları tamamladın. Dilersen tüm kart destesine dönebilirsin.'
+                    : 'Farklı bir ders seçerek kart çalışmasına devam edebilirsin.',
+                actionLabel: _showDueOnly ? 'Tüm Kartları Göster' : null,
+                onAction: _showDueOnly
+                    ? () => _toggleDueOnly(
+                        false,
+                        scopeResolution.items,
+                        selection.scopeKey,
+                      )
+                    : null,
+              );
+            } else if (_isCompleted) {
+              activeContent = _FlashcardsSummaryView(
+                totalCards: filtered.length,
+                learnedCount: _learnedCount,
+                repeatCount: _repeatCount,
+                selectedLesson: _selectedLesson,
+                onRestart: _restart,
+                onGoHome: _goToHome,
+                nextTask: isDailyFlow ? nextTask : null,
+                onNextTask: (isDailyFlow && nextTask != null)
+                    ? () {
+                        final nav = Navigator.maybeOf(context);
+                        if (nav != null && nav.canPop()) {
+                          nav.pop();
+                        }
+                        StudyTaskLauncher.launch(context, ref, nextTask);
+                      }
+                    : null,
+              );
+            } else if (isSplitPane) {
+              final deckColumn = Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _currentCard.lesson,
-                            style: Theme.of(layoutCtx).textTheme.titleSmall,
-                          ),
-                          Text(
-                            'Kart ${_currentIndex + 1} / ${filtered.length}',
-                            style: Theme.of(layoutCtx).textTheme.bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                        ],
+                      Text(
+                        _currentCard.lesson,
+                        style: Theme.of(layoutCtx).textTheme.titleSmall,
                       ),
-                      AppSpacing.gapXs,
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: LinearProgressIndicator(
-                          minHeight: 8,
-                          value: (_currentIndex + 1) / filtered.length,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            key: const ValueKey('flashcard_flip_detector'),
-                            onTap: _flipCard,
-                            child: AnimatedSwitcher(
-                              duration: animDuration,
-                              transitionBuilder: (child, animation) =>
-                                  FadeTransition(
-                                    opacity: animation,
-                                    child: child,
-                                  ),
-                              child: _FlashcardFace(
-                                key: ValueKey(_isBackVisible),
-                                isBack: _isBackVisible,
-                                topic: _currentCard.topic,
-                                text: _isBackVisible
-                                    ? _currentCard.backText
-                                    : _currentCard.frontText,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Tooltip(
-                              message: 'Kısayol: Sol Ok veya R',
-                              child: OutlinedButton.icon(
-                                onPressed: _onRepeat,
-                                icon: const PhosphorIcon(
-                                  PhosphorIconsRegular.arrowsClockwise,
-                                  size: 16,
-                                ),
-                                label: const Text('Tekrar Et'),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Tooltip(
-                              message: 'Kısayol: Boşluk veya Enter',
-                              child: OutlinedButton.icon(
-                                onPressed: _flipCard,
-                                icon: const PhosphorIcon(
-                                  PhosphorIconsRegular.arrowsLeftRight,
-                                  size: 16,
-                                ),
-                                label: const Text('Çevir (Boşluk)'),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Tooltip(
-                              message: 'Kısayol: Sağ Ok veya B',
-                              child: FilledButton.icon(
-                                onPressed: _onLearned,
-                                icon: const PhosphorIcon(
-                                  PhosphorIconsBold.check,
-                                  size: 16,
-                                ),
-                                label: const Text('Biliyorum'),
-                              ),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Kart ${_currentIndex + 1} / ${filtered.length}',
+                        style: Theme.of(layoutCtx).textTheme.bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     ],
-                  );
-
-                  activeContent = Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                  ),
+                  AppSpacing.gapXs,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(
+                      minHeight: 8,
+                      value: (_currentIndex + 1) / filtered.length,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: GestureDetector(
+                      key: const ValueKey('flashcard_flip_detector'),
+                      onTap: _flipCard,
+                      child: AnimatedSwitcher(
+                        duration: animDuration,
+                        transitionBuilder: (child, animation) =>
+                            FadeTransition(opacity: animation, child: child),
+                        child: _FlashcardFace(
+                          key: ValueKey(_isBackVisible),
+                          isBack: _isBackVisible,
+                          topic: _currentCard.topic,
+                          reviewBox: currentBox,
+                          text: _isBackVisible
+                              ? _currentCard.backText
+                              : _currentCard.frontText,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
                     children: [
-                      Expanded(flex: 7, child: deckColumn),
-                      const SizedBox(width: 24),
                       Expanded(
-                        flex: 5,
-                        child: SingleChildScrollView(
-                          child: _FlashcardsDesktopTelemetryPanel(
-                            totalCards: filtered.length,
-                            currentIndex: _currentIndex,
-                            learnedCount: _learnedCount,
-                            repeatCount: _repeatCount,
-                            selectedLesson: _selectedLesson,
+                        child: OutlinedButton.icon(
+                          onPressed: _onRepeat,
+                          icon: const PhosphorIcon(
+                            PhosphorIconsRegular.arrowsClockwise,
+                            size: 16,
                           ),
+                          label: const Text('Tekrar Et'),
                         ),
                       ),
-                    ],
-                  );
-                } else {
-                  activeContent = Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _currentCard.lesson,
-                            style: Theme.of(layoutCtx).textTheme.titleSmall,
-                          ),
-                          Text(
-                            'Kart ${_currentIndex + 1} / ${filtered.length}',
-                            style: Theme.of(layoutCtx).textTheme.bodyMedium
-                                ?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                      AppSpacing.gapXs,
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(999),
-                        child: LinearProgressIndicator(
-                          minHeight: 8,
-                          value: (_currentIndex + 1) / filtered.length,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
+                      const SizedBox(width: 10),
                       Expanded(
-                        child: GestureDetector(
-                          key: const ValueKey('flashcard_flip_detector'),
-                          onTap: _flipCard,
-                          child: AnimatedSwitcher(
-                            duration: animDuration,
-                            transitionBuilder: (child, animation) {
-                              return FadeTransition(
-                                opacity: animation,
-                                child: child,
-                              );
-                            },
-                            child: _FlashcardFace(
-                              key: ValueKey(_isBackVisible),
-                              isBack: _isBackVisible,
-                              topic: _currentCard.topic,
-                              text: _isBackVisible
-                                  ? _currentCard.backText
-                                  : _currentCard.frontText,
-                            ),
+                        child: OutlinedButton.icon(
+                          onPressed: _flipCard,
+                          icon: const PhosphorIcon(
+                            PhosphorIconsRegular.arrowsLeftRight,
+                            size: 16,
                           ),
+                          label: const Text('Kartı Çevir'),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: _onRepeat,
-                              icon: const PhosphorIcon(
-                                PhosphorIconsRegular.arrowsClockwise,
-                                size: 16,
-                              ),
-                              label: const Text('Tekrar Et'),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: FilledButton.icon(
-                              onPressed: _onLearned,
-                              icon: const PhosphorIcon(
-                                PhosphorIconsBold.check,
-                                size: 16,
-                              ),
-                              label: const Text('Biliyorum'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                }
-
-                return ResponsiveContentWrapper(
-                  maxWidth: isSplitPane ? 1200 : 720,
-                  padding: EdgeInsets.zero,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(
-                        height: 48,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          padding: EdgeInsets.symmetric(horizontal: hPad),
-                          itemCount: lessonFilters.length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(width: 8),
-                          itemBuilder: (context, index) {
-                            final lesson = lessonFilters[index];
-                            final isSelected = _selectedLesson == lesson;
-                            return ChoiceChip(
-                              label: Text(lesson),
-                              selected: isSelected,
-                              onSelected: (selected) {
-                                if (selected) {
-                                  _selectLesson(lesson);
-                                }
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                      if (scopeResolution.isUsingGkFallback)
-                        WorkshopScopeBridgeBanner(
-                          examTitle: selection.displayTitle,
-                        ),
-                      AppSpacing.gapXs,
+                      const SizedBox(width: 10),
                       Expanded(
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 16),
-                          child: activeContent,
+                        child: FilledButton.icon(
+                          onPressed: _onLearned,
+                          icon: const PhosphorIcon(
+                            PhosphorIconsBold.check,
+                            size: 16,
+                          ),
+                          label: const Text('Biliyorum'),
                         ),
                       ),
                     ],
                   ),
-                );
-              },
-            ),
-          ),
+                ],
+              );
+
+              activeContent = Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(flex: 7, child: deckColumn),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    flex: 5,
+                    child: SingleChildScrollView(
+                      child: _FlashcardsDesktopTelemetryPanel(
+                        totalCards: filtered.length,
+                        currentIndex: _currentIndex,
+                        learnedCount: _learnedCount,
+                        repeatCount: _repeatCount,
+                        selectedLesson: _selectedLesson,
+                        dueCount: dueCards.length,
+                        currentBox: currentBox,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              activeContent = Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        _currentCard.lesson,
+                        style: Theme.of(layoutCtx).textTheme.titleSmall,
+                      ),
+                      Text(
+                        'Kart ${_currentIndex + 1} / ${filtered.length}',
+                        style: Theme.of(layoutCtx).textTheme.bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                  AppSpacing.gapXs,
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(
+                      minHeight: 8,
+                      value: (_currentIndex + 1) / filtered.length,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: GestureDetector(
+                      key: const ValueKey('flashcard_flip_detector'),
+                      onTap: _flipCard,
+                      child: AnimatedSwitcher(
+                        duration: animDuration,
+                        transitionBuilder: (child, animation) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                        child: _FlashcardFace(
+                          key: ValueKey(_isBackVisible),
+                          isBack: _isBackVisible,
+                          topic: _currentCard.topic,
+                          reviewBox: currentBox,
+                          text: _isBackVisible
+                              ? _currentCard.backText
+                              : _currentCard.frontText,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _onRepeat,
+                          icon: const PhosphorIcon(
+                            PhosphorIconsRegular.arrowsClockwise,
+                            size: 16,
+                          ),
+                          label: const Text('Tekrar Et'),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: _onLearned,
+                          icon: const PhosphorIcon(
+                            PhosphorIconsBold.check,
+                            size: 16,
+                          ),
+                          label: const Text('Biliyorum'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            }
+
+            final dueFilterChip = FilterChip(
+              key: const ValueKey('flashcards_due_only_chip'),
+              avatar: const PhosphorIcon(
+                PhosphorIconsRegular.clockClockwise,
+                size: 16,
+              ),
+              label: Text('Bugün Tekrar (${dueCards.length})'),
+              selected: _showDueOnly,
+              onSelected: (selected) => _toggleDueOnly(
+                selected,
+                scopeResolution.items,
+                selection.scopeKey,
+              ),
+            );
+
+            return ResponsiveContentWrapper(
+              maxWidth: isSplitPane ? 1200 : 720,
+              padding: EdgeInsets.zero,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (isSplitPane)
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(hPad, 4, hPad, 6),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final lesson in lessonFilters)
+                            ChoiceChip(
+                              label: Text(lesson),
+                              selected: _selectedLesson == lesson,
+                              onSelected: (selected) {
+                                if (selected) _selectLesson(lesson);
+                              },
+                            ),
+                          dueFilterChip,
+                        ],
+                      ),
+                    )
+                  else
+                    SizedBox(
+                      height: 48,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.symmetric(horizontal: hPad),
+                        itemCount: lessonFilters.length + 1,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 8),
+                        itemBuilder: (context, index) {
+                          if (index == lessonFilters.length) {
+                            return dueFilterChip;
+                          }
+                          final lesson = lessonFilters[index];
+                          final isSelected = _selectedLesson == lesson;
+                          return ChoiceChip(
+                            label: Text(lesson),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              if (selected) {
+                                _selectLesson(lesson);
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  if (scopeResolution.isUsingGkFallback)
+                    WorkshopScopeBridgeBanner(
+                      examTitle: selection.displayTitle,
+                    ),
+                  AppSpacing.gapXs,
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(hPad, 0, hPad, 16),
+                      child: activeContent,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
   }
 }
 
-/// Masaüstü Split-Pane sağ paneli: Bilgi kartı oturum ilerlemesini ve klavye
-/// kısayol rehberini gösterir (`TASK-150`).
+/// Yatay tablet Split-Pane sağ paneli: Bilgi kartı oturum ilerlemesini gösterir.
 class _FlashcardsDesktopTelemetryPanel extends StatelessWidget {
   final int totalCards;
   final int currentIndex;
   final int learnedCount;
   final int repeatCount;
   final String selectedLesson;
+  final int dueCount;
+  final int currentBox;
 
   const _FlashcardsDesktopTelemetryPanel({
     required this.totalCards,
@@ -501,6 +701,8 @@ class _FlashcardsDesktopTelemetryPanel extends StatelessWidget {
     required this.learnedCount,
     required this.repeatCount,
     required this.selectedLesson,
+    required this.dueCount,
+    required this.currentBox,
   });
 
   @override
@@ -544,6 +746,14 @@ class _FlashcardsDesktopTelemetryPanel extends StatelessWidget {
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Aktif Kart: ${LeitnerScheduler.boxBadgeLabel(currentBox)} · Bugün Vadesi Gelen: $dueCount',
+                          style: textTheme.labelSmall?.copyWith(
+                            color: colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -576,31 +786,6 @@ class _FlashcardsDesktopTelemetryPanel extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
-            ],
-          ),
-        ),
-        AppSpacing.gapMd,
-        TactileCard(
-          backgroundColor: colorScheme.surface,
-          borderColor: colorScheme.outlineVariant,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Klavye Kısayolları',
-                style: textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Boşluk / Enter: Kartı çevir\nSol Ok / R: Tekrar et listesine al\nSağ Ok / B: Biliyorum olarak işaretle',
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  height: 1.55,
-                ),
               ),
             ],
           ),
@@ -660,12 +845,14 @@ class _FlashcardFace extends StatelessWidget {
   final bool isBack;
   final String topic;
   final String text;
+  final int reviewBox;
 
   const _FlashcardFace({
     super.key,
     required this.isBack,
     required this.topic,
     required this.text,
+    this.reviewBox = 1,
   });
 
   @override
@@ -686,29 +873,55 @@ class _FlashcardFace extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 8,
+            runSpacing: 6,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: isBack
-                      ? colorScheme.primary
-                      : colorScheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  isBack ? 'HAP BİLGİ' : 'SORU / KAVRAM',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: isBack
-                        ? colorScheme.onPrimary
-                        : colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isBack
+                          ? colorScheme.primary
+                          : colorScheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      isBack ? 'HAP BİLGİ' : 'SORU / KAVRAM',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: isBack
+                            ? colorScheme.onPrimary
+                            : colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.tertiaryContainer.withAlpha(160),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      LeitnerScheduler.boxBadgeLabel(reviewBox),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: colorScheme.onTertiaryContainer,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Text(
                 topic,
@@ -763,6 +976,9 @@ class _FlashcardsSummaryView extends StatelessWidget {
   final int repeatCount;
   final String selectedLesson;
   final VoidCallback onRestart;
+  final VoidCallback onGoHome;
+  final StudyTask? nextTask;
+  final VoidCallback? onNextTask;
 
   const _FlashcardsSummaryView({
     required this.totalCards,
@@ -770,6 +986,9 @@ class _FlashcardsSummaryView extends StatelessWidget {
     required this.repeatCount,
     this.selectedLesson = 'Tümü',
     required this.onRestart,
+    required this.onGoHome,
+    this.nextTask,
+    this.onNextTask,
   });
 
   @override
@@ -914,9 +1133,25 @@ class _FlashcardsSummaryView extends StatelessWidget {
           ],
         ),
         const Spacer(),
+        if (nextTask != null && onNextTask != null) ...[
+          FilledButton.icon(
+            onPressed: onNextTask,
+            style: FilledButton.styleFrom(
+              backgroundColor: colorScheme.secondary,
+              foregroundColor: colorScheme.onSecondary,
+            ),
+            icon: const PhosphorIcon(PhosphorIconsBold.arrowRight, size: 18),
+            label: Text(
+              'Sıradaki Göreve Geç: ${nextTask!.title} →',
+              softWrap: true,
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
         FilledButton.icon(
           onPressed: () {
-            Navigator.of(context).push(
+            Navigator.of(context, rootNavigator: true).pushReplacement(
               MaterialPageRoute(
                 builder: (_) => QuizScreen(
                   lessonFilter: selectedLesson == 'Tümü'
@@ -949,7 +1184,7 @@ class _FlashcardsSummaryView extends StatelessWidget {
             const SizedBox(width: 8),
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: onGoHome,
                 icon: const PhosphorIcon(PhosphorIconsRegular.house, size: 16),
                 label: const Text('Ana Sayfaya Dön'),
               ),

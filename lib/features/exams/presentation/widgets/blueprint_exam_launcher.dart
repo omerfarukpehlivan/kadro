@@ -8,6 +8,7 @@ import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
+import 'package:kadro/shared/widgets/kadro_confirm_dialog.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Bir [MockExamBlueprint] şablonu için çevrimdışı indirme paket anahtarını döner.
@@ -40,11 +41,13 @@ Future<void> launchBlueprintExamWithGuard({
   required ExamSelection selection,
   String? customTitle,
   bool? applyExtraTime,
+  bool isBranchMock = false,
   VoidCallback? onCompleted,
+  String? taskId,
 }) async {
   final isUserPro = ref.read(userPreferencesProvider).isPro;
   if (blueprint.isProOnly && !isUserPro) {
-    Navigator.of(context).push(
+    Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => PaywallScreen(
           reasonMessage:
@@ -66,55 +69,41 @@ Future<void> launchBlueprintExamWithGuard({
           .read(offlineDownloadServiceProvider)
           .getDownloadedQuestions(packageId);
       if (!context.mounted) return;
-      Navigator.of(context).push(
+      Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
           builder: (_) => QuizScreen(
             questions: questions ?? const [],
             blueprint: blueprint,
             examSelection: selection,
             applyExtraTime: applyExtraTime,
+            isBranchMock: isBranchMock,
             customTitle: '$effectiveTitle (Çevrimdışı)',
             mode: QuizMode.exam,
             onCompleted: onCompleted,
+            taskId: taskId,
           ),
         ),
       );
       return;
     }
 
-    await showDialog<void>(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: const Row(
-          children: [
-            PhosphorIcon(PhosphorIconsRegular.wifiSlash),
-            SizedBox(width: 8),
-            Expanded(child: Text('İnternet Bağlantısı Yok')),
-          ],
-        ),
-        content: const Text(
-          'Bu denemeyi internetsiz çözebilmek için internet varken Kadro PRO ile indirmiş olmanız gerekir.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Tamam'),
+    await KadroConfirmDialog.alert(
+      context,
+      icon: PhosphorIconsRegular.wifiSlash,
+      title: 'İnternet Bağlantısı Yok',
+      message: 'Bu denemeyi internetsiz çözebilmek için internet varken Kadro PRO ile indirmiş olmanız gerekir.',
+      buttonLabel: 'Tamam',
+      secondaryButtonLabel: "Kadro PRO'ya Geç",
+      onSecondaryPressed: () {
+        if (!context.mounted) return;
+        Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(
+            builder: (_) => const PaywallScreen(
+              reasonMessage: 'Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
+            ),
           ),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(dialogCtx).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const PaywallScreen(
-                    reasonMessage: 'Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
-                  ),
-                ),
-              );
-            },
-            child: const Text("Kadro PRO'ya Geç"),
-          ),
-        ],
-      ),
+        );
+      },
     );
     return;
   }
@@ -129,7 +118,7 @@ Future<void> launchBlueprintExamWithGuard({
           blueprint.id == 'b_gk_sprint_15');
 
   if (isFastLegacyGk) {
-    Navigator.of(context).push(
+    Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => QuizScreen(
           mockExamNumber:
@@ -144,6 +133,7 @@ Future<void> launchBlueprintExamWithGuard({
               : blueprint,
           examSelection: selection,
           applyExtraTime: applyExtraTime,
+          isBranchMock: isBranchMock,
           examDuration: blueprint.resolveDuration(
             selection,
             applyExtraTime: applyExtraTime,
@@ -155,6 +145,7 @@ Future<void> launchBlueprintExamWithGuard({
               blueprint.id == 'b_gk_tarih_cografya_kamp' ||
               blueprint.id == 'b_gk_sprint_15',
           onCompleted: onCompleted,
+          taskId: taskId,
         ),
       ),
     );
@@ -167,61 +158,32 @@ Future<void> launchBlueprintExamWithGuard({
   if (!context.mounted) return;
 
   if (generated.questions.isEmpty) {
-    await showDialog<void>(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: const Row(
-          children: [
-            PhosphorIcon(PhosphorIconsRegular.hourglassMedium),
-            SizedBox(width: 8),
-            Expanded(child: Text('Soru Havuzu Hazırlanıyor')),
-          ],
-        ),
-        content: Text(
+    await KadroConfirmDialog.alert(
+      context,
+      icon: PhosphorIconsRegular.hourglassMedium,
+      title: 'Soru Havuzu Hazırlanıyor',
+      message:
           '${blueprint.title} kapsamındaki bölüm soruları henüz yüklenmedi. Şimdilik Genel Kültür ortak oturumunu veya konu çalışmalarını kullanabilirsin.',
-        ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Tamam'),
-          ),
-        ],
-      ),
+      buttonLabel: 'Tamam',
     );
     return;
   }
 
   if (generated.hasMissingSections) {
     final missingList = generated.missingSections.join(', ');
-    final proceed = await showDialog<bool>(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: const Row(
-          children: [
-            PhosphorIcon(PhosphorIconsRegular.warningCircle),
-            SizedBox(width: 8),
-            Expanded(child: Text('Eksik Bölüm Uyarısı')),
-          ],
-        ),
-        content: Text(
+    final proceed = await KadroConfirmDialog.confirm(
+      context,
+      icon: PhosphorIconsRegular.warningCircle,
+      title: 'Eksik Bölüm Uyarısı',
+      message:
           'Bu denemedeki bazı bölümler ($missingList) için soru havuzu henüz yüklenmedi. Hazır olan ${generated.questions.length} soru ile devam etmek ister misin?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(false),
-            child: const Text('Vazgeç'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(true),
-            child: const Text('Mevcut Sorularla Başlat'),
-          ),
-        ],
-      ),
+      cancelLabel: 'Vazgeç',
+      confirmLabel: 'Mevcut Sorularla Başlat',
     );
-    if (proceed != true || !context.mounted) return;
+    if (!proceed || !context.mounted) return;
   }
 
-  Navigator.of(context).push(
+  Navigator.of(context, rootNavigator: true).push(
     MaterialPageRoute(
       builder: (_) => QuizScreen(
         questions: generated.questions,
@@ -229,9 +191,11 @@ Future<void> launchBlueprintExamWithGuard({
         blueprint: blueprint,
         examSelection: selection,
         applyExtraTime: applyExtraTime,
+        isBranchMock: isBranchMock,
         customTitle: effectiveTitle,
         mode: QuizMode.exam,
         onCompleted: onCompleted,
+        taskId: taskId,
       ),
     ),
   );

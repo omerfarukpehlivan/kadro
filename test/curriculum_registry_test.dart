@@ -62,6 +62,99 @@ void main() {
       expect(curriculum.allLessons.length, 6);
     });
 
+    test('TASK-165: Lisans GY-GK Türkçe aktif (71 test, 11 konu), Ön Lisans/E-KPSS Yakında, Yalnız GK Türkçe içermez', () {
+      const lisansGyGk = ExamSelection(
+        family: KpssExamFamily.bGrubu,
+        educationLevel: EducationLevel.lisans,
+        bGroupProfile: BGroupProfile.fullGyGk,
+      );
+      final lisansCurriculum = CurriculumRegistry.resolve(lisansGyGk);
+
+      expect(lisansCurriculum.activeLessons.length, 5);
+      expect(lisansCurriculum.upcomingLessons.length, 1);
+      expect(
+        lisansCurriculum.activeSectionTitle,
+        'KPSS Genel Kültür + GY Türkçe (90 Soru)',
+      );
+      expect(
+        lisansCurriculum.upcomingSectionTitle,
+        'KPSS Genel Yetenek · Matematik (30 Soru · Yakında)',
+      );
+
+      final activeTurkce = lisansCurriculum.activeLessons.firstWhere(
+        (l) => l.name == 'Türkçe',
+      );
+      expect(activeTurkce.isComingSoon, isFalse);
+      expect(activeTurkce.badgeText, isNull);
+      expect(activeTurkce.topics.length, 11);
+      expect(activeTurkce.totalTestCount, 71);
+      expect(activeTurkce.testCountForTopic('Paragrafta Anlam ve Yapı'), 31);
+      expect(activeTurkce.testCountForTopic('Sözel Mantık ve Muhakeme'), 7);
+      expect(
+        lisansCurriculum.upcomingLessons.single.name,
+        'Matematik & Geometri',
+      );
+      expect(lisansCurriculum.upcomingLessons.single.isComingSoon, isTrue);
+
+      // Ön Lisans fullGyGk -> Türkçe hâlâ upcoming ve comingSoon
+      const onlisansGyGk = ExamSelection(
+        family: KpssExamFamily.bGrubu,
+        educationLevel: EducationLevel.onlisans,
+        bGroupProfile: BGroupProfile.fullGyGk,
+      );
+      final onlisansCurriculum = CurriculumRegistry.resolve(onlisansGyGk);
+      expect(
+        onlisansCurriculum.activeLessons.any((l) => l.name == 'Türkçe'),
+        isFalse,
+      );
+      final onlisansTurkce = onlisansCurriculum.upcomingLessons.firstWhere(
+        (l) => l.name == 'Türkçe',
+      );
+      expect(onlisansTurkce.isComingSoon, isTrue);
+
+      // E-KPSS -> Türkçe hâlâ upcoming ve comingSoon
+      const ekpssSel = ExamSelection(
+        family: KpssExamFamily.ekpss,
+        educationLevel: EducationLevel.lisans,
+      );
+      final ekpssCurriculum = CurriculumRegistry.resolve(ekpssSel);
+      expect(
+        ekpssCurriculum.activeLessons.any((l) => l.name == 'Türkçe'),
+        isFalse,
+      );
+      final ekpssTurkce = ekpssCurriculum.upcomingLessons.firstWhere(
+        (l) => l.name == 'Türkçe',
+      );
+      expect(ekpssTurkce.isComingSoon, isTrue);
+
+      // Lisans onlyGk -> activeLessons içinde Türkçe hiç yok
+      final lisansOnlyGkCurriculum = CurriculumRegistry.resolve(
+        ExamSelection.initial,
+      );
+      expect(
+        lisansOnlyGkCurriculum.activeLessons.any((l) => l.name == 'Türkçe'),
+        isFalse,
+      );
+
+      // acceptedQuestionScopes ve matchesSelection kontrolü
+      expect(
+        lisansGyGk.acceptedQuestionScopes,
+        containsAll(['lisans_gk', 'lisans_gygk']),
+      );
+      const gkQuestion = Question(
+        id: 'q_gk_test',
+        lesson: 'Tarih',
+        topic: 'Osmanlı Kültür ve Uygarlığı',
+        text: 'Örnek GK sorusu',
+        options: ['A', 'B', 'C', 'D', 'E'],
+        correctIndex: 0,
+        explanation: 'Açıklama',
+        examScopes: ['lisans_gk'],
+      );
+      expect(gkQuestion.matchesSelection(ExamSelection.initial), isTrue);
+      expect(gkQuestion.matchesSelection(lisansGyGk), isTrue);
+    });
+
     test('E-KPSS ek süre ve 30 GY + 30 GK dağılımını doğru hesaplar', () {
       const selection = ExamSelection(
         family: KpssExamFamily.ekpss,

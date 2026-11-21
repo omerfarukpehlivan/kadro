@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kadro/app/router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
+import 'package:kadro/core/utils/leitner_scheduler.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/flashcards/presentation/flashcards_screen.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/mistakes/data/mistake_repository.dart';
+import 'package:kadro/features/mistakes/data/models/mistake_review_entry.dart';
+import 'package:kadro/features/planner/data/models/study_task.dart';
+import 'package:kadro/features/planner/data/study_planner_notifier.dart';
+import 'package:kadro/features/planner/presentation/study_task_launcher.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/empty_state_view.dart';
+import 'package:kadro/shared/widgets/kadro_filter_chips.dart';
+import 'package:kadro/shared/widgets/responsive_grid.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -18,11 +27,13 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 class MistakesScreen extends ConsumerStatefulWidget {
   final MistakeRepository mistakeRepository;
   final VoidCallback? onCompleted;
+  final String? taskId;
 
   const MistakesScreen({
     super.key,
     this.mistakeRepository = const MistakeRepository(),
     this.onCompleted,
+    this.taskId,
   });
 
   @override
@@ -71,7 +82,7 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      await Navigator.of(context).push(
+      await Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
           builder: (_) => const PaywallScreen(
             reasonMessage: 'Akıllı Yanlış Defteri Test Üretici: Yanlış yaptığın sorulardan özel testler üretip çözmek Kadro PRO üyelerine özeldir.',
@@ -82,7 +93,7 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
       return;
     }
 
-    await Navigator.of(context).push(
+    await Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => QuizScreen(
           questions: mistakes,
@@ -91,6 +102,27 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
               ? 'Yanlış Defteri Testi'
               : '$_selectedLesson Yanlışları Testi',
           onCompleted: _notifyDone,
+          taskId: widget.taskId,
+        ),
+      ),
+    );
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  Future<void> _startDueReview(List<Question> dueQuestions) async {
+    if (dueQuestions.isEmpty) return;
+
+    await Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute(
+        builder: (_) => QuizScreen(
+          questions: dueQuestions,
+          mistakeRepository: widget.mistakeRepository,
+          customTitle: 'Günlük Leitner Tekrarı (${dueQuestions.length} Soru)',
+          onCompleted: _notifyDone,
+          taskId: widget.taskId,
         ),
       ),
     );
@@ -109,33 +141,87 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
     }
   }
 
+  void _goToHome() {
+    popBranchToRoot();
+
+    final rootNav = Navigator.maybeOf(context, rootNavigator: true);
+    final branchNav = Navigator.maybeOf(context);
+
+    if (branchNav != null && branchNav != rootNav && branchNav.canPop()) {
+      branchNav.popUntil((route) => route.isFirst);
+    }
+
+    if (rootNav != null && rootNav.canPop()) {
+      rootNav.popUntil((route) => route.isFirst);
+    }
+
+    final router = GoRouter.maybeOf(context);
+    if (router != null) {
+      router.go('/');
+    }
+  }
+
+  StudyTask? _resolveNextDailyTask() {
+    if (widget.taskId == null && widget.onCompleted == null) return null;
+    try {
+      final planner = ref.watch(studyPlannerProvider);
+      return planner.tasks
+          .where((t) => !t.isCompleted && t.id != widget.taskId)
+          .firstOrNull;
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final mistakes = widget.mistakeRepository.getMistakes();
+    final entries = widget.mistakeRepository.getReviewEntries();
+    final nextTask = _resolveNextDailyTask();
+    final isDailyFlow = widget.taskId != null || widget.onCompleted != null;
 
-    if (mistakes.isEmpty) {
+    if (entries.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text('Yanlış Defteri')),
-        body: const _EmptyMistakesView(),
+        body: _EmptyMistakesView(
+          onGoHome: _goToHome,
+          nextTask: isDailyFlow ? nextTask : null,
+          onNextTask: (isDailyFlow && nextTask != null)
+              ? () {
+                  final nav = Navigator.maybeOf(context);
+                  if (nav != null && nav.canPop()) {
+                    nav.pop();
+                  }
+                  StudyTaskLauncher.launch(context, ref, nextTask);
+                }
+              : null,
+        ),
       );
     }
 
     final lessonCounts = <String, int>{};
-    for (final question in mistakes) {
-      lessonCounts[question.lesson] = (lessonCounts[question.lesson] ?? 0) + 1;
+    for (final entry in entries) {
+      final lesson = entry.question.lesson;
+      lessonCounts[lesson] = (lessonCounts[lesson] ?? 0) + 1;
     }
 
     final curriculum = readOrWatchCurriculum(ref);
     final filterLessons = curriculum.buildFilterLessons(
-      mistakes.map((q) => q.lesson),
+      entries.map((e) => e.question.lesson),
     );
     final effectiveSelected = filterLessons.contains(_selectedLesson)
         ? _selectedLesson
         : 'Tümü';
 
-    final filteredMistakes = effectiveSelected == 'Tümü'
-        ? mistakes
-        : mistakes.where((q) => q.lesson == effectiveSelected).toList();
+    final filteredEntries = effectiveSelected == 'Tümü'
+        ? entries
+        : entries.where((e) => e.question.lesson == effectiveSelected).toList();
+    final filteredQuestions = filteredEntries
+        .map((e) => e.question)
+        .toList(growable: false);
+    final dueEntries = widget.mistakeRepository.getDueEntries();
+    final dueQuestions = dueEntries
+        .map((e) => e.question)
+        .toList(growable: false);
 
     bool isPro = false;
     try {
@@ -144,83 +230,104 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
       // ProviderScope bulunmayan izole test fallback
     }
 
-    final lessonChips = filterLessons
+    final filterOptions = filterLessons
         .map(
-          (lessonName) => {
-            'id': lessonName,
-            'label': lessonName == 'Tümü'
-                ? 'Tümü (${mistakes.length})'
+          (lessonName) => KadroFilterOption<String>(
+            value: lessonName,
+            label: lessonName == 'Tümü'
+                ? 'Tümü (${entries.length})'
                 : '$lessonName (${lessonCounts[lessonName] ?? 0})',
-          },
+          ),
         )
         .toList(growable: false);
+
+    final isSplitPane = ResponsiveBreakpoints.usesSplitPane(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Yanlış Defteri')),
       body: ResponsiveContentWrapper(
-        maxWidth: 720,
+        maxWidth: isSplitPane ? 1200 : 720,
         padding: EdgeInsets.zero,
         child: Padding(
           padding: AppSpacing.pagePadding(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: lessonChips.map((chip) {
-                    final isSelected = effectiveSelected == chip['id'];
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ChoiceChip(
-                        label: Text(chip['label']!),
-                        selected: isSelected,
-                        onSelected: (selected) {
-                          if (selected) {
-                            setState(() {
-                              _selectedLesson = chip['id']!;
-                            });
-                          }
-                        },
-                      ),
-                    );
-                  }).toList(),
-                ),
+              KadroFilterChips<String>(
+                options: filterOptions,
+                selectedValue: effectiveSelected,
+                wrap: isSplitPane,
+                onSelected: (selectedLesson) {
+                  setState(() {
+                    _selectedLesson = selectedLesson;
+                  });
+                },
               ),
               AppSpacing.gapSm,
 
-              _MistakeHeaderCard(
-                mistakeCount: filteredMistakes.length,
-                lessonName: effectiveSelected,
-                totalMistakes: mistakes.length,
-                onSolveAll: () => _solveMistakes(filteredMistakes),
-                isPro: isPro,
-              ),
-              AppSpacing.gapMd,
-
               Expanded(
-                child: filteredMistakes.isEmpty
-                    ? Center(
-                        child: Text(
-                          '$effectiveSelected dersinden yanlışın bulunmuyor.',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                              ),
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (dueQuestions.isNotEmpty) ...[
+                          _LeitnerDueReviewBanner(
+                            dueCount: dueQuestions.length,
+                            onStartReview: () => _startDueReview(dueQuestions),
+                          ),
+                          AppSpacing.gapSm,
+                        ],
+
+                        _MistakeHeaderCard(
+                          mistakeCount: filteredQuestions.length,
+                          lessonName: effectiveSelected,
+                          totalMistakes: entries.length,
+                          onSolveAll: () => _solveMistakes(filteredQuestions),
+                          isPro: isPro,
                         ),
-                      )
-                    : ListView.builder(
-                        itemCount: filteredMistakes.length,
-                        itemBuilder: (context, index) {
-                          final question = filteredMistakes[index];
-                          return _MistakeQuestionCard(
-                            question: question,
-                            onDelete: () => _removeMistake(question.id),
-                          );
-                        },
-                      ),
+                        AppSpacing.gapMd,
+
+                        if (filteredEntries.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 32),
+                            child: Center(
+                              child: Text(
+                                '$effectiveSelected dersinden yanlışın bulunmuyor.',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant,
+                                    ),
+                              ),
+                            ),
+                          )
+                        else if (isSplitPane)
+                          ResponsiveGrid(
+                            columns: 2,
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: [
+                              for (final entry in filteredEntries)
+                                _MistakeQuestionCard(
+                                  entry: entry,
+                                  margin: EdgeInsets.zero,
+                                  onDelete: () =>
+                                      _removeMistake(entry.question.id),
+                                ),
+                            ],
+                          )
+                        else
+                          for (final entry in filteredEntries)
+                            _MistakeQuestionCard(
+                              entry: entry,
+                              onDelete: () => _removeMistake(entry.question.id),
+                            ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -231,10 +338,20 @@ class _MistakesScreenState extends ConsumerState<MistakesScreen> {
 }
 
 class _EmptyMistakesView extends StatelessWidget {
-  const _EmptyMistakesView();
+  final VoidCallback onGoHome;
+  final StudyTask? nextTask;
+  final VoidCallback? onNextTask;
+
+  const _EmptyMistakesView({
+    required this.onGoHome,
+    this.nextTask,
+    this.onNextTask,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -244,6 +361,24 @@ class _EmptyMistakesView extends StatelessWidget {
           title: 'Yanlış defterinde bekleyen soru yok',
           description: 'Testlerde yanlış yaptığın sorular otomatik olarak burada birikir.',
         ),
+        if (nextTask != null && onNextTask != null) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+            child: FilledButton.icon(
+              onPressed: onNextTask,
+              style: FilledButton.styleFrom(
+                backgroundColor: colorScheme.secondary,
+                foregroundColor: colorScheme.onSecondary,
+              ),
+              icon: const PhosphorIcon(PhosphorIconsBold.arrowRight, size: 16),
+              label: Text(
+                'Sıradaki Göreve Geç: ${nextTask!.title} →',
+                softWrap: true,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
         Wrap(
           alignment: WrapAlignment.center,
           spacing: 12,
@@ -251,25 +386,117 @@ class _EmptyMistakesView extends StatelessWidget {
           children: [
             FilledButton.tonalIcon(
               onPressed: () {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const QuizScreen()));
+                Navigator.of(context, rootNavigator: true).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const QuizScreen()),
+                );
               },
               icon: const PhosphorIcon(PhosphorIconsBold.play, size: 16),
               label: const Text('Yeni Test Çöz'),
             ),
             OutlinedButton.icon(
               onPressed: () {
-                Navigator.of(context).push(
+                Navigator.of(context, rootNavigator: true).pushReplacement(
                   MaterialPageRoute(builder: (_) => const FlashcardsScreen()),
                 );
               },
               icon: const PhosphorIcon(PhosphorIconsRegular.cards, size: 16),
               label: const Text('Bilgi Kartlarına Git'),
             ),
+            OutlinedButton.icon(
+              onPressed: onGoHome,
+              icon: const PhosphorIcon(PhosphorIconsRegular.house, size: 16),
+              label: const Text('Ana Sayfaya Dön'),
+            ),
           ],
         ),
       ],
+    );
+  }
+}
+
+class _LeitnerDueReviewBanner extends StatelessWidget {
+  final int dueCount;
+  final VoidCallback onStartReview;
+
+  const _LeitnerDueReviewBanner({
+    required this.dueCount,
+    required this.onStartReview,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isWide = ResponsiveBreakpoints.usesSplitPane(context);
+
+    final infoRow = Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: colorScheme.tertiaryContainer,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: PhosphorIcon(
+            PhosphorIconsFill.repeat,
+            size: 18,
+            color: colorScheme.onTertiaryContainer,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Bugün Tekrar Etmen Gereken $dueCount Soru',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              Text(
+                'Leitner 1·3·7·14 gün kutularından vadesi gelenler hazır.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    final actionButton = FilledButton.tonalIcon(
+      key: const ValueKey('mistakes_start_due_review_button'),
+      onPressed: onStartReview,
+      icon: const PhosphorIcon(PhosphorIconsBold.clockClockwise, size: 16),
+      label: const Text('Günlük Tekrarı Başlat'),
+    );
+
+    return TactileCard(
+      backgroundColor: Color.alphaBlend(
+        colorScheme.tertiaryContainer.withAlpha(110),
+        colorScheme.surface,
+      ),
+      borderColor: colorScheme.tertiary,
+      lipColor: colorScheme.tertiary,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: isWide
+          ? Row(
+              children: [
+                Expanded(child: infoRow),
+                const SizedBox(width: 12),
+                actionButton,
+              ],
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [infoRow, const SizedBox(height: 10), actionButton],
+            ),
     );
   }
 }
@@ -371,42 +598,76 @@ class _MistakeHeaderCard extends StatelessWidget {
 }
 
 class _MistakeQuestionCard extends StatelessWidget {
-  final Question question;
+  final MistakeReviewEntry entry;
   final VoidCallback onDelete;
+  final EdgeInsetsGeometry margin;
 
-  const _MistakeQuestionCard({required this.question, required this.onDelete});
+  const _MistakeQuestionCard({
+    required this.entry,
+    required this.onDelete,
+    this.margin = const EdgeInsets.only(bottom: 12),
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final question = entry.question;
+    final isDueNow = entry.isDue();
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: margin,
       child: TactileCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Flexible(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '${question.lesson} · ${question.topic}',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onSecondaryContainer,
+                Expanded(
+                  child: Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colorScheme.secondaryContainer,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '${question.lesson} · ${question.topic}',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSecondaryContainer,
+                          ),
+                        ),
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isDueNow
+                              ? colorScheme.tertiaryContainer
+                              : colorScheme.primaryContainer.withAlpha(110),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '${LeitnerScheduler.boxBadgeLabel(entry.reviewBox)} · ${LeitnerScheduler.formatRemainingReviewLabel(entry.nextReviewAt)}',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: isDueNow
+                                ? colorScheme.onTertiaryContainer
+                                : colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 IconButton(

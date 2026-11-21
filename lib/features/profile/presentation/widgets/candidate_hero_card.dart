@@ -52,8 +52,10 @@ class CandidateHeroCard extends ConsumerWidget {
 
     final editGoalButton = OutlinedButton.icon(
       onPressed: () {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => const OnboardingScreen()));
+        Navigator.of(
+          context,
+          rootNavigator: true,
+        ).push(MaterialPageRoute(builder: (_) => const OnboardingScreen()));
       },
       style: OutlinedButton.styleFrom(
         visualDensity: VisualDensity.compact,

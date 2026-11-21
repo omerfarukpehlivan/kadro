@@ -3,7 +3,6 @@ import 'package:kadro/features/reports/presentation/report_question_bottom_sheet
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/config/supabase_config.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
@@ -21,7 +20,6 @@ import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
 import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
-import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/adaptive_overlay.dart';
@@ -112,7 +110,9 @@ class QuizScreen extends ConsumerStatefulWidget {
   final MockExamBlueprint? blueprint;
   final ExamSelection? examSelection;
   final bool? applyExtraTime;
+  final bool isBranchMock;
   final List<BlueprintSectionRange>? prebuiltSectionRanges;
+  final String? taskId;
 
   const QuizScreen({
     super.key,
@@ -133,7 +133,9 @@ class QuizScreen extends ConsumerStatefulWidget {
     this.blueprint,
     this.examSelection,
     this.applyExtraTime,
+    this.isBranchMock = false,
     this.prebuiltSectionRanges,
+    this.taskId,
   });
 
   @override
@@ -371,6 +373,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             topic: widget.topicFilter,
             selection: selection,
             preferredSourceVariant: variant,
+            limit: widget.topicTestNumber != null ? 500 : 60,
           );
     if (!mounted) return;
     setState(() {
@@ -474,111 +477,6 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     });
   }
 
-  void _selectOptionViaKeyboard(int index) {
-    if (index < 0 || index >= _currentQuestion.options.length) return;
-    _onOptionTap(index);
-  }
-
-  void _handlePrimaryActionShortcut() {
-    final isAtHistory = _currentIndex < _maxReachedIndex;
-    if (_isExamMode) {
-      if (isAtHistory) {
-        _goToNextQuestion();
-      } else if (!_isLastQuestion) {
-        _nextQuestion();
-      } else {
-        _finishQuiz();
-      }
-      return;
-    }
-
-    if (isAtHistory) {
-      _goToNextQuestion();
-    } else if (!_isAnswered) {
-      if (_selectedOptionIndex != null) {
-        _submitAnswer();
-      }
-    } else if (!_isLastQuestion) {
-      _nextQuestion();
-    } else {
-      _finishQuiz();
-    }
-  }
-
-  void _showShortcutsHelpDialog() {
-    AdaptiveOverlay.showModal<void>(
-      context: context,
-      title: 'Klavye Kısayolları',
-      dialogMaxWidth: 460,
-      builder: (_) => const _QuizShortcutsHelpBody(),
-    );
-  }
-
-  Map<ShortcutActivator, VoidCallback> _buildShortcutBindings() {
-    return {
-      const SingleActivator(LogicalKeyboardKey.digit1): () =>
-          _selectOptionViaKeyboard(0),
-      const SingleActivator(LogicalKeyboardKey.digit2): () =>
-          _selectOptionViaKeyboard(1),
-      const SingleActivator(LogicalKeyboardKey.digit3): () =>
-          _selectOptionViaKeyboard(2),
-      const SingleActivator(LogicalKeyboardKey.digit4): () =>
-          _selectOptionViaKeyboard(3),
-      const SingleActivator(LogicalKeyboardKey.digit5): () =>
-          _selectOptionViaKeyboard(4),
-      const SingleActivator(LogicalKeyboardKey.keyA): () =>
-          _selectOptionViaKeyboard(0),
-      const SingleActivator(LogicalKeyboardKey.keyB): () =>
-          _selectOptionViaKeyboard(1),
-      const SingleActivator(LogicalKeyboardKey.keyC): () =>
-          _selectOptionViaKeyboard(2),
-      const SingleActivator(LogicalKeyboardKey.keyD): () =>
-          _selectOptionViaKeyboard(3),
-      const SingleActivator(LogicalKeyboardKey.keyE): () =>
-          _selectOptionViaKeyboard(4),
-      const SingleActivator(LogicalKeyboardKey.digit1, shift: true): () =>
-          _toggleEliminateOption(0),
-      const SingleActivator(LogicalKeyboardKey.digit2, shift: true): () =>
-          _toggleEliminateOption(1),
-      const SingleActivator(LogicalKeyboardKey.digit3, shift: true): () =>
-          _toggleEliminateOption(2),
-      const SingleActivator(LogicalKeyboardKey.digit4, shift: true): () =>
-          _toggleEliminateOption(3),
-      const SingleActivator(LogicalKeyboardKey.digit5, shift: true): () =>
-          _toggleEliminateOption(4),
-      const SingleActivator(LogicalKeyboardKey.keyA, shift: true): () =>
-          _toggleEliminateOption(0),
-      const SingleActivator(LogicalKeyboardKey.keyB, shift: true): () =>
-          _toggleEliminateOption(1),
-      const SingleActivator(LogicalKeyboardKey.keyC, shift: true): () =>
-          _toggleEliminateOption(2),
-      const SingleActivator(LogicalKeyboardKey.keyD, shift: true): () =>
-          _toggleEliminateOption(3),
-      const SingleActivator(LogicalKeyboardKey.keyE, shift: true): () =>
-          _toggleEliminateOption(4),
-      const SingleActivator(LogicalKeyboardKey.enter):
-          _handlePrimaryActionShortcut,
-      const SingleActivator(LogicalKeyboardKey.numpadEnter):
-          _handlePrimaryActionShortcut,
-      const SingleActivator(LogicalKeyboardKey.keyN):
-          _handlePrimaryActionShortcut,
-      const SingleActivator(LogicalKeyboardKey.arrowRight):
-          _handlePrimaryActionShortcut,
-      const SingleActivator(LogicalKeyboardKey.keyP): _previousQuestion,
-      const SingleActivator(LogicalKeyboardKey.arrowLeft): _previousQuestion,
-      const SingleActivator(LogicalKeyboardKey.keyF): _toggleFlagQuestion,
-      const SingleActivator(LogicalKeyboardKey.keyG):
-          _showQuestionPaletteBottomSheet,
-      const SingleActivator(LogicalKeyboardKey.keyO):
-          _showQuestionPaletteBottomSheet,
-      const SingleActivator(LogicalKeyboardKey.f2):
-          _showQuestionPaletteBottomSheet,
-      const SingleActivator(LogicalKeyboardKey.slash, shift: true):
-          _showShortcutsHelpDialog,
-      const SingleActivator(LogicalKeyboardKey.f1): _showShortcutsHelpDialog,
-    };
-  }
-
   void _submitAnswer() {
     if (_selectedOptionIndex == null || _isAnswered) return;
 
@@ -606,13 +504,17 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
 
       if (isCorrect) {
         _correctCount++;
-        widget.mistakeRepository.removeMistake(_currentQuestion.id);
-        const CloudSyncRepository().markMistakeResolved(
-          questionText: _currentQuestion.text,
+        widget.mistakeRepository.recordReviewOutcome(
+          _currentQuestion.id,
+          isCorrect: true,
+          examScope: _activeExamSelection().scopeKey,
         );
       } else {
         _wrongCount++;
-        widget.mistakeRepository.addMistake(_currentQuestion);
+        widget.mistakeRepository.addMistake(
+          _currentQuestion,
+          examScope: _activeExamSelection().scopeKey,
+        );
         if (!_hasDismissedMistakeNotice) {
           _showMistakeNotice = true;
         }
@@ -690,19 +592,28 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
     );
   }
 
+  /// Geliştirme ve UX testleri sürecinde günlük 30 soru limiti kapısını
+  /// geçici olarak devre dışı bırakan bayrak (Feature Flag).
+  /// Canlıya çıkarken `false` yapıldığında limit kontrolü tekrar devreye girer.
+  static const bool _bypassDailyQuestionLimit = true;
+
   void _nextQuestion() {
-    try {
-      final prefs = ref.read(userPreferencesProvider);
-      final stats = ref.read(studyStatsProvider);
-      if (!prefs.isPro &&
-          stats.effectiveDailySolvedCount() >=
-              prefs.effectiveDailyFreeLimit()) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
-        return;
+    if (!_bypassDailyQuestionLimit) {
+      try {
+        final prefs = ref.read(userPreferencesProvider);
+        final stats = ref.read(studyStatsProvider);
+        if (!prefs.isPro &&
+            stats.effectiveDailySolvedCount() >=
+                prefs.effectiveDailyFreeLimit()) {
+          Navigator.of(
+            context,
+            rootNavigator: true,
+          ).push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+          return;
+        }
+      } catch (_) {
+        // ProviderScope bulunmayan izole test ortamlarında güvenli fallback
       }
-    } catch (_) {
-      // ProviderScope bulunmayan izole test ortamlarında güvenli fallback
     }
 
     setState(() {
@@ -730,13 +641,17 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           final isCorrect = q.isCorrect(ans);
           if (isCorrect) {
             _correctCount++;
-            widget.mistakeRepository.removeMistake(q.id);
-            const CloudSyncRepository().markMistakeResolved(
-              questionText: q.text,
+            widget.mistakeRepository.recordReviewOutcome(
+              q.id,
+              isCorrect: true,
+              examScope: _activeExamSelection().scopeKey,
             );
           } else {
             _wrongCount++;
-            widget.mistakeRepository.addMistake(q);
+            widget.mistakeRepository.addMistake(
+              q,
+              examScope: _activeExamSelection().scopeKey,
+            );
           }
           try {
             ref
@@ -753,18 +668,45 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       }
     }
 
-    // Ders bazında net ve performans dökümünü hesapla
+    // Ders ve konu bazında net ve performans dökümünü hesapla
     final lessonGrouped = <String, List<int>>{};
+    final topicGrouped =
+        <String, ({String lesson, String topic, int c, int w, int e})>{};
     for (var i = 0; i < _questions.length; i++) {
       final q = _questions[i];
       lessonGrouped.putIfAbsent(q.lesson, () => [0, 0, 0]);
+      final topicKey = '${q.lesson}::${q.topic}';
+      final prevTopic =
+          topicGrouped[topicKey] ??
+          (lesson: q.lesson, topic: q.topic, c: 0, w: 0, e: 0);
       final ans = _userAnswers[i];
       if (ans == null) {
         lessonGrouped[q.lesson]![2]++;
+        topicGrouped[topicKey] = (
+          lesson: q.lesson,
+          topic: q.topic,
+          c: prevTopic.c,
+          w: prevTopic.w,
+          e: prevTopic.e + 1,
+        );
       } else if (q.isCorrect(ans)) {
         lessonGrouped[q.lesson]![0]++;
+        topicGrouped[topicKey] = (
+          lesson: q.lesson,
+          topic: q.topic,
+          c: prevTopic.c + 1,
+          w: prevTopic.w,
+          e: prevTopic.e,
+        );
       } else {
         lessonGrouped[q.lesson]![1]++;
+        topicGrouped[topicKey] = (
+          lesson: q.lesson,
+          topic: q.topic,
+          c: prevTopic.c,
+          w: prevTopic.w + 1,
+          e: prevTopic.e,
+        );
       }
     }
 
@@ -782,6 +724,18 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       );
     });
 
+    final topicBreakdown = <String, TopicResult>{};
+    topicGrouped.forEach((topicKey, entry) {
+      topicBreakdown[topicKey] = TopicResult(
+        topic: entry.topic,
+        lesson: entry.lesson,
+        totalQuestions: entry.c + entry.w + entry.e,
+        correctCount: entry.c,
+        wrongCount: entry.w,
+        emptyCount: entry.e,
+      );
+    });
+
     final emptyCount = _questions.length - (_correctCount + _wrongCount);
     final result = QuizResult(
       totalQuestions: _questions.length,
@@ -789,11 +743,14 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       wrongCount: _wrongCount,
       emptyCount: emptyCount,
       lessonBreakdown: lessonBreakdown,
+      topicBreakdown: (topicBreakdown.length > 1 || widget.isBranchMock)
+          ? topicBreakdown
+          : null,
     );
 
+    final activeSelection = _activeExamSelection();
     try {
-      final scopeKey =
-          widget.blueprint?.scopeKey ?? _activeExamSelection().scopeKey;
+      final scopeKey = widget.blueprint?.scopeKey ?? activeSelection.scopeKey;
       final effectiveDuration = _effectiveExamDuration;
       final sessionRecord = QuizSessionRecord(
         id: DateTime.now().microsecondsSinceEpoch.toString(),
@@ -824,7 +781,9 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             lesson: widget.lessonFilter ?? _currentQuestion.lesson,
             topic: widget.topicFilter,
             testNumber: widget.topicTestNumber,
-            mockExamNumber: widget.mockExamNumber,
+            mockExamNumber:
+                widget.mockExamNumber ?? widget.blueprint?.mockNumber,
+            isBranchMock: widget.isBranchMock,
           );
     } catch (_) {
       // ProviderScope bulunmayan izole test ortamlarında güvenli fallback
@@ -838,11 +797,13 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       MaterialPageRoute(
         builder: (context) => QuizResultScreen(
           result: result,
+          examSelection: activeSelection,
           testTitle:
               widget.customTitle ??
               (widget.lessonFilter != null
                   ? '${widget.lessonFilter} Testi'
                   : 'Genel Kültür Testi'),
+          taskId: widget.taskId,
         ),
       ),
     );
@@ -918,7 +879,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       }
     }
 
-    final isDesktop = ResponsiveBreakpoints.isDesktop(context);
+    final isLargeTablet = ResponsiveBreakpoints.isLargeTablet(context);
     final isWideViewport = ResponsiveBreakpoints.usesDialogOverlay(context);
     final isFlagged = _flaggedQuestions.contains(_currentIndex);
     final eliminatedSet = _eliminatedOptions[_currentIndex] ?? const <int>{};
@@ -962,7 +923,6 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               status: _getOptionStatus(i),
               highContrast: highReadabilityMode,
               isEliminated: eliminatedSet.contains(i),
-              shortcutHint: isWideViewport ? labels[i] : null,
               onToggleEliminate: (_isExamMode || !_isAnswered)
                   ? () => _toggleEliminateOption(i)
                   : null,
@@ -1005,7 +965,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             label: Text(buttonLabel),
           );
 
-    final hasSideVisualAid = isDesktop && visualAidCard != null;
+    final hasSideVisualAid = isLargeTablet && visualAidCard != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -1023,12 +983,6 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
               remainingSeconds: _remainingSeconds,
               extraMinutes: _extraTimeMinutes,
             ),
-          if (isWideViewport)
-            IconButton(
-              icon: const PhosphorIcon(PhosphorIconsRegular.keyboard, size: 20),
-              tooltip: 'Klavye Kısayolları (?)',
-              onPressed: _showShortcutsHelpDialog,
-            ),
           IconButton(
             icon: const PhosphorIcon(PhosphorIconsBold.squaresFour, size: 20),
             tooltip: 'Soru Gezinti Paleti',
@@ -1040,6 +994,10 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             onPressed: () {
               AdaptiveOverlay.showModal<void>(
                 context: context,
+                title: 'Hatalı Soru Bildir',
+                headerIcon: PhosphorIconsRegular.flag,
+                headerIconColor: Theme.of(context).colorScheme.error,
+                showMobileHeader: true,
                 dialogMaxWidth: 520,
                 builder: (ctx) => Padding(
                   padding: EdgeInsets.only(
@@ -1057,97 +1015,88 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
           ),
         ],
       ),
-      body: CallbackShortcuts(
-        bindings: _buildShortcutBindings(),
-        child: Focus(
-          autofocus: true,
-          child: ResponsiveContentWrapper(
-            maxWidth: hasSideVisualAid ? 1140 : (isWideViewport ? 920 : 720),
-            padding: EdgeInsets.zero,
-            child: Scrollbar(
-              child: ListView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isWideViewport
-                      ? 24
-                      : ResponsiveBreakpoints.horizontalPadding(context),
-                  vertical: isWideViewport ? 10 : 12,
-                ),
-                children: [
-                  // Konu Başlığı ve Soru Sayacı (Meta Bar)
-                  _QuestionMetaBar(
-                    topic: question.topic,
-                    questionNumber: _currentIndex + 1,
-                    totalQuestions: _questions.length,
-                    isFlagged: isFlagged,
-                    onToggleFlag: _toggleFlagQuestion,
-                    onOpenPalette: _showQuestionPaletteBottomSheet,
-                  ),
-                  AppSpacing.gapXs,
-
-                  // İlerleme Çubuğu (Progress Indicator)
-                  LinearProgressIndicator(
-                    value: (_currentIndex + 1) / _questions.length,
-                  ),
-                  if (isWideViewport) AppSpacing.gapSm else AppSpacing.gapMd,
-
-                  if (hasSideVisualAid)
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(flex: 42, child: visualAidCard),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          flex: 58,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              questionAndOptionsColumn,
-                              AppSpacing.gapSm,
-                              actionButtons,
-                            ],
-                          ),
-                        ),
-                      ],
-                    )
-                  else ...[
-                    if (visualAidCard != null) ...[
-                      visualAidCard,
-                      AppSpacing.gapMd,
-                    ],
-
-                    // Soru Metni Kartı + Şıklar (Yüksek Okunabilirlik aktifse ~1.2x ölçek + 2px çerçeve)
-                    questionAndOptionsColumn,
-                    if (isWideViewport) AppSpacing.gapSm else AppSpacing.gapMd,
-
-                    // Aksiyon Butonları (Önceki Soru + Birincil Buton)
-                    actionButtons,
-                  ],
-
-                  if (!_isExamMode && _isAnswered) ...[
-                    AppSpacing.gapMd,
-                    _ExplanationCard(
-                      explanation: question.explanation,
-                      distractorTrap: question.distractorTrap,
-                    ),
-                  ],
-
-                  // Zarif Yanlış Defteri Bilgilendirme Kartı (Tek seferlik / kapatılabilir, yalnızca Öğrenme modunda)
-                  if (!_isExamMode &&
-                      _showMistakeNotice &&
-                      !_hasDismissedMistakeNotice) ...[
-                    AppSpacing.gapMd,
-                    _MistakeNoticeCard(
-                      onDismiss: () {
-                        setState(() {
-                          _showMistakeNotice = false;
-                          _hasDismissedMistakeNotice = true;
-                        });
-                      },
-                    ),
-                  ],
-                ],
-              ),
+      body: ResponsiveContentWrapper(
+        maxWidth: hasSideVisualAid ? 1140 : (isWideViewport ? 920 : 720),
+        padding: EdgeInsets.zero,
+        child: Scrollbar(
+          child: ListView(
+            padding: EdgeInsets.symmetric(
+              horizontal: isWideViewport
+                  ? 24
+                  : ResponsiveBreakpoints.horizontalPadding(context),
+              vertical: isWideViewport ? 10 : 12,
             ),
+            children: [
+              // Konu Başlığı ve Soru Sayacı (Meta Bar)
+              _QuestionMetaBar(
+                topic: question.topic,
+                questionNumber: _currentIndex + 1,
+                totalQuestions: _questions.length,
+                isFlagged: isFlagged,
+                onToggleFlag: _toggleFlagQuestion,
+                onOpenPalette: _showQuestionPaletteBottomSheet,
+              ),
+              AppSpacing.gapXs,
+
+              // İlerleme Çubuğu (Progress Indicator)
+              LinearProgressIndicator(
+                value: (_currentIndex + 1) / _questions.length,
+              ),
+              if (isWideViewport) AppSpacing.gapSm else AppSpacing.gapMd,
+
+              if (hasSideVisualAid)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(flex: 42, child: visualAidCard),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      flex: 58,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          questionAndOptionsColumn,
+                          AppSpacing.gapSm,
+                          actionButtons,
+                        ],
+                      ),
+                    ),
+                  ],
+                )
+              else ...[
+                if (visualAidCard != null) ...[visualAidCard, AppSpacing.gapMd],
+
+                // Soru Metni Kartı + Şıklar (Yüksek Okunabilirlik aktifse ~1.2x ölçek + 2px çerçeve)
+                questionAndOptionsColumn,
+                if (isWideViewport) AppSpacing.gapSm else AppSpacing.gapMd,
+
+                // Aksiyon Butonları (Önceki Soru + Birincil Buton)
+                actionButtons,
+              ],
+
+              if (!_isExamMode && _isAnswered) ...[
+                AppSpacing.gapMd,
+                _ExplanationCard(
+                  explanation: question.explanation,
+                  distractorTrap: question.distractorTrap,
+                ),
+              ],
+
+              // Zarif Yanlış Defteri Bilgilendirme Kartı (Tek seferlik / kapatılabilir, yalnızca Öğrenme modunda)
+              if (!_isExamMode &&
+                  _showMistakeNotice &&
+                  !_hasDismissedMistakeNotice) ...[
+                AppSpacing.gapMd,
+                _MistakeNoticeCard(
+                  onDismiss: () {
+                    setState(() {
+                      _showMistakeNotice = false;
+                      _hasDismissedMistakeNotice = true;
+                    });
+                  },
+                ),
+              ],
+            ],
           ),
         ),
       ),
@@ -1211,54 +1160,51 @@ class _QuestionMetaBar extends StatelessWidget {
                     : 'Soruyu tekrar için işaretle',
                 child: Tooltip(
                   message: isFlagged
-                      ? 'İşareti Kaldır (F)'
-                      : 'Tekrar İçin İşaretle (F)',
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: InkWell(
-                      onTap: onToggleFlag,
-                      borderRadius: BorderRadius.circular(8),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        margin: const EdgeInsets.only(right: 8),
-                        decoration: BoxDecoration(
+                      ? 'İşareti Kaldır'
+                      : 'Tekrar İçin İşaretle',
+                  child: InkWell(
+                    onTap: onToggleFlag,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(
+                        color: isFlagged
+                            ? colorScheme.tertiaryContainer
+                            : colorScheme.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
                           color: isFlagged
-                              ? colorScheme.tertiaryContainer
-                              : colorScheme.surfaceContainerLow,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: isFlagged
-                                ? colorScheme.tertiary
-                                : colorScheme.outlineVariant,
-                          ),
+                              ? colorScheme.tertiary
+                              : colorScheme.outlineVariant,
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            PhosphorIcon(
-                              isFlagged
-                                  ? PhosphorIconsFill.bookmarkSimple
-                                  : PhosphorIconsRegular.bookmarkSimple,
-                              size: 14,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          PhosphorIcon(
+                            isFlagged
+                                ? PhosphorIconsFill.bookmarkSimple
+                                : PhosphorIconsRegular.bookmarkSimple,
+                            size: 14,
+                            color: isFlagged
+                                ? colorScheme.onTertiaryContainer
+                                : colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            isFlagged ? 'İşaretli' : 'İşaretle',
+                            style: theme.textTheme.labelSmall?.copyWith(
                               color: isFlagged
                                   ? colorScheme.onTertiaryContainer
                                   : colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
                             ),
-                            const SizedBox(width: 4),
-                            Text(
-                              isFlagged ? 'İşaretli' : 'İşaretle',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: isFlagged
-                                    ? colorScheme.onTertiaryContainer
-                                    : colorScheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -1269,45 +1215,38 @@ class _QuestionMetaBar extends StatelessWidget {
               label:
                   'Soru $questionNumber / $totalQuestions. Soru gezinti paletini açmak için dokunun.',
               child: Tooltip(
-                message: 'Soru Gezinti Paletini Aç (G / O)',
-                child: MouseRegion(
-                  cursor: onOpenPalette != null
-                      ? SystemMouseCursors.click
-                      : SystemMouseCursors.basic,
-                  child: InkWell(
-                    onTap: onOpenPalette,
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: colorScheme.outlineVariant),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          PhosphorIcon(
-                            PhosphorIconsBold.squaresFour,
-                            size: 14,
-                            color: colorScheme.primary,
+                message: 'Soru Gezinti Paletini Aç',
+                child: InkWell(
+                  onTap: onOpenPalette,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: colorScheme.outlineVariant),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        PhosphorIcon(
+                          PhosphorIconsBold.squaresFour,
+                          size: 14,
+                          color: colorScheme.primary,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          'Soru $questionNumber / $totalQuestions',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.bold,
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
-                          const SizedBox(width: 5),
-                          Text(
-                            'Soru $questionNumber / $totalQuestions',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.bold,
-                              fontFeatures: const [
-                                FontFeature.tabularFigures(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -2067,79 +2006,6 @@ class _QuizQuestionPaletteContentState
           ),
         ),
       ],
-    );
-  }
-}
-
-class _QuizShortcutsHelpBody extends StatelessWidget {
-  const _QuizShortcutsHelpBody();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    const shortcuts = <(String, String)>[
-      ('1–5 veya A–E', 'Şık seç / boş bırak'),
-      ('Shift + 1–5 / A–E', 'Çeldirici şıkkın üstünü çiz (veya sağ tık)'),
-      ('Enter / N / Sağ Ok', 'Cevabı onayla veya sonraki soruya geç'),
-      ('P / Sol Ok', 'Önceki soruya dön'),
-      ('F', 'Soruyu tekrar için işaretle / kaldır'),
-      ('G veya O / F2', 'Soru gezinti ve optik form paletini aç'),
-      ('Ctrl + K / Cmd + K', 'Hızlı arama & Komut paleti'),
-      ('? / F1', 'Klavye kısayolları rehberi'),
-    ];
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            'Web ve masaüstünde fare kullanmadan hızla test çözebilirsiniz.',
-            style: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 12),
-          for (final entry in shortcuts)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 5),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: colorScheme.outlineVariant),
-                    ),
-                    child: Text(
-                      entry.$1,
-                      style: textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      entry.$2,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
     );
   }
 }

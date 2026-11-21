@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/planner/data/models/study_program_pace.dart';
+import 'package:kadro/features/planner/data/services/auto_study_program_generator.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
+import 'package:kadro/features/planner/presentation/widgets/weekly_planner_calendar_grid.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/adaptive_overlay.dart';
@@ -33,13 +36,33 @@ class AutoStudyProgramModal extends ConsumerStatefulWidget {
 class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
   late StudyProgramPace _selectedPace;
   late ExamSelection _selectedSelection;
+  late List<int> _weeklyStudyDays;
+  late bool _isSprintMode;
 
   @override
   void initState() {
     super.initState();
     final prefs = ref.read(userPreferencesProvider);
+    final planner = ref.read(studyPlannerProvider);
     _selectedPace = prefs.studyProgramPace;
     _selectedSelection = prefs.examSelection;
+    _weeklyStudyDays = List<int>.from(planner.weeklyStudyDays);
+    _isSprintMode =
+        planner.isSprintModeActive ||
+        AutoStudyProgramGenerator.isWithinSprintWindow(_selectedSelection);
+  }
+
+  void _toggleWeekday(int weekday) {
+    setState(() {
+      if (_weeklyStudyDays.contains(weekday)) {
+        if (_weeklyStudyDays.length > 1) {
+          _weeklyStudyDays.remove(weekday);
+        }
+      } else {
+        _weeklyStudyDays.add(weekday);
+        _weeklyStudyDays.sort();
+      }
+    });
   }
 
   void _applyProgram(UserPreferencesState prefs) {
@@ -86,6 +109,8 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
             focusLesson: effectiveFocusLesson,
             curriculum: selectedCurriculum,
             examScope: _selectedSelection.scopeKey,
+            isSprintMode: _isSprintMode,
+            weeklyStudyDays: _weeklyStudyDays,
             isTestSolved: isTestSolved,
           );
     } else {
@@ -98,6 +123,8 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
             curriculum: selectedCurriculum,
             examScope: _selectedSelection.scopeKey,
             cycleDay: 1,
+            isSprintMode: _isSprintMode,
+            weeklyStudyDays: _weeklyStudyDays,
             isTestSolved: isTestSolved,
           );
     }
@@ -174,17 +201,10 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Center(
-            child: Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 14),
+          if (!ResponsiveBreakpoints.usesDialogOverlay(context)) ...[
+            const KadroSheetHandle(),
+            const SizedBox(height: 14),
+          ],
 
           Row(
             children: [
@@ -439,6 +459,36 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                         ),
                       ],
                     ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  if (AutoStudyProgramGenerator.isWithinSprintWindow(
+                    _selectedSelection,
+                  )) ...[
+                    SwitchListTile.adaptive(
+                      key: const ValueKey('modal_sprint_mode_switch'),
+                      value: _isSprintMode,
+                      onChanged: (v) => setState(() => _isSprintMode = v),
+                      title: const Text('Son 30 Gün Sprint Modu'),
+                      subtitle: const Text(
+                        'Deneme sınavı ve yanlış tekrar sıklığını artırır.',
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+
+                  WeeklyPlannerCalendarGrid(
+                    title: 'Haftalık Çalışma Takvimi Önizlemesi',
+                    days: AutoStudyProgramGenerator.buildWeeklyPreview(
+                      selection: _selectedSelection,
+                      pace: _selectedPace,
+                      weeklyStudyDays: _weeklyStudyDays,
+                      focusLesson: prefs.focusLesson,
+                      curriculum: selectedCurriculum,
+                      isSprintMode: _isSprintMode,
+                    ),
+                    onToggleWeekday: _toggleWeekday,
                   ),
                   const SizedBox(height: 10),
 

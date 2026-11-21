@@ -3,6 +3,7 @@ import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/features/profile/data/models/achievement_badge.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/adaptive_overlay.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -22,20 +23,12 @@ class AchievementShowcase extends StatelessWidget {
       context: context,
       title: 'Başarı Madalyası',
       dialogMaxWidth: 420,
+      showMobileHeader: true,
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            AppSpacing.gapMd,
             PhosphorIcon(
               badge.icon,
               size: 36,
@@ -54,29 +47,18 @@ class AchievementShowcase extends StatelessWidget {
               ),
             ),
             AppSpacing.gapMd,
-            Container(
+            KadroBadge(
+              label: badge.isUnlocked
+                  ? 'Madalya Açıldı'
+                  : 'Kilitli · Hedef: ${badge.progressText}',
+              tone: badge.isUnlocked
+                  ? KadroBadgeTone.secondary
+                  : KadroBadgeTone.neutral,
+              borderColor: badge.isUnlocked
+                  ? colorScheme.secondary.withAlpha(120)
+                  : colorScheme.outlineVariant,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: badge.isUnlocked
-                    ? colorScheme.secondaryContainer
-                    : colorScheme.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(6),
-                border: Border.all(
-                  color: badge.isUnlocked
-                      ? colorScheme.secondary.withAlpha(120)
-                      : colorScheme.outlineVariant,
-                ),
-              ),
-              child: Text(
-                badge.isUnlocked
-                    ? 'Madalya Açıldı'
-                    : 'Kilitli · Hedef: ${badge.progressText}',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: badge.isUnlocked
-                      ? colorScheme.onSecondaryContainer
-                      : colorScheme.onSurfaceVariant,
-                ),
-              ),
+              borderRadius: 6,
             ),
           ],
         ),

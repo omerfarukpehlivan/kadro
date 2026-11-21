@@ -231,9 +231,6 @@ class _InteractiveTugrulAvatar extends StatefulWidget {
 }
 
 class _InteractiveTugrulAvatarState extends State<_InteractiveTugrulAvatar> {
-  bool _isFocused = false;
-  bool _isHovered = false;
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -244,15 +241,10 @@ class _InteractiveTugrulAvatarState extends State<_InteractiveTugrulAvatar> {
       height: widget.size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: _isHovered
-            ? Color.alphaBlend(
-                colorScheme.primary.withAlpha(18),
-                colorScheme.primaryContainer,
-              )
-            : colorScheme.primaryContainer,
+        color: colorScheme.primaryContainer,
         border: Border.all(
-          color: _isFocused ? colorScheme.onSurface : widget.effectiveRing,
-          width: _isFocused ? widget.ringWidth + 1.5 : widget.ringWidth,
+          color: widget.effectiveRing,
+          width: widget.ringWidth,
         ),
         boxShadow: widget.hasShadow
             ? [
@@ -271,26 +263,13 @@ class _InteractiveTugrulAvatarState extends State<_InteractiveTugrulAvatar> {
     medallion = Semantics(
       button: true,
       label: accessibleLabel,
-      child: FocusableActionDetector(
-        mouseCursor: SystemMouseCursors.click,
-        onShowFocusHighlight: (focused) {
-          if (_isFocused != focused) {
-            setState(() => _isFocused = focused);
-          }
-        },
-        onShowHoverHighlight: (hovered) {
-          if (_isHovered != hovered) {
-            setState(() => _isHovered = hovered);
-          }
-        },
-        child: Material(
-          color: colorScheme.surface.withAlpha(0),
-          shape: const CircleBorder(),
-          child: InkWell(
-            onTap: widget.onTap,
-            customBorder: const CircleBorder(),
-            child: medallion,
-          ),
+      child: Material(
+        color: colorScheme.surface.withAlpha(0),
+        shape: const CircleBorder(),
+        child: InkWell(
+          onTap: widget.onTap,
+          customBorder: const CircleBorder(),
+          child: medallion,
         ),
       ),
     );
@@ -320,24 +299,15 @@ class TugrulTipsSheet {
       context: context,
       title: category.sheetTitle,
       preferSideDrawerOnDesktop: true,
+      showMobileHeader: true,
+      showCloseButton: false,
       builder: (ctx) => SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
               Row(
                 children: [
                   TugrulAvatar(
@@ -352,16 +322,10 @@ class TugrulTipsSheet {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          category.sheetTitle,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
                           'Tuğrul ile KPSS Çalışma Özeti',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: colorScheme.onSurface,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],

@@ -39,35 +39,49 @@ void main() {
         await tester.pumpWidget(const MyApp());
         await tester.pumpAndSettle();
 
-        // TASK-155: İlk açılışta zorunlu AuthScreen açılmaz, doğrudan kurulum ekranı gelir.
+        // TASK-155 + Hızlı Kurulum: İlk açılışta zorunlu AuthScreen açılmaz,
+        // tek adımlı Hızlı Kurulum + Atla butonu gelir.
         expect(find.byType(AuthScreen), findsNothing);
         expect(find.byType(OnboardingScreen), findsOneWidget);
         expect(find.byType(AppNavigationBar), findsNothing);
-        expect(find.text('Çalışma Programını Kur'), findsOneWidget);
+        expect(
+          find.byKey(const ValueKey('onboarding_skip_button')),
+          findsOneWidget,
+        );
 
-        // Adım 1: Sınav Seçimi -> B Grubu Ön Lisans seç
+        // Tek Adım: B Grubu Ön Lisans seç ve doğrudan başlat
         await tester.tap(find.byKey(const ValueKey('b_level_dropdown')));
         await tester.pumpAndSettle();
         await tester.tap(find.text('Ön Lisans').last);
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Devam Et'));
-        await tester.pumpAndSettle();
-
-        // Adım 2: Günlük Süre -> 45 Dk seç
-        await tester.tap(find.text('45 Dk · Dengeli Tempo'));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Devam Et'));
-        await tester.pumpAndSettle();
-
-        // Adım 3: Hedef & Odak -> Coğrafya + 90+ Puan ve Programı Başlat
-        await tester.tap(find.text('90+ Puan'));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Coğrafya · 18 Soru (%30 Ağırlık)'));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Programımı Kur ve Başla'));
+        await tester.tap(find.byKey(const ValueKey('onboarding_start_button')));
         await tester.pumpAndSettle();
 
         // Ana kabuk açılmalı ve ilk gün görevleri hazır olmalı
+        expect(find.byType(OnboardingScreen), findsNothing);
+        expect(find.byType(AppNavigationBar), findsOneWidget);
+        expect(find.byType(HomeScreen), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'İlk açılışta belirgin Atla butonu tek tıkla kurulumu geçip HomeScreen açar',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 2400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        await tester.pumpWidget(const MyApp());
+        await tester.pumpAndSettle();
+
+        final skipBtn = find.byKey(const ValueKey('onboarding_skip_button'));
+        expect(skipBtn, findsOneWidget);
+        await tester.tap(skipBtn);
+        await tester.pumpAndSettle();
+
         expect(find.byType(OnboardingScreen), findsNothing);
         expect(find.byType(AppNavigationBar), findsOneWidget);
         expect(find.byType(HomeScreen), findsOneWidget);

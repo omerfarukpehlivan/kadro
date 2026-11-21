@@ -253,7 +253,9 @@ void main() {
         expect(find.text('Hangi KPSS Sınavına Gireceksin?'), findsOneWidget);
 
         // Adım 1: Sınav türü seç
-        await tester.tap(find.text('2028 KPSS Ön Lisans'));
+        await tester.tap(find.byKey(const ValueKey('b_level_dropdown')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Ön Lisans').last);
         await tester.pumpAndSettle();
         await tester.tap(find.text('Devam Et'));
         await tester.pumpAndSettle();

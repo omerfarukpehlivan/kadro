@@ -61,8 +61,19 @@ void main() {
           expect(find.byType(OnboardingScreen), findsOneWidget);
           expect(find.byType(AppNavigationBar), findsNothing);
 
-          // Adım 1: Sınav (varsayılan 2027 KPSS Lisans seçili)
-          await tester.tap(find.text('Devam Et'));
+          // Tek Adımlı Hızlı Kurulum: Atla butonu hemen görünür olmalı
+          expect(
+            find.byKey(const ValueKey('onboarding_skip_button')),
+            findsOneWidget,
+          );
+
+          // Opsiyonel özelleştirmeye geç: Süre ve hedefi özelleştir
+          await tester.ensureVisible(
+            find.byKey(const ValueKey('onboarding_customize_button')),
+          );
+          await tester.tap(
+            find.byKey(const ValueKey('onboarding_customize_button')),
+          );
           await tester.pumpAndSettle();
 
           // Adım 2: Süre

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/current_affairs/presentation/current_affairs_screen.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 import 'package:kadro/features/lessons/presentation/lesson_topics_screen.dart';
@@ -24,12 +25,12 @@ class LessonsScreen extends ConsumerWidget {
     final activeLessons = curriculum.activeLessons;
     final upcomingLessons = curriculum.upcomingLessons;
     final screenWidth = MediaQuery.sizeOf(context).width;
-    final isDesktop = ResponsiveBreakpoints.isDesktop(context);
+    final isLargeTablet = ResponsiveBreakpoints.isLargeTablet(context);
     final columns = screenWidth >= 1200 ? 3 : (screenWidth >= 720 ? 2 : 1);
     final gridRunSpacing = columns == 1 ? 10.0 : 12.0;
 
     return ResponsiveContentWrapper(
-      maxWidth: isDesktop ? 1240 : 720,
+      maxWidth: isLargeTablet ? 1240 : 720,
       padding: EdgeInsets.zero,
       child: Scrollbar(
         child: ListView(
@@ -115,7 +116,12 @@ class _LessonCard extends ConsumerWidget {
     final solvedCount = sessionSolved > questionBasedSolved
         ? sessionSolved
         : questionBasedSolved;
-    final totalTests = lesson.topics.length * 5;
+    final totalTests = lesson.topics.isNotEmpty
+        ? lesson.topics.fold<int>(
+            0,
+            (sum, topic) => sum + defaultTopicTestCount(lesson.name, topic),
+          )
+        : 0;
     final progress = totalTests > 0
         ? (solvedCount / totalTests).clamp(0.0, 1.0)
         : 0.0;
@@ -124,8 +130,8 @@ class _LessonCard extends ConsumerWidget {
     final accent = _lessonColor(lesson.name, colorScheme);
     final mood = TugrulMoodExtension.fromLesson(lesson.name);
 
-    final isDesktop = ResponsiveBreakpoints.isDesktop(context);
-    final ringSize = isDesktop ? 82.0 : 62.0;
+    final isLargeTablet = ResponsiveBreakpoints.isLargeTablet(context);
+    final ringSize = isLargeTablet ? 82.0 : 62.0;
 
     return Padding(
       padding: margin,
@@ -220,6 +226,36 @@ class _LessonCard extends ConsumerWidget {
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
+                  if (lesson.name.toLowerCase().contains('güncel') ||
+                      lesson.name.toLowerCase().contains('guncel')) ...[
+                    const SizedBox(height: 8),
+                    ActionChip(
+                      key: const ValueKey(
+                        'lessons_current_affairs_bulletin_cta',
+                      ),
+                      visualDensity: VisualDensity.compact,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      avatar: PhosphorIcon(
+                        PhosphorIconsFill.newspaper,
+                        size: 14,
+                        color: accent,
+                      ),
+                      label: Text(
+                        'Aylık Bülten Akışı →',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: accent,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CurrentAffairsScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -255,28 +291,18 @@ class _ComingSoonLessonCard extends StatelessWidget {
       context: context,
       title: lesson.name,
       dialogMaxWidth: 520,
+      showMobileHeader: true,
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
             Row(
               children: [
                 TugrulAvatar(
                   mood: TugrulMood.coach,
-                  size: ResponsiveBreakpoints.isDesktop(context) ? 68 : 52,
+                  size: ResponsiveBreakpoints.isLargeTablet(context) ? 68 : 52,
                 ),
                 const SizedBox(width: 14),
                 Expanded(

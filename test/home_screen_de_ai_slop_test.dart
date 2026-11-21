@@ -47,9 +47,9 @@ void main() {
         expect(find.text('Seri & Hedef'), findsOneWidget);
         expect(find.text('Hızlı Pratik'), findsOneWidget);
 
-        // 4. Günlük plan kartı doğrulaması
+        // 4. Günlük plan kartı doğrulaması (TASK-162: Tümünü Gör kaldırıldı)
         expect(find.text('Bugünün Çalışma Planı'), findsOneWidget);
-        expect(find.text('Tümünü Gör'), findsOneWidget);
+        expect(find.text('Tümünü Gör'), findsNothing);
       },
     );
   });

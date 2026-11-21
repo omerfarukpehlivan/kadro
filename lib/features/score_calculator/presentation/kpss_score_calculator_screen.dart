@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
@@ -15,17 +14,12 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// KPSS Puan Hesaplama Robotu (P3 / P93 / P94) & Son 3 Sınav Karşılaştırma ekranı.
 ///
-/// Angular/Web karşılığı: Reaktif form kontrolleri üzerinden canlı KPSS puanı ve
-/// geçmiş yıl karşılaştırması üreten sade `KpssScoreCalculatorComponent`.
+/// Reaktif form kontrolleri üzerinden canlı KPSS puanı ve
+/// geçmiş yıl karşılaştırması üreten bileşen.
 class KpssScoreCalculatorScreen extends ConsumerStatefulWidget {
   final String? initialExamParam;
-  final bool isGuestMode;
 
-  const KpssScoreCalculatorScreen({
-    super.key,
-    this.initialExamParam,
-    this.isGuestMode = false,
-  });
+  const KpssScoreCalculatorScreen({super.key, this.initialExamParam});
 
   @override
   ConsumerState<KpssScoreCalculatorScreen> createState() =>
@@ -77,15 +71,6 @@ class _KpssScoreCalculatorScreenState
       return ScoreEngineMode.bGrubuLisans;
     }
     return null;
-  }
-
-  void _openAuth(BuildContext context) {
-    final router = GoRouter.maybeOf(context);
-    if (router != null) {
-      router.go('/');
-      return;
-    }
-    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   ScoreEngineMode _modeFromLegacyTarget(KpssExamTarget target) {
@@ -301,18 +286,7 @@ class _KpssScoreCalculatorScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text('KPSS Puan Hesaplama'),
-        actions: [
-          TextButton(onPressed: _reset, child: const Text('Sıfırla')),
-          if (widget.isGuestMode)
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: FilledButton.tonalIcon(
-                onPressed: () => _openAuth(context),
-                icon: const PhosphorIcon(PhosphorIconsRegular.signIn, size: 16),
-                label: const Text('Giriş Yap'),
-              ),
-            ),
-        ],
+        actions: [TextButton(onPressed: _reset, child: const Text('Sıfırla'))],
       ),
       body: isSplitPane
           ? ResponsiveContentWrapper(
@@ -331,12 +305,6 @@ class _KpssScoreCalculatorScreenState
                         child: ListView(
                           padding: const EdgeInsets.fromLTRB(0, 16, 20, 24),
                           children: [
-                            if (widget.isGuestMode) ...[
-                              _CalculatorGuestCallout(
-                                onSignIn: () => _openAuth(context),
-                              ),
-                              AppSpacing.gapMd,
-                            ],
                             selectorSection,
                             AppSpacing.gapMd,
                             const SectionTitle('Test Netlerini Gir'),
@@ -372,10 +340,6 @@ class _KpssScoreCalculatorScreenState
               child: ListView(
                 padding: AppSpacing.pagePadding(context),
                 children: [
-                  if (widget.isGuestMode) ...[
-                    _CalculatorGuestCallout(onSignIn: () => _openAuth(context)),
-                    AppSpacing.gapMd,
-                  ],
                   selectorSection,
                   AppSpacing.gapMd,
                   _PrimaryScoreHeroCard(
@@ -1167,48 +1131,6 @@ class _HistoricalYearRow extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _CalculatorGuestCallout extends StatelessWidget {
-  final VoidCallback onSignIn;
-
-  const _CalculatorGuestCallout({required this.onSignIn});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
-    return TactileCard(
-      backgroundColor: colorScheme.surfaceContainerLow,
-      borderColor: colorScheme.primary.withAlpha(110),
-      lipColor: colorScheme.primary.withAlpha(130),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      child: Row(
-        children: [
-          PhosphorIcon(
-            PhosphorIconsFill.sparkle,
-            size: 18,
-            color: colorScheme.primary,
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Misafir Modu: Netlerini ücretsiz hesapla; ilerlemeni kaydetmek için giriş yap.',
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurface,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          FilledButton.tonal(
-            onPressed: onSignIn,
-            child: const Text('Giriş Yap'),
-          ),
-        ],
-      ),
     );
   }
 }

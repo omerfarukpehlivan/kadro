@@ -276,7 +276,7 @@ void main() {
 
         expect(find.text('Bugünün Çalışma Planı'), findsOneWidget);
         expect(find.text('Gün 1'), findsOneWidget);
-        expect(find.text('Düzenle'), findsOneWidget);
+        expect(find.text('Düzenle'), findsNothing);
 
         // Henüz görevler bitmediği için sonraki güne geçiş alanı görünmemeli
         expect(
@@ -319,11 +319,8 @@ void main() {
         expect(find.textContaining('Gün 1'), findsOneWidget);
         expect(find.textContaining('Tekrar'), findsWidgets);
 
-        // Düzenle butonu modalı açmalı
-        await tester.tap(find.text('Düzenle'));
-        await tester.pumpAndSettle();
-
-        expect(find.byType(AutoStudyProgramModal), findsOneWidget);
+        // TASK-162: HomeDailyPlanCard üzerinde Düzenle butonu kaldırılmıştır
+        expect(find.text('Düzenle'), findsNothing);
       },
     );
   });

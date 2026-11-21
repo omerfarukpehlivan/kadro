@@ -12,13 +12,19 @@
 
 ### Layout Overrides
 
-- **Max Width (`container-width`):** Constrain BOTH step indicator header, scrollable step body (with `Scrollbar`), and sticky bottom CTA footer within `ResponsiveContentWrapper(maxWidth: 820)` so desktop Web (`1440px`) stays balanced and readable instead of stretching edge-to-edge
-- **Readable Text Measure:** Keep subtitles and exam descriptions under `65–75` characters per line via centered container constraint
+- **Desktop / Wide Web (`>= 960px` via `ResponsiveBreakpoints.usesSplitPane`):**
+  - Use a centered **2-Column SaaS Setup Studio** (`ResponsiveContentWrapper(maxWidth: 1180)`):
+    - **Left Rail (`flex: 4`):** Persistent interactive 3-step stepper (`_SidebarStepTile` with live selected summaries) + **Live Program Blueprint & Tuğrul Advisory** card (`Kalan gün`, `Tahmini tamamlama`, quick-apply recommendation).
+    - **Right Workspace Card (`flex: 7`):** Single focused `TactileCard` with progress bar (`Adım X / 3`), bold `Outfit` title, **2-column `ResponsiveGrid`** for Daily Pace cards and Priority Focus Lessons, and a right-aligned natural-width Web action footer (`Geri` left, `Devam Et` / `Programımı Kur ve Başla` right).
+- **Mobile / Narrow Tablet (`< 960px`):**
+  - Constrain header, scrollable body (`Scrollbar`), and docked footer within `ResponsiveContentWrapper(maxWidth: 720)` for balanced single-column mobile UX.
+- **Readable Text Measure:** Keep subtitles and exam descriptions comfortable via card column sizing.
 
 ### Navigation & Progress Overrides (`ui-ux-pro-max` §8 & §9)
 
-- **`multi-step-progress`:** Always preserve step counter (`Adım X / 3`) + `LinearProgressIndicator` + `Geri` button on Steps 2 and 3
-- **`TugrulAvatar` Help Consistency:** Maintain step-contextual mood (`exam`, `practice`, `coach`) clickable to open `TugrulTipsSheet`
+- **`express-onboarding` + Prominent Skip:** On mandatory first launch (`isMandatory: true`), present a **1-Step Express Setup** (Exam Selector + smart default pace/focus) with a prominently placed top-right **`Şimdilik Atla`** button (`onboarding_skip_button`) visible immediately above the fold on both Desktop and Mobile, plus an optional `'Süre ve hedefi de özelleştir'` trigger to expand into the full 3-step studio.
+- **`multi-step-progress`:** When customizing (`isMandatory: false` or expanded), preserve step counter (`Adım X / 3`) + `LinearProgressIndicator` + `Geri` button on Steps 2 and 3.
+- **`TugrulAvatar` Help Consistency:** Maintain step-contextual mood (`exam`, `practice`, `coach`) clickable to open `TugrulTipsSheet`.
 
 ---
 

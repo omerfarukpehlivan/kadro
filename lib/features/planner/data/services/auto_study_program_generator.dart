@@ -1,10 +1,49 @@
+import 'package:kadro/core/utils/exam_calendar_utils.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/flashcards/data/sample_flashcards.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 import 'package:kadro/features/lessons/data/models/exam_curriculum.dart';
 import 'package:kadro/features/map_practice/data/map_practice_data.dart';
 import 'package:kadro/features/planner/data/models/study_program_pace.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
-import 'package:kadro/core/utils/exam_calendar_utils.dart';
+
+/// Haftalık görsel takvimde bir günün baskın çalışma türünü belirler (`TASK-159`).
+enum WeeklyActivityKind { quiz, review, sprintExam, rest }
+
+/// Haftalık görsel takvim şeridindeki tekil bir günün önizleme özeti (`TASK-159`).
+class WeeklyPlanDayPreview {
+  final int weekday;
+  final String shortLabel;
+  final bool isRestDay;
+  final int estimatedMinutes;
+  final int taskCount;
+  final WeeklyActivityKind primaryKind;
+  final String focusSummary;
+
+  const WeeklyPlanDayPreview({
+    required this.weekday,
+    required this.shortLabel,
+    required this.isRestDay,
+    required this.estimatedMinutes,
+    required this.taskCount,
+    required this.primaryKind,
+    required this.focusSummary,
+  });
+}
+
+/// Kaçırılan günlerin telafi dağıtımı sonrası bugüne ve gelecek günlere atanan
+/// yeniden dengelenmiş görev sonucu (`TASK-159`).
+class CatchUpRebalancePlan {
+  final List<StudyTask> todayTasks;
+  final Map<int, List<StudyTask>> futureDayTasks;
+  final int carriedCount;
+
+  const CatchUpRebalancePlan({
+    required this.todayTasks,
+    required this.futureDayTasks,
+    required this.carriedCount,
+  });
+}
 
 /// Müfredat içi tek bir 10 soruluk konu testi birimi.
 class CurriculumTestUnit {
@@ -172,6 +211,7 @@ class AutoStudyProgramGenerator {
     String examScope = 'lisans_gk',
     bool Function(String lesson, String topic, int testNumber)? isTestSolved,
     bool ignoreOffsetWhenSolvedFiltered = false,
+    bool isSprintMode = false,
   }) {
     final safeDay = cycleDay < 1 ? 1 : cycleDay;
     final effectiveScope = examScope != 'lisans_gk'
@@ -432,7 +472,191 @@ class AutoStudyProgramGenerator {
         break;
     }
 
+    if (isSprintMode && safeDay.isEven) {
+      if (!tasks.any((t) => t.actionType == StudyTaskActionType.exam)) {
+        final examCount = curriculum?.totalQuestions ?? 60;
+        final examTitle = (effectiveScope == 'lisans_gk' || curriculum == null)
+            ? '60 Soruluk Genel Kültür Sprint Denemesi'
+            : '$examCount Soruluk ${curriculum.title} Sprint Denemesi';
+        tasks.add(
+          StudyTask(
+            id: '${idPrefix}_sprint_exam',
+            title: examTitle,
+            lessonTag: 'Genel',
+            estimatedMinutes: 25,
+            actionType: StudyTaskActionType.exam,
+            targetExamNumber: 1,
+            targetCount: examCount,
+            examScope: effectiveScope,
+          ),
+        );
+      }
+      if (!tasks.any((t) => t.actionType == StudyTaskActionType.mistakes)) {
+        tasks.add(
+          StudyTask(
+            id: '${idPrefix}_sprint_mistakes',
+            title: 'Sprint: Yanlış Defteri & ÖSYM Çeldirici Tekrarı',
+            lessonTag: 'Genel',
+            estimatedMinutes: 10,
+            actionType: StudyTaskActionType.mistakes,
+            targetCount: 10,
+            examScope: effectiveScope,
+          ),
+        );
+      }
+    }
+
     return tasks;
+  }
+
+  /// Seçili sınava 30 gün veya daha az kaldığında Sprint Modu önerilip önerilmeyeceğini döner (`TASK-159`).
+  static bool isWithinSprintWindow(ExamSelection selection, {DateTime? now}) {
+    final remainingDays = selection.detailedRemaining(now: now).totalDays;
+    return remainingDays >= 0 && remainingDays <= 30;
+  }
+
+  /// Kaçırılan/biriken görevleri bugünün kapasitesini aşmayacak şekilde gelecek günlere
+  /// dengeli dağıtan telafi planlayıcısı (`TASK-159`).
+  static CatchUpRebalancePlan rebalanceMissedTasks({
+    required List<StudyTask> currentDayTasks,
+    required int currentDay,
+    required StudyProgramPace pace,
+    required KpssExamTarget examTarget,
+    String? focusLesson,
+    ExamCurriculum? curriculum,
+    String examScope = 'lisans_gk',
+    bool isSprintMode = false,
+  }) {
+    final completed = currentDayTasks.where((t) => t.isCompleted).toList();
+    final pending = currentDayTasks.where((t) => !t.isCompleted).toList();
+    final maxPerDay = _maxTasksPerDayForPace(pace);
+
+    final todaySlots = (maxPerDay - completed.length).clamp(0, pending.length);
+    final todayTasks = <StudyTask>[...completed, ...pending.take(todaySlots)];
+
+    final overflow = pending.skip(todaySlots).toList();
+    final futureDayTasks = <int, List<StudyTask>>{};
+    var dayCursor = (currentDay < 1 ? 1 : currentDay) + 1;
+
+    for (final task in overflow) {
+      while (true) {
+        final existing = futureDayTasks.putIfAbsent(dayCursor, () {
+          final generated = generateDailyTasks(
+            examTarget: examTarget,
+            pace: pace,
+            focusLesson: focusLesson,
+            cycleDay: dayCursor,
+            curriculum: curriculum,
+            examScope: examScope,
+            isSprintMode: isSprintMode,
+          );
+          // Gelecek güne taşınan görev için yer açmak adına temel listeyi sınırla
+          return generated.take(maxPerDay - 1).toList();
+        });
+        if (existing.length < maxPerDay) {
+          existing.add(task);
+          break;
+        }
+        dayCursor++;
+      }
+    }
+
+    return CatchUpRebalancePlan(
+      todayTasks: todayTasks,
+      futureDayTasks: futureDayTasks,
+      carriedCount: pending.length,
+    );
+  }
+
+  static int _maxTasksPerDayForPace(StudyProgramPace pace) {
+    switch (pace) {
+      case StudyProgramPace.dk15:
+        return 3;
+      case StudyProgramPace.dk30:
+        return 4;
+      case StudyProgramPace.dk45:
+        return 4;
+      case StudyProgramPace.dk60:
+        return 5;
+      case StudyProgramPace.dk90:
+        return 6;
+    }
+  }
+
+  /// Haftalık 7 günlük (`Pzt–Paz`) çalışma ve dinlenme önizlemesini üretir (`TASK-159`).
+  static List<WeeklyPlanDayPreview> buildWeeklyPreview({
+    required ExamSelection selection,
+    required StudyProgramPace pace,
+    List<int> weeklyStudyDays = const [1, 2, 3, 4, 5, 6],
+    String? focusLesson,
+    ExamCurriculum? curriculum,
+    int startCycleDay = 1,
+    bool isSprintMode = false,
+  }) {
+    const dayLabels = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+    final activeSet = weeklyStudyDays.toSet();
+    final result = <WeeklyPlanDayPreview>[];
+    var cycleCursor = startCycleDay < 1 ? 1 : startCycleDay;
+
+    for (var weekday = 1; weekday <= 7; weekday++) {
+      final shortLabel = dayLabels[weekday - 1];
+      if (!activeSet.contains(weekday)) {
+        result.add(
+          WeeklyPlanDayPreview(
+            weekday: weekday,
+            shortLabel: shortLabel,
+            isRestDay: true,
+            estimatedMinutes: 0,
+            taskCount: 0,
+            primaryKind: WeeklyActivityKind.rest,
+            focusSummary: '$shortLabel · Dinlenme & Mola Günü',
+          ),
+        );
+        continue;
+      }
+
+      final dayTasks = generateDailyTasks(
+        examTarget: selection.toLegacyTarget(),
+        pace: pace,
+        focusLesson: focusLesson,
+        cycleDay: cycleCursor,
+        curriculum: curriculum,
+        examScope: selection.scopeKey,
+        isSprintMode: isSprintMode,
+      );
+      cycleCursor++;
+
+      final totalMinutes = dayTasks.fold<int>(
+        0,
+        (sum, t) => sum + t.estimatedMinutes,
+      );
+      final hasExam = dayTasks.any(
+        (t) => t.actionType == StudyTaskActionType.exam,
+      );
+      final hasQuiz = dayTasks.any(
+        (t) => t.actionType == StudyTaskActionType.quiz,
+      );
+      final primaryKind = hasExam
+          ? WeeklyActivityKind.sprintExam
+          : (hasQuiz ? WeeklyActivityKind.quiz : WeeklyActivityKind.review);
+      final focusSummary = dayTasks.isNotEmpty
+          ? dayTasks.first.title
+          : '$shortLabel · Çalışma Günü';
+
+      result.add(
+        WeeklyPlanDayPreview(
+          weekday: weekday,
+          shortLabel: shortLabel,
+          isRestDay: false,
+          estimatedMinutes: totalMinutes,
+          taskCount: dayTasks.length,
+          primaryKind: primaryKind,
+          focusSummary: focusSummary,
+        ),
+      );
+    }
+
+    return result;
   }
 
   static int _testsCountForDay(StudyProgramPace pace, int cycleDay) {

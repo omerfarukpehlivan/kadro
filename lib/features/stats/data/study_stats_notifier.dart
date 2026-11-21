@@ -308,17 +308,22 @@ class StudyStatsState {
     return null;
   }
 
-  /// Belirli bir ders ve konuya ait kaç farklı testin çözüldüğünü hesaplar.
-  int countSolvedTestsForTopic({
+  /// Belirli bir ders ve konuya ait çözülen farklı test numaraları kümesini döner.
+  Set<int> solvedTestNumbersForTopic({
     required String lesson,
     required String topic,
   }) {
     final targetPattern = '$lesson · $topic · Test ';
+    final topicOnlyPattern = '$topic · Test ';
     final regex = RegExp(r'Test (\d+)');
     final solvedNumbers = <int>{};
 
     for (final s in sessionHistory) {
-      if (s.title.contains(targetPattern)) {
+      final matchesFull = s.title.contains(targetPattern);
+      final matchesTopicInLesson =
+          s.lesson.toLowerCase() == lesson.toLowerCase() &&
+          s.title.contains(topicOnlyPattern);
+      if (matchesFull || matchesTopicInLesson) {
         final match = regex.firstMatch(s.title);
         if (match != null) {
           final number = int.tryParse(match.group(1)!);
@@ -329,7 +334,15 @@ class StudyStatsState {
       }
     }
 
-    return solvedNumbers.length;
+    return solvedNumbers;
+  }
+
+  /// Belirli bir ders ve konuya ait kaç farklı testin çözüldüğünü hesaplar.
+  int countSolvedTestsForTopic({
+    required String lesson,
+    required String topic,
+  }) {
+    return solvedTestNumbersForTopic(lesson: lesson, topic: topic).length;
   }
 
   /// Başlığı verilen önekle başlayan en son oturum kaydını döner (örn. deneme sınavları).

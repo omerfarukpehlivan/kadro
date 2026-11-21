@@ -43,12 +43,48 @@ class StudyPlannerState {
   /// Planın bağlı olduğu aktif sınav kapsamı (`'lisans_gk'`, `'ekpss_lisans'` vb.).
   final String examScope;
 
+  /// Planın en son aktif olduğu takvim günü (Telafi Modu gecikme tespiti için).
+  final DateTime? lastPlannedDate;
+
+  /// Sınava `<= 30` gün kala veya kullanıcı tercihiyle açılan yoğun Sprint Modu.
+  final bool isSprintModeActive;
+
+  /// Kullanıcının seçtiği haftalık çalışma günleri (`1` = Pzt ... `7` = Paz).
+  final List<int> weeklyStudyDays;
+
   const StudyPlannerState({
     this.tasks = const [],
     this.cycleDay = 1,
     this.maxUnlockedDay = 1,
     this.examScope = 'lisans_gk',
+    this.lastPlannedDate,
+    this.isSprintModeActive = false,
+    this.weeklyStudyDays = const [1, 2, 3, 4, 5, 6, 7],
   });
+
+  /// Son planlı çalışma tarihinden bugüne kaç aktif çalışma günü geciktiğini döner (`TASK-159`).
+  int missedDaysCount({DateTime? now}) {
+    final lastDate = lastPlannedDate;
+    if (lastDate == null || remainingCount == 0) return 0;
+    final refNow = now ?? DateTime.now();
+    final today = DateTime(refNow.year, refNow.month, refNow.day);
+    final plannedDay = DateTime(lastDate.year, lastDate.month, lastDate.day);
+    final diffDays = today.difference(plannedDay).inDays;
+    if (diffDays <= 0) return 0;
+
+    final activeDays = weeklyStudyDays.toSet();
+    var missed = 0;
+    for (var i = 0; i < diffDays; i++) {
+      final cursor = plannedDay.add(Duration(days: i));
+      if (activeDays.isEmpty || activeDays.contains(cursor.weekday)) {
+        missed++;
+      }
+    }
+    return missed;
+  }
+
+  /// Telafi gerektiren en az 1 gecikmiş gün olup olmadığını döner.
+  bool hasMissedDays({DateTime? now}) => missedDaysCount(now: now) > 0;
 
   int get totalCount => tasks.length;
   int get completedCount => tasks.where((t) => t.isCompleted).length;
@@ -58,6 +94,25 @@ class StudyPlannerState {
   double get completionProgress =>
       totalCount == 0 ? 0.0 : (completedCount / totalCount).clamp(0.0, 1.0);
   bool get allCompleted => totalCount > 0 && completedCount == totalCount;
+
+  /// Belirli bir ders ve konuya ait çalışma planında tamamlanmış olarak işaretlenen
+  /// konu testi numaraları kümesini döner.
+  Set<int> completedTestNumbersForTopic({
+    required String lesson,
+    required String topic,
+  }) {
+    final result = <int>{};
+    for (final t in tasks) {
+      if (t.isCompleted &&
+          t.actionType == StudyTaskActionType.quiz &&
+          t.lessonTag == lesson &&
+          t.targetTopic == topic &&
+          t.targetTestNumber != null) {
+        result.add(t.targetTestNumber!);
+      }
+    }
+    return result;
+  }
 
   /// Günlük tüm görevler bittiğinde VEYA zaten kilidi açılmış bir gün aralığındayken
   /// sonraki güne geçişe izin verilir.
@@ -71,12 +126,21 @@ class StudyPlannerState {
     int? cycleDay,
     int? maxUnlockedDay,
     String? examScope,
+    DateTime? lastPlannedDate,
+    bool clearLastPlannedDate = false,
+    bool? isSprintModeActive,
+    List<int>? weeklyStudyDays,
   }) {
     return StudyPlannerState(
       tasks: tasks ?? this.tasks,
       cycleDay: cycleDay ?? this.cycleDay,
       maxUnlockedDay: maxUnlockedDay ?? this.maxUnlockedDay,
       examScope: examScope ?? this.examScope,
+      lastPlannedDate: clearLastPlannedDate
+          ? null
+          : (lastPlannedDate ?? this.lastPlannedDate),
+      isSprintModeActive: isSprintModeActive ?? this.isSprintModeActive,
+      weeklyStudyDays: weeklyStudyDays ?? this.weeklyStudyDays,
     );
   }
 }
@@ -285,10 +349,28 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       .map((t) => t.id)
       .toSet();
 
+  static String _formatDateKey(DateTime dt) {
+    final m = dt.month.toString().padLeft(2, '0');
+    final d = dt.day.toString().padLeft(2, '0');
+    return '${dt.year}-$m-$d';
+  }
+
+  static DateTime? _parseDateKey(String? raw) {
+    if (raw == null || raw.trim().isEmpty) return null;
+    return DateTime.tryParse(raw.trim());
+  }
+
+  static DateTime _todayDateOnly([DateTime? now]) {
+    final refNow = now ?? DateTime.now();
+    return DateTime(refNow.year, refNow.month, refNow.day);
+  }
+
   bool _isOnlyUntouchedDefaultTasks() {
     if (_activeExamScope != 'lisans_gk' ||
         state.cycleDay > 1 ||
         state.maxUnlockedDay > 1 ||
+        state.isSprintModeActive ||
+        state.lastPlannedDate != null ||
         _completedTaskIds.isNotEmpty ||
         _customTasksByDay.isNotEmpty) {
       return false;
@@ -358,6 +440,11 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       customTasksByDay: customCopy,
       tasksByDay: tasksByDayCopy,
       examScope: _activeExamScope,
+      lastPlannedDate: state.lastPlannedDate != null
+          ? _formatDateKey(state.lastPlannedDate!)
+          : null,
+      isSprintModeActive: state.isSprintModeActive,
+      weeklyStudyDays: state.weeklyStudyDays,
       updatedAt: DateTime.now().toUtc(),
     );
   }
@@ -458,6 +545,36 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     }
   }
 
+  static bool _matchesCompletedTestTask(
+    StudyTask task, {
+    required String lesson,
+    String? topic,
+    int? testNumber,
+    int? mockExamNumber,
+    required bool isBranchMock,
+  }) {
+    if (task.isCompleted) return false;
+    final matchesQuiz =
+        task.actionType == StudyTaskActionType.quiz &&
+        topic != null &&
+        testNumber != null &&
+        task.lessonTag == lesson &&
+        task.targetTopic == topic &&
+        task.targetTestNumber == testNumber;
+
+    final matchesExam =
+        task.actionType == StudyTaskActionType.exam &&
+        (isBranchMock
+            ? task.lessonTag == lesson &&
+                  (mockExamNumber == null ||
+                      task.targetExamNumber == null ||
+                      task.targetExamNumber == mockExamNumber)
+            : mockExamNumber != null &&
+                  task.targetExamNumber == mockExamNumber);
+
+    return matchesQuiz || matchesExam;
+  }
+
   /// Görev dışından (ör. Dersler veya Denemeler sekmesinden) bağımsız olarak çözülen
   /// bir testin veya denemenin, çalışma planındaki eşleşen görevlerini otomatik tamamlar.
   ///
@@ -467,28 +584,21 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     String? topic,
     int? testNumber,
     int? mockExamNumber,
+    bool isBranchMock = false,
   }) {
     var changed = false;
 
     // 1. Önce aktif günün görevlerini kontrol et ve güncelle
     final currentTasks = state.tasks;
     final updatedCurrentTasks = currentTasks.map((t) {
-      final matchesQuiz =
-          t.actionType == StudyTaskActionType.quiz &&
-          !t.isCompleted &&
-          topic != null &&
-          testNumber != null &&
-          t.lessonTag == lesson &&
-          t.targetTopic == topic &&
-          t.targetTestNumber == testNumber;
-
-      final matchesExam =
-          t.actionType == StudyTaskActionType.exam &&
-          !t.isCompleted &&
-          mockExamNumber != null &&
-          t.targetExamNumber == mockExamNumber;
-
-      if (matchesQuiz || matchesExam) {
+      if (_matchesCompletedTestTask(
+        t,
+        lesson: lesson,
+        topic: topic,
+        testNumber: testNumber,
+        mockExamNumber: mockExamNumber,
+        isBranchMock: isBranchMock,
+      )) {
         changed = true;
         _completedTaskIds.add(t.id);
         return t.copyWith(isCompleted: true);
@@ -515,22 +625,14 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
 
       var dayChanged = false;
       final updatedDayTasks = cachedDayTasks.map((t) {
-        final matchesQuiz =
-            t.actionType == StudyTaskActionType.quiz &&
-            !t.isCompleted &&
-            topic != null &&
-            testNumber != null &&
-            t.lessonTag == lesson &&
-            t.targetTopic == topic &&
-            t.targetTestNumber == testNumber;
-
-        final matchesExam =
-            t.actionType == StudyTaskActionType.exam &&
-            !t.isCompleted &&
-            mockExamNumber != null &&
-            t.targetExamNumber == mockExamNumber;
-
-        if (matchesQuiz || matchesExam) {
+        if (_matchesCompletedTestTask(
+          t,
+          lesson: lesson,
+          topic: topic,
+          testNumber: testNumber,
+          mockExamNumber: mockExamNumber,
+          isBranchMock: isBranchMock,
+        )) {
           dayChanged = true;
           changed = true;
           _completedTaskIds.add(t.id);
@@ -635,6 +737,7 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     StudyTaskActionType actionType = StudyTaskActionType.custom,
     String? targetTopic,
     int? targetTestNumber,
+    int? targetExamNumber,
     int? targetCount,
   }) {
     final cleanTitle = title.trim();
@@ -648,6 +751,7 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       actionType: actionType,
       targetTopic: targetTopic,
       targetTestNumber: targetTestNumber,
+      targetExamNumber: targetExamNumber,
       targetCount: targetCount,
       examScope: _activeExamScope,
     );
@@ -741,6 +845,8 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     ExamCurriculum? curriculum,
     String? examScope,
     int cycleDay = 1,
+    bool? isSprintMode,
+    List<int>? weeklyStudyDays,
     bool Function(String lesson, String topic, int testNumber)? isTestSolved,
   }) {
     final safeDay = cycleDay < 1 ? 1 : cycleDay;
@@ -750,6 +856,11 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       effectiveScope,
     );
     _activeExamScope = effectiveScope;
+    final effectiveSprint = isSprintMode ?? state.isSprintModeActive;
+    final effectiveWeeklyDays =
+        (weeklyStudyDays != null && weeklyStudyDays.isNotEmpty)
+        ? List<int>.unmodifiable(weeklyStudyDays)
+        : state.weeklyStudyDays;
 
     if (safeDay == 1) {
       _completedTaskIds.clear();
@@ -765,6 +876,7 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       curriculum: effectiveCurriculum,
       examScope: effectiveScope,
       isTestSolved: isTestSolved,
+      isSprintMode: effectiveSprint,
     );
 
     _dayTasksCache[safeDay] = generatedTasks;
@@ -776,6 +888,9 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       cycleDay: safeDay,
       maxUnlockedDay: maxDay,
       examScope: effectiveScope,
+      lastPlannedDate: _todayDateOnly(),
+      isSprintModeActive: effectiveSprint,
+      weeklyStudyDays: effectiveWeeklyDays,
     );
 
     unawaited(_storage.saveStudyTasks(generatedTasks));
@@ -872,6 +987,8 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     String? focusLesson,
     ExamCurriculum? curriculum,
     String? examScope,
+    bool? isSprintMode,
+    List<int>? weeklyStudyDays,
     bool Function(String lesson, String topic, int testNumber)? isTestSolved,
   }) {
     final effectiveScope =
@@ -881,6 +998,11 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       effectiveScope,
     );
     _activeExamScope = effectiveScope;
+    final effectiveSprint = isSprintMode ?? state.isSprintModeActive;
+    final effectiveWeeklyDays =
+        (weeklyStudyDays != null && weeklyStudyDays.isNotEmpty)
+        ? List<int>.unmodifiable(weeklyStudyDays)
+        : state.weeklyStudyDays;
 
     // 1. Gün sayacını koru (asla geriye düşürme!)
     final currentDay = state.cycleDay < 1 ? 1 : state.cycleDay;
@@ -956,6 +1078,7 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       examScope: effectiveScope,
       isTestSolved: combinedIsTestSolved,
       ignoreOffsetWhenSolvedFiltered: true,
+      isSprintMode: effectiveSprint,
     );
 
     // 5. Bugünün (currentDay) tamamlanmış görev item'larını %100 koru
@@ -1020,6 +1143,9 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       cycleDay: currentDay,
       maxUnlockedDay: currentMax,
       examScope: effectiveScope,
+      lastPlannedDate: _todayDateOnly(),
+      isSprintModeActive: effectiveSprint,
+      weeklyStudyDays: effectiveWeeklyDays,
     );
 
     unawaited(_storage.saveStudyTasks(mergedTasks));
@@ -1027,6 +1153,91 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     unawaited(_storage.savePlannerCycleDay(currentDay));
     unawaited(_storage.savePlannerMaxUnlockedDay(currentMax));
     _persistAndSyncSnapshot();
+  }
+
+  /// Haftalık aktif çalışma günlerini (`1` = Pzt ... `7` = Paz) günceller (`TASK-159`).
+  void setWeeklyStudyDays(List<int> days) {
+    final cleaned = days.where((d) => d >= 1 && d <= 7).toSet().toList()
+      ..sort();
+    if (cleaned.isEmpty) return;
+    state = state.copyWith(weeklyStudyDays: List<int>.unmodifiable(cleaned));
+    _persistAndSyncSnapshot();
+  }
+
+  /// Kaçırılan/gecikmiş çalışma günlerini kalan günlere dengeli yeniden dağıtır (`TASK-159`).
+  ///
+  /// Döndürdüğü değer bugünden ileriye dengelenen görev sayısıdır.
+  int applyCatchUpRebalance({
+    required KpssExamTarget examTarget,
+    required StudyProgramPace pace,
+    String? focusLesson,
+    ExamCurriculum? curriculum,
+    String? examScope,
+  }) {
+    final effectiveScope =
+        examScope ?? curriculum?.scopeKey ?? _activeExamScope;
+    final effectiveCurriculum = _resolveCurriculumForCall(
+      curriculum,
+      effectiveScope,
+    );
+    _activeExamScope = effectiveScope;
+
+    final plan = AutoStudyProgramGenerator.rebalanceMissedTasks(
+      currentDayTasks: state.tasks,
+      currentDay: state.cycleDay,
+      pace: pace,
+      examTarget: examTarget,
+      focusLesson: focusLesson,
+      curriculum: effectiveCurriculum,
+      examScope: effectiveScope,
+      isSprintMode: state.isSprintModeActive,
+    );
+
+    _dayTasksCache[state.cycleDay] = plan.todayTasks;
+    for (final entry in plan.futureDayTasks.entries) {
+      _dayTasksCache[entry.key] = entry.value;
+      unawaited(_storage.savePlannerDayTasks(entry.key, entry.value));
+    }
+
+    state = state.copyWith(
+      tasks: plan.todayTasks,
+      lastPlannedDate: _todayDateOnly(),
+      examScope: effectiveScope,
+    );
+
+    unawaited(_storage.saveStudyTasks(plan.todayTasks));
+    unawaited(_storage.savePlannerDayTasks(state.cycleDay, plan.todayTasks));
+    _persistAndSyncSnapshot();
+    return plan.carriedCount;
+  }
+
+  /// Son 30 gün kala yoğun deneme & yanlış tekrarı odaklı Sprint Modunu açar (`TASK-159`).
+  void activateSprintMode({
+    required KpssExamTarget examTarget,
+    required StudyProgramPace pace,
+    String? focusLesson,
+    ExamCurriculum? curriculum,
+    String? examScope,
+  }) {
+    final effectiveScope =
+        examScope ?? curriculum?.scopeKey ?? _activeExamScope;
+    adaptStudyProgramPace(
+      examTarget: examTarget,
+      oldPace: pace,
+      newPace: pace,
+      focusLesson: focusLesson,
+      curriculum: curriculum,
+      examScope: effectiveScope,
+      isSprintMode: true,
+    );
+  }
+
+  /// Testlerde gecikmiş gün senaryolarını deterministik doğrulamak için son planlı tarihi ayarlar.
+  void debugSetLastPlannedDateForTest(DateTime? date) {
+    state = state.copyWith(
+      lastPlannedDate: date,
+      clearLastPlannedDate: date == null,
+    );
   }
 
   /// Sıradaki güne geçiş yapar.
@@ -1307,6 +1518,9 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       cycleDay: safeCycle,
       maxUnlockedDay: safeMax,
       examScope: effectiveScope,
+      lastPlannedDate: _parseDateKey(snapshot.lastPlannedDate),
+      isSprintModeActive: snapshot.isSprintModeActive,
+      weeklyStudyDays: snapshot.weeklyStudyDays,
     );
 
     unawaited(_storage.saveStudyTasks(activeTasks));
@@ -1413,6 +1627,9 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
       cycleDay: 1,
       maxUnlockedDay: 1,
       examScope: 'lisans_gk',
+      lastPlannedDate: null,
+      isSprintModeActive: false,
+      weeklyStudyDays: [1, 2, 3, 4, 5, 6, 7],
     );
     unawaited(_storage.clearActivePlannerCache());
   }

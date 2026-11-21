@@ -32,6 +32,15 @@ class PlannerSyncSnapshot {
   /// Planın oluşturulduğu aktif KPSS / MEB-AGS sınav kapsamı anahtarı.
   final String examScope;
 
+  /// Planın en son aktif olduğu takvim günü (`'YYYY-MM-DD'`).
+  final String? lastPlannedDate;
+
+  /// Son 30 gün yoğunlaştırma (Sprint) modunun açık olup olmadığı.
+  final bool isSprintModeActive;
+
+  /// Kullanıcının haftalık çalışma günleri (`1` = Pzt ... `7` = Paz).
+  final List<int> weeklyStudyDays;
+
   /// Son güncelleme zaman damgası (UTC).
   final DateTime updatedAt;
 
@@ -42,6 +51,9 @@ class PlannerSyncSnapshot {
     this.customTasksByDay = const {},
     Map<int, List<StudyTask>>? tasksByDay,
     this.examScope = 'lisans_gk',
+    this.lastPlannedDate,
+    this.isSprintModeActive = false,
+    this.weeklyStudyDays = const [1, 2, 3, 4, 5, 6, 7],
     DateTime? updatedAt,
   }) : tasksByDay = tasksByDay ?? const {},
        updatedAt = updatedAt ?? DateTime.now().toUtc();
@@ -52,7 +64,8 @@ class PlannerSyncSnapshot {
       maxUnlockedDay <= 1 &&
       completedTaskIds.isEmpty &&
       customTasksByDay.isEmpty &&
-      tasksByDay.isEmpty;
+      tasksByDay.isEmpty &&
+      !isSprintModeActive;
 
   /// JSON çıktısı üretir (Yerel SharedPreferences ve Supabase JSONB için).
   Map<String, dynamic> toJson() {
@@ -70,6 +83,9 @@ class PlannerSyncSnapshot {
             '${e.key}': e.value.map((t) => t.toJson()).toList(),
       },
       'exam_scope': examScope,
+      if (lastPlannedDate != null) 'last_planned_date': lastPlannedDate,
+      'is_sprint_mode_active': isSprintModeActive,
+      'weekly_study_days': weeklyStudyDays,
       'updated_at': updatedAt.toIso8601String(),
     };
   }
@@ -146,6 +162,21 @@ class PlannerSyncSnapshot {
       parsedUpdatedAt = DateTime.now().toUtc();
     }
 
+    final rawWeeklyDays = json['weekly_study_days'] ?? json['weeklyStudyDays'];
+    final parsedWeeklyDays = <int>[];
+    if (rawWeeklyDays is Iterable) {
+      for (final d in rawWeeklyDays) {
+        final dayInt = (d as num?)?.toInt();
+        if (dayInt != null &&
+            dayInt >= 1 &&
+            dayInt <= 7 &&
+            !parsedWeeklyDays.contains(dayInt)) {
+          parsedWeeklyDays.add(dayInt);
+        }
+      }
+      parsedWeeklyDays.sort();
+    }
+
     return PlannerSyncSnapshot(
       cycleDay: safeCycleDay,
       maxUnlockedDay: safeMaxDay,
@@ -154,6 +185,15 @@ class PlannerSyncSnapshot {
       tasksByDay: tasksByDayMap,
       examScope:
           ((json['exam_scope'] ?? json['examScope']) as String?) ?? 'lisans_gk',
+      lastPlannedDate:
+          (json['last_planned_date'] ?? json['lastPlannedDate']) as String?,
+      isSprintModeActive:
+          (json['is_sprint_mode_active'] ?? json['isSprintModeActive'])
+              as bool? ??
+          false,
+      weeklyStudyDays: parsedWeeklyDays.isNotEmpty
+          ? parsedWeeklyDays
+          : const [1, 2, 3, 4, 5, 6, 7],
       updatedAt: parsedUpdatedAt,
     );
   }
@@ -316,6 +356,14 @@ class PlannerSyncSnapshot {
         ? updatedAt
         : other.updatedAt;
 
+    final mergedLastPlanned = thisIsNewer
+        ? (lastPlannedDate ?? other.lastPlannedDate)
+        : (other.lastPlannedDate ?? lastPlannedDate);
+    final mergedSprint = isSprintModeActive || other.isSprintModeActive;
+    final mergedWeeklyDays = thisIsNewer
+        ? weeklyStudyDays
+        : other.weeklyStudyDays;
+
     return PlannerSyncSnapshot(
       cycleDay: mergedCycleDay,
       maxUnlockedDay: mergedMaxUnlockedDay,
@@ -323,6 +371,9 @@ class PlannerSyncSnapshot {
       customTasksByDay: mergedCustomTasks,
       tasksByDay: mergedTasksByDay,
       examScope: examScope,
+      lastPlannedDate: mergedLastPlanned,
+      isSprintModeActive: mergedSprint,
+      weeklyStudyDays: mergedWeeklyDays,
       updatedAt: mergedUpdatedAt,
     );
   }
@@ -334,6 +385,9 @@ class PlannerSyncSnapshot {
     Map<int, List<StudyTask>>? customTasksByDay,
     Map<int, List<StudyTask>>? tasksByDay,
     String? examScope,
+    String? lastPlannedDate,
+    bool? isSprintModeActive,
+    List<int>? weeklyStudyDays,
     DateTime? updatedAt,
   }) {
     return PlannerSyncSnapshot(
@@ -343,6 +397,9 @@ class PlannerSyncSnapshot {
       customTasksByDay: customTasksByDay ?? this.customTasksByDay,
       tasksByDay: tasksByDay ?? this.tasksByDay,
       examScope: examScope ?? this.examScope,
+      lastPlannedDate: lastPlannedDate ?? this.lastPlannedDate,
+      isSprintModeActive: isSprintModeActive ?? this.isSprintModeActive,
+      weeklyStudyDays: weeklyStudyDays ?? this.weeklyStudyDays,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }

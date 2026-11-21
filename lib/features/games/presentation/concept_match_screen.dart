@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kadro/app/router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/games/data/models/concept_match_set.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
+import 'package:kadro/features/planner/data/models/study_task.dart';
+import 'package:kadro/features/planner/data/study_planner_notifier.dart';
+import 'package:kadro/features/planner/presentation/study_task_launcher.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/empty_state_view.dart';
@@ -20,12 +25,14 @@ class ConceptMatchScreen extends ConsumerStatefulWidget {
   final List<ConceptMatchSet> sets;
   final int initialSetIndex;
   final VoidCallback? onCompleted;
+  final String? taskId;
 
   const ConceptMatchScreen({
     super.key,
     this.sets = sampleConceptMatchSets,
     this.initialSetIndex = 0,
     this.onCompleted,
+    this.taskId,
   });
 
   @override
@@ -146,6 +153,38 @@ class _ConceptMatchScreenState extends ConsumerState<ConceptMatchScreen> {
     }
   }
 
+  void _goToHome() {
+    popBranchToRoot();
+
+    final rootNav = Navigator.maybeOf(context, rootNavigator: true);
+    final branchNav = Navigator.maybeOf(context);
+
+    if (branchNav != null && branchNav != rootNav && branchNav.canPop()) {
+      branchNav.popUntil((route) => route.isFirst);
+    }
+
+    if (rootNav != null && rootNav.canPop()) {
+      rootNav.popUntil((route) => route.isFirst);
+    }
+
+    final router = GoRouter.maybeOf(context);
+    if (router != null) {
+      router.go('/');
+    }
+  }
+
+  StudyTask? _resolveNextDailyTask() {
+    if (widget.taskId == null && widget.onCompleted == null) return null;
+    try {
+      final planner = ref.watch(studyPlannerProvider);
+      return planner.tasks
+          .where((t) => !t.isCompleted && t.id != widget.taskId)
+          .firstOrNull;
+    } catch (_) {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -153,6 +192,8 @@ class _ConceptMatchScreenState extends ConsumerState<ConceptMatchScreen> {
     final selection = readOrWatchExamSelection(ref);
     final resolution = _resolveSets();
     final sets = resolution.items;
+    final nextTask = _resolveNextDailyTask();
+    final isDailyFlow = widget.taskId != null || widget.onCompleted != null;
 
     if (sets.isEmpty) {
       return Scaffold(
@@ -304,15 +345,62 @@ class _ConceptMatchScreenState extends ConsumerState<ConceptMatchScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  FilledButton.icon(
-                    onPressed: () => setState(_resetBoard),
-                    icon: const PhosphorIcon(
-                      PhosphorIconsBold.arrowsCounterClockwise,
+                  if (isDailyFlow && nextTask != null) ...[
+                    FilledButton.icon(
+                      onPressed: () {
+                        final nav = Navigator.maybeOf(context);
+                        if (nav != null && nav.canPop()) {
+                          nav.pop();
+                        }
+                        StudyTaskLauncher.launch(context, ref, nextTask);
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: colorScheme.secondary,
+                        foregroundColor: colorScheme.onSecondary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      icon: const PhosphorIcon(
+                        PhosphorIconsBold.arrowRight,
+                        size: 18,
+                      ),
+                      label: Text(
+                        'Sıradaki Göreve Geç: ${nextTask.title} →',
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    label: const Text('Seti Sıfırla'),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
+                    const SizedBox(height: 10),
+                  ],
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => setState(_resetBoard),
+                          icon: const PhosphorIcon(
+                            PhosphorIconsBold.arrowsCounterClockwise,
+                            size: 16,
+                          ),
+                          label: const Text('Seti Sıfırla'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: _goToHome,
+                          icon: const PhosphorIcon(
+                            PhosphorIconsRegular.house,
+                            size: 16,
+                          ),
+                          label: const Text('Ana Sayfaya Dön'),
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ] else ...[
                   Row(

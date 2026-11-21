@@ -852,6 +852,31 @@ class ExamSelection {
         _stringListsEqual(other.selectedFieldLessons, selectedFieldLessons);
   }
 
+  /// Bu sınav seçimi için veritabanı veya yerel soru havuzunda kabul edilen
+  /// `exam_scopes` kapsam etiketleri kümesi (`TASK-165`).
+  ///
+  /// Angular/Web Karşılığı: Supabase `.overlaps('exam_scopes', ...)` sorgusuna ve
+  /// istemci tarafı `Question.matchesSelection` süzgecine geçilen kanonik kapsam kümesi.
+  /// Not: MEB-AGS'deki `meb_ags` ortak kapsamı sorunun `subBranch` alanına bağlı olduğu
+  /// için bu temel kümeye dahil edilmez (`Question.matchesSelection` içinde kontrol edilir).
+  Set<String> get acceptedQuestionScopes {
+    final targetScope = scopeKey.toLowerCase();
+    return <String>{
+      targetScope,
+      '${family.key}_common',
+      if (family == KpssExamFamily.bGrubu &&
+          bGroupProfile == BGroupProfile.fullGyGk) ...{
+        '${educationLevel.key}_gk',
+        'b_grubu_gygk',
+        'b_grubu_gk',
+      },
+      if (family == KpssExamFamily.bGrubu &&
+          bGroupProfile == BGroupProfile.onlyGk)
+        'b_grubu_gk',
+      if (family == KpssExamFamily.dhbt) ...{'dhbt_common', 'dhbt_1'},
+    };
+  }
+
   /// `exam_scopes` alanını JSON/DB kayıtlarından güvenle okur (`TASK-138`).
   static List<String> parseExamScopes(dynamic raw) {
     if (raw is List) {

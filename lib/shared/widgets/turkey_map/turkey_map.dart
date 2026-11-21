@@ -31,9 +31,6 @@ class TurkeyMap extends StatefulWidget {
   /// Bir dairesel işaretçiye dokunulduğunda tetiklenir
   final ValueChanged<TurkeyMapMarker>? onMarkerTap;
 
-  /// Masaüstü / Web'de fare bir ilin üzerine geldiğinde tetiklenir.
-  final ValueChanged<String?>? onProvinceHover;
-
   /// Arka plan dolgusu (null ise şeffaf)
   final Color? backgroundColor;
 
@@ -45,7 +42,6 @@ class TurkeyMap extends StatefulWidget {
     this.config = const TurkeyMapConfig(),
     this.onProvinceTap,
     this.onMarkerTap,
-    this.onProvinceHover,
     this.backgroundColor,
     this.padding = EdgeInsets.zero,
   });
@@ -55,8 +51,6 @@ class TurkeyMap extends StatefulWidget {
 }
 
 class _TurkeyMapState extends State<TurkeyMap> {
-  String? _hoveredProvinceId;
-
   ProvinceData? _findProvinceAt(
     Offset localPos,
     double canvasWidth,
@@ -73,23 +67,6 @@ class _TurkeyMapState extends State<TurkeyMap> {
       }
     }
     return null;
-  }
-
-  void _handleHover(Offset localPos, double canvasWidth, double canvasHeight) {
-    if (widget.onProvinceTap == null && widget.onProvinceHover == null) return;
-    final prov = _findProvinceAt(localPos, canvasWidth, canvasHeight);
-    final nextId = prov?.id;
-    if (nextId != _hoveredProvinceId) {
-      setState(() => _hoveredProvinceId = nextId);
-      widget.onProvinceHover?.call(nextId);
-    }
-  }
-
-  void _clearHover() {
-    if (_hoveredProvinceId != null) {
-      setState(() => _hoveredProvinceId = null);
-      widget.onProvinceHover?.call(null);
-    }
   }
 
   void _handleTap(Offset localPos, double canvasWidth, double canvasHeight) {
@@ -123,7 +100,6 @@ class _TurkeyMapState extends State<TurkeyMap> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final isDark = theme.brightness == Brightness.dark;
 
     // Varsayılan zemin ve çizgi renkleri (Açık temada yüksek kontrastlı belirgin tonlar)
@@ -133,8 +109,6 @@ class _TurkeyMapState extends State<TurkeyMap> {
     final defaultStrokeColor =
         widget.config.strokeColor ??
         (isDark ? const Color(0xFF475569) : Colors.white);
-    final isInteractive =
-        widget.onProvinceTap != null || widget.onMarkerTap != null;
 
     return Padding(
       padding: widget.padding,
@@ -147,36 +121,17 @@ class _TurkeyMapState extends State<TurkeyMap> {
                 ? constraints.maxHeight
                 : canvasWidth / TurkeyMapConstants.aspectRatio;
 
-            return MouseRegion(
-              cursor: isInteractive
-                  ? SystemMouseCursors.click
-                  : MouseCursor.defer,
-              onHover: (event) =>
-                  _handleHover(event.localPosition, canvasWidth, canvasHeight),
-              onExit: (_) => _clearHover(),
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTapUp: (details) => _handleTap(
-                  details.localPosition,
-                  canvasWidth,
-                  canvasHeight,
-                ),
-                child: CustomPaint(
-                  size: Size(canvasWidth, canvasHeight),
-                  painter: _TurkeyMapPainter(
-                    config: widget.config,
-                    baseFillColor: defaultBaseFill,
-                    strokeColor: defaultStrokeColor,
-                    hoverFillColor: Color.alphaBlend(
-                      colorScheme.primary.withAlpha(55),
-                      defaultBaseFill,
-                    ),
-                    hoverStrokeColor: colorScheme.primary,
-                    hoveredProvinceId: isInteractive
-                        ? _hoveredProvinceId
-                        : null,
-                    isDark: isDark,
-                  ),
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTapUp: (details) =>
+                  _handleTap(details.localPosition, canvasWidth, canvasHeight),
+              child: CustomPaint(
+                size: Size(canvasWidth, canvasHeight),
+                painter: _TurkeyMapPainter(
+                  config: widget.config,
+                  baseFillColor: defaultBaseFill,
+                  strokeColor: defaultStrokeColor,
+                  isDark: isDark,
                 ),
               ),
             );
@@ -192,18 +147,12 @@ class _TurkeyMapPainter extends CustomPainter {
   final TurkeyMapConfig config;
   final Color baseFillColor;
   final Color strokeColor;
-  final Color hoverFillColor;
-  final Color hoverStrokeColor;
-  final String? hoveredProvinceId;
   final bool isDark;
 
   _TurkeyMapPainter({
     required this.config,
     required this.baseFillColor,
     required this.strokeColor,
-    required this.hoverFillColor,
-    required this.hoverStrokeColor,
-    required this.hoveredProvinceId,
     required this.isDark,
   });
 
@@ -226,7 +175,6 @@ class _TurkeyMapPainter extends CustomPainter {
 
     // 1. Önce standart (vurgulanmamış) illeri çiz
     final highlightedList = <(ProvinceData, Color)>[];
-    ProvinceData? hoveredProvince;
 
     for (final prov in TurkeyMapData.provinces.values) {
       Color? specialColor;
@@ -240,27 +188,12 @@ class _TurkeyMapPainter extends CustomPainter {
 
       if (specialColor != null) {
         highlightedList.add((prov, specialColor));
-      } else if (hoveredProvinceId == prov.id) {
-        hoveredProvince = prov;
       } else {
         final path = TurkeySvgParser.parse(prov.pathData);
         fillPaint.color = baseFillColor;
         canvas.drawPath(path, fillPaint);
         canvas.drawPath(path, strokePaint);
       }
-    }
-
-    if (hoveredProvince != null) {
-      final path = TurkeySvgParser.parse(hoveredProvince.pathData);
-      final hoverStroke = Paint()
-        ..style = PaintingStyle.stroke
-        ..color = hoverStrokeColor
-        ..strokeWidth = config.strokeWidth + 0.6
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round;
-      fillPaint.color = hoverFillColor;
-      canvas.drawPath(path, fillPaint);
-      canvas.drawPath(path, hoverStroke);
     }
 
     // 2. Vurgulanmış illeri üst katmanda çiz (Sınır çizgileri komşular tarafından ezilmez)
@@ -342,9 +275,6 @@ class _TurkeyMapPainter extends CustomPainter {
     return oldDelegate.config != config ||
         oldDelegate.baseFillColor != baseFillColor ||
         oldDelegate.strokeColor != strokeColor ||
-        oldDelegate.hoverFillColor != hoverFillColor ||
-        oldDelegate.hoverStrokeColor != hoverStrokeColor ||
-        oldDelegate.hoveredProvinceId != hoveredProvinceId ||
         oldDelegate.isDark != isDark;
   }
 }

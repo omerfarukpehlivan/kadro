@@ -96,12 +96,14 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
           lesson: widget.lessonName,
           topic: widget.topic,
           selection: selection,
+          limit: 500,
         );
       } catch (_) {
         fetched = await widget.questionRepository.fetchQuestions(
           lesson: widget.lessonName,
           topic: widget.topic,
           selection: selection,
+          limit: 500,
         );
       }
     }
@@ -122,10 +124,14 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
     List<Question> chunkQuestions,
     TestDifficultyTier tier,
   ) {
-    Navigator.of(context).push(
+    Navigator.of(context, rootNavigator: true).push(
       MaterialPageRoute(
         builder: (_) => QuizScreen(
           questions: chunkQuestions,
+          lessonFilter: widget.lessonName,
+          topicFilter: widget.topic,
+          topicTestNumber: testIndex + 1,
+          examSelection: _effectiveSelection,
           customTitle:
               '${widget.lessonName} · ${widget.topic} · Test ${testIndex + 1} (${tier.cleanTitle})',
         ),

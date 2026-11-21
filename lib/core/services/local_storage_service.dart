@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:kadro/features/flashcards/data/models/flashcard_review_progress.dart';
+import 'package:kadro/features/mistakes/data/models/mistake_review_entry.dart';
 import 'package:kadro/features/planner/data/models/planner_sync_snapshot.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
@@ -26,6 +28,12 @@ class LocalStorageService {
       'kadro_planner_snapshot_${accountKey.trim().toLowerCase()}';
   static String _keyAccountUserPrefs(String accountKey) =>
       'kadro_user_prefs_${accountKey.trim().toLowerCase()}';
+  static String _keyFlashcardReviews(String scopeNamespace) =>
+      'kadro_flashcard_reviews_${scopeNamespace.trim().toLowerCase()}';
+  static const String _keyCurrentAffairsReadIds =
+      'kadro_current_affairs_read_ids';
+  static const String _keyCurrentAffairsBookmarkedIds =
+      'kadro_current_affairs_bookmarked_ids';
   static const String _keyDownloadedPackages = 'kadro_downloaded_packages';
   static String _keyOfflinePackage(String packageId) =>
       'offline_pkg_$packageId';
@@ -156,23 +164,24 @@ class LocalStorageService {
     return null;
   }
 
-  // --- 3. Yanlış Defteri (Mistakes) ---
+  // --- 3. Yanlış Defteri & Leitner Aralıklı Tekrar (Mistakes & Flashcards) ---
 
-  /// Yanlış defterindeki soruları yerel hafızaya kaydeder.
-  Future<void> saveMistakes(List<Question> mistakes) async {
+  /// Yanlış defterindeki soruları Leitner kutu ve vade meta verileriyle kaydeder.
+  Future<void> saveMistakeEntries(List<MistakeReviewEntry> entries) async {
     try {
       final prefs = await _getPrefs();
       if (prefs == null) return;
-      final list = mistakes.map((q) => q.toJson()).toList();
+      final list = entries.map((e) => e.toJson()).toList();
       final jsonStr = jsonEncode(list);
       await prefs.setString(_keyMistakes, jsonStr);
     } catch (e) {
-      debugPrint('saveMistakes hatası: $e');
+      debugPrint('saveMistakeEntries hatası: $e');
     }
   }
 
-  /// Cihazda kayıtlı yanlış defteri sorularını okur.
-  Future<List<Question>> loadMistakes() async {
+  /// Cihazda kayıtlı yanlış defteri Leitner kayıtlarını (eski düz `Question`
+  /// JSON listesiyle geriye dönük uyumlu şekilde) okur.
+  Future<List<MistakeReviewEntry>> loadMistakeEntries() async {
     try {
       final prefs = await _getPrefs();
       if (prefs == null) return [];
@@ -180,13 +189,73 @@ class LocalStorageService {
       if (jsonStr != null && jsonStr.isNotEmpty) {
         final list = jsonDecode(jsonStr) as List;
         return list
-            .map((item) => Question.fromJson(item as Map<String, dynamic>))
+            .whereType<Map<String, dynamic>>()
+            .map(MistakeReviewEntry.fromJson)
             .toList();
       }
     } catch (e) {
-      debugPrint('loadMistakes hatası: $e');
+      debugPrint('loadMistakeEntries hatası: $e');
     }
     return [];
+  }
+
+  /// Geriye dönük uyumlu düz soru kaydı: her soruyu Kutu 1 Leitner kaydı olarak saklar.
+  Future<void> saveMistakes(List<Question> mistakes) async {
+    final now = DateTime.now();
+    await saveMistakeEntries(
+      mistakes
+          .map((q) => MistakeReviewEntry.initial(question: q, now: now))
+          .toList(),
+    );
+  }
+
+  /// Cihazda kayıtlı yanlış defteri sorularını okur.
+  Future<List<Question>> loadMistakes() async {
+    final entries = await loadMistakeEntries();
+    return entries.map((e) => e.question).toList();
+  }
+
+  /// Seçili sınav kapsamındaki bilgi kartı Leitner ilerlemelerini kaydeder.
+  Future<void> saveFlashcardReviews(
+    String scopeNamespace,
+    Map<String, FlashcardReviewProgress> reviews,
+  ) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return;
+      final list = reviews.values.map((r) => r.toJson()).toList();
+      await prefs.setString(
+        _keyFlashcardReviews(scopeNamespace),
+        jsonEncode(list),
+      );
+    } catch (e) {
+      debugPrint('saveFlashcardReviews hatası: $e');
+    }
+  }
+
+  /// Seçili sınav kapsamındaki bilgi kartı Leitner ilerlemelerini okur.
+  Future<Map<String, FlashcardReviewProgress>> loadFlashcardReviews(
+    String scopeNamespace,
+  ) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return {};
+      final raw = prefs.getString(_keyFlashcardReviews(scopeNamespace));
+      if (raw != null && raw.isNotEmpty) {
+        final list = jsonDecode(raw) as List;
+        final result = <String, FlashcardReviewProgress>{};
+        for (final item in list.whereType<Map<String, dynamic>>()) {
+          final parsed = FlashcardReviewProgress.fromJson(item);
+          if (parsed.cardId.isNotEmpty) {
+            result[parsed.cardId] = parsed;
+          }
+        }
+        return result;
+      }
+    } catch (e) {
+      debugPrint('loadFlashcardReviews hatası: $e');
+    }
+    return {};
   }
 
   // --- 4. Çalışma Planlayıcı Görevleri (StudyTasks) ---
@@ -592,6 +661,51 @@ class LocalStorageService {
     return null;
   }
 
+  // --- 7. Aylık Güncel Bilgiler Bülteni Okuma & Kaydetme (`TASK-160`) ---
+
+  /// Verilen anahtar altında kullanıcıya ait kimlik kümesini JSON/StringList olarak saklar.
+  Future<void> _saveStringIdSet(String key, Set<String> ids) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return;
+      final normalized = ids.where((id) => id.trim().isNotEmpty).toList()
+        ..sort();
+      await prefs.setStringList(key, normalized);
+    } catch (e) {
+      debugPrint('_saveStringIdSet($key) hatası: $e');
+    }
+  }
+
+  /// Verilen anahtardan kimlik kümesini güvenli şekilde yükler.
+  Future<Set<String>> _loadStringIdSet(String key) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return <String>{};
+      final list = prefs.getStringList(key);
+      if (list == null) return <String>{};
+      return list.where((id) => id.trim().isNotEmpty).toSet();
+    } catch (e) {
+      debugPrint('_loadStringIdSet($key) hatası: $e');
+      return <String>{};
+    }
+  }
+
+  /// Okundu olarak işaretlenen güncel bülten madde kimliklerini kaydeder.
+  Future<void> saveCurrentAffairsReadIds(Set<String> ids) =>
+      _saveStringIdSet(_keyCurrentAffairsReadIds, ids);
+
+  /// Okundu olarak işaretlenen güncel bülten madde kimliklerini okur.
+  Future<Set<String>> loadCurrentAffairsReadIds() =>
+      _loadStringIdSet(_keyCurrentAffairsReadIds);
+
+  /// Kaydedilen (bookmark) güncel bülten madde kimliklerini saklar.
+  Future<void> saveCurrentAffairsBookmarkedIds(Set<String> ids) =>
+      _saveStringIdSet(_keyCurrentAffairsBookmarkedIds, ids);
+
+  /// Kaydedilen (bookmark) güncel bülten madde kimliklerini okur.
+  Future<Set<String>> loadCurrentAffairsBookmarkedIds() =>
+      _loadStringIdSet(_keyCurrentAffairsBookmarkedIds);
+
   /// Test izolasyonu veya fabrika ayarlarına dönüş için aktif oturum anahtarlarını temizler.
   /// Cihaz günlük kota sayacı (`kadro_device_daily_quota`) suistimali önlemek için korunur.
   Future<void> clearAll() async {
@@ -610,12 +724,15 @@ class LocalStorageService {
       await prefs.remove(_keyPlannerCycleDay);
       await prefs.remove(_keyPlannerMaxUnlockedDay);
       await prefs.remove(_keyPlannerSnapshot);
+      await prefs.remove(_keyCurrentAffairsReadIds);
+      await prefs.remove(_keyCurrentAffairsBookmarkedIds);
       final allKeys = prefs.getKeys();
       for (final key in allKeys) {
         if (key.startsWith('kadro_planner_day_tasks_') ||
             key.startsWith('kadro_planner_snapshot_') ||
             key.startsWith('kadro_user_prefs_') ||
-            key.startsWith('kadro_study_stats_account_')) {
+            key.startsWith('kadro_study_stats_account_') ||
+            key.startsWith('kadro_flashcard_reviews_')) {
           await prefs.remove(key);
         }
       }

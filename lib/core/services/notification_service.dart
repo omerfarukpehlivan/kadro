@@ -1,18 +1,22 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:kadro/core/utils/platform_env.dart';
 
 /// KPSS Günlük Çalışma ve Seri Hatırlatıcı Bildirim Servisi.
 ///
 /// Akşam saat 20:00'de veya günlük çalışma saatlerinde kullanıcıya
 /// motivasyonel bildirim gönderir.
-/// Masaüstü, Web veya test ortamında otomatik olarak sessiz mock moduna geçer.
+/// Test ortamında otomatik olarak sessiz mock moduna geçer.
 class NotificationService {
   static final FlutterLocalNotificationsPlugin _notificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
   static bool _isInitialized = false;
   static bool _mockMode = false;
+
+  static bool get _isMobileDevice =>
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   /// Test senaryolarında mock modunu etkinleştirir.
   static void enableMockMode() {
@@ -23,7 +27,7 @@ class NotificationService {
   static Future<void> initializeSafely() async {
     if (_mockMode) return;
     try {
-      if (!PlatformEnv.isMobile) {
+      if (!_isMobileDevice) {
         _isInitialized = false;
         return;
       }
@@ -43,13 +47,16 @@ class NotificationService {
         iOS: iosSettings,
       );
 
-      await _notificationsPlugin.initialize(settings: initSettings);
+      await _notificationsPlugin
+          .initialize(settings: initSettings)
+          .timeout(const Duration(seconds: 4));
       _isInitialized = true;
 
-      // Akşam 20:00 günlük hatırlatmasını planla
-      await scheduleDailyStudyReminder();
-      // Pazar 10:00 haftalık deneme hatırlatmasını planla
-      await scheduleWeeklyExamReminder();
+      // Hatırlatma planlamaları ilk açılış karesini bekletmeden arka planda çalışır.
+      await Future.wait([
+        scheduleDailyStudyReminder(),
+        scheduleWeeklyExamReminder(),
+      ]).timeout(const Duration(seconds: 4));
     } catch (e) {
       debugPrint(
         'NotificationService initialize hatası (Mock moda geçiliyor): $e',

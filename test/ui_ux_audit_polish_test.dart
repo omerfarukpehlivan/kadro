@@ -215,11 +215,22 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
 
-        expect(find.text('Adım 1 / 3'), findsOneWidget);
+        expect(find.text('Hızlı Başlangıç · Tek Adım'), findsOneWidget);
+        expect(find.text('Şimdilik Atla'), findsOneWidget);
+        expect(find.text('Sınav & Müfredat'), findsOneWidget);
+        await tester.tap(
+          find.byKey(const ValueKey('onboarding_customize_button')),
+        );
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(find.text('Adım 2 / 3'), findsOneWidget);
+        expect(find.text('Günde Kaç Dakika Ayırabilirsin?'), findsOneWidget);
         await tester.tap(find.widgetWithText(FilledButton, 'Devam Et'));
         await tester.pumpAndSettle();
-        expect(find.text('Adım 2 / 3'), findsOneWidget);
+        expect(find.text('Adım 3 / 3'), findsOneWidget);
+        expect(find.text('Programımı Kur ve Başla'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );

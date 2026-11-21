@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:flex_color_scheme/flex_color_scheme.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:kadro/core/utils/platform_env.dart';
 
 /// Kadro uygulamasının "Tuğrul Kobaltı & Anadolu Altını" tasarım tokenları ve tema yapılandırması.
 ///
@@ -64,7 +66,8 @@ class AppTheme {
   /// Tipografi hiyerarşisi: Başlık ve skorlarda Outfit, gövde ve şıklarda DM Sans.
   static TextTheme _buildTextTheme(TextTheme base) {
     // Test ortamında Google Fonts HTTP ağ çağrılarını engeller; TASK-73 ölçeğini korur.
-    if (PlatformEnv.isFlutterTest) {
+    // Web ortamında Platform.environment çağrısı kIsWeb kontrolü olmadan UnsupportedOperation hatası fırlatır.
+    if (!kIsWeb && Platform.environment.containsKey('FLUTTER_TEST')) {
       return base.copyWith(
         displayLarge: base.displayLarge?.copyWith(
           fontSize: 32,
@@ -280,6 +283,26 @@ class AppTheme {
         color: scheme.outlineVariant,
         thickness: 1,
         space: 1,
+      ),
+      inputDecorationTheme: base.inputDecorationTheme.copyWith(
+        filled: true,
+        fillColor: scheme.surface,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: scheme.outlineVariant, width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: scheme.outlineVariant, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: scheme.primary, width: 1.8),
+        ),
       ),
       chipTheme: base.chipTheme.copyWith(
         shape: RoundedRectangleBorder(

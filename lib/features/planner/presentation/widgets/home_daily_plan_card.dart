@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
-import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
 import 'package:kadro/features/planner/presentation/study_task_launcher.dart';
-import 'package:kadro/features/planner/presentation/widgets/auto_study_program_modal.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -38,8 +36,9 @@ class HomeDailyPlanCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // 1. Üst Başlık ve Tümünü Gör
+          // 1. Üst Başlık ve Kompakt İlerleme Rozeti
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: 32,
@@ -59,38 +58,41 @@ class HomeDailyPlanCard extends ConsumerWidget {
               Expanded(
                 child: Text(
                   'Bugünün Çalışma Planı',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
                   style: textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurface,
                   ),
                 ),
               ),
               const SizedBox(width: 6),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => const StudyPlannerScreen(),
-                    ),
-                  );
-                },
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 4,
-                  ),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: isAllDone
+                      ? colorScheme.secondaryContainer
+                      : colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text('Tümünü Gör'),
+                child: Text(
+                  '${planner.completedCount}/${planner.totalCount}',
+                  style: textTheme.labelSmall?.copyWith(
+                    color: isAllDone
+                        ? colorScheme.onSecondaryContainer
+                        : colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w700,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 10),
 
-          // 2. Program Özeti & Düzenle Satırı
-          Row(
+          // 2. Program Özeti Satırı
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -113,8 +115,7 @@ class HomeDailyPlanCard extends ConsumerWidget {
                   ),
                 ),
               ),
-              if (planner.isViewingPastDay) ...[
-                const SizedBox(width: 6),
+              if (planner.isViewingPastDay)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 6,
@@ -132,47 +133,13 @@ class HomeDailyPlanCard extends ConsumerWidget {
                     ),
                   ),
                 ),
-              ],
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  prefs.hasActiveStudyProgram
-                      ? prefs.studyProgramPace.label
-                      : 'Program Seç',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 8),
-              InkWell(
-                onTap: () => AutoStudyProgramModal.show(context),
-                borderRadius: BorderRadius.circular(6),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 4,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      PhosphorIcon(
-                        PhosphorIconsRegular.slidersHorizontal,
-                        size: 14,
-                        color: colorScheme.primary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Düzenle',
-                        style: textTheme.labelMedium?.copyWith(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
+              Text(
+                prefs.hasActiveStudyProgram
+                    ? prefs.studyProgramPace.label
+                    : 'Program Seç',
+                softWrap: true,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -208,19 +175,19 @@ class HomeDailyPlanCard extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
 
-          // 4. Okunaklı Görev Kutuları
+          // 4. Okunaklı Görev Kutuları (Tüm Görevler Eksiksiz)
           if (planner.tasks.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: Text(
-                'Planlanmış görev yok. Tümünü Gör üzerinden yeni hedef ekleyebilirsin.',
+                'Bugün için planlanan tüm görevleri tamamladınız veya henüz görev bulunmuyor.',
                 style: textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
             )
           else
-            ...planner.tasks.take(4).map((task) {
+            ...planner.tasks.map((task) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _DailyPlanTaskItem(
@@ -253,13 +220,12 @@ class HomeDailyPlanCard extends ConsumerWidget {
                 ),
               ),
               icon: const PhosphorIcon(PhosphorIconsBold.arrowRight, size: 16),
-              label: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  planner.isViewingPastDay
-                      ? 'Sıradaki Güne Dön (Gün ${planner.cycleDay + 1}) →'
-                      : 'Günü Tamamladın! Sonraki Güne Geç (Gün ${planner.cycleDay + 1}) →',
-                ),
+              label: Text(
+                planner.isViewingPastDay
+                    ? 'Sıradaki Güne Dön (Gün ${planner.cycleDay + 1}) →'
+                    : 'Günü Tamamladın! Sonraki Güne Geç (Gün ${planner.cycleDay + 1}) →',
+                softWrap: true,
+                textAlign: TextAlign.center,
               ),
             ),
           ] else if (planner.isViewingPastDay &&
@@ -286,6 +252,8 @@ class HomeDailyPlanCard extends ConsumerWidget {
               ),
               label: Text(
                 'Sonraki Açık Güne Git (Gün ${planner.cycleDay + 1})',
+                softWrap: true,
+                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -311,6 +279,8 @@ class HomeDailyPlanCard extends ConsumerWidget {
               ),
               label: Text(
                 'Önceki Güne Dön (Gün ${planner.cycleDay - 1} Tekrarı)',
+                softWrap: true,
+                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -322,8 +292,9 @@ class HomeDailyPlanCard extends ConsumerWidget {
 
 /// Ana sayfa günlük plan kartı içindeki okunaklı tekil görev satırı.
 ///
-/// Web/Angular karşılığı: Başlığı, ders etiketini ve durum aksiyonunu
-/// tek satırda çerçeveli kutu olarak sunan `<app-daily-plan-task-item>` bileşenidir.
+/// Web/Angular karşılığı: Başlığı, ders etiketini, tahmini süresini ve durum aksiyonunu
+/// küçük ekranlarda bile kesilmeden (`softWrap: true`) çerçeveli kutu olarak sunan
+/// `<app-daily-plan-task-item>` bileşenidir.
 class _DailyPlanTaskItem extends StatelessWidget {
   final StudyTask task;
   final VoidCallback onToggle;
@@ -351,6 +322,7 @@ class _DailyPlanTaskItem extends StatelessWidget {
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           InkWell(
             onTap: onToggle,
@@ -358,7 +330,7 @@ class _DailyPlanTaskItem extends StatelessWidget {
               left: Radius.circular(10),
             ),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(10, 12, 6, 12),
+              padding: const EdgeInsets.fromLTRB(10, 14, 6, 14),
               child: PhosphorIcon(
                 task.isCompleted
                     ? PhosphorIconsFill.checkCircle
@@ -379,6 +351,7 @@ class _DailyPlanTaskItem extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(4, 10, 10, 10),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Column(
@@ -387,10 +360,10 @@ class _DailyPlanTaskItem extends StatelessWidget {
                         children: [
                           Text(
                             task.title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
                             style: textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w600,
+                              height: 1.35,
                               decoration: task.isCompleted
                                   ? TextDecoration.lineThrough
                                   : null,
@@ -399,14 +372,28 @@ class _DailyPlanTaskItem extends StatelessWidget {
                                   : colorScheme.onSurface,
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            task.lessonTag,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
+                          const SizedBox(height: 4),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              Text(
+                                task.lessonTag,
+                                softWrap: true,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (task.estimatedMinutes > 0)
+                                Text(
+                                  '· ${task.estimatedMinutes} dk',
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                            ],
                           ),
                         ],
                       ),

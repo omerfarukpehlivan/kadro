@@ -3,14 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/features/exams/data/branch_mock_exam_generator.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
+import 'package:kadro/features/exams/presentation/widgets/blueprint_exam_launcher.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
+import 'package:kadro/features/lessons/data/models/exam_curriculum.dart';
 import 'package:kadro/features/lessons/presentation/topic_tests_screen.dart';
+import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
+import 'package:kadro/shared/widgets/kadro_confirm_dialog.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -44,7 +50,7 @@ class _LessonTopicsScreenState extends ConsumerState<LessonTopicsScreen> {
   Future<void> _downloadAllTopics(BuildContext context, WidgetRef ref) async {
     final isPro = ref.read(userPreferencesProvider).isPro;
     if (!isPro) {
-      Navigator.of(context).push(
+      Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
           builder: (_) => const PaywallScreen(
             reasonMessage: 'Çevrimdışı soru ve deneme indirme özelliği Kadro PRO üyelerine özeldir.',
@@ -76,6 +82,7 @@ class _LessonTopicsScreenState extends ConsumerState<LessonTopicsScreen> {
           lesson: lesson.name,
           topic: topic,
           selection: selection,
+          limit: 500,
         );
         final finalQuestions = questions.isNotEmpty
             ? questions
@@ -102,6 +109,31 @@ class _LessonTopicsScreenState extends ConsumerState<LessonTopicsScreen> {
     }
   }
 
+  Future<void> _startBranchMockExam(BuildContext context, WidgetRef ref) async {
+    final selection = readOrWatchExamSelection(ref, watch: false);
+    final curriculum = CurriculumRegistry.resolve(selection);
+    final matchingSpec = curriculum.activeLessons
+        .cast<LessonSpec?>()
+        .firstWhere(
+          (item) => item?.id == lesson.id || item?.name == lesson.name,
+          orElse: () => null,
+        );
+    final effectiveSpec = matchingSpec ?? LessonSpec.fromLegacyLesson(lesson);
+    final blueprint = BranchMockExamGenerator.buildBlueprint(
+      lesson: effectiveSpec,
+      selection: selection,
+      branchMockNumber: 1,
+      isProOnly: false,
+    );
+    await launchBlueprintExamWithGuard(
+      context: context,
+      ref: ref,
+      blueprint: blueprint,
+      selection: selection,
+      isBranchMock: true,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -111,62 +143,71 @@ class _LessonTopicsScreenState extends ConsumerState<LessonTopicsScreen> {
     final accent = mood.accentColor(colorScheme);
     final isSplitPane = ResponsiveBreakpoints.usesSplitPane(context);
     final activeTopic = _effectiveSelectedTopic;
+    final canStartBranchMock =
+        !lesson.isComingSoon &&
+        lesson.questionCount > 0 &&
+        lesson.topics.isNotEmpty;
 
     final heroBanner = TactileCard(
       backgroundColor: colorScheme.surfaceContainerLow,
       borderColor: accent.withAlpha(120),
       lipColor: accent.withAlpha(140),
       padding: const EdgeInsets.all(14),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: accent.withAlpha(24),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    '${lesson.topics.length} Ünite · Sınavda ${lesson.questionCount} Soru',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: accent,
-                      fontWeight: FontWeight.w700,
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    KadroBadge(
+                      label:
+                          '${lesson.topics.length} Ünite · Sınavda ${lesson.questionCount} Soru',
+                      backgroundColor: accent.withAlpha(24),
+                      foregroundColor: accent,
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Konu Yol Haritası',
+                      style: textTheme.titleLarge?.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      isSplitPane
+                          ? 'Soldan ünite seçin, sağ panelde konu testlerine hemen başlayın.'
+                          : 'Üniteleri sırayla aç veya doğrudan test çözmeye başla.',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Konu Yol Haritası',
-                  style: textTheme.titleLarge?.copyWith(
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  isSplitPane
-                      ? 'Soldan ünite seçin, sağ panelde konu testlerine hemen başlayın.'
-                      : 'Üniteleri sırayla aç veya doğrudan test çözmeye başla.',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
+              ),
+              const SizedBox(width: 12),
+              TugrulAvatar(
+                mood: mood,
+                size: isSplitPane ? 76 : 62,
+                ringColor: accent,
+                tooltip: '${lesson.name} İpuçları',
+                onTap: () => TugrulTipsSheet.show(context, mood: mood),
+              ),
+            ],
+          ),
+          if (canStartBranchMock) ...[
+            const SizedBox(height: 12),
+            FilledButton.tonalIcon(
+              key: const ValueKey('lesson_branch_mock_button'),
+              onPressed: () => _startBranchMockExam(context, ref),
+              icon: const PhosphorIcon(PhosphorIconsBold.exam, size: 16),
+              label: Text(
+                'Bu Dersten Branş Denemesi Çöz (${lesson.questionCount} Soru)',
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          TugrulAvatar(
-            mood: mood,
-            size: isSplitPane ? 76 : 62,
-            ringColor: accent,
-            tooltip: '${lesson.name} İpuçları',
-            onTap: () => TugrulTipsSheet.show(context, mood: mood),
-          ),
+          ],
         ],
       ),
     );
@@ -181,36 +222,35 @@ class _LessonTopicsScreenState extends ConsumerState<LessonTopicsScreen> {
           style: textTheme.titleMedium,
         ),
         actions: [
-          if (OfflineDownloadService.isSupported)
-            Padding(
-              padding: EdgeInsets.only(
-                right: ResponsiveBreakpoints.horizontalPadding(context) - 8,
-              ),
-              child: Tooltip(
-                message: '${lesson.name} Tüm Konuları İndir (PRO)',
-                child: TextButton.icon(
-                  onPressed: () => _downloadAllTopics(context, ref),
-                  style: TextButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
+          Padding(
+            padding: EdgeInsets.only(
+              right: ResponsiveBreakpoints.horizontalPadding(context) - 8,
+            ),
+            child: Tooltip(
+              message: '${lesson.name} Tüm Konuları İndir (PRO)',
+              child: TextButton.icon(
+                onPressed: () => _downloadAllTopics(context, ref),
+                style: TextButton.styleFrom(
+                  visualDensity: VisualDensity.compact,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
                   ),
-                  icon: const PhosphorIcon(
-                    PhosphorIconsBold.downloadSimple,
-                    size: 16,
-                  ),
-                  label: Text(
-                    'Tümünü İndir',
-                    style: textTheme.labelMedium?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
+                ),
+                icon: const PhosphorIcon(
+                  PhosphorIconsBold.downloadSimple,
+                  size: 16,
+                ),
+                label: Text(
+                  'Tümünü İndir',
+                  style: textTheme.labelMedium?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
             ),
+          ),
         ],
       ),
       body: isSplitPane && activeTopic != null
@@ -348,35 +388,20 @@ class _TopicPathNode extends ConsumerWidget {
           ),
         );
       } else {
-        showDialog(
-          context: context,
-          builder: (dialogCtx) => AlertDialog(
-            title: const Row(
-              children: [
-                PhosphorIcon(PhosphorIconsBold.wifiSlash),
-                SizedBox(width: 8),
-                Text('İnternet Bağlantısı Yok'),
-              ],
-            ),
-            content: const Text(
-              'Bu denemeyi internetsiz çözebilmek için internet varken Kadro PRO ile indirmiş olmanız gerekir.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogCtx).pop(),
-                child: const Text('Tamam'),
-              ),
-              FilledButton(
-                onPressed: () {
-                  Navigator.of(dialogCtx).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PaywallScreen()),
-                  );
-                },
-                child: const Text("Kadro PRO'ya Geç"),
-              ),
-            ],
-          ),
+        KadroConfirmDialog.alert(
+          context,
+          icon: PhosphorIconsBold.wifiSlash,
+          title: 'İnternet Bağlantısı Yok',
+          message: 'Bu denemeyi internetsiz çözebilmek için internet varken Kadro PRO ile indirmiş olmanız gerekir.',
+          buttonLabel: 'Tamam',
+          secondaryButtonLabel: "Kadro PRO'ya Geç",
+          onSecondaryPressed: () {
+            if (!context.mounted) return;
+            Navigator.of(
+              context,
+              rootNavigator: true,
+            ).push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+          },
         );
       }
     } else {
@@ -405,10 +430,12 @@ class _TopicPathNode extends ConsumerWidget {
     );
 
     final stats = ref.watch(studyStatsProvider);
-    final solvedTestCount = stats.countSolvedTestsForTopic(
-      lesson: lessonName,
-      topic: topic,
-    );
+    final planner = ref.watch(studyPlannerProvider);
+    final solvedTestNumbers = <int>{
+      ...stats.solvedTestNumbersForTopic(lesson: lessonName, topic: topic),
+      ...planner.completedTestNumbersForTopic(lesson: lessonName, topic: topic),
+    };
+    final solvedTestCount = solvedTestNumbers.length;
     final topicCountsAsync = ref.watch(
       lessonTopicTestCountsProvider(
         TopicCountQueryKey(

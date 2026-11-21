@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 /// KPSS Soru Havuzu Telif ve Ekran Kaydı Koruma Servisi (TASK-96).
@@ -8,7 +7,7 @@ import 'package:flutter/services.dart';
 /// otomatik ekran görüntüsü (screenshot) veya ekran kaydı ile çalınmasını (scraping) önler.
 ///
 /// Android: `WindowManager.LayoutParams.FLAG_SECURE`
-/// iOS / Web / Test: Güvenli fallback / Mock mod.
+/// iOS / Test: Güvenli fallback / Mock mod.
 class ScreenSecurityService {
   ScreenSecurityService._();
 
@@ -23,7 +22,6 @@ class ScreenSecurityService {
 
   /// Soru çözüm ekranında ekran görüntüsü ve video kaydı almayı engeller.
   static Future<void> enableSecureMode() async {
-    if (kIsWeb) return;
     try {
       await _channel.invokeMethod('enableSecureMode');
       _isSecureModeEnabled = true;
@@ -35,7 +33,6 @@ class ScreenSecurityService {
 
   /// Ekrandan çıkıldığında ekran görüntüsü engelini kaldırır.
   static Future<void> disableSecureMode() async {
-    if (kIsWeb) return;
     try {
       await _channel.invokeMethod('disableSecureMode');
       _isSecureModeEnabled = false;

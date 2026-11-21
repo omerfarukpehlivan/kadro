@@ -3,15 +3,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
-import 'package:kadro/features/planner/presentation/study_planner_screen.dart';
+import 'package:kadro/features/planner/presentation/widgets/home_daily_plan_card.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/main.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('StudyPlannerNotifier ve StudyTask Testleri', () {
     late ProviderContainer container;
 
     setUp(() {
+      SharedPreferences.setMockInitialValues({});
       container = ProviderContainer();
     });
 
@@ -113,8 +118,9 @@ void main() {
 
   group('StudyPlanner Widget & Entegrasyon Testleri', () {
     testWidgets(
-      'HomeScreen üzerinde Bugünün Çalışma Planı kartı ve StudyPlannerScreen entegrasyonu',
+      'TASK-162: HomeScreen üzerinde Bugünün Çalışma Planı kartı tüm görevleri gösterir, Tümünü Gör ve Düzenle kaldırılmıştır',
       (WidgetTester tester) async {
+        SharedPreferences.setMockInitialValues({});
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -137,51 +143,44 @@ void main() {
           scrollable: find.byType(Scrollable).first,
         );
         expect(find.text('Bugünün Çalışma Planı'), findsOneWidget);
+        // TASK-162: Tümünü Gör ve Düzenle butonları kaldırıldı
+        expect(find.text('Tümünü Gör'), findsNothing);
+        expect(find.text('Düzenle'), findsNothing);
+
+        // Kompakt ilerleme rozeti mevcut
+        expect(find.text('0/3'), findsOneWidget);
+        expect(find.text('0/3 görev'), findsOneWidget);
+
+        await tester.scrollUntilVisible(
+          find.text('İslamiyet Öncesi Türk Tarihi · Test 1'),
+          100,
+          scrollable: find.byType(Scrollable).first,
+        );
         expect(
           find.text('İslamiyet Öncesi Türk Tarihi · Test 1'),
           findsOneWidget,
         );
-        expect(find.text('Tümünü Gör'), findsOneWidget);
-        expect(find.text('Düzenle'), findsOneWidget);
 
-        // 2. 'Tümünü Gör' butonuna bas ve StudyPlannerScreen ekranına geçişi doğrula
-        await tester.ensureVisible(find.text('Tümünü Gör'));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Tümünü Gör'));
-        await tester.pumpAndSettle();
-
-        expect(find.byType(StudyPlannerScreen), findsOneWidget);
-        expect(find.text('Çalışma Planlayıcın'), findsOneWidget);
+        // 2. İlk görevin onay kutusuna dokun ve tamamlandığını (üzeri çizili) doğrula
+        final firstCheckCircle = find.byIcon(PhosphorIconsRegular.circle).first;
         await tester.scrollUntilVisible(
-          find.text('Görev Listesi (3)'),
-          200,
+          firstCheckCircle,
+          100,
           scrollable: find.byType(Scrollable).first,
         );
-        expect(find.text('Görev Listesi (3)'), findsOneWidget);
-
-        // 3. Sıradaki görevlerden ilk hızlı ekleme kartına tıkla ve görev sayısının 4 olduğunu doğrula
-        final firstUpcomingChip = find.byKey(
-          const ValueKey('upcoming_quick_task_0'),
-        );
-        expect(firstUpcomingChip, findsOneWidget);
-        final chipWidget = tester.widget<ActionChip>(firstUpcomingChip);
-        final chipTitle = (chipWidget.label as Text).data!.replaceFirst(
-          '+ ',
-          '',
-        );
-
-        await tester.ensureVisible(firstUpcomingChip);
         await tester.pumpAndSettle();
-        await tester.tap(firstUpcomingChip);
+        await tester.tap(firstCheckCircle, warnIfMissed: false);
         await tester.pumpAndSettle();
 
-        expect(find.text('Görev Listesi (4)'), findsOneWidget);
-        await tester.drag(
-          find.text('Görev Listesi (4)'),
-          const Offset(0, -400),
+        expect(
+          find.descendant(
+            of: find.byType(HomeDailyPlanCard),
+            matching: find.byIcon(PhosphorIconsFill.checkCircle),
+          ),
+          findsOneWidget,
         );
-        await tester.pumpAndSettle();
-        expect(find.text(chipTitle), findsOneWidget);
+        expect(find.text('1/3'), findsOneWidget);
+        expect(find.text('1/3 görev'), findsOneWidget);
       },
     );
 
@@ -213,5 +212,68 @@ void main() {
         isFalse,
       );
     });
+
+    testWidgets(
+      'Küçük mobil ekranda (320px) uzun görev başlıkları üç nokta (ellipsis) ile kesilmeden tam okunabilir (softWrap) render edilmeli',
+      (WidgetTester tester) async {
+        SharedPreferences.setMockInitialValues({});
+        tester.view.physicalSize = const Size(320, 720);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        const longTask = StudyTask(
+          id: 'long_task_1',
+          title: 'Osmanlı Devleti Kültür ve Medeniyeti · Devlet Yönetimi ve Ordu Teşkilatı · Test 3',
+          lessonTag: 'Tarih',
+          estimatedMinutes: 15,
+          actionType: StudyTaskActionType.quiz,
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              initialUserPreferencesProvider.overrideWithValue(
+                const UserPreferencesState(
+                  hasCompletedOnboarding: true,
+                  hasActiveStudyProgram: true,
+                ),
+              ),
+              studyPlannerProvider.overrideWith(
+                () => _FixedStudyPlannerNotifier(
+                  const StudyPlannerState(tasks: [longTask], cycleDay: 1),
+                ),
+              ),
+            ],
+            child: const MaterialApp(
+              home: Scaffold(
+                body: SingleChildScrollView(child: HomeDailyPlanCard()),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final titleFinder = find.text(longTask.title);
+        expect(titleFinder, findsOneWidget);
+
+        final titleWidget = tester.widget<Text>(titleFinder);
+        expect(titleWidget.maxLines, isNull);
+        expect(titleWidget.overflow, isNot(equals(TextOverflow.ellipsis)));
+        expect(titleWidget.softWrap, isTrue);
+        expect(find.text('· 15 dk'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
   });
+}
+
+class _FixedStudyPlannerNotifier extends StudyPlannerNotifier {
+  final StudyPlannerState initialState;
+  _FixedStudyPlannerNotifier(this.initialState);
+
+  @override
+  StudyPlannerState build() => initialState;
 }

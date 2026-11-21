@@ -108,24 +108,12 @@ class Question {
         ? const {'lisans_gk'}
         : normalizedScopes;
 
-    final targetScope = selection.scopeKey.toLowerCase();
     final acceptedScopes = <String>{
-      targetScope,
-      '${selection.family.key}_common',
-      if (selection.family == KpssExamFamily.bGrubu &&
-          selection.bGroupProfile == BGroupProfile.fullGyGk) ...{
-        '${selection.educationLevel.key}_gk',
-        'b_grubu_gygk',
-        'b_grubu_gk',
-      },
-      if (selection.family == KpssExamFamily.bGrubu &&
-          selection.bGroupProfile == BGroupProfile.onlyGk)
-        'b_grubu_gk',
+      ...selection.acceptedQuestionScopes,
       if (selection.family == KpssExamFamily.mebAgs &&
           selection.oabtBranch != OabtBranch.none &&
           (subBranch == null || subBranch!.trim().isEmpty))
         'meb_ags',
-      if (selection.family == KpssExamFamily.dhbt) ...{'dhbt_common', 'dhbt_1'},
     };
 
     if (effectiveScopes.intersection(acceptedScopes).isEmpty) {

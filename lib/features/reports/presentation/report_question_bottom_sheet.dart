@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/reports/data/models/question_report.dart';
 import 'package:kadro/features/reports/data/question_report_repository.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/shared/widgets/kadro_dropdown.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -99,56 +100,16 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
         : widget.question.text;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Center(
-            child: Container(
-              width: 36,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  PhosphorIcon(
-                    PhosphorIconsRegular.flag,
-                    color: colorScheme.error,
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Hatalı Soru Bildir',
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurface,
-                    ),
-                  ),
-                ],
-              ),
-              IconButton(
-                icon: const PhosphorIcon(PhosphorIconsBold.x, size: 18),
-                onPressed: () => Navigator.of(context).pop(),
-                tooltip: 'Kapat',
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: colorScheme.surfaceContainerLow,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(color: colorScheme.outlineVariant),
             ),
             child: Column(
@@ -156,20 +117,14 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
               children: [
                 Row(
                   children: [
-                    Container(
+                    KadroBadge(
+                      label:
+                          '${widget.question.lesson} · ${widget.question.topic}',
+                      tone: KadroBadgeTone.primary,
+                      borderRadius: 6,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 7,
                         vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        '${widget.question.lesson} · ${widget.question.topic}',
-                        style: textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onPrimaryContainer,
-                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -228,9 +183,6 @@ class _ReportQuestionBottomSheetState extends State<ReportQuestionBottomSheet> {
               hintText: 'Detay eklemek ister misiniz? (Opsiyonel)',
               hintStyle: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
               ),
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/map_practice/data/models/map_challenge.dart';
+import 'package:kadro/shared/widgets/kadro_confirm_dialog.dart';
 import 'package:kadro/shared/widgets/turkey_map/turkey_map.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -125,79 +126,36 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
     try {
       widget.onCompleted?.call();
     } catch (_) {}
-    final theme = Theme.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
 
-    showDialog(
-      context: context,
+    KadroConfirmDialog.alert(
+      context,
       barrierDismissible: false,
-      builder: (ctx) {
-        final ctxScheme = Theme.of(ctx).colorScheme;
-        return AlertDialog(
-          backgroundColor: ctxScheme.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(color: ctxScheme.outlineVariant),
-          ),
-          title: Row(
-            children: [
-              PhosphorIcon(
-                PhosphorIconsRegular.trophy,
-                color: ctxScheme.tertiary,
-                size: 26,
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  'Antrenman Tamamlandı!',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Harita üzerinde görsel hafızanı güçlendirdin!',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    _buildStatItem('Soru', '${widget.challenges.length}'),
-                    _buildStatItem('Kazanılan Puan', '+$_score XP'),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          actions: [
-            FilledButton(
-              onPressed: () {
-                Navigator.of(ctx).pop();
-                Navigator.of(context).pop();
-              },
-              child: const Text('Antrenmanı Bitir'),
-            ),
+      icon: PhosphorIconsRegular.trophy,
+      iconColor: colorScheme.tertiary,
+      title: 'Antrenman Tamamlandı!',
+      message: 'Harita üzerinde görsel hafızanı güçlendirdin!',
+      extraContent: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: colorScheme.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: colorScheme.primary.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildStatItem('Soru', '${widget.challenges.length}'),
+            _buildStatItem('Kazanılan Puan', '+$_score XP'),
           ],
-        );
-      },
-    );
+        ),
+      ),
+      buttonLabel: 'Antrenmanı Bitir',
+    ).then((_) {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    });
   }
 
   Widget _buildStatItem(String label, String value) {

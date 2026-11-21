@@ -136,11 +136,8 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // 5 / 35 Test Çözüldü (%14) görünmeli
-        expect(
-          find.textContaining('5 / 35 Test Çözüldü (%14)'),
-          findsOneWidget,
-        );
+        // 5 / 62 Test Çözüldü (%8) görünmeli (Tarih dersinde toplam 62 test vardır)
+        expect(find.textContaining('5 / 62 Test Çözüldü (%8)'), findsOneWidget);
       },
     );
   });

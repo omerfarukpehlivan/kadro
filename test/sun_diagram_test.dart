@@ -134,7 +134,7 @@ void main() {
 
       expect(find.byType(InteractiveViewer), findsOneWidget);
       expect(
-        find.textContaining('Çift parmakla yakınlaştırabilirsiniz'),
+        find.textContaining('İki parmağınızla yakınlaştırabilirsiniz'),
         findsOneWidget,
       );
     });

@@ -7,18 +7,41 @@ import 'package:kadro/core/services/ad_service.dart';
 import 'package:kadro/core/services/local_storage_service.dart';
 import 'package:kadro/core/services/notification_service.dart';
 import 'package:kadro/core/services/purchase_service.dart';
-import 'package:kadro/core/utils/web_url_strategy.dart';
+import 'package:kadro/features/flashcards/data/flashcard_review_repository.dart';
+import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+/// Uygulama açılışından sonraki ilk kare çizildikten sonra ağ/reklam/bildirim
+/// SDK'larını başlatır; böylece açılış ekranı donmaz ve kilitlenmez.
+void _scheduleDeferredStartupServices() {
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    Future.wait([
+      PurchaseService.initializeSafely(),
+      AdService.initializeSafely(),
+      NotificationService.initializeSafely(),
+    ]);
+  });
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  configureWebUrlStrategy();
+
+  // Görünmez/sessiz çökme yerine hatayı logla ve izolatın kilitlenmesini önle
+  // (örn. çevrimdışı GoogleFonts font indirme hataları).
+  final defaultFlutterErrorHandler = FlutterError.onError;
+  FlutterError.onError = (details) {
+    debugPrint('FlutterError: ${details.exceptionAsString()}');
+    defaultFlutterErrorHandler?.call(details);
+  };
+  WidgetsBinding.instance.platformDispatcher.onError = (error, stack) {
+    debugPrint('PlatformDispatcherError: $error\n$stack');
+    return true;
+  };
+
   await SupabaseConfig.initializeSafely();
-  await PurchaseService.initializeSafely();
-  await AdService.initializeSafely();
-  await NotificationService.initializeSafely();
+  _scheduleDeferredStartupServices();
 
   final hasSupabaseSession =
       !SupabaseConfig.isReady ||
@@ -42,6 +65,18 @@ Future<void> main() async {
   final savedSnapshot = hasSupabaseSession
       ? await storage.loadPlannerSnapshot()
       : null;
+
+  if (hasSupabaseSession) {
+    final activeScope = savedPrefs?.examSelection.scopeKey ?? 'lisans_gk';
+    try {
+      await Future.wait([
+        const MistakeRepository().loadFromStorage(),
+        const FlashcardReviewRepository().loadFromStorage(activeScope),
+      ]).timeout(const Duration(seconds: 2));
+    } catch (e) {
+      debugPrint('Başlangıç önbellek yükleme fallback: $e');
+    }
+  }
 
   StudyPlannerState? initialPlannerState;
   if ((savedDayTasks != null && savedDayTasks.isNotEmpty) ||

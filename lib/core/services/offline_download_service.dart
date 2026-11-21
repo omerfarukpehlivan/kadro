@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/services/local_storage_service.dart';
-import 'package:kadro/core/utils/platform_env.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 
 /// Kadro PRO üyeliği gerektiren bir eylem ücretsiz kullanıcı tarafından çağrıldığında fırlatılan özel istisna.
@@ -29,10 +28,6 @@ class OfflineDownloadService {
 
   OfflineDownloadService({LocalStorageService? storage, this.isOnline = true})
     : _storage = storage ?? LocalStorageService();
-
-  /// Web tarayıcılarında `localStorage` ~5MB sınırı ve telif koruması nedeniyle
-  /// çevrimdışı toplu soru indirme kapalıdır (`TASK-145`).
-  static bool get isSupported => !PlatformEnv.isWeb;
 
   /// Sınav kapsamı (`scopeNamespace`) ile izole edilmiş kanonik konu paket ID'si üretir.
   ///
@@ -82,11 +77,6 @@ class OfflineDownloadService {
     required List<Question> questions,
     required bool isPro,
   }) async {
-    if (!isSupported) {
-      throw UnsupportedError(
-        'Çevrimdışı indirme özelliği yalnızca mobil uygulamada desteklenir.',
-      );
-    }
     if (!isPro) {
       throw const ProRequiredException();
     }

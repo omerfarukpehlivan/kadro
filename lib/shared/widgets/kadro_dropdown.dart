@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -6,6 +8,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 /// Angular/Web karşılığı: Stilize edilmiş `<mat-select>` / `<select>` bileşenidir.
 /// Form içi tam genişlikte alan (`KadroDropdown`) ve kart başlıkları için
 /// kompakt hap (`KadroDropdown.compact`) varyantlarını tek çekirdek mantıkta sunar.
+/// Açılır liste butonun üzerinde değil, doğrudan altında yukarıdan aşağıya
+/// yumuşak bir animasyonla açılır.
 class KadroDropdown<T> extends StatefulWidget {
   final T? value;
   final List<T> items;
@@ -55,9 +59,241 @@ class KadroDropdown<T> extends StatefulWidget {
   State<KadroDropdown<T>> createState() => _KadroDropdownState<T>();
 }
 
-class _KadroDropdownState<T> extends State<KadroDropdown<T>> {
-  bool _isHovered = false;
+class _KadroDropdownState<T> extends State<KadroDropdown<T>>
+    with SingleTickerProviderStateMixin {
+  final LayerLink _layerLink = LayerLink();
+  final GlobalKey _triggerKey = GlobalKey();
+
+  late final AnimationController _animController;
+  late final Animation<double> _expandAnimation;
+
+  OverlayEntry? _overlayEntry;
   bool _isFocused = false;
+  bool _isOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 170),
+      reverseDuration: const Duration(milliseconds: 120),
+    );
+    _expandAnimation = CurvedAnimation(
+      parent: _animController,
+      curve: Curves.easeOutCubic,
+      reverseCurve: Curves.easeInCubic,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant KadroDropdown<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.enabled && _isOpen) {
+      _removeOverlay();
+    } else if (_isOpen) {
+      _overlayEntry?.markNeedsBuild();
+    }
+  }
+
+  @override
+  void dispose() {
+    _removeOverlay();
+    _animController.dispose();
+    super.dispose();
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
+  }
+
+  void _toggleMenu() {
+    if (_isOpen) {
+      _closeMenu();
+    } else {
+      _openMenu();
+    }
+  }
+
+  void _closeMenu({bool immediate = false}) {
+    if (!_isOpen) return;
+    setState(() => _isOpen = false);
+
+    final disableAnimations =
+        immediate || (mounted && MediaQuery.disableAnimationsOf(context));
+    if (disableAnimations) {
+      _animController.value = 0;
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+      return;
+    }
+
+    _animController.reverse().then((_) {
+      if (!mounted || _isOpen) return;
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    });
+  }
+
+  void _openMenu() {
+    final renderObject = _triggerKey.currentContext?.findRenderObject();
+    if (renderObject is! RenderBox) return;
+
+    final overlayState = Overlay.of(context, rootOverlay: true);
+    final triggerSize = renderObject.size;
+    final triggerOffset = renderObject.localToGlobal(Offset.zero);
+    final media = MediaQuery.of(context);
+    final screenHeight = media.size.height;
+    final screenWidth = media.size.width;
+
+    final spaceBelow =
+        screenHeight -
+        (triggerOffset.dy + triggerSize.height) -
+        media.padding.bottom -
+        12;
+    final spaceAbove = triggerOffset.dy - media.padding.top - 12;
+
+    final openAbove = spaceBelow < 150 && spaceAbove > spaceBelow;
+    final availableHeight = openAbove ? spaceAbove : spaceBelow;
+    final maxMenuHeight = math.min(280.0, math.max(120.0, availableHeight));
+    final menuWidth = widget.isCompact
+        ? math.min(screenWidth - 24, math.max(triggerSize.width, 190.0))
+        : triggerSize.width;
+
+    setState(() => _isOpen = true);
+
+    _overlayEntry = OverlayEntry(
+      builder: (overlayContext) {
+        final theme = Theme.of(overlayContext);
+        final colorScheme = theme.colorScheme;
+        final textTheme = theme.textTheme;
+
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _closeMenu,
+              ),
+            ),
+            CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              targetAnchor: openAbove
+                  ? Alignment.topLeft
+                  : Alignment.bottomLeft,
+              followerAnchor: openAbove
+                  ? Alignment.bottomLeft
+                  : Alignment.topLeft,
+              offset: Offset(0, openAbove ? -6 : 6),
+              child: Material(
+                color: colorScheme.surface.withAlpha(0),
+                child: FadeTransition(
+                  opacity: _expandAnimation,
+                  child: SizeTransition(
+                    sizeFactor: _expandAnimation,
+                    axis: Axis.vertical,
+                    alignment: openAbove
+                        ? Alignment.bottomCenter
+                        : Alignment.topCenter,
+                    child: Container(
+                      width: menuWidth,
+                      constraints: BoxConstraints(maxHeight: maxMenuHeight),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: colorScheme.outlineVariant,
+                          width: 1.5,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colorScheme.shadow.withAlpha(26),
+                            blurRadius: 16,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: widget.items
+                              .map((item) {
+                                final isCurrent = item == widget.value;
+                                final itemLabel = widget.itemLabelBuilder(item);
+                                final itemStyle = textTheme.bodyMedium
+                                    ?.copyWith(
+                                      color: isCurrent
+                                          ? colorScheme.primary
+                                          : colorScheme.onSurface,
+                                      fontWeight: isCurrent
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
+                                    );
+
+                                return InkWell(
+                                  key: widget.itemKeyBuilder?.call(item),
+                                  onTap: () {
+                                    _closeMenu(immediate: true);
+                                    widget.onChanged(item);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 10,
+                                    ),
+                                    color: isCurrent
+                                        ? colorScheme.primaryContainer
+                                              .withAlpha(70)
+                                        : null,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            itemLabel,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: itemStyle,
+                                          ),
+                                        ),
+                                        if (isCurrent) ...[
+                                          const SizedBox(width: 8),
+                                          PhosphorIcon(
+                                            PhosphorIconsBold.check,
+                                            size: 15,
+                                            color: colorScheme.primary,
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              })
+                              .toList(growable: false),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    overlayState.insert(_overlayEntry!);
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _animController.value = 1.0;
+    } else {
+      _animController.forward(from: 0.0);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,11 +303,14 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>> {
     final disableAnimations = MediaQuery.disableAnimationsOf(context);
     final interactive = widget.enabled && widget.items.isNotEmpty;
 
-    final alignment = widget.alignEnd
-        ? AlignmentDirectional.centerEnd
-        : AlignmentDirectional.centerStart;
+    final hasValue = widget.value != null;
+    final displayText = hasValue
+        ? widget.itemLabelBuilder(widget.value as T)
+        : (widget.hint ?? '');
 
-    final TextStyle? selectedStyle = widget.isCompact
+    final TextStyle? selectedStyle = !hasValue
+        ? textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant)
+        : widget.isCompact
         ? textTheme.labelSmall?.copyWith(
             fontWeight: FontWeight.w700,
             color: colorScheme.onPrimaryContainer,
@@ -86,173 +325,109 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>> {
             fontWeight: FontWeight.w600,
           );
 
-    final dropdownButton = DropdownButtonHideUnderline(
-      child: DropdownButton<T>(
-        key: widget.dropdownKey,
-        value: widget.value,
-        isDense: true,
-        isExpanded: !widget.isCompact,
-        alignment: alignment,
-        borderRadius: BorderRadius.circular(12),
-        dropdownColor: colorScheme.surface,
-        focusColor: colorScheme.primary.withAlpha(18),
-        onTap: interactive ? () {} : null,
-        hint: widget.hint != null
-            ? Text(
-                widget.hint!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              )
-            : null,
-        icon: Padding(
-          padding: EdgeInsets.only(left: widget.isCompact ? 4 : 6),
-          child: PhosphorIcon(
-            widget.isCompact
-                ? PhosphorIconsBold.caretDown
-                : PhosphorIconsRegular.caretDown,
-            size: widget.isCompact ? 12 : 16,
-            color: widget.isCompact
-                ? colorScheme.onPrimaryContainer
-                : colorScheme.primary,
-          ),
-        ),
-        selectedItemBuilder: (ctx) => widget.items
-            .map(
-              (item) => Align(
-                alignment: alignment,
-                child: Text(
-                  widget.itemLabelBuilder(item),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: selectedStyle,
-                ),
-              ),
-            )
-            .toList(growable: false),
-        items: widget.items
-            .map((item) {
-              final isCurrent = item == widget.value;
-              final label = widget.itemLabelBuilder(item);
-              final style = textTheme.bodyMedium?.copyWith(
-                color: isCurrent ? colorScheme.primary : colorScheme.onSurface,
-                fontWeight: isCurrent ? FontWeight.w700 : FontWeight.w500,
-              );
-              return DropdownMenuItem<T>(
-                key: widget.itemKeyBuilder?.call(item),
-                value: item,
-                child: widget.isCompact
-                    ? Text(
-                        label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: style,
-                      )
-                    : Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              label,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: style,
-                            ),
-                          ),
-                          if (isCurrent) ...[
-                            const SizedBox(width: 8),
-                            PhosphorIcon(
-                              PhosphorIconsBold.check,
-                              size: 15,
-                              color: colorScheme.primary,
-                            ),
-                          ],
-                        ],
-                      ),
-              );
-            })
-            .toList(growable: false),
-        onChanged: interactive
-            ? (next) {
-                if (next != null) {
-                  widget.onChanged(next);
-                }
-              }
-            : null,
-      ),
-    );
-
     final Color containerBg = widget.isCompact
         ? colorScheme.primaryContainer
         : colorScheme.surfaceContainerLow;
-    final Color borderColor = _isFocused
+    final Color borderColor = (_isFocused || _isOpen)
         ? colorScheme.primary
-        : _isHovered && interactive
-        ? colorScheme.primary.withAlpha(150)
         : widget.isCompact
         ? colorScheme.primaryContainer
         : colorScheme.outlineVariant;
 
-    final box = Focus(
-      skipTraversal: true,
-      onFocusChange: (focused) {
-        if (_isFocused != focused) {
-          setState(() => _isFocused = focused);
-        }
-      },
-      child: MouseRegion(
-        cursor: interactive
-            ? SystemMouseCursors.click
-            : SystemMouseCursors.basic,
-        onEnter: (_) {
-          if (!_isHovered) setState(() => _isHovered = true);
+    final triggerBox = CompositedTransformTarget(
+      link: _layerLink,
+      child: Focus(
+        onFocusChange: (focused) {
+          if (_isFocused != focused) {
+            setState(() => _isFocused = focused);
+          }
         },
-        onExit: (_) {
-          if (_isHovered) setState(() => _isHovered = false);
-        },
-        child: AnimatedContainer(
-          duration: disableAnimations
-              ? Duration.zero
-              : const Duration(milliseconds: 120),
-          padding: widget.isCompact
-              ? const EdgeInsets.symmetric(horizontal: 10, vertical: 5)
-              : const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-            color: containerBg,
+        child: Material(
+          color: colorScheme.surface.withAlpha(0),
+          child: InkWell(
+            key: widget.dropdownKey,
+            onTap: interactive ? _toggleMenu : null,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: borderColor,
-              width: _isFocused ? 2.0 : 1.5,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: widget.isCompact
-                ? MainAxisSize.min
-                : MainAxisSize.max,
-            children: [
-              if (widget.leadingIcon != null) ...[
-                PhosphorIcon(
-                  widget.leadingIcon!,
-                  size: widget.isCompact ? 14 : 18,
-                  color: widget.isCompact
-                      ? colorScheme.onPrimaryContainer
-                      : colorScheme.primary,
+            child: AnimatedContainer(
+              key: _triggerKey,
+              duration: disableAnimations
+                  ? Duration.zero
+                  : const Duration(milliseconds: 120),
+              padding: widget.isCompact
+                  ? const EdgeInsets.symmetric(horizontal: 10, vertical: 6)
+                  : const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+              decoration: BoxDecoration(
+                color: containerBg,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: borderColor,
+                  width: (_isFocused || _isOpen) ? 2.0 : 1.5,
                 ),
-                SizedBox(width: widget.isCompact ? 5 : 8),
-              ],
-              if (widget.isCompact)
-                Flexible(child: dropdownButton)
-              else
-                Expanded(child: dropdownButton),
-            ],
+              ),
+              child: Row(
+                mainAxisSize: widget.isCompact
+                    ? MainAxisSize.min
+                    : MainAxisSize.max,
+                children: [
+                  if (widget.leadingIcon != null) ...[
+                    PhosphorIcon(
+                      widget.leadingIcon!,
+                      size: widget.isCompact ? 14 : 18,
+                      color: widget.isCompact
+                          ? colorScheme.onPrimaryContainer
+                          : colorScheme.primary,
+                    ),
+                    SizedBox(width: widget.isCompact ? 5 : 8),
+                  ],
+                  if (widget.isCompact)
+                    Flexible(
+                      child: Text(
+                        displayText,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: selectedStyle,
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: Align(
+                        alignment: widget.alignEnd
+                            ? AlignmentDirectional.centerEnd
+                            : AlignmentDirectional.centerStart,
+                        child: Text(
+                          displayText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: selectedStyle,
+                        ),
+                      ),
+                    ),
+                  SizedBox(width: widget.isCompact ? 4 : 8),
+                  AnimatedRotation(
+                    turns: _isOpen ? 0.5 : 0.0,
+                    duration: disableAnimations
+                        ? Duration.zero
+                        : const Duration(milliseconds: 160),
+                    child: PhosphorIcon(
+                      widget.isCompact
+                          ? PhosphorIconsBold.caretDown
+                          : PhosphorIconsRegular.caretDown,
+                      size: widget.isCompact ? 12 : 16,
+                      color: widget.isCompact
+                          ? colorScheme.onPrimaryContainer
+                          : colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
 
     if (widget.label == null || widget.isCompact) {
-      return box;
+      return triggerBox;
     }
 
     return Column(
@@ -267,7 +442,7 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>> {
           ),
         ),
         const SizedBox(height: 6),
-        box,
+        triggerBox,
       ],
     );
   }

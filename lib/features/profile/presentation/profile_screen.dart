@@ -13,8 +13,11 @@ import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/reports/presentation/admin_reports_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
-import 'package:kadro/shared/widgets/adaptive_overlay.dart';
+import 'package:kadro/shared/widgets/kadro_confirm_dialog.dart';
+import 'package:kadro/shared/widgets/kadro_option_picker_modal.dart';
+import 'package:kadro/shared/widgets/kadro_settings_card.dart';
 import 'package:kadro/shared/widgets/legal_document_viewer_screen.dart';
+import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/target_exam_selector_bottom_sheet.dart';
@@ -24,138 +27,122 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
-  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
-    showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          title: const Text('Hesabımı ve Verilerimi Sil'),
-          content: const Text(
-            'Hesabınızı ve tüm verilerinizi kalıcı olarak silmek istediğinizden emin misiniz?\n\n'
-            'Bu işlem geri alınamaz:\n'
-            '• Çözdüğünüz tüm testler ve net geçmişiniz\n'
-            '• Yanlış Defteri havuzunuz\n'
-            '• Günlük çalışma seriniz (streak) ve XP puanlarınız\n'
-            '• Varsa bulut hesabınız kalıcı olarak silinecektir.',
+  Future<void> _showDeleteAccountDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final confirmed = await KadroConfirmDialog.confirm(
+      context,
+      icon: PhosphorIconsRegular.trash,
+      title: 'Hesabımı ve Verilerimi Sil',
+      message:
+          'Hesabınızı ve tüm verilerinizi kalıcı olarak silmek istediğinizden emin misiniz?\n\n'
+          'Bu işlem geri alınamaz:\n'
+          '• Çözdüğünüz tüm testler ve net geçmişiniz\n'
+          '• Yanlış Defteri havuzunuz\n'
+          '• Günlük çalışma seriniz (streak) ve XP puanlarınız\n'
+          '• Varsa bulut hesabınız kalıcı olarak silinecektir.',
+      cancelLabel: 'Vazgeç',
+      confirmLabel: 'Kalıcı Olarak Sil',
+      isDestructive: true,
+    );
+
+    if (confirmed && context.mounted) {
+      final success = await ref
+          .read(authProvider.notifier)
+          .deleteAccountAndData();
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              success
+                  ? 'Hesabınız ve tüm verileriniz başarıyla silindi.'
+                  : 'Hesap silinirken bir sorun oluştu.',
+            ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Vazgeç'),
-            ),
-            FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.error,
-                foregroundColor: Theme.of(context).colorScheme.onError,
-              ),
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('Kalıcı Olarak Sil'),
-            ),
-          ],
         );
-      },
-    ).then((confirmed) async {
-      if (confirmed == true && context.mounted) {
-        final success = await ref
-            .read(authProvider.notifier)
-            .deleteAccountAndData();
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                success
-                    ? 'Hesabınız ve tüm verileriniz başarıyla silindi.'
-                    : 'Hesap silinirken bir sorun oluştu.',
-              ),
-            ),
-          );
-        }
       }
-    });
+    }
   }
 
-  void _showDailyGoalDialog(
+  Future<void> _showDailyGoalDialog(
     BuildContext context,
     WidgetRef ref,
     int currentGoal,
-  ) {
-    showDialog<int>(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: const Text('Günlük Hedef Belirle'),
-          children: [30, 50, 100].map((goal) {
-            return SimpleDialogOption(
-              onPressed: () {
-                ref.read(studyStatsProvider.notifier).updateDailyGoal(goal);
-                Navigator.of(context).pop();
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('$goal soru'),
-                    if (goal == currentGoal)
-                      PhosphorIcon(
-                        PhosphorIconsBold.check,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 18,
-                      ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        );
-      },
+  ) async {
+    final selected = await KadroOptionPickerModal.show<int>(
+      context,
+      title: 'Günlük Hedef Belirle',
+      subtitle: 'Her gün ulaşmak istediğin soru çözme hedefini seç:',
+      dialogMaxWidth: 440,
+      selectedValue: currentGoal,
+      options: const [
+        KadroPickerOption(
+          value: 30,
+          label: '30 soru',
+          description: 'Temel tempo · Günde yaklaşık 20–25 dk',
+          icon: PhosphorIconsRegular.target,
+          selectedIcon: PhosphorIconsFill.target,
+        ),
+        KadroPickerOption(
+          value: 50,
+          label: '50 soru',
+          description: 'Dengeli tempo · Günde yaklaşık 35–45 dk',
+          icon: PhosphorIconsRegular.fire,
+          selectedIcon: PhosphorIconsFill.fire,
+        ),
+        KadroPickerOption(
+          value: 100,
+          label: '100 soru',
+          description: 'Yoğun kamp · Günde 60+ dk seri hazırlık',
+          icon: PhosphorIconsRegular.trophy,
+          selectedIcon: PhosphorIconsFill.trophy,
+        ),
+      ],
     );
+    if (selected != null) {
+      ref.read(studyStatsProvider.notifier).updateDailyGoal(selected);
+    }
   }
 
-  void _showThemeDialog(
+  Future<void> _showThemeDialog(
     BuildContext context,
     WidgetRef ref,
     ThemeMode currentMode,
-  ) {
-    showDialog<ThemeMode>(
-      context: context,
-      builder: (context) {
-        const options = [
-          (ThemeMode.system, 'Sistem'),
-          (ThemeMode.light, 'Açık'),
-          (ThemeMode.dark, 'Koyu'),
-        ];
-
-        return SimpleDialog(
-          title: const Text('Tema Tercihi'),
-          children: options.map((option) {
-            final mode = option.$1;
-            final label = option.$2;
-            return SimpleDialogOption(
-              onPressed: () {
-                ref.read(userPreferencesProvider.notifier).setThemeMode(mode);
-                Navigator.of(context).pop();
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(label),
-                    if (mode == currentMode)
-                      PhosphorIcon(
-                        PhosphorIconsBold.check,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 18,
-                      ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        );
-      },
+  ) async {
+    final selected = await KadroOptionPickerModal.show<ThemeMode>(
+      context,
+      title: 'Tema Tercihi',
+      subtitle: 'Göz konforuna uygun görünüm modunu seç:',
+      dialogMaxWidth: 440,
+      selectedValue: currentMode,
+      options: const [
+        KadroPickerOption(
+          value: ThemeMode.system,
+          label: 'Sistem',
+          description: 'Cihazının açık / koyu temasını otomatik izler',
+          icon: PhosphorIconsRegular.deviceMobile,
+          selectedIcon: PhosphorIconsFill.deviceMobile,
+        ),
+        KadroPickerOption(
+          value: ThemeMode.light,
+          label: 'Açık',
+          description: 'Serin gündüz çalışma yüzeyi',
+          icon: PhosphorIconsRegular.sun,
+          selectedIcon: PhosphorIconsFill.sun,
+        ),
+        KadroPickerOption(
+          value: ThemeMode.dark,
+          label: 'Koyu',
+          description: 'Gece odaklı düşük göz yorgunluğu',
+          icon: PhosphorIconsRegular.moon,
+          selectedIcon: PhosphorIconsFill.moon,
+        ),
+      ],
     );
+    if (selected != null) {
+      ref.read(userPreferencesProvider.notifier).setThemeMode(selected);
+    }
   }
 
   String _themeModeLabel(ThemeMode mode) {
@@ -169,95 +156,53 @@ class ProfileScreen extends ConsumerWidget {
     }
   }
 
-  void _showQuizModeDialog(
+  Future<void> _showQuizModeDialog(
     BuildContext context,
     WidgetRef ref,
     QuizMode? currentMode,
-  ) {
+  ) async {
     final effectiveCurrentMode = currentMode ?? QuizMode.learning;
-    AdaptiveOverlay.showModal<void>(
-      context: context,
+    final selected = await KadroOptionPickerModal.show<QuizMode>(
+      context,
       title: 'Soru Çözüm Modu',
+      subtitle: 'Varsayılan test çözme deneyiminizi seçin:',
       dialogMaxWidth: 480,
-      builder: (modalCtx) {
-        final colorScheme = Theme.of(modalCtx).colorScheme;
-        final textTheme = Theme.of(modalCtx).textTheme;
-        final isDialog = ResponsiveBreakpoints.usesDialogOverlay(modalCtx);
-
-        return SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(
-            20,
-            isDialog ? 16 : 12,
-            20,
-            isDialog ? 20 : 28,
+      selectedValue: effectiveCurrentMode,
+      options: [
+        for (final mode in QuizMode.values)
+          KadroPickerOption<QuizMode>(
+            key: ValueKey('quiz_mode_option_${mode.name}'),
+            value: mode,
+            label: mode.label,
+            description: mode.description,
+            icon: mode == QuizMode.learning
+                ? PhosphorIconsRegular.lightbulb
+                : PhosphorIconsRegular.fileText,
+            selectedIcon: mode == QuizMode.learning
+                ? PhosphorIconsFill.lightbulb
+                : PhosphorIconsFill.fileText,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (!isDialog) ...[
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: colorScheme.outlineVariant,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Soru Çözüm Modu',
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 4),
-              ],
-              Text(
-                'Varsayılan test çözme deneyiminizi seçin:',
-                style: textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
+      ],
+      footerBuilder: (modalCtx) => FilledButton.tonalIcon(
+        onPressed: () {
+          Navigator.of(modalCtx).pop();
+          Navigator.of(context, rootNavigator: true).push(
+            MaterialPageRoute(
+              builder: (_) => QuizScreen(
+                mode: effectiveCurrentMode,
+                customTitle: '${effectiveCurrentMode.label} Testi',
+                limit: 10,
               ),
-              const SizedBox(height: 14),
-              for (final mode in QuizMode.values) ...[
-                _QuizModeOptionCard(
-                  mode: mode,
-                  isSelected: mode == effectiveCurrentMode,
-                  onTap: () {
-                    ref
-                        .read(userPreferencesProvider.notifier)
-                        .setQuizMode(mode);
-                    Navigator.of(modalCtx).pop();
-                  },
-                ),
-                const SizedBox(height: 10),
-              ],
-              const Divider(height: 20),
-              FilledButton.tonalIcon(
-                onPressed: () {
-                  Navigator.of(modalCtx).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => QuizScreen(
-                        mode: effectiveCurrentMode,
-                        customTitle: '${effectiveCurrentMode.label} Testi',
-                        limit: 10,
-                      ),
-                    ),
-                  );
-                },
-                icon: const PhosphorIcon(PhosphorIconsBold.play, size: 16),
-                label: const Text('Bu Modla Hemen 10 Soru Çöz'),
-              ),
-            ],
-          ),
-        );
-      },
+            ),
+          );
+        },
+        icon: const PhosphorIcon(PhosphorIconsBold.play, size: 16),
+        label: const Text('Bu Modla Hemen 10 Soru Çöz'),
+      ),
     );
+    if (selected != null) {
+      ref.read(userPreferencesProvider.notifier).setQuizMode(selected);
+    }
   }
 
   String _quizModeLabel(QuizMode? mode) {
@@ -278,26 +223,11 @@ class ProfileScreen extends ConsumerWidget {
     final stats = ref.watch(studyStatsProvider);
     final auth = ref.watch(authProvider);
 
-    final pageHeader = Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Profilin',
-            style: textTheme.headlineMedium?.copyWith(
-              color: colorScheme.onSurface,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Hedef sınavın, abonelik durumun ve uygulama ayarların.',
-            style: textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
+    const pageHeader = Padding(
+      padding: EdgeInsets.only(bottom: 4),
+      child: PageHeader(
+        title: 'Profilin',
+        subtitle: 'Hedef sınavın, abonelik durumun ve uygulama ayarların.',
       ),
     );
 
@@ -315,242 +245,221 @@ class ProfileScreen extends ConsumerWidget {
       if (!prefs.isPro)
         _ProBannerCard(
           onTap: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
+            Navigator.of(
+              context,
+              rootNavigator: true,
+            ).push(MaterialPageRoute(builder: (_) => const PaywallScreen()));
           },
         )
       else
         const _ProBadgeCard(),
       AppSpacing.gapMd,
       const SectionTitle('Hedef'),
-      TactileCard(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        child: Column(
-          children: [
-            ListTile(
-              key: const ValueKey('profile_target_exam_tile'),
-              leading: const PhosphorIcon(PhosphorIconsRegular.flag, size: 20),
-              title: const Text('Hedef sınav'),
-              subtitle: Text(
-                prefs.examSelection.displayTitle,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              trailing: const PhosphorIcon(
-                PhosphorIconsRegular.caretRight,
-                size: 16,
-              ),
-              onTap: () => TargetExamSelectorBottomSheet.showSelection(
-                context,
-                currentSelection: prefs.examSelection,
+      KadroSettingsCard(
+        children: [
+          ListTile(
+            key: const ValueKey('profile_target_exam_tile'),
+            leading: const PhosphorIcon(PhosphorIconsRegular.flag, size: 20),
+            title: const Text('Hedef sınav'),
+            subtitle: Text(
+              prefs.examSelection.displayTitle,
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const PhosphorIcon(
-                PhosphorIconsRegular.calendar,
-                size: 20,
-              ),
-              title: const Text('Günlük hedef'),
-              subtitle: Text(
-                '${stats.dailyGoal} soru',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              trailing: const PhosphorIcon(
-                PhosphorIconsRegular.caretRight,
-                size: 16,
-              ),
-              onTap: () => _showDailyGoalDialog(context, ref, stats.dailyGoal),
+            trailing: const PhosphorIcon(
+              PhosphorIconsRegular.caretRight,
+              size: 16,
             ),
-          ],
-        ),
+            onTap: () => TargetExamSelectorBottomSheet.showSelection(
+              context,
+              currentSelection: prefs.examSelection,
+            ),
+          ),
+          ListTile(
+            leading: const PhosphorIcon(
+              PhosphorIconsRegular.calendar,
+              size: 20,
+            ),
+            title: const Text('Günlük hedef'),
+            subtitle: Text(
+              '${stats.dailyGoal} soru',
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            trailing: const PhosphorIcon(
+              PhosphorIconsRegular.caretRight,
+              size: 16,
+            ),
+            onTap: () => _showDailyGoalDialog(context, ref, stats.dailyGoal),
+          ),
+        ],
       ),
       AppSpacing.gapSm,
       const SectionTitle('Uygulama'),
-      TactileCard(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        child: Column(
-          children: [
-            ListTile(
-              leading: const PhosphorIcon(
-                PhosphorIconsRegular.palette,
-                size: 20,
+      KadroSettingsCard(
+        children: [
+          ListTile(
+            leading: const PhosphorIcon(PhosphorIconsRegular.palette, size: 20),
+            title: const Text('Tema'),
+            subtitle: Text(
+              _themeModeLabel(prefs.themeMode),
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.w600,
               ),
-              title: const Text('Tema'),
-              subtitle: Text(
-                _themeModeLabel(prefs.themeMode),
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.primary,
-                  fontWeight: FontWeight.w600,
+            ),
+            trailing: const PhosphorIcon(
+              PhosphorIconsRegular.caretRight,
+              size: 16,
+            ),
+            onTap: () => _showThemeDialog(context, ref, prefs.themeMode),
+          ),
+          SwitchListTile(
+            key: const ValueKey('profile_high_readability_switch'),
+            secondary: const PhosphorIcon(PhosphorIconsRegular.eye, size: 20),
+            title: const Text('Yüksek Okunabilirlik (E-KPSS Modu)'),
+            subtitle: const Text(
+              'Soru ve şık metinlerini büyütür, kontrast çerçevesini güçlendirir.',
+            ),
+            value: prefs.highReadabilityMode,
+            onChanged: (value) => ref
+                .read(userPreferencesProvider.notifier)
+                .setHighReadabilityMode(value),
+          ),
+          ListTile(
+            leading: const PhosphorIcon(PhosphorIconsRegular.sliders, size: 20),
+            title: const Text('Soru Çözüm Modu'),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  _quizModeLabel(prefs.defaultQuizMode),
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
-              trailing: const PhosphorIcon(
-                PhosphorIconsRegular.caretRight,
-                size: 16,
-              ),
-              onTap: () => _showThemeDialog(context, ref, prefs.themeMode),
-            ),
-            const Divider(height: 1),
-            SwitchListTile(
-              key: const ValueKey('profile_high_readability_switch'),
-              secondary: const PhosphorIcon(PhosphorIconsRegular.eye, size: 20),
-              title: const Text('Yüksek Okunabilirlik (E-KPSS Modu)'),
-              subtitle: const Text(
-                'Soru ve şık metinlerini büyütür, kontrast çerçevesini güçlendirir.',
-              ),
-              value: prefs.highReadabilityMode,
-              onChanged: (value) => ref
-                  .read(userPreferencesProvider.notifier)
-                  .setHighReadabilityMode(value),
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const PhosphorIcon(
-                PhosphorIconsRegular.sliders,
-                size: 20,
-              ),
-              title: const Text('Soru Çözüm Modu'),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _quizModeLabel(prefs.defaultQuizMode),
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                Text(
+                  prefs.defaultQuizMode == QuizMode.learning
+                      ? 'Anında doğru/yanlış ve açıklama'
+                      : 'Sınav mantığıyla optik gizli çözüm',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
                   ),
-                  Text(
-                    prefs.defaultQuizMode == QuizMode.learning
-                        ? 'Anında doğru/yanlış ve açıklama'
-                        : 'Sınav mantığıyla optik gizli çözüm',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-              trailing: const PhosphorIcon(
-                PhosphorIconsRegular.caretRight,
-                size: 16,
-              ),
-              onTap: () =>
-                  _showQuizModeDialog(context, ref, prefs.defaultQuizMode),
+                ),
+              ],
             ),
-            const Divider(height: 1),
-            const ListTile(
-              leading: PhosphorIcon(PhosphorIconsRegular.bell, size: 20),
-              title: Text('Günlük hatırlatma'),
-              subtitle: Text('Kapalı'),
+            trailing: const PhosphorIcon(
+              PhosphorIconsRegular.caretRight,
+              size: 16,
             ),
-            const Divider(height: 1),
-            const ListTile(
-              leading: PhosphorIcon(PhosphorIconsRegular.info, size: 20),
-              title: Text('Hakkında'),
-              subtitle: Text('Kadro 1.0.0'),
-            ),
-          ],
-        ),
+            onTap: () =>
+                _showQuizModeDialog(context, ref, prefs.defaultQuizMode),
+          ),
+          const ListTile(
+            leading: PhosphorIcon(PhosphorIconsRegular.bell, size: 20),
+            title: Text('Günlük hatırlatma'),
+            subtitle: Text('Kapalı'),
+          ),
+          const ListTile(
+            leading: PhosphorIcon(PhosphorIconsRegular.info, size: 20),
+            title: Text('Hakkında'),
+            subtitle: Text('Kadro 1.0.0'),
+          ),
+        ],
       ),
       AppSpacing.gapSm,
       const SectionTitle('İçerik Yönetimi'),
-      TactileCard(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        child: ListTile(
-          leading: const PhosphorIcon(
-            PhosphorIconsRegular.warningCircle,
-            size: 20,
+      KadroSettingsCard(
+        children: [
+          ListTile(
+            leading: const PhosphorIcon(
+              PhosphorIconsRegular.warningCircle,
+              size: 20,
+            ),
+            title: const Text('Hatalı Soru Raporları'),
+            subtitle: const Text('İçerik editörü inceleme paneli'),
+            trailing: const PhosphorIcon(
+              PhosphorIconsRegular.caretRight,
+              size: 16,
+            ),
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const AdminReportsScreen()),
+              );
+            },
           ),
-          title: const Text('Hatalı Soru Raporları'),
-          subtitle: const Text('İçerik editörü inceleme paneli'),
-          trailing: const PhosphorIcon(
-            PhosphorIconsRegular.caretRight,
-            size: 16,
-          ),
-          onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const AdminReportsScreen()),
-            );
-          },
-        ),
+        ],
       ),
       AppSpacing.gapSm,
       const SectionTitle('Hukuki & Gizlilik'),
-      TactileCard(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        child: Column(
-          children: [
-            ListTile(
-              leading: const PhosphorIcon(
-                PhosphorIconsRegular.shieldCheck,
-                size: 20,
-              ),
-              title: const Text('Gizlilik Politikası & KVKK'),
-              trailing: const PhosphorIcon(
-                PhosphorIconsRegular.caretRight,
-                size: 16,
-              ),
-              onTap: () => LegalDocumentViewerScreen.showPrivacyPolicy(context),
+      KadroSettingsCard(
+        children: [
+          ListTile(
+            leading: const PhosphorIcon(
+              PhosphorIconsRegular.shieldCheck,
+              size: 20,
             ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const PhosphorIcon(
-                PhosphorIconsRegular.fileText,
-                size: 20,
-              ),
-              title: const Text('Kullanım Koşulları & Sözleşme'),
-              trailing: const PhosphorIcon(
-                PhosphorIconsRegular.caretRight,
-                size: 16,
-              ),
-              onTap: () =>
-                  LegalDocumentViewerScreen.showTermsOfService(context),
+            title: const Text('Gizlilik Politikası & KVKK'),
+            trailing: const PhosphorIcon(
+              PhosphorIconsRegular.caretRight,
+              size: 16,
             ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const PhosphorIcon(
-                PhosphorIconsRegular.certificate,
-                size: 20,
-              ),
-              title: const Text('Açık Kaynak Lisansları'),
-              trailing: const PhosphorIcon(
-                PhosphorIconsRegular.caretRight,
-                size: 16,
-              ),
-              onTap: () {
-                showLicensePage(
-                  context: context,
-                  applicationName: 'Kadro: KPSS Genel Kültür',
-                  applicationVersion: '1.0.0',
-                  applicationLegalese:
-                      '© 2026 Kadro Ekibi. Tüm hakları saklıdır.',
-                );
-              },
+            onTap: () => LegalDocumentViewerScreen.showPrivacyPolicy(context),
+          ),
+          ListTile(
+            leading: const PhosphorIcon(
+              PhosphorIconsRegular.fileText,
+              size: 20,
             ),
-            const Divider(height: 1),
-            ListTile(
-              leading: PhosphorIcon(
-                PhosphorIconsRegular.trash,
-                size: 20,
+            title: const Text('Kullanım Koşulları & Sözleşme'),
+            trailing: const PhosphorIcon(
+              PhosphorIconsRegular.caretRight,
+              size: 16,
+            ),
+            onTap: () => LegalDocumentViewerScreen.showTermsOfService(context),
+          ),
+          ListTile(
+            leading: const PhosphorIcon(
+              PhosphorIconsRegular.certificate,
+              size: 20,
+            ),
+            title: const Text('Açık Kaynak Lisansları'),
+            trailing: const PhosphorIcon(
+              PhosphorIconsRegular.caretRight,
+              size: 16,
+            ),
+            onTap: () {
+              showLicensePage(
+                context: context,
+                applicationName: 'Kadro: KPSS Genel Kültür',
+                applicationVersion: '1.0.0',
+                applicationLegalese:
+                    '© 2026 Kadro Ekibi. Tüm hakları saklıdır.',
+              );
+            },
+          ),
+          ListTile(
+            leading: PhosphorIcon(
+              PhosphorIconsRegular.trash,
+              size: 20,
+              color: colorScheme.error,
+            ),
+            title: Text(
+              'Hesabımı ve Verilerimi Sil',
+              style: textTheme.bodyLarge?.copyWith(
                 color: colorScheme.error,
+                fontWeight: FontWeight.w600,
               ),
-              title: Text(
-                'Hesabımı ve Verilerimi Sil',
-                style: textTheme.bodyLarge?.copyWith(
-                  color: colorScheme.error,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              subtitle: const Text('Google Play & KVKK veri tasfiyesi'),
-              onTap: () => _showDeleteAccountDialog(context, ref),
             ),
-          ],
-        ),
+            subtitle: const Text('Google Play & KVKK veri tasfiyesi'),
+            onTap: () => _showDeleteAccountDialog(context, ref),
+          ),
+        ],
       ),
     ];
 
@@ -671,6 +580,7 @@ class _AccountCard extends ConsumerWidget {
               onPressed: () {
                 Navigator.of(
                   context,
+                  rootNavigator: true,
                 ).push(MaterialPageRoute(builder: (_) => const AuthScreen()));
               },
               child: const Text('Giriş Yap / Kayıt Ol'),
@@ -838,151 +748,6 @@ class _ProBadgeCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Soru Çözüm Modu seçim modalında her modu tıklanabilir, radyo göstergeli
-/// dokunsal kart (`TactileCard`) olarak sunan bileşen.
-class _QuizModeOptionCard extends StatelessWidget {
-  final QuizMode mode;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _QuizModeOptionCard({
-    required this.mode,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-    final isLearning = mode == QuizMode.learning;
-
-    final iconData = isLearning
-        ? (isSelected
-              ? PhosphorIconsFill.lightbulb
-              : PhosphorIconsRegular.lightbulb)
-        : (isSelected
-              ? PhosphorIconsFill.fileText
-              : PhosphorIconsRegular.fileText);
-
-    return Semantics(
-      button: true,
-      selected: isSelected,
-      label: '${mode.label}. ${mode.description}',
-      child: TactileCard(
-        key: ValueKey('quiz_mode_option_${mode.name}'),
-        onTap: onTap,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        backgroundColor: isSelected
-            ? Color.alphaBlend(
-                colorScheme.primaryContainer.withAlpha(110),
-                colorScheme.surface,
-              )
-            : colorScheme.surface,
-        borderColor: isSelected
-            ? colorScheme.primary
-            : colorScheme.outlineVariant,
-        borderWidth: isSelected ? 2.0 : 1.5,
-        lipColor: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? colorScheme.primaryContainer
-                    : colorScheme.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: isSelected
-                      ? colorScheme.primary.withAlpha(90)
-                      : colorScheme.outlineVariant,
-                ),
-              ),
-              alignment: Alignment.center,
-              child: PhosphorIcon(
-                iconData,
-                size: 19,
-                color: isSelected
-                    ? colorScheme.primary
-                    : colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 6,
-                    runSpacing: 4,
-                    children: [
-                      Text(
-                        mode.label,
-                        style: textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: isSelected
-                              ? colorScheme.primary
-                              : colorScheme.onSurface,
-                        ),
-                      ),
-                      if (isSelected)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 7,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.primary,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            'Seçili',
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onPrimary,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    mode.description,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 10),
-            if (isSelected)
-              PhosphorIcon(
-                PhosphorIconsFill.checkCircle,
-                color: colorScheme.primary,
-                size: 22,
-              )
-            else
-              Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: colorScheme.outline, width: 1.8),
-                ),
-              ),
-          ],
-        ),
       ),
     );
   }

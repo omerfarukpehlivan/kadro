@@ -87,7 +87,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
     final summary = stats.statsSummaryForScope(activeScope);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final isDesktop = ResponsiveBreakpoints.usesSidebar(context);
+    final isLargeTablet = ResponsiveBreakpoints.isLargeTablet(context);
 
     final headerRow = Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -164,7 +164,7 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
       icon: PhosphorIconsRegular.warningCircle,
     );
 
-    if (isDesktop) {
+    if (isLargeTablet) {
       return ResponsiveContentWrapper(
         maxWidth: 1240,
         padding: EdgeInsets.zero,
@@ -1367,7 +1367,7 @@ class _WeakLessonActionCard extends StatelessWidget {
           const SizedBox(width: 8),
           OutlinedButton(
             onPressed: () {
-              Navigator.of(context).push(
+              Navigator.of(context, rootNavigator: true).push(
                 MaterialPageRoute(
                   builder: (_) => QuizScreen(
                     lessonFilter: weakestLesson,

@@ -1,21 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Ekran genişliği kırılım katmanları (`TASK-146`).
-///
-/// Angular CDK `Breakpoints` ve Tailwind CSS kırılım sisteminin karşılığıdır.
-enum ScreenLayoutTier {
-  compactMobile,
-  standardMobile,
-  tablet,
-  desktop,
-  wideDesktop,
-}
+/// Ekran genişliği kırılım katmanları (Telefon & Tablet).
+enum ScreenLayoutTier { compactMobile, standardMobile, tablet, largeTablet }
 
-/// Tüm uygulama genelinde duyarlı (responsive) ve uyarlanabilir (adaptive)
-/// kırılım noktalarını (breakpoints) yöneten yardımcı sınıf.
-///
-/// Web/Angular Karşılığı:
-/// `@media` breakpoint utility & Angular CDK BreakpointObserver.
+/// Tüm uygulama genelinde telefon ve tablet kırılım noktalarını (breakpoints) yöneten yardımcı sınıf.
 class ResponsiveBreakpoints {
   ResponsiveBreakpoints._();
 
@@ -23,11 +11,10 @@ class ResponsiveBreakpoints {
   static const double tabletMinWidth = 600.0;
   static const double railMinWidth = 900.0;
   static const double splitPaneMinWidth = 960.0;
-  static const double desktopMinWidth = 1024.0;
-  static const double wideDesktopMinWidth = 1440.0;
+  static const double largeTabletMinWidth = 1024.0;
 
   /// `1080x2400` gibi fiziksel piksel çözünürlüğünde çalışan dikey telefon
-  /// görünümünün veya dar mobil ekranların yanlışlıkla masaüstü sayılmasını engeller.
+  /// görünümünün veya dar mobil ekranların yanlışlıkla yatay tablet sayılmasını engeller.
   static bool _isPortraitPhoneSimulation(Size size) {
     return size.height >= size.width * 1.75 && size.width <= 1200.0;
   }
@@ -40,8 +27,7 @@ class ResponsiveBreakpoints {
           ? ScreenLayoutTier.tablet
           : ScreenLayoutTier.standardMobile;
     }
-    if (size.width >= wideDesktopMinWidth) return ScreenLayoutTier.wideDesktop;
-    if (size.width >= desktopMinWidth) return ScreenLayoutTier.desktop;
+    if (size.width >= largeTabletMinWidth) return ScreenLayoutTier.largeTablet;
     if (size.width >= tabletMinWidth) return ScreenLayoutTier.tablet;
     if (size.width < compactMaxWidth || size.height < 720) {
       return ScreenLayoutTier.compactMobile;
@@ -61,76 +47,56 @@ class ResponsiveBreakpoints {
     return MediaQuery.sizeOf(context).width >= tabletMinWidth;
   }
 
-  /// Masaüstü / Web tarayıcı çalışma düzeni (>= 1024px genişlik).
-  static bool isDesktop(BuildContext context) {
+  /// Geniş / yatay tablet düzeni (>= 1024px genişlik).
+  static bool isLargeTablet(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    return size.width >= desktopMinWidth && !_isPortraitPhoneSimulation(size);
-  }
-
-  /// Geniş monitör / ultra-wide masaüstü düzeni (>= 1440px genişlik).
-  static bool isWideDesktop(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-    return size.width >= wideDesktopMinWidth &&
+    return size.width >= largeTabletMinWidth &&
         !_isPortraitPhoneSimulation(size);
   }
 
-  /// Kalıcı sol `KadroSidebar` menüsünün kullanılacağı masaüstü kırılımı (>= 1024px).
-  static bool usesSidebar(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-    return size.width >= desktopMinWidth && !_isPortraitPhoneSimulation(size);
-  }
-
-  /// Orta genişlikli tarayıcı / yatay tabletlerde dar `NavigationRail` kırılımı (900px–1023px).
+  /// Yatay / büyük tabletlerde sol `NavigationRail` kırılımı (>= 900px).
   static bool usesNavigationRail(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     if (_isPortraitPhoneSimulation(size)) return false;
-    return size.width >= railMinWidth && size.width < desktopMinWidth;
+    return size.width >= railMinWidth;
   }
 
-  /// İki panelli Split-Pane (QuizScreen, Harita, Konu-Test) kırılımı (>= 960px).
+  /// Yatay tabletlerde iki panelli Split-Pane (QuizScreen, Harita, Konu-Test) kırılımı (>= 960px).
   static bool usesSplitPane(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     return size.width >= splitPaneMinWidth && !_isPortraitPhoneSimulation(size);
   }
 
   /// Alt çekmece (`BottomSheet`) yerine ortalanmış `Dialog` / sağ `SideDrawer`
-  /// açılacak masaüstü web kırılımı (>= 900px).
+  /// açılacak büyük tablet kırılımı (>= 900px).
   static bool usesDialogOverlay(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     return size.width >= railMinWidth && !_isPortraitPhoneSimulation(size);
   }
 
   /// Ekran boyutuna göre uygun yatay sayfa dolgusu
-  /// (Kompakt: 12px, Standart: 16px, Tablet/Masaüstü: 24px, Geniş: 32px).
+  /// (Kompakt: 12px, Standart: 16px, Tablet: 24px, Büyük Tablet: 28px).
   static double horizontalPadding(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    if (width >= 1280) return 32.0;
+    if (width >= 1280) return 28.0;
     if (isCompact(context)) return 12.0;
     if (isTablet(context)) return 24.0;
     return 16.0;
   }
 
-  /// Harita, grafik ve görsel büyütme modalında cihaz/ekran boyutuna göre
-  /// yakınlaştırma ipucu metnini döner (PC'de fare tekerleği, mobil/tablette parmak).
+  /// Harita, grafik ve görsel büyütme modalında dokunmatik yakınlaştırma ipucu metnini döner.
   static String zoomHintText(
     BuildContext context, {
     bool includePan = false,
     bool selectProvince = false,
   }) {
-    final desktop = isDesktop(context);
     if (selectProvince) {
-      return desktop
-          ? 'Fare tekerleğiyle yakınlaştırıp ili seçin'
-          : 'İki parmakla yakınlaştırıp ili seçin';
+      return 'İki parmakla yakınlaştırıp ili seçin';
     }
     if (includePan) {
-      return desktop
-          ? 'Fare tekerleğiyle yakınlaştırıp sürükleyebilirsiniz'
-          : 'İki parmağınızla yakınlaştırıp kaydırabilirsiniz';
+      return 'İki parmağınızla yakınlaştırıp kaydırabilirsiniz';
     }
-    return desktop
-        ? 'Fare tekerleğiyle yakınlaştırabilirsiniz'
-        : 'İki parmağınızla yakınlaştırabilirsiniz';
+    return 'İki parmağınızla yakınlaştırabilirsiniz';
   }
 }
 
