@@ -1,0 +1,72 @@
+{
+  "$comment": "Tarama betiğinin konu eşleştirmesi için anahtar kelimeler. Anahtarlar konu_matrisi.json'daki alan/konu adlarıyla aynıdır. Kelimeler küçük harf (tr) ve kök biçimindedir; metinde alt dize olarak aranır. Kapsam dışı (outOfScope) listesi, hedef sınavda OLMAYAN konuların işaretidir. Yeni ders eklenince bu dosya genişletilir.",
+  "dersler": {
+    "kpss-gy-turkce": {
+      "hedefSinav": "kpss_gy_gk",
+      "konular": {
+        "Sözcükte Anlam": ["sözcükte anlam", "gerçek anlam", "mecaz anlam", "terim anlam", "eş anlam", "zıt anlam", "deyim", "atasöz", "ikileme"],
+        "Cümlede Anlam": ["cümlede anlam", "neden-sonuç", "amaç-sonuç", "koşul", "öznel", "nesnel", "üslup"],
+        "Paragrafta Anlam ve Yapı": ["paragraf", "ana düşünce", "yardımcı düşünce", "konu nedir", "akışı bozan", "anlatım biçimi", "düşünceyi geliştirme"],
+        "Ses Bilgisi": ["ses olay", "ünlü uyum", "ünsüz yumuşama", "ünsüz benzeşme", "ünlü düşmesi", "kaynaştırma"],
+        "Sözcükte Yapı ve Ekler": ["yapım eki", "çekim eki", "kök", "gövde", "basit sözcük", "türemiş", "birleşik sözcük"],
+        "Sözcük Türleri": ["isim", "sıfat", "zamir", "zarf", "edat", "bağlaç", "ünlem", "fiilimsi", "eylemsi"],
+        "Cümlenin Ögeleri ve Cümle Türleri": ["yüklem", "özne", "nesne", "dolaylı tümleç", "zarf tümleci", "cümle türleri", "devrik", "kurallı"],
+        "Yazım Kuralları": ["yazım kural", "büyük harf", "birleşik yazıl", "ayrı yazıl", "kısaltma"],
+        "Noktalama İşaretleri": ["noktalama", "virgül", "noktalı virgül", "iki nokta", "kesme işareti", "tırnak"],
+        "Anlatım Bozuklukları": ["anlatım bozuk", "gereksiz sözcük", "özne-yüklem uyumsuz", "anlam belirsiz", "çatı uyumsuz"],
+        "Sözel Mantık": ["sözel mantık", "aşağıdakilerden hangisi kesinlikle", "sıralama", "yerleştirme"]
+      },
+      "outOfScope": {
+        "Edebiyat (KPSS GY'de yok)": ["divan edebiyatı", "halk edebiyatı", "tanzimat edebiyatı", "servet-i fünun", "aruz", "hece ölçüsü", "nazım biçim"]
+      }
+    },
+    "kpss-tarih": {
+      "hedefSinav": "kpss_gy_gk",
+      "konular": {
+        "Osmanlı Öncesi Türk Devletleri Tarihi": ["hun", "göktürk", "uygur", "karahanlı", "gazneli", "selçuklu", "orhun", "kut anlayışı", "ikta"],
+        "Osmanlı Tarihi (XIII. yy - XX. yy başı)": ["osmanlı", "padişah", "divan-ı hümayun", "tımar", "yeniçeri", "tanzimat", "meşrutiyet", "lale devri", "fetret"],
+        "Atatürk İlkeleri ve İnkılap Tarihi (Osmanlı'nın yıkılışı - II. Dünya Savaşı sonu)": ["mondros", "kurtuluş savaşı", "erzurum kongresi", "sivas kongresi", "tbmm", "sakarya", "lozan", "inkılap", "cumhuriyetçilik", "laiklik", "halkçılık", "devletçilik", "inkılapçılık", "milliyetçilik"],
+        "Çağdaş Türk ve Dünya Tarihi": ["soğuk savaş", "nato", "varşova", "truman doktrini", "marshall", "kore savaşı", "kıbrıs barış harekâtı", "berlin duvarı", "küreselleşme"]
+      },
+      "outOfScope": {}
+    },
+    "kpss-cografya": {
+      "hedefSinav": "kpss_gy_gk",
+      "konular": {
+        "Türkiye'nin fiziki özellikleri": ["matematik konum", "özel konum", "yer şekil", "dağ", "ova", "plato", "iklim", "akarsu", "göl", "toprak", "bitki örtüsü", "fay", "deprem"],
+        "Türkiye'nin beşerî özellikleri": ["nüfus", "göç", "yerleşme", "kır", "kent", "nüfus piramid"],
+        "Türkiye'nin ekonomik özellikleri": ["tarım", "hayvancılık", "maden", "enerji", "sanayi", "ticaret", "ulaşım", "turizm", "liman"]
+      },
+      "outOfScope": {
+        "Dünya/kıtalar coğrafyası (KPSS GK yalnızca Türkiye)": ["kıtalar", "amazon", "sahra", "avustralya", "kutup"]
+      }
+    },
+    "kpss-vatandaslik": {
+      "hedefSinav": "kpss_gy_gk",
+      "konular": {
+        "Hukuk başlangıcı": ["hukuk kural", "yaptırım", "hak ehliyeti", "fiil ehliyeti", "kişilik", "hukukun kaynak", "örf ve adet", "içtihat"],
+        "Anayasa, İnsan Hakları Hukuku": ["anayasa", "temel hak", "tbmm", "cumhurbaşkan", "yargı", "anayasa mahkemesi", "seçim", "milletvekil"],
+        "İdare": ["idare", "merkezi yönetim", "yerel yönetim", "belediye", "il özel idare", "kamu tüzel", "vesayet", "hiyerarşi"]
+      },
+      "outOfScope": {
+        "Güncel kapsamındaki uluslararası kuruluşlar": ["birleşmiş milletler", "nato", "avrupa birliği", "unesco"],
+        "Eski sisteme ait terimler (2017 öncesi)": ["bakanlar kurulu", "başbakan", "kanun hükmünde kararname"]
+      }
+    },
+    "kpss-guncel": {
+      "hedefSinav": "kpss_gy_gk",
+      "konular": {
+        "Türkiye ve Dünya ile İlgili Genel, Kültürel ve Sosyoekonomik Konular": ["zirve", "unesco", "olimpiyat", "ödül", "festival", "teknofest", "uydu", "birleşmiş milletler", "nato", "g20"]
+      },
+      "outOfScope": {}
+    }
+  },
+  "eskilikIsaretleri": [
+    {"ifade": "bakanlar kurulu", "not": "2018 Cumhurbaşkanlığı Hükümet Sistemi ile kaldırıldı"},
+    {"ifade": "başbakan", "not": "2018'de kaldırıldı"},
+    {"ifade": "kanun hükmünde kararname", "not": "2018'de Cumhurbaşkanlığı Kararnamesi'ne dönüştü"},
+    {"ifade": "danıştay'ın idari daireleri", "not": "Kontrol: güncel teşkilat"},
+    {"ifade": "öğretmenlik alan bilgisi testi alan eğitimi", "not": "2026 ÖABT'de alan eğitimi yalnızca Sınıf, Okul Öncesi, Özel Eğitim"},
+    {"ifade": "kpss eğitim bilimleri", "not": "2025'ten itibaren MEB-AGS; TYMM ve 7528 kapsamı kontrol edilmeli"}
+  ]
+}

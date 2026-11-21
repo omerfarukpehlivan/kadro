@@ -1,0 +1,649 @@
+{
+  "ders": "kpss-gy-turkce",
+  "hedefSinav": "kpss_gy_gk",
+  "tarih": "2026-11-21",
+  "sonuclar": [
+    {
+      "dosya": "Kpss-Türkçe-Konu-Anlatımı.pdf",
+      "sayfa": 72,
+      "karakter": 100092,
+      "sayfaBasinaKarakter": 1390,
+      "metinKatmani": true,
+      "okunabilirlik": {
+        "tokens": 15678,
+        "commonPct": 12,
+        "ok": true
+      },
+      "kopyalanabilir": true,
+      "koken": {
+        "referrer": "https://alonot.com/kpss-turkce-konu-anlatimi/",
+        "domain": "alonot.com"
+      },
+      "izler": {
+        "urls": [
+          "www.sorubak.com (8)",
+          "http://www.sorubak.com/ (3)"
+        ],
+        "publishers": []
+      },
+      "eskilik": {
+        "maxYear": 2000,
+        "markers": []
+      },
+      "konu": {
+        "topics": [
+          {
+            "topic": "Sözcükte Anlam",
+            "hits": 129,
+            "pct": 22
+          },
+          {
+            "topic": "Cümlede Anlam",
+            "hits": 20,
+            "pct": 3
+          },
+          {
+            "topic": "Paragrafta Anlam ve Yapı",
+            "hits": 113,
+            "pct": 20
+          },
+          {
+            "topic": "Ses Bilgisi",
+            "hits": 21,
+            "pct": 4
+          },
+          {
+            "topic": "Sözcükte Yapı ve Ekler",
+            "hits": 94,
+            "pct": 16
+          },
+          {
+            "topic": "Sözcük Türleri",
+            "hits": 80,
+            "pct": 14
+          },
+          {
+            "topic": "Cümlenin Ögeleri ve Cümle Türleri",
+            "hits": 40,
+            "pct": 7
+          },
+          {
+            "topic": "Yazım Kuralları",
+            "hits": 28,
+            "pct": 5
+          },
+          {
+            "topic": "Noktalama İşaretleri",
+            "hits": 39,
+            "pct": 7
+          },
+          {
+            "topic": "Anlatım Bozuklukları",
+            "hits": 9,
+            "pct": 2
+          },
+          {
+            "topic": "Sözel Mantık",
+            "hits": 1,
+            "pct": 0
+          }
+        ],
+        "covered": 10,
+        "totalTopics": 11,
+        "outOfScope": [
+          {
+            "label": "Edebiyat (KPSS GY'de yok)",
+            "hits": 2
+          }
+        ],
+        "outOfScopeRatio": 0
+      },
+      "soru": {
+        "questionLike": 36,
+        "options": {
+          "A": 23,
+          "B": 23,
+          "C": 21,
+          "D": 13,
+          "E": 7
+        },
+        "fiveChoice": false,
+        "answerKey": false
+      }
+    },
+    {
+      "dosya": "Kpss-Türkçe-Ne-Sorulursa-Neye-Bakılır.pdf",
+      "sayfa": 4,
+      "karakter": 19580,
+      "sayfaBasinaKarakter": 4895,
+      "metinKatmani": true,
+      "okunabilirlik": {
+        "tokens": 2990,
+        "commonPct": 11.7,
+        "ok": true
+      },
+      "kopyalanabilir": true,
+      "koken": {
+        "referrer": "https://alonot.com/kpss-turkce-ders-notlari-test-sorulari-ve-cevaplari/",
+        "domain": "alonot.com"
+      },
+      "izler": {
+        "urls": [],
+        "publishers": []
+      },
+      "eskilik": {
+        "maxYear": null,
+        "markers": []
+      },
+      "konu": {
+        "topics": [
+          {
+            "topic": "Sözcükte Anlam",
+            "hits": 5,
+            "pct": 2
+          },
+          {
+            "topic": "Cümlede Anlam",
+            "hits": 6,
+            "pct": 3
+          },
+          {
+            "topic": "Paragrafta Anlam ve Yapı",
+            "hits": 2,
+            "pct": 1
+          },
+          {
+            "topic": "Ses Bilgisi",
+            "hits": 5,
+            "pct": 2
+          },
+          {
+            "topic": "Sözcükte Yapı ve Ekler",
+            "hits": 20,
+            "pct": 9
+          },
+          {
+            "topic": "Sözcük Türleri",
+            "hits": 131,
+            "pct": 56
+          },
+          {
+            "topic": "Cümlenin Ögeleri ve Cümle Türleri",
+            "hits": 47,
+            "pct": 20
+          },
+          {
+            "topic": "Yazım Kuralları",
+            "hits": 7,
+            "pct": 3
+          },
+          {
+            "topic": "Noktalama İşaretleri",
+            "hits": 8,
+            "pct": 3
+          },
+          {
+            "topic": "Anlatım Bozuklukları",
+            "hits": 3,
+            "pct": 1
+          },
+          {
+            "topic": "Sözel Mantık",
+            "hits": 0,
+            "pct": 0
+          }
+        ],
+        "covered": 9,
+        "totalTopics": 11,
+        "outOfScope": [],
+        "outOfScopeRatio": 0
+      },
+      "soru": {
+        "questionLike": 52,
+        "options": {
+          "A": 8,
+          "B": 8,
+          "C": 8,
+          "D": 8,
+          "E": 8
+        },
+        "fiveChoice": true,
+        "answerKey": true
+      }
+    },
+    {
+      "dosya": "Parcada-Anlam-Paragraf-Ders-Notu.pdf",
+      "sayfa": 10,
+      "karakter": 21949,
+      "sayfaBasinaKarakter": 2195,
+      "metinKatmani": true,
+      "okunabilirlik": {
+        "tokens": 3232,
+        "commonPct": 13.5,
+        "ok": true
+      },
+      "kopyalanabilir": true,
+      "koken": {
+        "referrer": "https://alonot.com/parcada-anlam-paragraf-ders-notu/",
+        "domain": "alonot.com"
+      },
+      "izler": {
+        "urls": [
+          "yelpazesi.net (1)",
+          "https://paragraf.nedir.org/ (1)",
+          "https://cumle.nedir.org/ (1)"
+        ],
+        "publishers": []
+      },
+      "eskilik": {
+        "maxYear": null,
+        "markers": []
+      },
+      "konu": {
+        "topics": [
+          {
+            "topic": "Sözcükte Anlam",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Cümlede Anlam",
+            "hits": 3,
+            "pct": 3
+          },
+          {
+            "topic": "Paragrafta Anlam ve Yapı",
+            "hits": 71,
+            "pct": 81
+          },
+          {
+            "topic": "Ses Bilgisi",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Sözcükte Yapı ve Ekler",
+            "hits": 4,
+            "pct": 5
+          },
+          {
+            "topic": "Sözcük Türleri",
+            "hits": 3,
+            "pct": 3
+          },
+          {
+            "topic": "Cümlenin Ögeleri ve Cümle Türleri",
+            "hits": 3,
+            "pct": 3
+          },
+          {
+            "topic": "Yazım Kuralları",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Noktalama İşaretleri",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Anlatım Bozuklukları",
+            "hits": 1,
+            "pct": 1
+          },
+          {
+            "topic": "Sözel Mantık",
+            "hits": 3,
+            "pct": 3
+          }
+        ],
+        "covered": 6,
+        "totalTopics": 11,
+        "outOfScope": [],
+        "outOfScopeRatio": 0
+      },
+      "soru": {
+        "questionLike": 1,
+        "options": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 0,
+          "E": 0
+        },
+        "fiveChoice": false,
+        "answerKey": false
+      }
+    },
+    {
+      "dosya": "Sözel-Mantık-Konu-Anlatımı.pdf",
+      "sayfa": 2,
+      "karakter": 5258,
+      "sayfaBasinaKarakter": 2629,
+      "metinKatmani": true,
+      "okunabilirlik": {
+        "tokens": 860,
+        "commonPct": 13.6,
+        "ok": true
+      },
+      "kopyalanabilir": true,
+      "koken": {
+        "referrer": "https://alonot.com/kpss-turkce-sozel-mantik-konu-anlatimi/",
+        "domain": "alonot.com"
+      },
+      "izler": {
+        "urls": [
+          "http://www.kpssdenemeleri.net/p/tum-sozel-mantik-sorularini-indirin.html (4)",
+          "www.kpssdenemeleri.net (2)",
+          "https://www.facebook.com/sozel.mantik (2)"
+        ],
+        "publishers": []
+      },
+      "eskilik": {
+        "maxYear": 2015,
+        "markers": []
+      },
+      "konu": {
+        "topics": [
+          {
+            "topic": "Sözcükte Anlam",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Cümlede Anlam",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Paragrafta Anlam ve Yapı",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Ses Bilgisi",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Sözcükte Yapı ve Ekler",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Sözcük Türleri",
+            "hits": 2,
+            "pct": 15
+          },
+          {
+            "topic": "Cümlenin Ögeleri ve Cümle Türleri",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Yazım Kuralları",
+            "hits": 2,
+            "pct": 15
+          },
+          {
+            "topic": "Noktalama İşaretleri",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Anlatım Bozuklukları",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Sözel Mantık",
+            "hits": 9,
+            "pct": 69
+          }
+        ],
+        "covered": 1,
+        "totalTopics": 11,
+        "outOfScope": [],
+        "outOfScopeRatio": 0
+      },
+      "soru": {
+        "questionLike": 2,
+        "options": {
+          "A": 0,
+          "B": 0,
+          "C": 0,
+          "D": 0,
+          "E": 0
+        },
+        "fiveChoice": false,
+        "answerKey": false
+      }
+    },
+    {
+      "dosya": "Tdk-Yazim-Kurallari-Ve-Noktalama-Isaretleri.pdf",
+      "sayfa": 17,
+      "karakter": 67744,
+      "sayfaBasinaKarakter": 3985,
+      "metinKatmani": true,
+      "okunabilirlik": {
+        "tokens": 10858,
+        "commonPct": 8.3,
+        "ok": true
+      },
+      "kopyalanabilir": true,
+      "koken": {
+        "referrer": "https://alonot.com/yks-kpss-turkce-yazim-kurallari-ve-noktalama-isaretleri/",
+        "domain": "alonot.com"
+      },
+      "izler": {
+        "urls": [
+          "http://tdk.org.tr (2)",
+          "http://tdk.org.tr/ (2)",
+          "http://tdk.gov.tr (1)",
+          "http://tdk.gov.tr/ (1)"
+        ],
+        "publishers": [
+          "akıllı adam"
+        ]
+      },
+      "eskilik": {
+        "maxYear": 2010,
+        "markers": [
+          "bakanlar kurulu ×2 (2018 Cumhurbaşkanlığı Hükümet Sistemi ile kaldırıldı)",
+          "başbakan ×3 (2018'de kaldırıldı)"
+        ]
+      },
+      "konu": {
+        "topics": [
+          {
+            "topic": "Sözcükte Anlam",
+            "hits": 13,
+            "pct": 5
+          },
+          {
+            "topic": "Cümlede Anlam",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Paragrafta Anlam ve Yapı",
+            "hits": 2,
+            "pct": 1
+          },
+          {
+            "topic": "Ses Bilgisi",
+            "hits": 20,
+            "pct": 8
+          },
+          {
+            "topic": "Sözcükte Yapı ve Ekler",
+            "hits": 27,
+            "pct": 11
+          },
+          {
+            "topic": "Sözcük Türleri",
+            "hits": 51,
+            "pct": 20
+          },
+          {
+            "topic": "Cümlenin Ögeleri ve Cümle Türleri",
+            "hits": 8,
+            "pct": 3
+          },
+          {
+            "topic": "Yazım Kuralları",
+            "hits": 73,
+            "pct": 29
+          },
+          {
+            "topic": "Noktalama İşaretleri",
+            "hits": 58,
+            "pct": 23
+          },
+          {
+            "topic": "Anlatım Bozuklukları",
+            "hits": 0,
+            "pct": 0
+          },
+          {
+            "topic": "Sözel Mantık",
+            "hits": 0,
+            "pct": 0
+          }
+        ],
+        "covered": 7,
+        "totalTopics": 11,
+        "outOfScope": [],
+        "outOfScopeRatio": 0
+      },
+      "soru": {
+        "questionLike": 91,
+        "options": {
+          "A": 1,
+          "B": 1,
+          "C": 0,
+          "D": 0,
+          "E": 0
+        },
+        "fiveChoice": false,
+        "answerKey": true
+      }
+    },
+    {
+      "dosya": "Yks-Kpss-Turkce-Dilbilgisi-Ozetleri-25-Konu.pdf",
+      "sayfa": 54,
+      "karakter": 248359,
+      "sayfaBasinaKarakter": 4599,
+      "metinKatmani": true,
+      "okunabilirlik": {
+        "tokens": 40513,
+        "commonPct": 9.8,
+        "ok": true
+      },
+      "kopyalanabilir": true,
+      "koken": {
+        "referrer": "https://alonot.com/yks-kpss-turkce-dilbilgisi-ozetleri-25-konu/",
+        "domain": "alonot.com"
+      },
+      "izler": {
+        "urls": [
+          "www.turkcetest.com (54)",
+          "turkcetest.com (3)",
+          "http://tdk.org.tr (2)",
+          "http://www.edebiyat\\303\\266gretmeni.net/sozcukte_anlam.htm (2)",
+          "http://tr.wikipedia.org/wiki/sava%c5%9f (2)",
+          "http://tr.wikipedia.org/wiki/g%c3%b6%c3%a7 (2)"
+        ],
+        "publishers": [
+          "isem"
+        ]
+      },
+      "eskilik": {
+        "maxYear": 2012,
+        "markers": [
+          "başbakan ×1 (2018'de kaldırıldı)"
+        ]
+      },
+      "konu": {
+        "topics": [
+          {
+            "topic": "Sözcükte Anlam",
+            "hits": 130,
+            "pct": 6
+          },
+          {
+            "topic": "Cümlede Anlam",
+            "hits": 62,
+            "pct": 3
+          },
+          {
+            "topic": "Paragrafta Anlam ve Yapı",
+            "hits": 166,
+            "pct": 8
+          },
+          {
+            "topic": "Ses Bilgisi",
+            "hits": 25,
+            "pct": 1
+          },
+          {
+            "topic": "Sözcükte Yapı ve Ekler",
+            "hits": 277,
+            "pct": 13
+          },
+          {
+            "topic": "Sözcük Türleri",
+            "hits": 938,
+            "pct": 43
+          },
+          {
+            "topic": "Cümlenin Ögeleri ve Cümle Türleri",
+            "hits": 409,
+            "pct": 19
+          },
+          {
+            "topic": "Yazım Kuralları",
+            "hits": 72,
+            "pct": 3
+          },
+          {
+            "topic": "Noktalama İşaretleri",
+            "hits": 54,
+            "pct": 2
+          },
+          {
+            "topic": "Anlatım Bozuklukları",
+            "hits": 25,
+            "pct": 1
+          },
+          {
+            "topic": "Sözel Mantık",
+            "hits": 7,
+            "pct": 0
+          }
+        ],
+        "covered": 11,
+        "totalTopics": 11,
+        "outOfScope": [
+          {
+            "label": "Edebiyat (KPSS GY'de yok)",
+            "hits": 7
+          }
+        ],
+        "outOfScopeRatio": 0
+      },
+      "soru": {
+        "questionLike": 69,
+        "options": {
+          "A": 31,
+          "B": 31,
+          "C": 23,
+          "D": 18,
+          "E": 0
+        },
+        "fiveChoice": false,
+        "answerKey": true
+      }
+    }
+  ]
+}

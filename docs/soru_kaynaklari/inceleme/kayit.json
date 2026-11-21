@@ -1,0 +1,491 @@
+{
+  "$comment": "Kaynak inceleme kayıt defteri. Her dosya için bir kayıt. karar: onayli | kosullu | ret | bekliyor. Puanlar 0-5 (kaynak_inceleme_plani.md Aşama B). Rapor: inceleme/<ders>/<dosya>.md",
+  "schema": {
+    "dosya": "Masaüstündeki dosya adı",
+    "ders": "kpss-gy-turkce gibi klasör anahtarı",
+    "hedefSinav": "konu_matrisi.json exam id (kpss_gy_gk, ekpss, dhbt, meb_ags, kpss_a_grubu)",
+    "tur": "notlar | sorular",
+    "koken": "Zone.Identifier ve gömülü izlerden bulunan kaynak",
+    "taramaTarihi": "YYYY-MM-DD",
+    "puanlar": {
+      "dogruluk": 0,
+      "konuUyumu": 0,
+      "duzeyUyumu": 0,
+      "osymTarzi": 0,
+      "celdirici": 0,
+      "dilBicim": 0,
+      "guncellik": 0
+    },
+    "kapsananKonular": [
+      "konu_matrisi.json konu adları"
+    ],
+    "karar": "bekliyor",
+    "kararNotu": "",
+    "kullaniciOnayi": false
+  },
+  "kayitlar": [
+    {
+      "dosya": "Kpss-Türkçe-Konu-Anlatımı.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "notlar",
+      "koken": "alonot.com ← alonot.com/kpss-turkce-konu-anlatimi (içinde sorubak.com bağlantıları)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 5,
+        "duzeyUyumu": 4,
+        "osymTarzi": null,
+        "celdirici": null,
+        "dilBicim": 4,
+        "guncellik": 4
+      },
+      "ortalama": 4.2,
+      "kapsananKonular": [
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı",
+        "Ses Bilgisi",
+        "Sözcükte Yapı ve Ekler",
+        "Sözcük Türleri",
+        "Cümlenin Ögeleri ve Cümle Türleri",
+        "Yazım Kuralları",
+        "Noktalama İşaretleri",
+        "Anlatım Bozuklukları"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Olgu kaynağı olarak kullanılabilir. Tek başına soru örneği içermez (yaklaşık 36 soru benzeri satır, çoğu konu içi örnek).",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "Yks-Kpss-Turkce-Dilbilgisi-Ozetleri-25-Konu.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "notlar",
+      "koken": "alonot.com ← alonot.com/yks-kpss-turkce-dilbilgisi-ozetleri-25-konu (turkcetest.com, isem izi)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 3,
+        "duzeyUyumu": 3,
+        "osymTarzi": null,
+        "celdirici": null,
+        "dilBicim": 3,
+        "guncellik": 3
+      },
+      "ortalama": 3.2,
+      "kapsananKonular": [
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı",
+        "Ses Bilgisi",
+        "Sözcükte Yapı ve Ekler",
+        "Sözcük Türleri",
+        "Cümlenin Ögeleri ve Cümle Türleri",
+        "Yazım Kuralları",
+        "Noktalama İşaretleri",
+        "Anlatım Bozuklukları"
+      ],
+      "karar": "kosullu",
+      "kararNotu": "Yalnızca dil bilgisi bölümleri (sayfa 5-16 ve 33-54: anlam, yazım, noktalama, sözcük türleri, fiil, cümle ögeleri, anlatım bozukluğu). Sayfa 3-4 ve 17-22 kullanılmaz.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "Tdk-Yazim-Kurallari-Ve-Noktalama-Isaretleri.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "notlar",
+      "koken": "alonot.com ← alonot.com/yks-kpss-turkce-yazim-kurallari-ve-noktalama-isaretleri (akıllı adam yayınları izi)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 4,
+        "duzeyUyumu": 4,
+        "osymTarzi": null,
+        "celdirici": null,
+        "dilBicim": 4,
+        "guncellik": 3
+      },
+      "ortalama": 3.8,
+      "kapsananKonular": [
+        "Yazım Kuralları",
+        "Noktalama İşaretleri"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Üretimde kurum adları güncel adlarla (Cumhurbaşkanlığı, Cumhurbaşkanlığı Kabinesi) yazılır. Şüpheli bir kural çıkarsa TDK güncel yazım kılavuzundan doğrulanır.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "Kpss-Türkçe-Ne-Sorulursa-Neye-Bakılır.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "notlar",
+      "koken": "alonot.com ← alonot.com/kpss-turkce-ders-notlari-test-sorulari-ve-cevaplari (Ekimbir Yayınları)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 3,
+        "duzeyUyumu": 4,
+        "osymTarzi": null,
+        "celdirici": null,
+        "dilBicim": 4,
+        "guncellik": 5
+      },
+      "ortalama": 4,
+      "kapsananKonular": [
+        "Sözcük Türleri",
+        "Cümlenin Ögeleri ve Cümle Türleri",
+        "Sözcükte Yapı ve Ekler"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Çeldirici ve distractorTrap yazarken \"öğrenci nerede yanılır\" referansı olarak kullanılır. Tek başına olgu kaynağı değildir.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "Parcada-Anlam-Paragraf-Ders-Notu.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "notlar",
+      "koken": "alonot.com ← alonot.com/parcada-anlam-paragraf-ders-notu (yelpazesi.net, nedir.org bağlantıları)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 5,
+        "duzeyUyumu": 3,
+        "osymTarzi": null,
+        "celdirici": null,
+        "dilBicim": 4,
+        "guncellik": 5
+      },
+      "ortalama": 4.2,
+      "kapsananKonular": [
+        "Paragrafta Anlam ve Yapı",
+        "Cümlede Anlam",
+        "Anlatım Bozuklukları"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Paragraf konusu için olgu kaynağı olarak onaylı. Zor paragraf soruları için tek başına yetmez.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "Kpss-Türkçe-Sözcükte-Anlam-Konu-Anlatımı-Ve-Soru-Çözümleri.doc",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "notlar",
+      "koken": "alonot.com (Word .doc; Word kurulu olmadığı için metin ikili dosyadan kısmen çıkarıldı)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 5,
+        "duzeyUyumu": 4,
+        "osymTarzi": null,
+        "celdirici": null,
+        "dilBicim": 3,
+        "guncellik": 4
+      },
+      "ortalama": 4,
+      "kapsananKonular": [
+        "Sözcükte Anlam"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Yalnızca konu anlatımı kısmı kullanılır. Dosya LibreOffice veya Word'de açılıp kontrol edilirse çözümlü soru bölümü ayrıca incelenebilir.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "Sözel-Mantık-Konu-Anlatımı.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "notlar",
+      "koken": "alonot.com ← alonot.com/kpss-turkce-sozel-mantik-konu-anlatimi (kpssdenemeleri.net, Facebook sayfası)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 3,
+        "duzeyUyumu": 3,
+        "osymTarzi": null,
+        "celdirici": null,
+        "dilBicim": 3,
+        "guncellik": 3
+      },
+      "ortalama": 3.2,
+      "kapsananKonular": [
+        "Sözel Mantık"
+      ],
+      "karar": "kosullu",
+      "kararNotu": "Yalnızca \"tablo kurma\" ipuçları için referans. Sözel mantık soruları için ayrı, daha geniş bir kaynak gerekir.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "Turkce-Sb-KPSS-Cozum.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "sorular",
+      "koken": "cozum.hocakafasi.com ← cozum.hocakafasi.com/kpss-turkce-soru-bankasi-2026 (Anla Kazan yayınları izi)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 5,
+        "duzeyUyumu": 4,
+        "osymTarzi": 4,
+        "celdirici": 4,
+        "dilBicim": 4,
+        "guncellik": 4
+      },
+      "ortalama": 4.1,
+      "kapsananKonular": [
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı",
+        "Ses Bilgisi",
+        "Sözcükte Yapı ve Ekler",
+        "Sözcük Türleri",
+        "Cümlenin Ögeleri ve Cümle Türleri",
+        "Yazım Kuralları",
+        "Noktalama İşaretleri",
+        "Anlatım Bozuklukları"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Hem not (kural anlatımı) hem tarz referansı. Kaynak ticari olduğu için soru ya da çözüm cümlesi kopyalanmaz; yalnızca çözüm mantığı özgün sorulara uyarlanır.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "9780202100043.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "sorular",
+      "koken": "depo.pegem.net ← depo.pegem.net/9780202100043.pdf (Pegem Akademi, KPSS Lise ve Ön Lisans Türkçe Soru Bankası 2022)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 4,
+        "duzeyUyumu": 3,
+        "osymTarzi": 4,
+        "celdirici": 3,
+        "dilBicim": 4,
+        "guncellik": 4
+      },
+      "ortalama": 3.7,
+      "kapsananKonular": [
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı",
+        "Ses Bilgisi",
+        "Sözcük Türleri",
+        "Cümlenin Ögeleri ve Cümle Türleri",
+        "Yazım Kuralları",
+        "Noktalama İşaretleri",
+        "Anlatım Bozuklukları"
+      ],
+      "karar": "kosullu",
+      "kararNotu": "Yalnızca Ön Lisans ve Ortaöğretim seviyesinde tarz ve zorluk referansı. Soru metni hiçbir biçimde alınmaz.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "38- deneme sınavı 1.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "sorular",
+      "koken": "Google Drive paylaşımı (yayıncı belirsiz); ticari iz yok",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 5,
+        "duzeyUyumu": 4,
+        "osymTarzi": 4,
+        "celdirici": 4,
+        "dilBicim": 4,
+        "guncellik": 4
+      },
+      "ortalama": 4.1,
+      "kapsananKonular": [
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Anlam bilgisi (sözcük, cümle, paragraf) için tarz ve zorluk referansı.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "105- deneme sınavı 5.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "sorular",
+      "koken": "Google Drive paylaşımı (yayıncı belirsiz); ticari iz yok",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 4,
+        "duzeyUyumu": 4,
+        "osymTarzi": 4,
+        "celdirici": 4,
+        "dilBicim": 4,
+        "guncellik": 4
+      },
+      "ortalama": 4,
+      "kapsananKonular": [
+        "Sözcük Türleri",
+        "Cümlenin Ögeleri ve Cümle Türleri",
+        "Anlatım Bozuklukları",
+        "Yazım Kuralları"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Dil bilgisi ağırlıklı konular için tarz referansı.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "57- deneme sınavı 2.docx",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "sorular",
+      "koken": "Google Drive paylaşımı (yayıncı belirsiz)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 4,
+        "duzeyUyumu": 4,
+        "osymTarzi": 4,
+        "celdirici": 4,
+        "dilBicim": 4,
+        "guncellik": 4
+      },
+      "ortalama": 4,
+      "kapsananKonular": [
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Tarz ve zorluk referansı.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "77- deneme sınavı - 3.docx",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "sorular",
+      "koken": "Google Drive paylaşımı (yayıncı belirsiz)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 4,
+        "duzeyUyumu": 4,
+        "osymTarzi": 4,
+        "celdirici": 4,
+        "dilBicim": 4,
+        "guncellik": 4
+      },
+      "ortalama": 4,
+      "kapsananKonular": [
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Tarz ve zorluk referansı.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "87- deneme sınavı 4.docx",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "sorular",
+      "koken": "Google Drive paylaşımı (yayıncı belirsiz)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 4,
+        "konuUyumu": 4,
+        "duzeyUyumu": 4,
+        "osymTarzi": 4,
+        "celdirici": 4,
+        "dilBicim": 4,
+        "guncellik": 4
+      },
+      "ortalama": 4,
+      "kapsananKonular": [
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı"
+      ],
+      "karar": "onayli",
+      "kararNotu": "Tarz ve zorluk referansı.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "KPSS Türkçe Deneme Sınavı.pdf",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "sorular",
+      "koken": "Google Drive paylaşımı (yayıncı belirsiz)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 3,
+        "konuUyumu": 4,
+        "duzeyUyumu": 3,
+        "osymTarzi": 3,
+        "celdirici": 3,
+        "dilBicim": 3,
+        "guncellik": 4
+      },
+      "ortalama": 3.3,
+      "kapsananKonular": [
+        "Sözcükte Anlam",
+        "Cümlede Anlam",
+        "Paragrafta Anlam ve Yapı"
+      ],
+      "karar": "ret",
+      "kararNotu": "Çok sayıda başka denemenin zaten olduğu için kayıp değil. Ret nedeni: cevap anahtarı güvenilir değil.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "DİL BİLGİSİ DENEMESİ.docx",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "sorular",
+      "koken": "Sosyal medya hocası (Eyüp Hoca, \"Türkçe ve Edebiyat\" Instagram hesabı) kişisel denemesi",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 2,
+        "konuUyumu": 4,
+        "duzeyUyumu": 4,
+        "osymTarzi": 4,
+        "celdirici": 3,
+        "dilBicim": 3,
+        "guncellik": 4
+      },
+      "ortalama": 3.4,
+      "kapsananKonular": [
+        "Cümlenin Ögeleri ve Cümle Türleri",
+        "Sözcükte Yapı ve Ekler",
+        "Anlatım Bozuklukları"
+      ],
+      "karar": "ret",
+      "kararNotu": "Cevap anahtarı sağlanırsa yeniden değerlendirilebilir; mevcut hâliyle kullanılmaz.",
+      "kullaniciOnayi": true
+    },
+    {
+      "dosya": "Paragraf-50-Soru.docx",
+      "ders": "kpss-gy-turkce",
+      "hedefSinav": "kpss_gy_gk",
+      "tur": "sorular",
+      "koken": "Kaynak izi yok (alonot.com dışı, Word dosyası)",
+      "taramaTarihi": "2026-11-21",
+      "puanlar": {
+        "dogruluk": 2,
+        "konuUyumu": 3,
+        "duzeyUyumu": 2,
+        "osymTarzi": 2,
+        "celdirici": 3,
+        "dilBicim": 3,
+        "guncellik": 4
+      },
+      "ortalama": 2.7,
+      "kapsananKonular": [
+        "Paragrafta Anlam ve Yapı"
+      ],
+      "karar": "ret",
+      "kararNotu": "Ret. Aynı konuda çok daha iyi 5 şıklı ve cevaplı kaynaklar var.",
+      "kullaniciOnayi": true
+    }
+  ]
+}

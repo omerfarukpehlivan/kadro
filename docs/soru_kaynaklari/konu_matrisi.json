@@ -1,0 +1,240 @@
+{
+  "$comment": "Kadro sınav türü konu matrisi. Kaynak önceliği: resmi (ÖSYM/MEB kılavuz tabloları) > gelenek (çıkmış soru analizi, teyit gerekir) > teyitsiz. weightPct = ÖSYM'nin 'Soruların Testteki Yaklaşık Ağırlığı'; approxQuestions = weightPct x test soru sayısı (yuvarlanmış, yaklaşık). Hazırlanma: 2026-11-20.",
+  "version": 1,
+  "sources": {
+    "kpss_lisans_2026": {
+      "title": "2026-KPSS Lisans Kılavuzu, Tablo-1 KPSS'de Uygulanacak Testlerin Kapsamları + DHBT açıklamaları",
+      "url": "https://dokuman.osym.gov.tr/pdfdokuman/2026/KPSS/LISANS/kilavuz_Ld01072026.pdf",
+      "type": "resmi"
+    },
+    "ekpss_2026": {
+      "title": "2026-EKPSS Kılavuzu, 3.1 Sınavın Kapsamı (Testler ve Soru Sayıları, ek süre tablosu)",
+      "url": "https://dokuman.osym.gov.tr/pdfdokuman/2026/EKPSS/kilavuz_ekpd0402026.pdf",
+      "type": "resmi"
+    },
+    "ags_kilavuz_2026": {
+      "title": "2026-MEB-AGS Kılavuzu, Tablo-1 Testlerin Kapsamları (AGS + 17 ÖABT alanı)",
+      "url": "https://dokuman.osym.gov.tr/pdfdokuman/2026/MEB-AGS/kilavuz_agsd08052026.pdf",
+      "type": "resmi"
+    },
+    "ags_konudagilimi_2026": {
+      "title": "2026 AGS ve ÖABT Özel Eğitim Konu Dağılımı (08.01.2026)",
+      "url": "https://dokuman.osym.gov.tr/pdfdokuman/2026/MEB-AGS/konudagilimi08012026.pdf",
+      "type": "resmi"
+    },
+    "kpss_onlisans_ortaogretim_2026": {
+      "title": "2026-KPSS Ön Lisans ve 2026-KPSS Ortaöğretim Başvuru Kılavuzları, Tablo-1 Testlerin Kapsamı + DHBT açıklamaları",
+      "urls": [
+        "https://dokuman.osym.gov.tr/web/2026/8/basvuru-kilavuzu-fqs59p-13083438.pdf",
+        "https://dokuman.osym.gov.tr/web/2026/8/basvuru-kilavuzu-ci4pae-27090228.pdf"
+      ],
+      "type": "resmi",
+      "note": "İki kılavuzun Tablo-1'i ve DHBT konu başlıkları Lisans kılavuzuyla kelimesi kelimesine aynı. Puan türleri: Ön Lisans KPSSP93, Ortaöğretim KPSSP94 (GY 0,50 + GK 0,50). ÖSYM sayfalarındaki bağlantı adlarıyla dosya içerikleri ters eşleşiyor olabilir; içerik başlıktan teyit edildi."
+    }
+  },
+  "exams": [
+    {
+      "id": "kpss_gy_gk",
+      "family": "bGrubu",
+      "levels": ["lisans", "onlisans", "ortaogretim"],
+      "levelNote": "Konu ve ağırlık tablosu üç düzeyde aynı; fark yalnızca zorluk düzeyindedir (ayrı sınavlar, ayrı kitapçıklar).",
+      "durationMinutes": 130,
+      "source": "kpss_lisans_2026",
+      "alsoConfirmedBy": "kpss_onlisans_ortaogretim_2026",
+      "tests": [
+        {
+          "id": "genel_yetenek",
+          "name": "Genel Yetenek",
+          "questions": 60,
+          "areas": [
+            {
+              "name": "Sözel Bölüm",
+              "weightPct": 50,
+              "approxQuestions": 30,
+              "confidence": "resmi",
+              "officialScope": "Sözel akıl yürütme (muhakeme) becerileri, dil bilgisi ve yazım kuralları",
+              "codeLessonId": "turkce",
+              "subtopicsConfidence": "gelenek",
+              "subtopics": ["Sözcükte Anlam", "Cümlede Anlam", "Paragrafta Anlam ve Yapı", "Ses Bilgisi", "Sözcükte Yapı ve Ekler", "Sözcük Türleri", "Cümlenin Ögeleri ve Cümle Türleri", "Yazım Kuralları", "Noktalama İşaretleri", "Anlatım Bozuklukları", "Sözel Mantık"],
+              "note": "ÖSYM alt konu ağırlığı yayımlamıyor. Alt konu dağılımı çıkmış soru sayımıyla teyit edilmeli."
+            },
+            {
+              "name": "Sayısal Bölüm",
+              "weightPct": 50,
+              "approxQuestions": 30,
+              "confidence": "resmi",
+              "officialScope": "Sayısal ve mantıksal akıl yürütme (muhakeme) becerileri",
+              "codeLessonId": "matematik",
+              "subtopicsConfidence": "gelenek",
+              "subtopics": ["Temel Kavramlar ve Sayılar", "Bölme-Bölünebilme, EBOB-EKOK", "Rasyonel/Ondalık Sayılar", "Eşitsizlik ve Mutlak Değer", "Üslü ve Köklü İfadeler", "Çarpanlara Ayırma, Oran-Orantı", "Denklem ve Problemler", "Kümeler, Fonksiyon, Modüler Aritmetik", "Permütasyon-Kombinasyon-Olasılık", "Sayısal Mantık, Tablo-Grafik", "Geometri"],
+              "note": "Geometri payı resmî değil (gelenekte 4-8 soru)."
+            }
+          ]
+        },
+        {
+          "id": "genel_kultur",
+          "name": "Genel Kültür",
+          "questions": 60,
+          "areas": [
+            {
+              "name": "Tarih", "weightPct": 45, "approxQuestions": 27, "confidence": "resmi", "codeLessonId": "tarih",
+              "topics": [
+                {"name": "Osmanlı Öncesi Türk Devletleri Tarihi", "weightPct": 5, "approxQuestions": 3},
+                {"name": "Osmanlı Tarihi (XIII. yy - XX. yy başı)", "weightPct": 15, "approxQuestions": 9},
+                {"name": "Atatürk İlkeleri ve İnkılap Tarihi (Osmanlı'nın yıkılışı - II. Dünya Savaşı sonu)", "weightPct": 20, "approxQuestions": 12},
+                {"name": "Çağdaş Türk ve Dünya Tarihi", "weightPct": 5, "approxQuestions": 3}
+              ]
+            },
+            {
+              "name": "Türkiye Coğrafyası", "weightPct": 30, "approxQuestions": 18, "confidence": "resmi", "codeLessonId": "cografya",
+              "topics": [
+                {"name": "Türkiye'nin fiziki özellikleri", "weightPct": 12, "approxQuestions": 7},
+                {"name": "Türkiye'nin beşerî özellikleri", "weightPct": 5, "approxQuestions": 3},
+                {"name": "Türkiye'nin ekonomik özellikleri", "weightPct": 13, "approxQuestions": 8}
+              ]
+            },
+            {
+              "name": "Temel Yurttaşlık Bilgisi", "weightPct": 15, "approxQuestions": 9, "confidence": "resmi", "codeLessonId": "vatandaslik",
+              "topics": [
+                {"name": "Hukuk başlangıcı", "weightPct": 5, "approxQuestions": 3},
+                {"name": "Anayasa, İnsan Hakları Hukuku", "weightPct": 5, "approxQuestions": 3},
+                {"name": "İdare", "weightPct": 5, "approxQuestions": 3}
+              ]
+            },
+            {
+              "name": "Türkiye ve Dünya ile İlgili Genel, Kültürel ve Sosyoekonomik Konular", "weightPct": 10, "approxQuestions": 6, "confidence": "resmi", "codeLessonId": "guncel"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ekpss",
+      "family": "ekpss",
+      "levels": ["lisans", "onlisans", "ortaogretim"],
+      "durationMinutes": 60,
+      "source": "ekpss_2026",
+      "note": "Dağılım tüm öğrenim düzeyleri ve engel grupları için aynı tablodur; her düzey ve engel grubu için ayrı kitapçık hazırlanır.",
+      "tests": [
+        {
+          "id": "genel_yetenek", "name": "Genel Yetenek", "questions": 30,
+          "areas": [
+            {"name": "Türkçe", "questions": 15, "confidence": "resmi", "codeLessonId": "turkce"},
+            {"name": "Matematik", "questions": 15, "confidence": "resmi", "codeLessonId": "matematik"}
+          ]
+        },
+        {
+          "id": "genel_kultur", "name": "Genel Kültür", "questions": 30,
+          "areas": [
+            {"name": "Atatürk İlkeleri ve İnkılap Tarihi", "questions": 10, "confidence": "resmi", "codeLessonId": "tarih"},
+            {"name": "Temel Yurttaşlık Bilgisi", "questions": 6, "confidence": "resmi", "codeLessonId": "vatandaslik"},
+            {"name": "Türk Kültür ve Medeniyetleri", "questions": 3, "confidence": "resmi", "codeLessonId": "tarih"},
+            {"name": "Türkiye Coğrafyası", "questions": 5, "confidence": "resmi", "codeLessonId": "cografya"},
+            {"name": "Türkiye ve Dünya ile İlgili Genel, Kültürel ve Güncel Sosyoekonomik Konular", "questions": 6, "confidence": "resmi", "codeLessonId": "guncel"}
+          ]
+        }
+      ],
+      "booklets": [
+        {"id": "genel_gorme_isitme2", "name": "Genel, Görme ve İşitme-2 Testi", "groups": ["Genel engelli", "Görme engelli", "İlköğretime başlama yaşı sonrası işitme engelli", "Dil ve konuşma engelli"], "contentRule": "Aynı içerik; görme engellilere grafik ve şekilli soru sorulmaz; işitme-2 için karmaşık ve uzun paragraf içermeyen sorular"},
+        {"id": "isitme1", "name": "İşitme-1 Testi", "groups": ["İlköğretime başlama yaşı öncesi işitme engelli"], "contentRule": "Ayrı test; günlük ve yaygın kullanılan kelimelerden oluşan sorular"},
+        {"id": "zihinsel", "name": "Zihinsel Engelli Testi", "groups": ["Zihinsel engelli"], "contentRule": "Engel durumu dikkate alınarak ayrı test"}
+      ],
+      "extraTimeMinutes": [
+        {"group": "Genel: ortopedik, ruhsal-duygusal, süreğen hastalık", "extra": 0},
+        {"group": "Genel: yaygın gelişimsel bozukluk, özgül öğrenme güçlüğü, dil ve konuşma", "extra": 20},
+        {"group": "Genel: okuyucu yardımı alan CP", "extra": 40},
+        {"group": "Görme: okuyucu yardımı alan", "extra": 40},
+        {"group": "Görme: kendisi okuyan", "extra": 0},
+        {"group": "Görme: az gören (%25+ veya ÇÖZGER ÖGV)", "extra": 30},
+        {"group": "İşitme", "extra": 20},
+        {"group": "Zihinsel: okuyucu yardımı alan", "extra": 40},
+        {"group": "Zihinsel: kendisi okuyan", "extra": 20}
+      ]
+    },
+    {
+      "id": "dhbt",
+      "family": "dhbt",
+      "levels": ["lisans", "onlisans", "ortaogretim"],
+      "durationMinutes": 60,
+      "source": "kpss_lisans_2026",
+      "tests": [
+        {
+          "id": "dhbt_1", "name": "DHBT-1 (Temel Din Bilgisi, tüm düzeyler ortak)", "questions": 20, "topicsConfidence": "resmi", "weightsConfidence": "teyitsiz",
+          "topics": ["İslam İnanç Esasları", "İslam İbadet Esasları", "Kur'an Bilgisi (Kur'an tarihi, tecvid, Kur'an'ı anlama ve meal bilgisi)", "Siyer", "İslam Ahlakı"]
+        },
+        {
+          "id": "dhbt_2", "name": "DHBT-2 (öğrenim düzeyine göre)", "questions": 20, "topicsConfidence": "resmi", "weightsConfidence": "teyitsiz",
+          "levelCurriculum": {"lisans": "İlahiyat Fakültesi müfredatı", "onlisans": "İlahiyat ön lisans programı müfredatı", "ortaogretim": "İmam Hatip Okulları müfredatı"},
+          "topics": ["Tefsir", "Fıkıh", "Hadis", "Akaid ve Kelam", "İslam Tarihi", "Dinler ve Mezhepler Tarihi", "Dini Hitabet"]
+        }
+      ],
+      "contentRule": "Kur'an-ı Kerim metinleri ve mealleri Türkiye Diyanet Vakfı Yayın No: 86/A 'Kur'an-ı Kerim ve Açıklamalı Meali'nden alınır (ÖSYM). Bu meal telifli; uygulamada sure:ayet künyesi verilir."
+    },
+    {
+      "id": "meb_ags",
+      "family": "mebAgs",
+      "durationMinutes": 110,
+      "source": "ags_kilavuz_2026",
+      "tests": [
+        {
+          "id": "ags", "name": "Akademi Giriş Sınavı (AGS)", "questions": 80,
+          "areas": [
+            {"name": "Sözel Yetenek", "weightPct": 18.75, "approxQuestions": 15, "confidence": "resmi", "topics": ["Sözcükte Anlam", "Cümlede Anlam", "Anlatımın Oluşması", "Paragrafta Anlam", "Sözel Mantık"], "note": "Dil bilgisi ve yazım kuralları listede YOK (KPSS GY'den farklı)."},
+            {"name": "Sayısal Yetenek", "weightPct": 18.75, "approxQuestions": 15, "confidence": "resmi", "topics": ["Temel Matematik", "Grafik ve Tablo Yorumlama", "Mantıksal Muhakeme Problemleri"], "note": "Geometri listede YOK."},
+            {"name": "Tarih", "weightPct": 7.5, "approxQuestions": 6, "confidence": "resmi", "topics": ["Osmanlı Öncesi Türk Devletleri Tarihi", "Osmanlı Tarihi", "Atatürk İlkeleri ve İnkılap Tarihi", "Çağdaş Türk ve Dünya Tarihi"]},
+            {"name": "Türkiye Coğrafyası", "weightPct": 7.5, "approxQuestions": 6, "confidence": "resmi", "topics": ["Türkiye Fiziki Coğrafyası", "Türkiye Beşerî ve Ekonomik Coğrafyası"]},
+            {"name": "Eğitim Bilimleri ve Türk Millî Eğitim Sistemi", "weightPct": 37.5, "approxQuestions": 30, "confidence": "resmi", "topics": ["Eğitimin Tarihî, Felsefi, Toplumsal, Ekonomik ve Politik Temelleri", "Öğretim Yöntem ve Teknikleri", "Sınıf Yönetimi", "Program Okuryazarlığı", "Eğitimde Ölçme ve Değerlendirme", "Öğrenme Psikolojisi", "Gelişim Psikolojisi", "Rehberlik", "Eğitim ve Öğretim Teknolojileri", "Türk Millî Eğitim Sisteminin Genel Yapısı", "Türkiye Yüzyılı Maarif Modeli"], "note": "Alt konu ağırlıkları yayımlanmadı."},
+            {"name": "Mevzuat", "weightPct": 10, "approxQuestions": 8, "confidence": "resmi", "topics": ["T.C. Anayasası (2709) ve İnsan Hakları Hukuku", "1739 sayılı Millî Eğitim Temel Kanunu", "222 sayılı İlköğretim ve Eğitim Kanunu", "7528 sayılı Öğretmenlik Mesleği Kanunu"]}
+          ]
+        }
+      ],
+      "oabt": {
+        "questions": 50,
+        "branches": [
+          {"code": "turkce", "name": "Türkçe", "durationMinutes": 70, "split": null, "topics": [["Anlama ve Anlatma Teknikleri", 32], ["Dil Bilgisi ve Dil Bilimi", 24], ["Çocuk Edebiyatı", 6], ["Türk Halk Edebiyatı", 10], ["Eski Türk Edebiyatı", 10], ["Yeni Türk Edebiyatı", 10], ["Edebiyat Bilgi ve Kuramları", 8]]},
+          {"code": "ilkogretimMatematik", "name": "İlköğretim Matematik", "durationMinutes": 90, "split": null, "topics": [["Analiz", 36], ["Cebir", 24], ["Geometri", 24], ["Uygulamalı Matematik", 16]]},
+          {"code": "matematikLise", "name": "Matematik", "durationMinutes": 90, "split": null, "topics": [["Analiz", 36], ["Cebir", 24], ["Geometri", 20], ["Uygulamalı Matematik", 20]]},
+          {"code": "fenBilimleri", "name": "Fen Bilimleri", "durationMinutes": 90, "split": null, "topics": [["Fizik", 32], ["Kimya", 30], ["Biyoloji", 26], ["Jeoloji (Yer Bilimi)", 4], ["Astronomi", 4], ["Çevre Bilimi", 4]]},
+          {"code": "sosyalBilgiler", "name": "Sosyal Bilgiler", "durationMinutes": 70, "split": null, "topics": [["Tarih", 44], ["Coğrafya", 24], ["Siyaset Bilimi", 16], ["Diğer Sosyal Bilim Alanları (Sosyal Bilgilerin Temelleri, Bilim Teknoloji ve Toplum, Sosyal Antropoloji ve Medeniyet Tarihi, Ekonomi, İnsan İlişkileri ve İletişim, Sosyoloji, Sosyal Proje Geliştirme)", 16]]},
+          {"code": "turkDiliEdebiyati", "name": "Türk Dili ve Edebiyatı", "durationMinutes": 70, "split": null, "topics": [["Eski Türk Dili ve Yeni Türk Dili", 30], ["Türk Halk Edebiyatı", 20], ["Eski Türk Edebiyatı", 20], ["Yeni Türk Edebiyatı", 30]]},
+          {"code": "tarih", "name": "Tarih", "durationMinutes": 70, "split": null, "topics": [["Tarih Metodolojisi", 8], ["Osmanlı Türkçesi", 6], ["Eski Çağ Tarihi", 4], ["İlk Türk Devletleri Tarihi", 10], ["Orta Çağ İslam Tarihi", 14], ["Osmanlı Tarihi", 18], ["Türkiye Cumhuriyeti Tarihi", 16], ["Orta Çağ'dan XX. Yüzyıl'a Dünya Tarihi", 14], ["XX. Yüzyıl Türk ve Dünya Tarihi", 10]]},
+          {"code": "cografya", "name": "Coğrafya", "durationMinutes": 70, "split": null, "topics": [["Fiziki Coğrafya", 40], ["Beşerî ve Ekonomik Coğrafya", 40], ["Kıtalar ve Ülkeler Coğrafyası", 20]]},
+          {"code": "fizik", "name": "Fizik", "durationMinutes": 90, "split": null, "topics": [["Mekanik", 30], ["Elektrik ve Manyetizma", 24], ["Maddenin Mekanik ve Isıl Özellikleri", 10], ["Dalgalar ve Optik", 16], ["Modern Fizik", 20]]},
+          {"code": "kimya", "name": "Kimya/Kimya Teknolojisi", "durationMinutes": 90, "split": null, "topics": [["Temel Kimya", 32], ["Analitik Kimya", 20], ["Anorganik Kimya", 16], ["Organik Kimya", 20], ["Fizikokimya", 12]]},
+          {"code": "biyoloji", "name": "Biyoloji", "durationMinutes": 70, "split": null, "topics": [["Hücre ve Metabolizma", 20], ["Bitki Biyolojisi", 12], ["İnsan ve Hayvan Biyolojisi", 28], ["Ekoloji", 12], ["Canlıların Sınıflandırılması", 8], ["Genetik", 20]]},
+          {"code": "pdr", "name": "Rehberlik", "durationMinutes": 70, "split": null, "topics": [["Temel Psikolojik Kavramlar", 16], ["Psikolojik Danışma Kuram İlke ve Teknikleri", 20], ["Davranış ve Uyum Problemleri", 12], ["Bireyi Tanıma Teknikleri", 14], ["Bireyle ve Grupla Psikolojik Danışma", 14], ["Mesleki Rehberlik ve Kariyer Danışmanlığı", 12], ["PDR'de Araştırma ve Program Geliştirme", 8], ["Meslek Etiği ve Yasal Konular", 4]]},
+          {"code": "sinifOgretmenligi", "name": "Sınıf Öğretmenliği", "durationMinutes": 70, "split": {"alanBilgisiPct": 34, "alanEgitimiPct": 66}, "topics": [["Alan Bilgisi: İlkokulda Temel Matematik", 6], ["Alan Bilgisi: İlkokulda Temel Fen Bilimleri", 10], ["Alan Bilgisi: Türk Dili", 6], ["Alan Bilgisi: Türk Tarihi ve Kültürü", 4], ["Alan Bilgisi: Türkiye Coğrafyası ve Jeopolitiği", 4], ["Alan Bilgisi: Çocuk Edebiyatı", 4], ["Alan Eğitimi: Hayat Bilgisi, Sosyal Bilgiler, DKAB, Fen Bilgisi, Drama, Görsel Sanatlar, Müzik, Matematik, İlk Okuma ve Yazma Öğretimi vb.", 66]]},
+          {"code": "okulOncesi", "name": "Okul Öncesi", "durationMinutes": 70, "split": {"alanBilgisiPct": 60, "alanEgitimiPct": 40}, "topics": [["Erken Çocukluk Eğitimine Giriş", 8], ["Çocuk Sağlığı ve İlk Yardım", 4], ["Erken Çocukluk Döneminde Gelişim", 12], ["Çocuk Ruh Sağlığı", 8], ["Erken Çocukluk Dönemi Edebiyatı", 6], ["Erken Çocuklukta Program, Yöntem ve Yaklaşımlar", 12], ["Anne-Baba Eğitimi", 6], ["Çocuk Hakları", 4], ["Alan Eğitimi: Fen, Matematik, Güzel Sanatlar, Müzik, Oyun, Drama, Öğrenme Yaklaşımları, Okula Uyum ve Erken Okuryazarlık vb.", 40]]},
+          {"code": "bedenEgitimi", "name": "Beden Eğitimi", "durationMinutes": 70, "split": null, "topics": [["Beden Eğitimi ve Sporun Temelleri", 16], ["İnsan Anatomisi ve Kinesiyoloji", 8], ["Sağlık Bilgisi ve İlk Yardım", 6], ["Egzersiz Fizyolojisi", 8], ["Antrenman Bilgisi", 6], ["Fiziksel Uygunluk", 6], ["Egzersiz ve Beslenme", 4], ["Engelliler İçin Beden Eğitimi ve Spor", 4], ["Psikomotor Gelişim", 6], ["Beden Eğitimi ve Spor Yönetimi", 4], ["Beceri Öğrenimi", 6], ["Atletizm", 4], ["Takım Sporları", 10], ["Ritim Eğitimi ve Dans, Halk Oyunları", 4], ["Jimnastik", 4], ["Eğitsel Oyunlar", 4]]},
+          {"code": "ozelEgitim", "name": "Özel Eğitim", "durationMinutes": 70, "split": {"alanBilgisiPct": 60, "alanEgitimiPct": 40}, "topics": [["Zihin Yetersizliği ve Otizm Spektrum Bozukluğu", 10], ["Öğrenme Güçlüğü ve Özel Yetenek", 6], ["İşitme ve Görme Yetersizliği", 10], ["Erken Çocuklukta Özel Eğitim", 4], ["Uygulamalı Davranış Analizi", 8], ["Bireyselleştirilmiş Eğitim Programları", 6], ["Özel Eğitimde Değerlendirme", 6], ["Dil ve İletişim Becerilerinin Desteklenmesi", 4], ["Özel Eğitim Politikaları ve Yasal Düzenlemeler", 6], ["Alan Eğitimi: 2024 TYMM Özel Eğitim Programları", 4], ["Alan Eğitimi: Okuma-Yazma Öğretimi", 4], ["Alan Eğitimi: Fen ve Sosyal Bilgiler Öğretimi", 4], ["Alan Eğitimi: Matematik Öğretimi", 4], ["Alan Eğitimi: Sanatsal Becerilerin Öğretimi", 4], ["Alan Eğitimi: Fiziksel Eğitim ve Spor", 4], ["Alan Eğitimi: Sosyal Uyum Becerilerinin Öğretimi", 4], ["Alan Eğitimi: Türkçe Öğretimi", 4], ["Alan Eğitimi: Oyun ve Müzik", 4], ["Alan Eğitimi: Aile Eğitimi", 4]]},
+          {"code": "dkabIhl", "name": "Din Kültürü ve Ahlâk Bilgisi / İHL Meslek Dersleri", "durationMinutes": 70, "split": null, "weightsConfidence": "yorum", "weightsNote": "PDF tablo düzeni metin çıkarımında bozuluyor; toplamlar (20 + 46 + 34 = 100) tutarlı ama görsel teyit önerilir.", "groups": [{"name": "Ortak Alan Bilgisi", "pct": 20, "topics": [["Kur'an-ı Kerim ve Tecvid", 8], ["Fıkıh", 4], ["Akaid", 2], ["Siyer", 6]]}, {"name": "Temel İslam Bilimleri", "pct": 46, "topics": [["Tefsir", 10], ["Hadis", 10], ["Fıkıh", 10], ["Kelam", 10], ["İslam Mezhepleri ve Akımları", 6]]}, {"name": "İslam Tarihi, Felsefe ve Din Bilimleri", "pct": 34, "topics": [["İslam Tarihi, Kültür ve Medeniyeti", 10], ["İslam Felsefesi", 4], ["Din Felsefesi", 4], ["Din Sosyolojisi", 4], ["Din Psikolojisi", 4], ["Din Eğitimi", 4], ["Dinler Tarihi", 4]]}]}
+        ],
+        "noOabtLanguages": ["Almanca", "Arapça", "Çince", "Farsça", "Fransızca", "İngilizce", "İspanyolca", "İtalyanca", "Japonca", "Korece", "Rusça"],
+        "noOabtNote": "Bu alanlarda ÖABT yok; YDS/e-YDS puanı kullanılır (MEB-AGS-P3)."
+      },
+      "scoreWeights": {"$comment": "Puan türü standart puan ağırlıkları (%), sütunlar: Sözel, Sayısal, Tarih, Coğrafya, Eğitim Bilimleri, Mevzuat, ÖABT, YDS", "MEB-AGS-P1": [20, 20, 15, 10, 25, 10, 0, 0], "MEB-AGS-P2": [10, 10, 7.5, 5, 12.5, 5, 50, 0], "MEB-AGS-P3": [10, 10, 7.5, 5, 12.5, 5, 0, 50]}
+    },
+    {
+      "id": "kpss_a_grubu",
+      "family": "aGrubu",
+      "source": "kpss_lisans_2026",
+      "confidence": "resmi",
+      "tests": [
+        {"id": "hukuk", "name": "Hukuk", "questions": 40, "durationMinutes": 50, "topics": [["Anayasa Hukuku", 10], ["İdare Hukuku ve İdari Yargı", 15], ["Ceza Hukuku (Genel Hükümler ve Ceza Muhakemesi Hukuku)", 15], ["Medeni Hukuk", 15], ["Borçlar Hukuku (Genel Hükümler)", 15], ["Ticaret Hukuku", 15], ["İcra ve İflas Hukuku", 15]]},
+        {"id": "iktisat", "name": "İktisat", "questions": 40, "durationMinutes": 50, "topics": [["İktisadi Doktrinler Tarihi", 5], ["Mikro İktisat", 30], ["Makro İktisat", 25], ["Para-Banka-Kredi", 10], ["Uluslararası İktisat", 10], ["Kalkınma-Büyüme", 10], ["Türkiye Ekonomisi", 10]]},
+        {"id": "maliye", "name": "Maliye", "questions": 40, "durationMinutes": 50, "topics": [["Maliye Teorisi", 10], ["Kamu Gelirleri", 15], ["Kamu Giderleri", 15], ["Kamu Borçları", 15], ["Bütçe", 15], ["Vergi Hukuku", 15], ["Maliye Politikası", 15]]},
+        {"id": "muhasebe", "name": "Muhasebe", "questions": 40, "durationMinutes": 50, "topics": [["Genel Muhasebe", 70], ["Mali Tablolar Analizi", 20], ["İhtisas Muhasebesi (Maliyet, Yönetim Muhasebesi, Denetim, TFRS, TMS)", 10]]},
+        {"id": "isletme", "name": "İşletme", "questions": 40, "durationMinutes": 50, "topics": [["Temel Kavramlar", 10], ["İşletme Yönetimi", 25], ["Üretim Yönetimi", 25], ["Pazarlama Yönetimi", 20], ["Finansal Yönetim", 20]]},
+        {"id": "kamu_yonetimi", "name": "Kamu Yönetimi", "questions": 40, "durationMinutes": 50, "topics": [["Siyaset Bilimi", 20], ["Anayasa", 15], ["Yönetim Bilimleri", 20], ["Yönetim Hukuku", 20], ["Kentleşme ve Çevre Sorunları", 15], ["Türk Siyasi Hayatı (Osmanlıdan Günümüze)", 10]]},
+        {"id": "uluslararasi_iliskiler", "name": "Uluslararası İlişkiler", "questions": 40, "durationMinutes": 50, "topics": [["Uluslararası İlişkiler Teorisi", 20], ["Uluslararası Hukuk", 25], ["Siyasi Tarih", 20], ["Uluslararası Güncel Sorunlar", 10], ["Uluslararası Örgütler", 10], ["Türk Dış Politikası", 15]]},
+        {"id": "ceko", "name": "Çalışma Ekonomisi ve Endüstri İlişkileri", "questions": 40, "durationMinutes": 50, "topics": [["İş Hukuku ve Teorisi", 20], ["Sosyal Güvenlik Hukuku ve Teorisi", 25], ["Sosyal Politika", 10], ["Çalışma Ekonomisi", 30], ["Çalışma Psikolojisi ve Çalışma Sosyolojisi", 15]]},
+        {"id": "istatistik", "name": "İstatistik", "questions": 40, "durationMinutes": 60, "topics": [["Olasılık ve Stokastik Süreçler", 15], ["Matematiksel İstatistik", 15], ["Yöneylem Araştırması", 5], ["Çok Değişkenli Analizler", 10], ["Parametrik Olmayan Testler", 5], ["Uygulamalı İstatistik", 15], ["Zaman Serileri", 5], ["Deney Tasarımı ve Varyans Analizi", 10], ["Örnekleme", 10], ["Regresyon Analizi", 10]]}
+      ],
+      "sessions": [
+        {"session": 1, "tests": ["kamu_yonetimi", "uluslararasi_iliskiler", "ceko"]},
+        {"session": 2, "tests": ["hukuk", "iktisat", "maliye"]},
+        {"session": 3, "tests": ["isletme", "muhasebe", "istatistik"]}
+      ]
+    }
+  ]
+}

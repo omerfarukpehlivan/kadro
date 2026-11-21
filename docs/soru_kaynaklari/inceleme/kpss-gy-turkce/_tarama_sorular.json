@@ -1,0 +1,11 @@
+{
+  "ders": "kpss-gy-turkce",
+  "hedefSinav": "kpss_gy_gk",
+  "tarih": "2026-11-21",
+  "sonuclar": [
+    {
+      "dosya": "Paragraf-50-Soru.docx",
+      "hata": "spawnSync unzip ENOENT"
+    }
+  ]
+}
