@@ -75,6 +75,8 @@ alter table public.user_topic_mastery    alter column exam_scope set default 'li
 alter table public.quiz_sessions         alter column exam_scope set default 'lisans_gygk';
 alter table public.question_attempt_logs alter column exam_scope set default 'lisans_gygk';
 alter table public.study_tasks           alter column exam_scope set default 'lisans_gygk';
+-- 07 migration'ı ile gelen tablo (varsa):
+alter table if exists public.user_flashcard_reviews alter column exam_scope set default 'lisans_gygk';
 
 -- 4) Profil tercihleri: kayıtlı exam_selection JSON'undaki only_gk değerini çevir
 --    (istemciler okurken zaten normalize ediyor; bu adım veriyi temizler).
