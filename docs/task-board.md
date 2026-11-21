@@ -211,6 +211,7 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-164** | **🚀 Yayın Öncesi Mağaza Uyumluluk Kapısı (`app-store-compliance` skill denetimi)** | Play Store'a çıkmadan önce zorunlu: canlı `/gizlilik` + `/hesap-silme` sayfaları, hesap silme hatasının kullanıcıya gösterilmesi, AdMob UMP rıza formu, gerçek AdMob/RevenueCat kimliklerinin `--dart-define` ile verilmesi, `POST_NOTIFICATIONS` izni ve izin akışı, Veri Güvenliği formu, 12 test kullanıcısı / 14 gün kapalı test; sonunda `/app-store-audit` yeniden çalıştırılıp kritik bulgu sıfırlanır | ⏳ **Planlandı** | ❌ | ❌ |
 | **TASK-165** | **GY Türkçe Dersinin Aktifleştirilmesi ("Yakında" → Hazır) & GY-GK Kapsam Sorgusu Düzeltmesi** | Canlıdaki 710 Türkçe sorusu (`lisans_gygk`, 11 konu) ile Türkçe'nin KPSS Lisans GY-GK müfredatında diğer dersler gibi açılması (konu testleri, branş denemesi, planlayıcı, pratik merkezi); Matematik "Yakında" kalır; GY-GK modunda GK sorularının buluttan gelmemesine yol açan `contains(exam_scopes)` filtresinin kabul edilen kapsam kümesiyle `overlaps` olarak düzeltilmesi | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-166** | **B Grubunda Tek Profil — "Sadece GK / Tam GY-GK" Ayrımının Kaldırılması** | Gerçek KPSS’de GY ve GK aynı oturumda olduğu için 60/120 seçiminin kaldırılması; B Grubu seçen herkes tüm dersleri görür (Lisans: 4 GK + Türkçe aktif, Matematik Yakında); eski `only_gk` kayıtlarının `full_gygk`’ya normalize edilmesi; Tam GY-GK denemesi Matematik gelene kadar Yakında; `exam_scopes.json` eşleniklik dosyası | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
+| **TASK-167** | **B Grubu Ortak Soru Havuzu — Lisans / Ön Lisans / Ortaöğretim & Alt Düzey Deneme Zor Soru Tavanı** | Üç B Grubu düzeyinin tek GY-GK havuzunu paylaşması (`09` SQL: `b_grubu_gk` / `b_grubu_gygk` etiketleri, Türkçe `education_level` NULL); Türkçe’nin üç düzeyde aktif olması; Ön Lisans/Ortaöğretim denemelerinde bölüm başına zor soru ≤ %15 tavanı; `mock_difficulty_cap.json` eşleniklik dosyası | ⏳ **Planlandı** | ❌ | ❌ |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** | ❌ | ❌ |
 
 ### 📊 Aktif Mobil & Web Eşleniklik Özeti
@@ -6867,3 +6868,55 @@ ADIM 4: tests/parity/parity.test.ts ../gunisigi/docs/parity_fixtures/exam_scopes
 - [ ] `exam_scopes.json` eşleniklik vakaları iki depoda yeşil
 - [ ] GEMINI.md B Grubu satırı güncellendi
 - [ ] Mobilde flutter analyze 0, tam flutter test yeşil; Claude incelemesi onaylandı
+
+---
+
+## 🧩 54. Dalga 54 [Ürün Kararı]: B Grubu Ortak Soru Havuzu — Lisans / Ön Lisans / Ortaöğretim (`TASK-167`)
+
+### 📦 TASK-167: B Grubu Düzeyleri Tek Soru Havuzunu Paylaşır & Alt Düzey Denemelerinde Zor Soru Tavanı
+
+- **Durum:** ⏳ Planlandı · 🌐 Web ❌ · 📱 Mobil ❌
+- **Amaç:** KPSS Lisans, Ön Lisans ve Ortaöğretim aynı GY-GK derslerini ve aynı soru dağılımını (Türkçe 30, Matematik 30, Tarih 27, Coğrafya 18, Vatandaşlık 9, Güncel 6) paylaşır. Düzeyler için ayrı soru üretmek yerine tek havuz kullanılır; fark kolay → orta → zor test kademeleriyle ve alt düzey denemelerindeki zor soru tavanıyla yönetilir (2026-11-22 ürün kararı). Böylece bugün buluttan hiç GK sorusu alamayan Ön Lisans/Ortaöğretim adayları 2.233 GK + 710 Türkçe sorusuna erişir.
+- **Platform Uygulanabilirliği:** Ortak (iki platform).
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Supabase (veri):** `docs/supabase_migrations/09_b_group_shared_question_pool.sql` — GK sorularına `b_grubu_gk`, Türkçe sorularına `b_grubu_gygk` etiketi eklenir; Türkçe'de `education_level` NULL yapılır. Şema değişikliği yok. Kullanıcı SQL Editor'da uygular. Kabul kümeleri (`exam_scopes.json`) zaten `b_grubu_*` içerdiği için **soru getirme kodunda değişiklik gerekmez.**
+- **Ders görünürlüğü (kesin):** B Grubu'nun **üç düzeyinde de** 4 GK dersi + **Türkçe aktif**, Matematik & Geometri "Yakında". Türkçe konu test sayıları üç düzeyde aynı (toplam 71). E-KPSS GY Türkçe "Yakında" kalır (ayrı kitapçık kuralları — TASK-141).
+- **Konu testleri:** Değişmez; kolay/orta/zor kademeleri üç düzeyde aynı.
+- **Deneme zor soru tavanı (kesin):** Ön Lisans ve Ortaöğretim denemelerinde (tam deneme, GK oturum denemesi, branş denemesi, hızlı mola) her bölümde zor soru (`difficulty = 3`) sayısı en fazla `floor(bölüm_soru_sayısı × 0.15)` olur; kalan sorular kolay+orta (`difficulty` 1–2) havuzundan seçilir. Kolay+orta havuzu yetmezse eksik kalan yer zor sorularla doldurulur (deneme asla eksik üretilmez). **Lisans'ta tavan yoktur** (bugünkü seçim aynen kalır).
+  - Örnek tavanlar: Türkçe 30 → 4 · Tarih 27 → 4 · Coğrafya 18 → 2 · Vatandaşlık 9 → 1 · Güncel 6 → 0.
+- **Eşleniklik örnekleri:** `docs/parity_fixtures/mock_difficulty_cap.json` eklenir: `{ level, sectionQuestionCount } → expectedMaxHard` (Lisans için `null`). En az: üç düzey × (30, 27, 18, 9, 6) ve 15 soruluk hızlı mola. Mobil `test/parity_fixtures_test.dart` ve web `tests/parity/parity.test.ts` bu dosyayı okur; tavanı hesaplayan saf fonksiyon iki platformda da test edilir.
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-167 — B Grubu Ortak Soru Havuzu & Alt Düzey Deneme Zor Soru Tavanı (Mobil / Flutter)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma. Soru verisine/migration'a dokunma (09 SQL hazır), yeni paket ekleme. Bitince flutter-verify adımlarını çalıştır; Mobil kolonunu Claude incelemesi onaylanana kadar ❌ bırak. Commit etme.
+
+ADIM 1: Müfredat
+- lib/features/lessons/data/curriculum_registry.dart `_resolveBGrubu`: Türkçe'nin hazır olma koşulu "Lisans" yerine "B Grubu'nun tüm düzeyleri" olsun (isLisans dalını kaldır). Bölüm başlıkları üç düzeyde aynı. E-KPSS `_resolveEkpss` değişmez.
+ADIM 2: Zor soru tavanı
+- Saf fonksiyon: `int? maxHardQuestionsForSection(EducationLevel level, int sectionQuestionCount)` (Lisans → null, diğerleri → floor(count × 0.15)). Uygun yer: lib/features/exams/data/ (ör. mock_exam_blueprint.dart yanında yeni küçük dosya).
+- lib/features/quiz/data/question_repository.dart deneme soru seçimi (konu kotalarıyla seçim yapılan bölüm, ≈ satır 550–580): Ön Lisans/Ortaöğretim seçiminde her bölüm için önce kolay+orta sorulardan seç, zor soruları tavana kadar al, havuz yetmezse zorla tamamla. Lisans'ta davranış birebir aynı kalsın.
+- branch_mock_exam_generator.dart ve hızlı mola denemesi de aynı yoldan geçiyorsa ek iş gerekmez; geçmiyorsa aynı kuralı uygula.
+ADIM 3: Eşleniklik dosyası & testler
+- docs/parity_fixtures/mock_difficulty_cap.json'ı Ortak Sözleşme'deki vakalarla yaz; test/parity_fixtures_test.dart'a okuyucuyu ekle.
+- Yeni testler: Ön Lisans ve Ortaöğretim'de Türkçe aktif; Ortaöğretim GK oturum denemesinde (sahte havuzla) her bölümde zor soru ≤ tavan; Lisans denemesinde tavan uygulanmıyor; kolay+orta yetmezse deneme yine tam soru sayısıyla üretiliyor.
+- dart format (değişen dosyalar), flutter analyze 0, node tools/affected_tests.mjs --run, sonra tam flutter test.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-167 — B Grubu Ortak Soru Havuzu & Alt Düzey Deneme Zor Soru Tavanı (Web / Next.js)
+ÖNEMLİ: kadro-web/AGENTS.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma. Bitince lint/test adımlarını çalıştır ve ../gunisigi/docs/task-board.md içinde yalnızca "Web de Yapıldı" kolonunu güncelle. Commit etme.
+
+ADIM 1: src/domain/curriculum.ts — Türkçe B Grubu'nun üç düzeyinde hazır (isLisans koşulunu kaldır); E-KPSS değişmez.
+ADIM 2: src/domain/ altında saf `maxHardQuestionsForSection(level, count)`; src/lib/supabase/studio-queries.ts `fetchBlueprintExamQuestions` içinde Ön Lisans/Ortaöğretim için bölüm başına zor soru tavanı (kolay+orta öncelikli, yetmezse zorla tamamla). Lisans aynen kalsın.
+ADIM 3: tests/parity/parity.test.ts ../gunisigi/docs/parity_fixtures/mock_difficulty_cap.json'ı okusun. npm run lint, npx tsc --noEmit, npm run test:parity, npm run build yeşil.
+```
+
+#### ✅ Kabul Kriterleri
+- [ ] 09 migration'ı canlıya uygulandı; doğrulama sorgusunda etiketsiz soru = 0, Türkçe'de education_level dolu = 0
+- [ ] Ön Lisans ve Ortaöğretim seçen kullanıcı Dersler'de 4 GK + Türkçe aktif görüyor; konu testleri buluttan geliyor
+- [ ] Ön Lisans/Ortaöğretim denemelerinde her bölümde zor soru ≤ tavan; Lisans denemeleri değişmedi
+- [ ] `mock_difficulty_cap.json` vakaları iki depoda yeşil
+- [ ] Mobilde flutter analyze 0, tam flutter test yeşil; web lint/tsc/build yeşil; Claude incelemesi onaylandı
