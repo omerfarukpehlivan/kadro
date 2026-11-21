@@ -148,7 +148,7 @@ class OptionTile extends StatelessWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: badgeBg,
-                        borderRadius: BorderRadius.circular(9),
+                        borderRadius: BorderRadius.circular(8),
                         border: status == OptionStatus.normal
                             ? Border.all(
                                 color: colorScheme.outlineVariant,

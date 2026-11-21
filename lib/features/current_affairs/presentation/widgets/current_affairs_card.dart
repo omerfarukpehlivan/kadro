@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/features/current_affairs/data/models/current_affairs_bulletin.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -83,34 +84,12 @@ class CurrentAffairsCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 6,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: accent.withAlpha(24),
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: accent.withAlpha(90)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    PhosphorIcon(
-                      _iconFor(item.category),
-                      size: 13,
-                      color: accent,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      item.category.label,
-                      style: textTheme.labelSmall?.copyWith(
-                        color: accent,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+              KadroBadge(
+                label: item.category.label,
+                icon: _iconFor(item.category),
+                backgroundColor: accent.withAlpha(24),
+                foregroundColor: accent,
+                borderColor: accent.withAlpha(90),
               ),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -208,21 +187,10 @@ class CurrentAffairsCard extends StatelessWidget {
               runSpacing: 6,
               children: [
                 for (final tag in item.linkedTags)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      '#$tag',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
+                  KadroBadge(
+                    label: '#$tag',
+                    backgroundColor: colorScheme.surfaceContainerLow,
+                    foregroundColor: colorScheme.onSurfaceVariant,
                   ),
               ],
             ),

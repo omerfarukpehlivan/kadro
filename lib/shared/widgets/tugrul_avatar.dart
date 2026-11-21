@@ -352,7 +352,7 @@ class TugrulTipsSheet {
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: colorScheme.primary,
-                          borderRadius: BorderRadius.circular(7),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           '${i + 1}',

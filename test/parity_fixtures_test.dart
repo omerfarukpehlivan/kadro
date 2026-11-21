@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/core/utils/leitner_scheduler.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/score_calculator/data/kpss_score_calculator.dart';
 
 /// Mobil ↔ Web eşleniklik testleri.
@@ -106,6 +107,28 @@ void main() {
           result.nextReviewAt.difference(now).inDays,
           expected['intervalDays'],
         );
+      });
+    }
+  });
+
+  group('Eşleniklik: Sınav kapsamları (exam_scopes.json)', () {
+    final fixture = _loadFixture('exam_scopes.json');
+    final cases = (fixture['cases'] as List).cast<Map<String, dynamic>>();
+
+    for (final c in cases) {
+      test(c['description'] as String, () {
+        final input = c['input'] as Map<String, dynamic>;
+        final expected = c['expected'] as Map<String, dynamic>;
+        final selection = ExamSelection.fromJson(input);
+
+        expect(selection.bGroupProfile.key, expected['bGroupProfile']);
+        expect(selection.scopeKey, expected['scopeKey']);
+
+        final actualScopes = selection.acceptedQuestionScopes.toList()..sort();
+        final expectedScopes =
+            (expected['acceptedQuestionScopes'] as List).cast<String>().toList()
+              ..sort();
+        expect(actualScopes, expectedScopes);
       });
     }
   });

@@ -58,8 +58,7 @@ class StudyTaskLauncher {
       case StudyTaskActionType.exam:
         if (!context.mounted) return;
         final selection = readOrWatchExamSelection(ref);
-        if (selection.family != KpssExamFamily.bGrubu ||
-            selection.bGroupProfile != BGroupProfile.onlyGk) {
+        if (selection.family != KpssExamFamily.bGrubu) {
           final blueprint = ExamBlueprintRegistry.primaryFullExamFor(selection);
           await launchBlueprintExamWithGuard(
             context: context,

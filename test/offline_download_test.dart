@@ -292,7 +292,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // İndirilmemiş bir denemeye tıkla
-        await tester.tap(find.text('Türkiye Geneli GK Provası #1'));
+        await tester.tap(find.text('Genel Kültür Bölümü Denemesi #1'));
         await tester.pumpAndSettle();
 
         // Diyalog metnini doğrula
@@ -337,7 +337,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // İndirilmiş denemeyi başlat
-        await tester.tap(find.text('Türkiye Geneli GK Provası #1'));
+        await tester.tap(find.text('Genel Kültür Bölümü Denemesi #1'));
         await tester.pumpAndSettle();
 
         // QuizScreen açılmış olmalı ve indirilen sorular render edilmeli

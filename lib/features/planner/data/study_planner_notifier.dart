@@ -931,7 +931,12 @@ class StudyPlannerNotifier extends Notifier<StudyPlannerState> {
     _activeExamScope = newScope;
 
     final restoredArchive = prevScope != newScope
-        ? _archivedSnapshotsByScope[newScope]
+        ? (_archivedSnapshotsByScope[newScope] ??
+              (newScope == 'lisans_gygk'
+                  ? _archivedSnapshotsByScope['lisans_gk']
+                  : (newScope == 'lisans_gk'
+                        ? _archivedSnapshotsByScope['lisans_gygk']
+                        : null)))
         : null;
     if (restoredArchive != null && !restoredArchive.isEmptyProgress) {
       applySnapshot(

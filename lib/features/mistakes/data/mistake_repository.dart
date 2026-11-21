@@ -23,15 +23,28 @@ class MistakeRepository {
   List<Question> getMistakes() =>
       List.unmodifiable(_entries.map((entry) => entry.question));
 
+  static Set<String> _equivalentScopesFor(String examScope) {
+    final trimmed = examScope.trim();
+    if (trimmed.isEmpty) return const {};
+    for (final level in const ['lisans', 'onlisans', 'ortaogretim']) {
+      if (trimmed == '${level}_gk' || trimmed == '${level}_gygk') {
+        return {'${level}_gk', '${level}_gygk'};
+      }
+    }
+    return {trimmed};
+  }
+
   /// Leitner kutu ve vade meta verilerini içeren tüm yanlış defteri kayıtlarını döner.
   List<MistakeReviewEntry> getReviewEntries({String? examScope}) {
-    final Iterable<MistakeReviewEntry> source = examScope == null
-        ? _entries
-        : _entries.where(
-            (e) =>
-                e.examScope == examScope ||
-                e.question.examScopes.contains(examScope),
-          );
+    if (examScope == null) {
+      return List.unmodifiable(_entries);
+    }
+    final accepted = _equivalentScopesFor(examScope);
+    final source = _entries.where(
+      (e) =>
+          accepted.contains(e.examScope) ||
+          e.question.examScopes.any(accepted.contains),
+    );
     return List.unmodifiable(source);
   }
 

@@ -14,27 +14,27 @@ import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 void main() {
   group('TASK-130: MockExamBlueprint & Çok Bölümlü Sınav Motoru', () {
     test('ExamBlueprintRegistry tüm sınav aileleri için geçerli süre ve soru şablonları üretmeli', () {
-      final gkPrimary = ExamBlueprintRegistry.primaryFullExamFor(
-        const ExamSelection(
-          family: KpssExamFamily.bGrubu,
-          educationLevel: EducationLevel.lisans,
-          bGroupProfile: BGroupProfile.onlyGk,
-        ),
+      const bGroupLisans = ExamSelection(
+        family: KpssExamFamily.bGrubu,
+        educationLevel: EducationLevel.lisans,
       );
-      expect(gkPrimary.totalQuestionCount, equals(60));
-      expect(gkPrimary.standardDurationMinutes, equals(65));
-      expect(gkPrimary.isMultiSection, isTrue);
-
       final gyGkPrimary = ExamBlueprintRegistry.primaryFullExamFor(
-        const ExamSelection(
-          family: KpssExamFamily.bGrubu,
-          educationLevel: EducationLevel.lisans,
-          bGroupProfile: BGroupProfile.fullGyGk,
-        ),
+        bGroupLisans,
       );
       expect(gyGkPrimary.totalQuestionCount, equals(120));
       expect(gyGkPrimary.standardDurationMinutes, equals(130));
       expect(gyGkPrimary.sections.length, equals(6));
+      expect(gyGkPrimary.isMultiSection, isTrue);
+      // Matematik gelene kadar Tam GY-GK denemesi Yakında olarak işaretlenir (TASK-166)
+      expect(gyGkPrimary.isComingSoon, isTrue);
+
+      final bGroupPacks = ExamBlueprintRegistry.forSelection(bGroupLisans);
+      final gkSessionPack = bGroupPacks.firstWhere(
+        (b) => b.id == 'b_gk_oturum_1',
+      );
+      expect(gkSessionPack.totalQuestionCount, equals(60));
+      expect(gkSessionPack.standardDurationMinutes, equals(65));
+      expect(gkSessionPack.isComingSoon, isFalse);
 
       const ekpssSelection = ExamSelection(
         family: KpssExamFamily.ekpss,

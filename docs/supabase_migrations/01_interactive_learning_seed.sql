@@ -1,6 +1,6 @@
 -- =============================================================================
 -- KADRO KPSS LİSANS GENEL KÜLTÜR — İNTERAKTİF ÖĞRENME & OYUNLAR SUPABASE MİGRASYONU
--- Oluşturulma: 2026-11-22T00:12:01.822953
+-- Oluşturulma: 2026-11-22T01:32:07.016050
 -- İçerik:
 --   1. public.flashcards (200 Adet KPSS Şifre & Hap Bilgi Kartı)
 --   2. public.questions - true_false (100 Adet 60 Saniyede Pençe Şimşek Önermesi)

@@ -213,12 +213,16 @@ void main() {
 
         final stats = container.read(studyStatsProvider);
         final gkSummary = stats.statsSummaryForScope('lisans_gk');
+        final gygkSummary = stats.statsSummaryForScope('lisans_gygk');
         final fullSummary = stats.statsSummaryForScope('b_grubu_full_lisans');
         final dhbtSummary = stats.statsSummaryForScope('dhbt_lisans');
         final allSummary = stats.statsSummaryForScope(null);
 
         expect(gkSummary.totalSolved, 1);
         expect(gkSummary.weakestLesson, 'Tarih');
+        // Eski lisans_gk verisi aktif lisans_gygk kapsamında da görünür (TASK-166)
+        expect(gygkSummary.totalSolved, 1);
+        expect(gygkSummary.weakestLesson, 'Tarih');
 
         expect(fullSummary.totalSolved, 2);
         expect(fullSummary.accuracyPercent, 50);

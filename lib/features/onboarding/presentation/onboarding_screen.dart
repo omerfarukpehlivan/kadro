@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
@@ -229,24 +230,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                   runSpacing: 6,
                                   crossAxisAlignment: WrapCrossAlignment.center,
                                   children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 5,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: colorScheme.primaryContainer,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        _isExpressMode
-                                            ? 'Hızlı Başlangıç · Tek Adım'
-                                            : 'Adım ${_step + 1} / 3',
-                                        style: textTheme.labelMedium?.copyWith(
-                                          color: colorScheme.onPrimaryContainer,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
+                                    KadroBadge(
+                                      label: _isExpressMode
+                                          ? 'Hızlı Başlangıç · Tek Adım'
+                                          : 'Adım ${_step + 1} / 3',
                                     ),
                                     if (!_isExpressMode)
                                       Text(
@@ -1261,27 +1248,13 @@ class _BlueprintStatChip extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          PhosphorIcon(icon, size: 13, color: colorScheme.primary),
-          const SizedBox(width: 5),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: colorScheme.onSurface,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
+    return KadroBadge(
+      label: label,
+      icon: icon,
+      iconColor: colorScheme.primary,
+      backgroundColor: colorScheme.surface,
+      foregroundColor: colorScheme.onSurface,
+      borderColor: colorScheme.outlineVariant,
     );
   }
 }
@@ -1361,26 +1334,14 @@ class _SelectableOptionCard extends StatelessWidget {
                       ),
                     ),
                     if (badgeText != null)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 7,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? colorScheme.primary
-                              : colorScheme.secondaryContainer,
-                          borderRadius: BorderRadius.circular(7),
-                        ),
-                        child: Text(
-                          badgeText!,
-                          style: textTheme.labelSmall?.copyWith(
-                            color: isSelected
-                                ? colorScheme.onPrimary
-                                : colorScheme.onSecondaryContainer,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      KadroBadge(
+                        label: badgeText!,
+                        backgroundColor: isSelected
+                            ? colorScheme.primary
+                            : colorScheme.secondaryContainer,
+                        foregroundColor: isSelected
+                            ? colorScheme.onPrimary
+                            : colorScheme.onSecondaryContainer,
                       ),
                   ],
                 ),

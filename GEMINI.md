@@ -5,7 +5,7 @@ This project (**Kadro**) is a commercial KPSS preparation app built with **Flutt
 - **Ürün Kapsamı & Çoklu KPSS Mimarisi:**
   - **Aktif Çekirdek Veri Havuzu:** KPSS Lisans Genel Kültür (Tarih: 27, Coğrafya: 18, Vatandaşlık: 9, Güncel Bilgiler: 6 — Toplam 60 soru, 65 dakika).
   - **Desteklenen Hedef Sınav Ekosistemi (Aşamalı Altyapı + Son Faz İçerik Üretimi):**
-    - **KPSS B Grubu (Lisans P1/P2/P3, Ön Lisans P93, Ortaöğretim P94):** Ortak GY-GK (`Türkçe 30, Matematik & Geometri 30, Tarih 27, Coğrafya 18, Vatandaşlık 9, Güncel 6` — Tam 120 soru / 130 dk veya Sadece GK 60 soru / 65 dk).
+    - **KPSS B Grubu (Lisans P1/P2/P3, Ön Lisans P93, Ortaöğretim P94):** Ortak GY-GK (`Türkçe 30, Matematik & Geometri 30, Tarih 27, Coğrafya 18, Vatandaşlık 9, Güncel 6` — Tek oturum GY-GK 120 soru / 130 dk (GK oturum denemesi 60 soru alıştırma olarak)).
     - **E-KPSS (`EKPSSP1 / P2 / P3`):** 30 GY + 30 GK, 4 engel grubu kitapçığı (`Genel`, `Görme`, `İşitme-1`, `Zihinsel`) ve erişilebilirlik/ek süre uyarlamaları.
     - **KPSS DHBT (`P122 / P123 / P124`):** DHBT-1 (20 soru ortak) + DHBT-2 (20 soru İHL / Ön Lisans / Lisans düzey filtresi).
     - **MEB-AGS + ÖABT (`AGS-P1 / P2 / P3`):** 1. Oturum (80 soru / 110 dk; Eğitim Bilimleri & TYMM + Mevzuat dahil) + 17 resmî ÖABT branşı (50 soru; 70/90 dk) ve Yabancı Dil (`YDS -> AGS-P3`).

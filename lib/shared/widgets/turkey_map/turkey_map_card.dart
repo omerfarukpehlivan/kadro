@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/shared/widgets/diagram_card_shell.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'turkey_map.dart';
@@ -26,112 +27,27 @@ class TurkeyMapCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16.0),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16.0),
-        border: Border.all(color: colorScheme.outlineVariant, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.outlineVariant,
-            offset: const Offset(0, 3),
-            blurRadius: 0,
+    return DiagramCardShell(
+      icon: PhosphorIconsRegular.mapTrifold,
+      badgeLabel: title ?? 'KPSS Harita İnceleme',
+      onZoom: () => _openZoomDialog(context),
+      children: [
+        // Harita Çizim Alanı
+        GestureDetector(
+          onTap: () => _openZoomDialog(context),
+          child: Container(
+            color: colorScheme.surface,
+            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+            child: TurkeyMap(
+              config: config,
+              onProvinceTap: onProvinceTap,
+              onMarkerTap: onMarkerTap,
+            ),
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(14.5),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Üst Başlık ve Büyüt Butonu Çubuğu
-            Padding(
-              padding: const EdgeInsets.fromLTRB(10, 8, 8, 4),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        PhosphorIcon(
-                          PhosphorIconsRegular.mapTrifold,
-                          size: 13,
-                          color: colorScheme.onPrimaryContainer,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          title ?? 'KPSS Harita İnceleme',
-                          style: textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Spacer(),
-                  // Büyüt Butonu
-                  InkWell(
-                    onTap: () => _openZoomDialog(context),
-                    borderRadius: BorderRadius.circular(8),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          PhosphorIcon(
-                            PhosphorIconsRegular.magnifyingGlassPlus,
-                            size: 14,
-                            color: colorScheme.primary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Büyüt',
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Harita Çizim Alanı
-            GestureDetector(
-              onTap: () => _openZoomDialog(context),
-              child: Container(
-                color: colorScheme.surface,
-                padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                child: TurkeyMap(
-                  config: config,
-                  onProvinceTap: onProvinceTap,
-                  onMarkerTap: onMarkerTap,
-                ),
-              ),
-            ),
-          ],
         ),
-      ),
+      ],
     );
   }
 
@@ -147,10 +63,8 @@ class TurkeyMapCard extends StatelessWidget {
         final viewportHeight = MediaQuery.sizeOf(ctx).height;
         return Dialog(
           backgroundColor: ctxScheme.surface,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(color: ctxScheme.outlineVariant),
-          ),
+          shape: diagramDialogShape(ctxScheme),
+          clipBehavior: Clip.antiAlias,
           insetPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 16,

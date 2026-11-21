@@ -208,11 +208,13 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>>
                           color: colorScheme.outlineVariant,
                           width: 1.5,
                         ),
+                        // MASTER.md: bulanık drop-shadow yerine keskin 3px
+                        // fiziksel alt dudak (`blurRadius: 0`).
                         boxShadow: [
                           BoxShadow(
-                            color: colorScheme.shadow.withAlpha(26),
-                            blurRadius: 16,
-                            offset: const Offset(0, 6),
+                            color: colorScheme.outlineVariant,
+                            blurRadius: 0,
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),

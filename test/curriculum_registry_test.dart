@@ -22,18 +22,18 @@ void main() {
   });
 
   group('CurriculumRegistry & ExamCurriculum Birim Testleri', () {
-    test('Varsayılan Lisans GK müfredatı 60 soru, 65 dk ve 152 test döner', () {
+    test('Varsayılan Lisans B Grubu müfredatı 120 soru, 130 dk ve 223 test (152 GK + 71 Türkçe) döner', () {
       final curriculum = CurriculumRegistry.resolve(ExamSelection.initial);
 
-      expect(curriculum.scopeKey, 'lisans_gk');
-      expect(curriculum.title, 'KPSS Genel Kültür');
-      expect(curriculum.totalQuestions, 60);
-      expect(curriculum.standardDurationMinutes, 65);
-      expect(curriculum.availability, CurriculumAvailability.ready);
-      expect(curriculum.activeLessons.length, 4);
-      expect(curriculum.upcomingLessons.length, 2);
-      expect(curriculum.totalTestCount, 152);
-      expect(totalCurriculumTestCount, 152);
+      expect(curriculum.scopeKey, 'lisans_gygk');
+      expect(curriculum.title, 'KPSS Lisans (GY-GK)');
+      expect(curriculum.totalQuestions, 120);
+      expect(curriculum.standardDurationMinutes, 130);
+      expect(curriculum.availability, CurriculumAvailability.partial);
+      expect(curriculum.activeLessons.length, 5);
+      expect(curriculum.upcomingLessons.length, 1);
+      expect(curriculum.totalTestCount, 223);
+      expect(totalCurriculumTestCount, 223);
       expect(defaultTopicTestCount('Tarih', 'Osmanlı Kültür ve Uygarlığı'), 12);
       expect(
         defaultTopicTestCount('Coğrafya', 'Madenler ve Enerji Kaynaklar'),
@@ -44,6 +44,7 @@ void main() {
         defaultTopicTestCount('Güncel Bilgiler', 'UNESCO Miras Listesi'),
         4,
       );
+      expect(defaultTopicTestCount('Türkçe', 'Paragrafta Anlam ve Yapı'), 31);
     });
 
     test('B Grubu Tam GY-GK 120 soru ve 130 dk müfredatı çözer', () {
@@ -127,13 +128,18 @@ void main() {
       );
       expect(ekpssTurkce.isComingSoon, isTrue);
 
-      // Lisans onlyGk -> activeLessons içinde Türkçe hiç yok
-      final lisansOnlyGkCurriculum = CurriculumRegistry.resolve(
-        ExamSelection.initial,
+      // Eski onlyGk ile oluşturulan veya JSON'dan okunan Lisans B Grubu da Türkçe'yi aktif içerir (TASK-166)
+      final legacyLisansSelection = ExamSelection.fromJson(const {
+        'family': 'b_grubu',
+        'educationLevel': 'lisans',
+        'bGroupProfile': 'only_gk',
+      });
+      final legacyLisansCurriculum = CurriculumRegistry.resolve(
+        legacyLisansSelection,
       );
       expect(
-        lisansOnlyGkCurriculum.activeLessons.any((l) => l.name == 'Türkçe'),
-        isFalse,
+        legacyLisansCurriculum.activeLessons.any((l) => l.name == 'Türkçe'),
+        isTrue,
       );
 
       // acceptedQuestionScopes ve matchesSelection kontrolü
@@ -277,6 +283,7 @@ void main() {
           'Coğrafya',
           'Vatandaşlık',
           'Güncel Bilgiler',
+          'Türkçe',
           'Alan Hukuk',
         ]);
       },

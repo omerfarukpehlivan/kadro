@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
@@ -94,22 +95,7 @@ class _QuizHistoryScreenState extends ConsumerState<QuizHistoryScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 7,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      '+${session.earnedXp} XP',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                  ),
+                  KadroBadge(label: '+${session.earnedXp} XP'),
                 ],
               ),
               const SizedBox(height: 8),
@@ -193,7 +179,7 @@ class _QuizHistoryScreenState extends ConsumerState<QuizHistoryScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       color: colorScheme.surface,
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: colorScheme.outlineVariant,
                         width: 1.5,

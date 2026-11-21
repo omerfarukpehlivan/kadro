@@ -126,21 +126,21 @@ void main() {
           );
 
           // Deneme 1 ve Deneme 2 kartlarının listelendiğini doğrula
-          expect(find.text('Türkiye Geneli GK Provası #1'), findsOneWidget);
+          expect(find.text('Genel Kültür Bölümü Denemesi #1'), findsOneWidget);
           expect(find.text('ÖSYM Standardı (Ücretsiz)'), findsOneWidget);
-          expect(find.text('Türkiye Geneli GK Provası #2'), findsOneWidget);
+          expect(find.text('Genel Kültür Bölümü Denemesi #2'), findsOneWidget);
           expect(find.text('ÖSYM Prova #2'), findsOneWidget);
           expect(find.text('PRO ile Başlat'), findsWidgets);
 
           // PRO Deneme #2'ye dokun
-          await tester.tap(find.text('Türkiye Geneli GK Provası #2'));
+          await tester.tap(find.text('Genel Kültür Bölümü Denemesi #2'));
           await tester.pumpAndSettle();
 
           // PaywallScreen açılmalı ve neden bilgisi verilmeli
           expect(find.byType(PaywallScreen), findsOneWidget);
           expect(
             find.text(
-              'Türkiye Geneli GK Provası #2 ve tüm Türkiye Geneli KPSS Deneme Sınavları Kadro PRO üyelerine özeldir.',
+              'Genel Kültür Bölümü Denemesi #2 ve tüm Türkiye Geneli KPSS Deneme Sınavları Kadro PRO üyelerine özeldir.',
             ),
             findsOneWidget,
           );
@@ -179,7 +179,7 @@ void main() {
           expect(find.text('Kadro PRO Açık'), findsWidgets);
 
           // Deneme #2'ye dokun
-          await tester.tap(find.text('Türkiye Geneli GK Provası #2'));
+          await tester.tap(find.text('Genel Kültür Bölümü Denemesi #2'));
           await tester.pump();
           await tester.pump(const Duration(milliseconds: 300));
 
@@ -188,7 +188,7 @@ void main() {
           expect(
             find.descendant(
               of: find.byType(QuizScreen),
-              matching: find.text('Türkiye Geneli GK Provası #2'),
+              matching: find.text('Genel Kültür Bölümü Denemesi #2'),
             ),
             findsOneWidget,
           );

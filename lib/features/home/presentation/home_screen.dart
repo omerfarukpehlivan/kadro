@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/config/app_config_service.dart';
 import 'package:kadro/core/config/app_remote_config.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
@@ -246,34 +247,13 @@ class _HomeHeroStage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: colorScheme.outlineVariant),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          PhosphorIcon(
-                            PhosphorIconsFill.flame,
-                            size: 13,
-                            color: colorScheme.tertiary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '$streakDays Gün Seri',
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
+                    KadroBadge(
+                      label: '$streakDays Gün Seri',
+                      icon: PhosphorIconsFill.flame,
+                      iconColor: colorScheme.tertiary,
+                      backgroundColor: colorScheme.surfaceContainerLow,
+                      foregroundColor: colorScheme.onSurface,
+                      borderColor: colorScheme.outlineVariant,
                     ),
                     const SizedBox(height: 8),
                     Text(

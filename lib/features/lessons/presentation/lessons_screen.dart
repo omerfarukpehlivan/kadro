@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/current_affairs/presentation/current_affairs_screen.dart';
@@ -177,34 +178,12 @@ class _LessonCard extends ConsumerWidget {
                       if (lesson.badgeText != null)
                         Tooltip(
                           message: 'Her hafta yeni sorularla güncellenir',
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: accent.withAlpha(20),
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: accent.withAlpha(65)),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                PhosphorIcon(
-                                  PhosphorIconsRegular.arrowsClockwise,
-                                  size: 11,
-                                  color: accent,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  lesson.badgeText!,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: accent,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ],
-                            ),
+                          child: KadroBadge(
+                            label: lesson.badgeText!,
+                            icon: PhosphorIconsRegular.arrowsClockwise,
+                            backgroundColor: accent.withAlpha(20),
+                            foregroundColor: accent,
+                            borderColor: accent.withAlpha(65),
                           ),
                         ),
                     ],
@@ -319,22 +298,9 @@ class _ComingSoonLessonCard extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.tertiaryContainer,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              'Çok Yakında',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: colorScheme.onTertiaryContainer,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
+                          const KadroBadge(
+                            label: 'Çok Yakında',
+                            tone: KadroBadgeTone.tertiary,
                           ),
                         ],
                       ),
@@ -439,25 +405,10 @@ class _ComingSoonLessonCard extends StatelessWidget {
                           color: colorScheme.onSurface,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 7,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: colorScheme.tertiary.withAlpha(80),
-                          ),
-                        ),
-                        child: Text(
-                          'Yakında',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onTertiaryContainer,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      KadroBadge(
+                        label: 'Yakında',
+                        tone: KadroBadgeTone.tertiary,
+                        borderColor: colorScheme.tertiary.withAlpha(80),
                       ),
                     ],
                   ),

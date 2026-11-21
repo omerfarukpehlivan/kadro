@@ -315,6 +315,8 @@ void main() {
 
       final shortcutFinder = find.text('KPSS Puan Hesaplama Robotu');
       await tester.scrollUntilVisible(shortcutFinder, 250);
+      await tester.ensureVisible(shortcutFinder);
+      await tester.pumpAndSettle();
       await tester.tap(shortcutFinder);
       await tester.pumpAndSettle();
 

@@ -7,6 +7,7 @@ import 'package:kadro/features/map_practice/data/map_practice_repository.dart';
 import 'package:kadro/features/map_practice/data/models/map_challenge.dart';
 import 'package:kadro/features/map_practice/presentation/map_challenge_screen.dart';
 import 'package:kadro/shared/widgets/adaptive_overlay.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/shared/widgets/section_title.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
@@ -71,8 +72,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildModeTile(
-                  context: ctx,
+                _ModeTile(
                   icon: PhosphorIconsRegular.handPointing,
                   title: 'Haritada İle Dokun (Zor)',
                   subtitle: 'Ekranda ilin adı yazar, sen Türkiye haritasında o ile dokunursun.',
@@ -88,8 +88,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
                   },
                 ),
                 const SizedBox(height: 10),
-                _buildModeTile(
-                  context: ctx,
+                _ModeTile(
                   icon: PhosphorIconsRegular.target,
                   title: 'Parlayan İli Tanı (Çoktan Seçmeli)',
                   subtitle: 'Haritada rastgele bir il parlar, sen 4 seçenek arasından doğru ili seçersin.',
@@ -109,68 +108,6 @@ class MapPracticeHubScreen extends ConsumerWidget {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildModeTile({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withValues(alpha: 0.25)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: color,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            PhosphorIcon(
-              PhosphorIconsRegular.caretRight,
-              size: 18,
-              color: color,
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -282,25 +219,11 @@ class MapPracticeHubScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.secondary
-                                      .withValues(alpha: 0.15),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  'Sonsuz Pratik',
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .secondary,
-                                  ),
-                                ),
+                              KadroBadge(
+                                label: 'Sonsuz Pratik',
+                                backgroundColor: colorScheme.secondary
+                                    .withValues(alpha: 0.15),
+                                foregroundColor: colorScheme.secondary,
                               ),
                             ],
                           ),
@@ -333,8 +256,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
-                      child: _buildCategoryCard(
-                        context: context,
+                      child: _CategoryCard(
                         title: 'Tarım & Hayvancılık',
                         subtitle:
                             'Lider iller, mikroklima ve yetiştirilmeyenler',
@@ -350,8 +272,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
                     ),
                     SizedBox(width: gridSpacing),
                     Expanded(
-                      child: _buildCategoryCard(
-                        context: context,
+                      child: _CategoryCard(
                         title: 'Madenler & Enerji',
                         subtitle: 'Bor, petrol, taş kömürü ve santraller',
                         badgeText: 'Madenler',
@@ -373,8 +294,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
-                      child: _buildCategoryCard(
-                        context: context,
+                      child: _CategoryCard(
                         title: 'Plato, Dağ & Göller',
                         subtitle: 'Karstik göller, horst-graben ve platolar',
                         badgeText: 'Fiziki',
@@ -389,8 +309,7 @@ class MapPracticeHubScreen extends ConsumerWidget {
                     ),
                     SizedBox(width: gridSpacing),
                     Expanded(
-                      child: _buildCategoryCard(
-                        context: context,
+                      child: _CategoryCard(
                         title: 'Sanayi & Limanlar',
                         subtitle: 'Hinterlandı dar/geniş limanlar ve tesisler',
                         badgeText: 'Sanayi',
@@ -445,23 +364,12 @@ class MapPracticeHubScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
+                              KadroBadge(
+                                label: 'Kurtuluş Savaşı',
+                                backgroundColor: colorScheme.error.withValues(
+                                  alpha: 0.12,
                                 ),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.error
-                                      .withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  'Kurtuluş Savaşı',
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: Theme.of(context).colorScheme.error,
-                                  ),
-                                ),
+                                foregroundColor: colorScheme.error,
                               ),
                             ],
                           ),
@@ -548,16 +456,97 @@ class MapPracticeHubScreen extends ConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _buildCategoryCard({
-    required BuildContext context,
-    required String title,
-    required String subtitle,
-    required String badgeText,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
+/// Harita antrenman modu seçim satırı (ikon + başlık + açıklama + ok).
+///
+/// Elle yazılmış `InkWell` + `Container(Border.all)` yerine ortak
+/// [TactileCard] kullanır. Web/Angular Karşılığı: `<app-mode-option>`.
+class _ModeTile extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ModeTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return TactileCard(
+      onTap: onTap,
+      padding: const EdgeInsets.all(14),
+      borderRadius: 14,
+      backgroundColor: color.withValues(alpha: 0.08),
+      borderColor: color.withValues(alpha: 0.25),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: PhosphorIcon(icon, color: color, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          PhosphorIcon(PhosphorIconsRegular.caretRight, size: 18, color: color),
+        ],
+      ),
+    );
+  }
+}
+
+/// Tematik harita havzası kartı (ikon + rozet + başlık + açıklama).
+///
+/// Web/Angular Karşılığı: `@Input()` alan `<app-map-category-card>` bileşeni.
+class _CategoryCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String badgeText;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _CategoryCard({
+    required this.title,
+    required this.subtitle,
+    required this.badgeText,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return TactileCard(
       onTap: onTap,
@@ -571,21 +560,15 @@ class MapPracticeHubScreen extends ConsumerWidget {
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, size: 20, color: color),
+                child: PhosphorIcon(icon, size: 20, color: color),
               ),
               const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  badgeText,
-                  style: TextStyle(fontWeight: FontWeight.w700, color: color),
-                ),
+              KadroBadge(
+                label: badgeText,
+                backgroundColor: color.withValues(alpha: 0.1),
+                foregroundColor: color,
               ),
             ],
           ),

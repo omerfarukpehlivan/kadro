@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/app/router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
@@ -361,113 +362,45 @@ class _TopMetricBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // Süre Rozeti
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: remainingSeconds <= 10
-                ? colorScheme.errorContainer
-                : colorScheme.secondaryContainer,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(
-              color: remainingSeconds <= 10
-                  ? colorScheme.error
-                  : colorScheme.outlineVariant,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PhosphorIcon(
-                PhosphorIconsBold.timer,
-                size: 16,
-                color: remainingSeconds <= 10
-                    ? colorScheme.onErrorContainer
-                    : colorScheme.onSecondaryContainer,
-              ),
-              const SizedBox(width: 6),
-              Text(
-                '$remainingSeconds sn',
-                style: textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: remainingSeconds <= 10
-                      ? colorScheme.onErrorContainer
-                      : colorScheme.onSecondaryContainer,
-                ),
-              ),
-            ],
-          ),
+        KadroBadge(
+          label: '$remainingSeconds sn',
+          icon: PhosphorIconsBold.timer,
+          backgroundColor: remainingSeconds <= 10
+              ? colorScheme.errorContainer
+              : colorScheme.secondaryContainer,
+          foregroundColor: remainingSeconds <= 10
+              ? colorScheme.onErrorContainer
+              : colorScheme.onSecondaryContainer,
+          borderColor: remainingSeconds <= 10
+              ? colorScheme.error
+              : colorScheme.outlineVariant,
         ),
 
         // Kombo Rozeti
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: combo > 1
-                ? colorScheme.tertiaryContainer
-                : colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(
-              color: combo > 1
-                  ? colorScheme.tertiary
-                  : colorScheme.outlineVariant,
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PhosphorIcon(
-                PhosphorIconsFill.lightning,
-                size: 16,
-                color: combo > 1
-                    ? colorScheme.onTertiaryContainer
-                    : colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                '${combo}x Kombo',
-                style: textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: combo > 1
-                      ? colorScheme.onTertiaryContainer
-                      : colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
+        KadroBadge(
+          label: '${combo}x Kombo',
+          icon: PhosphorIconsFill.lightning,
+          backgroundColor: combo > 1
+              ? colorScheme.tertiaryContainer
+              : colorScheme.surfaceContainerHighest,
+          foregroundColor: combo > 1
+              ? colorScheme.onTertiaryContainer
+              : colorScheme.onSurfaceVariant,
+          borderColor: combo > 1
+              ? colorScheme.tertiary
+              : colorScheme.outlineVariant,
         ),
 
         // XP Rozeti
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: colorScheme.primary.withAlpha(90)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              PhosphorIcon(
-                PhosphorIconsFill.lightning,
-                size: 16,
-                color: colorScheme.onPrimaryContainer,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                '+$earnedXp XP',
-                style: textTheme.labelMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.onPrimaryContainer,
-                ),
-              ),
-            ],
-          ),
+        KadroBadge(
+          label: '+$earnedXp XP',
+          icon: PhosphorIconsFill.lightning,
+          borderColor: colorScheme.primary.withAlpha(90),
         ),
       ],
     );
@@ -505,19 +438,9 @@ class _StatementCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${item.lesson} · ${item.topic}',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSecondaryContainer,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+              KadroBadge(
+                label: '${item.lesson} · ${item.topic}',
+                tone: KadroBadgeTone.secondary,
               ),
               Text(
                 '${currentIndex + 1} / $totalCount',

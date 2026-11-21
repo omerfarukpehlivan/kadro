@@ -14,8 +14,14 @@ import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  setUp(() {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    SharedPreferences.setMockInitialValues({});
+  });
+
   group('TASK-154: BranchMockExamGenerator Birim Testleri', () {
     test('Orantılı süre hesaplaması soru sayısına göre doğru yuvarlanır', () {
       expect(BranchMockExamGenerator.computeDurationMinutes(27), equals(30));
@@ -35,7 +41,7 @@ void main() {
         curriculum: gkCurriculum,
       );
 
-      expect(gkBlueprints.length, equals(4));
+      expect(gkBlueprints.length, equals(5));
       expect(
         gkBlueprints.map(
           (b) => (b.sections.first.lesson, b.totalQuestionCount),
@@ -45,6 +51,7 @@ void main() {
           ('Coğrafya', 18),
           ('Vatandaşlık', 9),
           ('Güncel Bilgiler', 6),
+          ('Türkçe', 30),
         ]),
       );
       expect(gkBlueprints.first.isProOnly, isFalse);

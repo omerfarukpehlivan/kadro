@@ -1,3 +1,4 @@
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/features/reports/presentation/report_question_bottom_sheet.dart';
 
 import 'dart:async';
@@ -1131,21 +1132,7 @@ class _QuestionMetaBar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Flexible(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              topic,
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: colorScheme.onSecondaryContainer,
-                fontWeight: FontWeight.w600,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+          child: KadroBadge(label: topic, tone: KadroBadgeTone.secondary),
         ),
         const SizedBox(width: 8),
         Row(
@@ -1560,7 +1547,7 @@ class _ExplanationCard extends StatelessWidget {
                 height: 30,
                 decoration: BoxDecoration(
                   color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(9),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 alignment: Alignment.center,
                 child: PhosphorIcon(

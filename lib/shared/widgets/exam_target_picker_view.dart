@@ -59,6 +59,7 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
         widget.onChanged(
           current.copyWith(
             family: KpssExamFamily.bGrubu,
+            bGroupProfile: BGroupProfile.fullGyGk,
             oabtBranch: OabtBranch.none,
             disabilityGroup: DisabilityGroup.genel,
             selectedFieldLessons: const [],
@@ -213,24 +214,38 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
               onChanged: (opt) => widget.onChanged(
                 selection.copyWith(
                   educationLevel: opt.educationLevel,
+                  bGroupProfile: BGroupProfile.fullGyGk,
                   examCycleYear: opt.examCycleYear,
                 ),
               ),
             ),
-            const SizedBox(height: 12),
-            KadroDropdown<BGroupProfile>(
-              dropdownKey: const ValueKey('b_profile_dropdown'),
-              label: 'Sınav Kapsamı',
-              value: selection.bGroupProfile,
-              items: BGroupProfile.values,
-              itemKeyBuilder: (p) => ValueKey(
-                p == BGroupProfile.onlyGk
-                    ? 'b_profile_only_gk'
-                    : 'b_profile_full_gygk',
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: colorScheme.outlineVariant),
               ),
-              itemLabelBuilder: (p) => p.label,
-              onChanged: (profile) =>
-                  widget.onChanged(selection.copyWith(bGroupProfile: profile)),
+              child: Row(
+                children: [
+                  PhosphorIcon(
+                    PhosphorIconsRegular.exam,
+                    size: 18,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'GY-GK · 120 Soru · 130 dk',
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         );

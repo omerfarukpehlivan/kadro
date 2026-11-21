@@ -178,18 +178,33 @@ class StudyStatsState {
     return 'Kritik (%$acc)';
   }
 
+  /// B Grubu `<düzey>_gk` ve `<düzey>_gygk` kapsamlarını tek bir kapsam ailesi
+  /// olarak eşleştiren geriye dönük uyumlu kapsam kümesi (`TASK-166`).
+  static Set<String> _equivalentScopesFor(String examScope) {
+    final trimmed = examScope.trim();
+    if (trimmed.isEmpty) return const {};
+    for (final level in const ['lisans', 'onlisans', 'ortaogretim']) {
+      if (trimmed == '${level}_gk' || trimmed == '${level}_gygk') {
+        return {'${level}_gk', '${level}_gygk'};
+      }
+    }
+    return {trimmed};
+  }
+
   /// Belirli bir sınav kapsamına (`examScope`) ait tamamlanmış oturumları döner.
+  /// B Grubu'nda eski `<düzey>_gk` ve yeni `<düzey>_gygk` kayıtları birlikte kabul edilir (`TASK-166`).
   List<QuizSessionRecord> sessionsForScope(String? examScope) {
     if (examScope == null || examScope.trim().isEmpty) {
       return sessionHistory;
     }
+    final accepted = _equivalentScopesFor(examScope);
     return sessionHistory
-        .where((s) => s.examScope == examScope)
+        .where((s) => accepted.contains(s.examScope))
         .toList(growable: false);
   }
 
   /// Belirli bir sınav kapsamı (veya `null` ise tüm çalışmalar) için birleştirilmiş
-  /// doğruluk, zayıf ders ve ders ustalık özetini üretir (`TASK-132`).
+  /// doğruluk, zayıf ders ve ders ustalık özetini üretir (`TASK-132` & `TASK-166`).
   ScopedStatsSummary statsSummaryForScope(String? examScope) {
     if (examScope == null || examScope.trim().isEmpty) {
       return ScopedStatsSummary(
@@ -205,22 +220,44 @@ class StudyStatsState {
     }
 
     final scopedSessions = sessionsForScope(examScope);
-    final scopedSolved = solvedByScopeLesson[examScope];
-    final scopedCorrect = correctByScopeLesson[examScope] ?? const {};
-    final scopedWrong = wrongByScopeLesson[examScope] ?? const {};
+    final acceptedScopes = _equivalentScopesFor(examScope);
+    final mergedSolved = <String, int>{};
+    final mergedCorrect = <String, int>{};
+    final mergedWrong = <String, int>{};
 
-    if (scopedSolved != null && scopedSolved.isNotEmpty) {
-      final sumSolved = scopedSolved.values.fold<int>(0, (a, b) => a + b);
-      final sumCorrect = scopedCorrect.values.fold<int>(0, (a, b) => a + b);
-      final sumWrong = scopedWrong.values.fold<int>(0, (a, b) => a + b);
+    for (final scope in acceptedScopes) {
+      final sMap = solvedByScopeLesson[scope];
+      if (sMap != null) {
+        for (final e in sMap.entries) {
+          mergedSolved[e.key] = (mergedSolved[e.key] ?? 0) + e.value;
+        }
+      }
+      final cMap = correctByScopeLesson[scope];
+      if (cMap != null) {
+        for (final e in cMap.entries) {
+          mergedCorrect[e.key] = (mergedCorrect[e.key] ?? 0) + e.value;
+        }
+      }
+      final wMap = wrongByScopeLesson[scope];
+      if (wMap != null) {
+        for (final e in wMap.entries) {
+          mergedWrong[e.key] = (mergedWrong[e.key] ?? 0) + e.value;
+        }
+      }
+    }
+
+    if (mergedSolved.isNotEmpty) {
+      final sumSolved = mergedSolved.values.fold<int>(0, (a, b) => a + b);
+      final sumCorrect = mergedCorrect.values.fold<int>(0, (a, b) => a + b);
+      final sumWrong = mergedWrong.values.fold<int>(0, (a, b) => a + b);
       return ScopedStatsSummary(
         examScope: examScope,
         totalSolved: sumSolved,
         totalCorrect: sumCorrect,
         totalWrong: sumWrong,
-        wrongByLesson: scopedWrong,
-        solvedByLesson: scopedSolved,
-        correctByLesson: scopedCorrect,
+        wrongByLesson: mergedWrong,
+        solvedByLesson: mergedSolved,
+        correctByLesson: mergedCorrect,
         sessions: scopedSessions,
       );
     }
@@ -258,7 +295,7 @@ class StudyStatsState {
     }
 
     // Geriye dönük uyumluluk: Sadece scope map'i boş olup eski GK verisi olan hesaplar
-    if (examScope == 'lisans_gk' &&
+    if ((examScope == 'lisans_gk' || examScope == 'lisans_gygk') &&
         solvedByScopeLesson.isEmpty &&
         sessionHistory.isEmpty) {
       return ScopedStatsSummary(
@@ -297,8 +334,11 @@ class StudyStatsState {
     String? examScope,
   }) {
     final prefix = '$lesson · $topic · Test $testNumber';
+    final acceptedScopes = examScope != null
+        ? _equivalentScopesFor(examScope)
+        : null;
     for (final s in sessionHistory) {
-      if (examScope != null && s.examScope != examScope) {
+      if (acceptedScopes != null && !acceptedScopes.contains(s.examScope)) {
         continue;
       }
       if (s.title.contains(prefix)) {

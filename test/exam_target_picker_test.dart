@@ -41,18 +41,11 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // 1. Başlangıçta B Grubu dropdownları görünür
+        // 1. Başlangıçta B Grubu düzey dropdown'ı görünür; 60/120 kapsam seçicisi yoktur (TASK-166)
         expect(find.byKey(const ValueKey('b_level_dropdown')), findsOneWidget);
-        expect(
-          find.byKey(const ValueKey('b_profile_dropdown')),
-          findsOneWidget,
-        );
-
-        await tester.tap(find.byKey(const ValueKey('b_profile_dropdown')));
-        await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const ValueKey('b_profile_only_gk')).last);
-        await tester.pumpAndSettle();
-        expect(current.bGroupProfile, BGroupProfile.onlyGk);
+        expect(find.byKey(const ValueKey('b_profile_dropdown')), findsNothing);
+        expect(find.text('GY-GK · 120 Soru · 130 dk'), findsOneWidget);
+        expect(current.bGroupProfile, BGroupProfile.fullGyGk);
 
         // 2. E-KPSS: engel grubu + ek süre anahtarı
         final familyDropdown = find.byKey(

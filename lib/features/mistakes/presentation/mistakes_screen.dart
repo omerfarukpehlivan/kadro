@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/app/router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/leitner_scheduler.dart';
@@ -630,42 +631,19 @@ class _MistakeQuestionCard extends StatelessWidget {
                     runSpacing: 6,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.secondaryContainer,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          '${question.lesson} · ${question.topic}',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSecondaryContainer,
-                          ),
-                        ),
+                      KadroBadge(
+                        label: '${question.lesson} · ${question.topic}',
+                        tone: KadroBadgeTone.secondary,
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isDueNow
-                              ? colorScheme.tertiaryContainer
-                              : colorScheme.primaryContainer.withAlpha(110),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          '${LeitnerScheduler.boxBadgeLabel(entry.reviewBox)} · ${LeitnerScheduler.formatRemainingReviewLabel(entry.nextReviewAt)}',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: isDueNow
-                                ? colorScheme.onTertiaryContainer
-                                : colorScheme.onSurface,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                      KadroBadge(
+                        label:
+                            '${LeitnerScheduler.boxBadgeLabel(entry.reviewBox)} · ${LeitnerScheduler.formatRemainingReviewLabel(entry.nextReviewAt)}',
+                        backgroundColor: isDueNow
+                            ? colorScheme.tertiaryContainer
+                            : colorScheme.primaryContainer.withAlpha(110),
+                        foregroundColor: isDueNow
+                            ? colorScheme.onTertiaryContainer
+                            : colorScheme.onSurface,
                       ),
                     ],
                   ),

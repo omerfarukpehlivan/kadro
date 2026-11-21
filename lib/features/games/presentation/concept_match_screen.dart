@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/app/router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
@@ -285,22 +286,9 @@ class _ConceptMatchScreenState extends ConsumerState<ConceptMatchScreen> {
                           ),
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.secondaryContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'Hamle: $_moves',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSecondaryContainer,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
+                      KadroBadge(
+                        label: 'Hamle: $_moves',
+                        tone: KadroBadgeTone.secondary,
                       ),
                     ],
                   ),

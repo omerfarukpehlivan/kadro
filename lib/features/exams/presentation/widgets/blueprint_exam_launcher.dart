@@ -15,8 +15,10 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 String blueprintPackageIdFor(MockExamBlueprint blueprint) {
   switch (blueprint.id) {
     case 'gk_deneme_1':
+    case 'b_gk_oturum_1':
       return 'exam_gk_prova_1';
     case 'gk_deneme_2':
+    case 'b_gk_oturum_2':
       return 'exam_gk_prova_2';
     case 'gk_deneme_3':
       return 'exam_gk_prova_3';
@@ -45,6 +47,18 @@ Future<void> launchBlueprintExamWithGuard({
   VoidCallback? onCompleted,
   String? taskId,
 }) async {
+  if (blueprint.isComingSoon) {
+    await KadroConfirmDialog.alert(
+      context,
+      icon: PhosphorIconsRegular.hourglassMedium,
+      title: 'Çok Yakında',
+      message:
+          '${blueprint.title} kapsamındaki Matematik & Geometri soru havuzu hazırlanıyor. Şimdilik Genel Kültür Bölümü Denemesi veya Türkçe Branş Denemesi çözebilirsin.',
+      buttonLabel: 'Tamam',
+    );
+    return;
+  }
+
   final isUserPro = ref.read(userPreferencesProvider).isPro;
   if (blueprint.isProOnly && !isUserPro) {
     Navigator.of(context, rootNavigator: true).push(
@@ -111,9 +125,10 @@ Future<void> launchBlueprintExamWithGuard({
   final isFastLegacyGk =
       blueprint.scopeKey == 'lisans_gk' &&
       selection.family == KpssExamFamily.bGrubu &&
-      selection.bGroupProfile == BGroupProfile.onlyGk &&
+      selection.educationLevel == EducationLevel.lisans &&
       (blueprint.id.startsWith('gk_deneme_') ||
           blueprint.id.startsWith('practice_gk_') ||
+          blueprint.id.startsWith('b_gk_oturum_') ||
           blueprint.id == 'b_gk_tarih_cografya_kamp' ||
           blueprint.id == 'b_gk_sprint_15');
 

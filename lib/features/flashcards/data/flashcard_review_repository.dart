@@ -18,10 +18,22 @@ class FlashcardReviewRepository {
 
   const FlashcardReviewRepository();
 
+  static String _canonicalScope(String examScope) {
+    final trimmed = examScope.trim();
+    if (trimmed.isEmpty || trimmed == 'lisans_gk' || trimmed == 'lisans_gygk') {
+      return 'lisans_gygk';
+    }
+    if (trimmed == 'onlisans_gk' || trimmed == 'onlisans_gygk') {
+      return 'onlisans_gygk';
+    }
+    if (trimmed == 'ortaogretim_gk' || trimmed == 'ortaogretim_gygk') {
+      return 'ortaogretim_gygk';
+    }
+    return trimmed;
+  }
+
   Map<String, FlashcardReviewProgress> _scopeMap(String examScope) {
-    final normalized = examScope.trim().isEmpty
-        ? 'lisans_gk'
-        : examScope.trim();
+    final normalized = _canonicalScope(examScope);
     return _byScope.putIfAbsent(
       normalized,
       () => <String, FlashcardReviewProgress>{},
@@ -125,10 +137,25 @@ class FlashcardReviewRepository {
 
   /// Yerel depodan ilgili sınav kapsamının bilgi kartı tekrar durumunu yükler.
   Future<void> loadFromStorage(String examScope) async {
+    final canonical = _canonicalScope(examScope);
     final loaded = await _storage.loadFlashcardReviews(examScope);
     if (loaded.isNotEmpty) {
-      final map = _scopeMap(examScope);
+      final map = _byScope.putIfAbsent(
+        canonical,
+        () => <String, FlashcardReviewProgress>{},
+      );
       map.addAll(loaded);
+      return;
+    }
+    if (canonical == 'lisans_gygk') {
+      final legacyLoaded = await _storage.loadFlashcardReviews('lisans_gk');
+      if (legacyLoaded.isNotEmpty) {
+        final map = _byScope.putIfAbsent(
+          canonical,
+          () => <String, FlashcardReviewProgress>{},
+        );
+        map.addAll(legacyLoaded);
+      }
     }
   }
 

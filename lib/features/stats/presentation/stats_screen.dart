@@ -3,6 +3,8 @@ import 'dart:math' as math;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
+import 'package:kadro/shared/widgets/kadro_filter_chips.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
@@ -128,21 +130,21 @@ class _StatsScreenState extends ConsumerState<StatsScreen> {
 
     final scopeChips = Material(
       type: MaterialType.transparency,
-      child: Wrap(
-        spacing: 8,
+      child: KadroFilterChips<bool>(
+        wrap: true,
         runSpacing: 6,
-        children: [
-          ChoiceChip(
+        selectedValue: _onlyActiveScope,
+        onSelected: (value) => setState(() => _onlyActiveScope = value),
+        options: [
+          KadroFilterOption(
             key: const ValueKey('stats_scope_filter_active'),
-            label: Text('Aktif Sınav · ${selection.family.shortLabel}'),
-            selected: _onlyActiveScope,
-            onSelected: (_) => setState(() => _onlyActiveScope = true),
+            value: true,
+            label: 'Aktif Sınav · ${selection.family.shortLabel}',
           ),
-          ChoiceChip(
-            key: const ValueKey('stats_scope_filter_all'),
-            label: const Text('Tüm Çalışmalar'),
-            selected: !_onlyActiveScope,
-            onSelected: (_) => setState(() => _onlyActiveScope = false),
+          const KadroFilterOption(
+            key: ValueKey('stats_scope_filter_all'),
+            value: false,
+            label: 'Tüm Çalışmalar',
           ),
         ],
       ),
@@ -355,29 +357,10 @@ class _LeagueAndStreakCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    PhosphorIcon(
-                      PhosphorIconsFill.fire,
-                      size: 13,
-                      color: colorScheme.onTertiaryContainer,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${stats.streakDays} Gün Seri',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onTertiaryContainer,
-                      ),
-                    ),
-                  ],
-                ),
+              KadroBadge(
+                label: '${stats.streakDays} Gün Seri',
+                icon: PhosphorIconsFill.fire,
+                tone: KadroBadgeTone.tertiary,
               ),
               const SizedBox(height: 4),
               Text(
@@ -649,19 +632,9 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
                 ),
               ),
               const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: colorScheme.secondaryContainer,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  '${widget.examFamily.shortLabel} · Bu Hafta',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSecondaryContainer,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+              KadroBadge(
+                label: '${widget.examFamily.shortLabel} · Bu Hafta',
+                tone: KadroBadgeTone.secondary,
               ),
             ],
           ),
@@ -908,19 +881,10 @@ class _MasteryHeatmapCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: badgeBg,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      label,
-                      style: textTheme.labelSmall?.copyWith(color: badgeText),
-                    ),
+                  KadroBadge(
+                    label: label,
+                    backgroundColor: badgeBg,
+                    foregroundColor: badgeText,
                   ),
                 ],
               ),

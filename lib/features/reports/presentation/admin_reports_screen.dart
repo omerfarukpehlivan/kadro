@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/reports/data/models/question_report.dart';
@@ -106,21 +107,9 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                         spacing: 8,
                         runSpacing: 6,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.errorContainer,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              '${report.lesson} · ${report.topic}',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: colorScheme.onErrorContainer,
-                              ),
-                            ),
+                          KadroBadge(
+                            label: '${report.lesson} · ${report.topic}',
+                            tone: KadroBadgeTone.error,
                           ),
                           Text(
                             report.testTitle,

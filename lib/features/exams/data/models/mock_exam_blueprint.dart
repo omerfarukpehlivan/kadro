@@ -110,6 +110,10 @@ class MockExamBlueprint {
   final bool isProOnly;
   final bool supportsExtraTime;
 
+  /// Bölüm soru havuzu henüz tamamlanmadığı için (ör. Matematik & Geometri
+  /// eklenene kadar 120 soruluk Tam GY-GK denemesi) kilitli / "Yakında" gösterilen deneme (`TASK-166`).
+  final bool isComingSoon;
+
   const MockExamBlueprint({
     required this.id,
     required this.title,
@@ -125,6 +129,7 @@ class MockExamBlueprint {
     this.isMiniPractice = false,
     this.isProOnly = false,
     this.supportsExtraTime = false,
+    this.isComingSoon = false,
   });
 
   /// Şablondaki tüm bölümlerin toplam hedef soru sayısı.
@@ -253,99 +258,69 @@ class ExamBlueprintRegistry {
   }) {
     switch (selection.family) {
       case KpssExamFamily.bGrubu:
-        if (selection.bGroupProfile == BGroupProfile.fullGyGk) {
-          return [
-            MockExamBlueprint(
-              id: 'b_gygk_tam_1',
-              title: '${selection.educationLevel.label} Tam GY-GK Deneme #1',
-              subtitle: '30 Türkçe · 30 Matematik · 27 Tarih · 18 Coğrafya · 9 Vatandaşlık · 6 Güncel',
-              badgeLabel: 'ÖSYM Tam Oturum (Ücretsiz)',
-              primaryButtonLabel: 'Tam GY-GK Denemesi Başlat',
-              family: selection.family,
-              scopeKey: selection.scopeKey,
-              sections: _bGroupGyGkSections,
-              standardDurationMinutes: 130,
-              mockNumber: 1,
-              isPrimaryFullExam: true,
-            ),
-            MockExamBlueprint(
-              id: 'b_gygk_tam_2',
-              title: '${selection.educationLevel.label} Tam GY-GK Deneme #2',
-              subtitle: 'Zaman yönetimi ve tam oturum dayanıklılığı için ikinci tam deneme',
-              badgeLabel: 'ÖSYM Tam Prova #2',
-              primaryButtonLabel: 'Tam GY-GK Başlat',
-              family: selection.family,
-              scopeKey: selection.scopeKey,
-              sections: _bGroupGyGkSections,
-              standardDurationMinutes: 130,
-              mockNumber: 2,
-              isProOnly: true,
-            ),
-            MockExamBlueprint(
-              id: 'b_gk_oturum_1',
-              title: 'Genel Kültür Bölümü Denemesi #1',
-              subtitle: 'Sadece 60 soruluk GK oturumu (Hazır soru havuzuyla tam uyumlu)',
-              badgeLabel: 'Hazır Havuz · 65 dk',
-              primaryButtonLabel: 'Genel Kültür Denemesi Başlat',
-              family: selection.family,
-              scopeKey: '${selection.educationLevel.key}_gk',
-              sections: _bGroupGkSections,
-              standardDurationMinutes: 65,
-              mockNumber: 1,
-            ),
-            MockExamBlueprint(
-              id: 'b_gk_sprint_15',
-              title: '15 Dakika Hızlı Mola Denemesi',
-              subtitle: 'Tarih, Coğrafya ve Güncel konularından 15 soruluk mini prova',
-              badgeLabel: '15 Soru · 15 dk',
-              primaryButtonLabel: 'Hızlı Mola Başlat',
-              family: selection.family,
-              scopeKey: '${selection.educationLevel.key}_gk',
-              sections: const [
-                ExamSectionSpec(
-                  id: 'tarih',
-                  lesson: 'Tarih',
-                  title: 'Tarih',
-                  questionCount: 6,
-                ),
-                ExamSectionSpec(
-                  id: 'cografya',
-                  lesson: 'Coğrafya',
-                  title: 'Coğrafya',
-                  questionCount: 4,
-                ),
-                ExamSectionSpec(
-                  id: 'vatandaslik',
-                  lesson: 'Vatandaşlık',
-                  title: 'Vatandaşlık',
-                  questionCount: 3,
-                ),
-                ExamSectionSpec(
-                  id: 'guncel',
-                  lesson: 'Güncel Bilgiler',
-                  title: 'Güncel',
-                  questionCount: 2,
-                ),
-              ],
-              standardDurationMinutes: 15,
-              mockNumber: 3,
-              isMiniPractice: true,
-            ),
-          ];
-        }
         return [
-          generalCultureTrial(examNumber: 1, selection: selection),
-          generalCultureTrial(examNumber: 2, selection: selection),
-          generalCultureTrial(examNumber: 3, selection: selection),
+          MockExamBlueprint(
+            id: 'b_gygk_tam_1',
+            title: '${selection.educationLevel.label} Tam GY-GK Deneme #1',
+            subtitle: '30 Türkçe · 30 Matematik · 27 Tarih · 18 Coğrafya · 9 Vatandaşlık · 6 Güncel',
+            badgeLabel: 'Yakında · 120 Soru',
+            primaryButtonLabel: 'Matematik Havuzu Yakında',
+            family: selection.family,
+            scopeKey: selection.scopeKey,
+            sections: _bGroupGyGkSections,
+            standardDurationMinutes: 130,
+            mockNumber: 1,
+            isPrimaryFullExam: true,
+            isComingSoon: true,
+          ),
+          MockExamBlueprint(
+            id: 'b_gygk_tam_2',
+            title: '${selection.educationLevel.label} Tam GY-GK Deneme #2',
+            subtitle: 'Zaman yönetimi ve tam oturum dayanıklılığı için ikinci tam deneme',
+            badgeLabel: 'Yakında · 120 Soru',
+            primaryButtonLabel: 'Matematik Havuzu Yakında',
+            family: selection.family,
+            scopeKey: selection.scopeKey,
+            sections: _bGroupGyGkSections,
+            standardDurationMinutes: 130,
+            mockNumber: 2,
+            isProOnly: true,
+            isComingSoon: true,
+          ),
+          MockExamBlueprint(
+            id: 'b_gk_oturum_1',
+            title: 'Genel Kültür Bölümü Denemesi #1',
+            subtitle: 'Sadece 60 soruluk GK oturumu (Hazır soru havuzuyla tam uyumlu)',
+            badgeLabel: 'ÖSYM Standardı (Ücretsiz)',
+            primaryButtonLabel: 'Genel Kültür Denemesi Başlat',
+            family: selection.family,
+            scopeKey: '${selection.educationLevel.key}_gk',
+            sections: _bGroupGkSections,
+            standardDurationMinutes: 65,
+            mockNumber: 1,
+          ),
+          MockExamBlueprint(
+            id: 'b_gk_oturum_2',
+            title: 'Genel Kültür Bölümü Denemesi #2',
+            subtitle:
+                'Tarih ve Coğrafya ağırlıklı zorlu ÖSYM GK simülasyon paketi',
+            badgeLabel: 'ÖSYM Prova #2',
+            primaryButtonLabel: 'Genel Kültür Denemesi Başlat',
+            family: selection.family,
+            scopeKey: '${selection.educationLevel.key}_gk',
+            sections: _bGroupGkSections,
+            standardDurationMinutes: 65,
+            mockNumber: 2,
+            isProOnly: true,
+          ),
           MockExamBlueprint(
             id: 'b_gk_tarih_cografya_kamp',
             title: 'Tarih & Coğrafya Kamp Denemesi',
-            subtitle:
-                'Sınavın en yüksek ağırlıklı 45 sorusu (Tarih + Coğrafya)',
-            badgeLabel: '45 Soru · 40 dk',
+            subtitle: 'En yüksek katsayılı iki GK dersine (27 Tarih + 18 Coğrafya) odaklı 45 soruluk kamp provası',
+            badgeLabel: '45 Soru · 45 dk',
             primaryButtonLabel: 'Kamp Denemesi Başlat',
             family: selection.family,
-            scopeKey: selection.scopeKey,
+            scopeKey: '${selection.educationLevel.key}_gk',
             sections: const [
               ExamSectionSpec(
                 id: 'tarih',
@@ -360,8 +335,9 @@ class ExamBlueprintRegistry {
                 questionCount: 18,
               ),
             ],
-            standardDurationMinutes: 40,
-            mockNumber: 1,
+            standardDurationMinutes: 45,
+            mockNumber: 2,
+            isProOnly: true,
           ),
           MockExamBlueprint(
             id: 'b_gk_sprint_15',
@@ -371,7 +347,7 @@ class ExamBlueprintRegistry {
             badgeLabel: '15 Soru · 15 dk',
             primaryButtonLabel: 'Hızlı Mola Başlat',
             family: selection.family,
-            scopeKey: selection.scopeKey,
+            scopeKey: '${selection.educationLevel.key}_gk',
             sections: const [
               ExamSectionSpec(
                 id: 'tarih',
@@ -688,8 +664,7 @@ class ExamBlueprintRegistry {
     ExamSelection selection, {
     ExamCurriculum? curriculum,
   }) {
-    if (selection.family == KpssExamFamily.bGrubu &&
-        selection.bGroupProfile == BGroupProfile.onlyGk) {
+    if (selection.family == KpssExamFamily.bGrubu) {
       final base1 = generalCultureTrial(examNumber: 1, selection: selection);
       return [
         MockExamBlueprint(
@@ -698,7 +673,7 @@ class ExamBlueprintRegistry {
           subtitle: '60 Soru · 65 Dakika (ÖSYM Standart Dağılım)',
           badgeLabel: '60 Soru · 65 dk',
           family: selection.family,
-          scopeKey: selection.scopeKey,
+          scopeKey: '${selection.educationLevel.key}_gk',
           sections: _bGroupGkSections,
           standardDurationMinutes: 65,
           mockNumber: 1,
@@ -710,7 +685,7 @@ class ExamBlueprintRegistry {
           subtitle: '60 Soru · 65 Dakika (Alternatif Konu Dengesi)',
           badgeLabel: '60 Soru · 65 dk',
           family: selection.family,
-          scopeKey: selection.scopeKey,
+          scopeKey: '${selection.educationLevel.key}_gk',
           sections: _bGroupGkSections,
           standardDurationMinutes: 65,
           mockNumber: 2,
@@ -722,7 +697,7 @@ class ExamBlueprintRegistry {
           subtitle: '60 Soru · 65 Dakika (Zorlayıcı Karma Paket)',
           badgeLabel: '60 Soru · 65 dk',
           family: selection.family,
-          scopeKey: selection.scopeKey,
+          scopeKey: '${selection.educationLevel.key}_gk',
           sections: _bGroupGkSections,
           standardDurationMinutes: 65,
           mockNumber: 3,
@@ -737,6 +712,7 @@ class ExamBlueprintRegistry {
           targetTotal: 20,
           durationMinutes: 20,
           mockNumber: 2,
+          scopeKeyOverride: '${selection.educationLevel.key}_gk',
         ),
       ];
     }
@@ -771,6 +747,7 @@ class ExamBlueprintRegistry {
     required int targetTotal,
     required int durationMinutes,
     required int mockNumber,
+    String? scopeKeyOverride,
   }) {
     final baseTotal = base.totalQuestionCount;
     if (base.sections.isEmpty || baseTotal <= 0) {
@@ -826,7 +803,7 @@ class ExamBlueprintRegistry {
       subtitle: subtitle,
       badgeLabel: badgeLabel,
       family: base.family,
-      scopeKey: base.scopeKey,
+      scopeKey: scopeKeyOverride ?? base.scopeKey,
       sections: scaledSections,
       standardDurationMinutes: durationMinutes,
       mockNumber: mockNumber,

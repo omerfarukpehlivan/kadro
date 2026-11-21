@@ -18,6 +18,7 @@ import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/presentation/widgets/victory_story_card.dart';
 import 'package:kadro/shared/widgets/kadro_badge.dart';
+import 'package:kadro/shared/widgets/kadro_confirm_dialog.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -296,7 +297,8 @@ class _QuizResultScreenState extends State<QuizResultScreen> {
                 const SizedBox(height: 4),
                 KadroBadge(
                   label:
-                      '✓ Günlük Görev Tamamlandı · $completedCount/$totalCount Görev',
+                      'Günlük Görev Tamamlandı · $completedCount/$totalCount Görev',
+                  icon: PhosphorIconsBold.check,
                   tone: KadroBadgeTone.secondary,
                 ),
               ],
@@ -1092,72 +1094,19 @@ class _GuestSaveWarningDialog extends StatelessWidget {
     required this.onContinuePressed,
   });
 
+  /// Elle yazılmış `Dialog` yerine ortak [KadroConfirmDialog] kullanılır;
+  /// kenarlık, köşe ve buton yerleşimi uygulama genelindeki diyaloglarla aynıdır.
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 44,
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: colorScheme.tertiaryContainer,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: PhosphorIcon(
-                        PhosphorIconsFill.cloudWarning,
-                        color: colorScheme.onTertiaryContainer,
-                        size: 22,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'İlerlemeniz Kaydedilmiyor',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        color: colorScheme.onSurface,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              Text(
-                'Giriş yapmazsanız ilerlemeniz kaydedilemez. Şimdi giriş yapmak istemezseniz dilediğiniz zaman Profil sekmesinden giriş yapabilirsiniz.',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 20),
-              FilledButton(
-                onPressed: onLoginPressed,
-                child: const Text('Giriş Yap / Kayıt Ol'),
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: onContinuePressed,
-                child: const Text('Şimdilik Devam Et'),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return KadroConfirmDialog(
+      title: 'İlerlemeniz Kaydedilmiyor',
+      message: 'Giriş yapmazsanız ilerlemeniz kaydedilemez. Şimdi giriş yapmak istemezseniz dilediğiniz zaman Profil sekmesinden giriş yapabilirsiniz.',
+      icon: PhosphorIconsFill.cloudWarning,
+      iconColor: Theme.of(context).colorScheme.tertiary,
+      confirmLabel: 'Giriş Yap / Kayıt Ol',
+      cancelLabel: 'Şimdilik Devam Et',
+      onConfirm: onLoginPressed,
+      onCancel: onContinuePressed,
     );
   }
 }
@@ -1226,7 +1175,7 @@ class _DailyFlowBanner extends StatelessWidget {
                     Text(
                       hasNext
                           ? 'Sırada ${nextTask!.title} görevi seni bekliyor.'
-                          : 'Gün $cycleDay için planlanan tüm görevleri tamamladın! 🎉',
+                          : 'Gün $cycleDay için planlanan tüm görevleri tamamladın!',
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                         height: 1.35,
@@ -1255,9 +1204,11 @@ class _DailyFlowBanner extends StatelessWidget {
                   PhosphorIconsBold.arrowRight,
                   size: 14,
                 ),
-                label: const Text(
-                  'Sıradaki Göreve Başla →',
-                  style: TextStyle(fontWeight: FontWeight.w700),
+                label: Text(
+                  'Sıradaki Göreve Başla',
+                  style: textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             )
@@ -1275,9 +1226,11 @@ class _DailyFlowBanner extends StatelessWidget {
                   visualDensity: VisualDensity.compact,
                 ),
                 icon: const PhosphorIcon(PhosphorIconsRegular.house, size: 14),
-                label: const Text(
+                label: Text(
                   'Ana Sayfaya Dön',
-                  style: TextStyle(fontWeight: FontWeight.w700),
+                  style: textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
             ),

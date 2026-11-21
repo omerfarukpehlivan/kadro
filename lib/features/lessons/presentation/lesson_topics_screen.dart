@@ -294,7 +294,7 @@ class _LessonTopicsScreenState extends ConsumerState<LessonTopicsScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: colorScheme.surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color: colorScheme.outlineVariant,
                             width: 1.5,
@@ -569,109 +569,26 @@ class _TopicPathNode extends ConsumerWidget {
                         runSpacing: 4,
                         children: [
                           if (isAllTestsSolved)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.secondaryContainer,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  PhosphorIcon(
-                                    PhosphorIconsFill.checkCircle,
-                                    size: 13,
-                                    color: colorScheme.onSecondaryContainer,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '$solvedTestCount/$totalTests Test',
-                                    style: textTheme.labelSmall?.copyWith(
-                                      color: colorScheme.onSecondaryContainer,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            KadroBadge(
+                              label: '$solvedTestCount/$totalTests Test',
+                              icon: PhosphorIconsFill.checkCircle,
+                              tone: KadroBadgeTone.secondary,
                             )
                           else if (isPartiallySolved)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  PhosphorIcon(
-                                    PhosphorIconsBold.chartPieSlice,
-                                    size: 13,
-                                    color: colorScheme.onPrimaryContainer,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '$solvedTestCount/$totalTests Test',
-                                    style: textTheme.labelSmall?.copyWith(
-                                      color: colorScheme.onPrimaryContainer,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            KadroBadge(
+                              label: '$solvedTestCount/$totalTests Test',
+                              icon: PhosphorIconsBold.chartPieSlice,
                             )
                           else
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainerHighest,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                '0/$totalTests Test',
-                                style: textTheme.labelSmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                            KadroBadge(
+                              label: '0/$totalTests Test',
+                              tone: KadroBadgeTone.neutral,
                             ),
                           if (isDownloaded)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorScheme.secondaryContainer,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  PhosphorIcon(
-                                    PhosphorIconsFill.checkCircle,
-                                    size: 13,
-                                    color: colorScheme.onSecondaryContainer,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Cihazda',
-                                    style: textTheme.labelSmall?.copyWith(
-                                      color: colorScheme.onSecondaryContainer,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            const KadroBadge(
+                              label: 'Cihazda',
+                              icon: PhosphorIconsFill.checkCircle,
+                              tone: KadroBadgeTone.secondary,
                             ),
                         ],
                       ),

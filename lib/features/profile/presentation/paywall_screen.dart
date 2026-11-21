@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/services/ad_service.dart';
 import 'package:kadro/core/services/purchase_service.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
@@ -110,31 +111,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             ringColor: colorScheme.tertiary,
           ),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: colorScheme.tertiaryContainer,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: colorScheme.tertiary.withAlpha(120)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                PhosphorIcon(
-                  PhosphorIconsFill.crown,
-                  size: 14,
-                  color: colorScheme.onTertiaryContainer,
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  'PRO Üyelik',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onTertiaryContainer,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
+          KadroBadge(
+            label: 'PRO Üyelik',
+            icon: PhosphorIconsFill.crown,
+            tone: KadroBadgeTone.tertiary,
+            borderColor: colorScheme.tertiary.withAlpha(120),
           ),
           const SizedBox(height: 10),
           Text(
@@ -207,21 +188,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                               ),
                             ),
                             if (plan.badge != null)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.tertiaryContainer,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  plan.badge!,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: colorScheme.onTertiaryContainer,
-                                  ),
-                                ),
+                              KadroBadge(
+                                label: plan.badge!,
+                                tone: KadroBadgeTone.tertiary,
                               ),
                           ],
                         ),

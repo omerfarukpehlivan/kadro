@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
@@ -65,24 +66,14 @@ class HomeDailyPlanCard extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: isAllDone
-                      ? colorScheme.secondaryContainer
-                      : colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  '${planner.completedCount}/${planner.totalCount}',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: isAllDone
-                        ? colorScheme.onSecondaryContainer
-                        : colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                    fontFeatures: const [FontFeature.tabularFigures()],
-                  ),
-                ),
+              KadroBadge(
+                label: '${planner.completedCount}/${planner.totalCount}',
+                backgroundColor: isAllDone
+                    ? colorScheme.secondaryContainer
+                    : colorScheme.surfaceContainerHighest,
+                foregroundColor: isAllDone
+                    ? colorScheme.onSecondaryContainer
+                    : colorScheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -94,44 +85,20 @@ class HomeDailyPlanCard extends ConsumerWidget {
             runSpacing: 6,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(
-                    color: planner.isViewingPastDay
-                        ? colorScheme.tertiary.withAlpha(140)
-                        : colorScheme.outlineVariant,
-                  ),
-                ),
-                child: Text(
-                  'Gün ${planner.cycleDay}',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: planner.isViewingPastDay
-                        ? colorScheme.tertiary
-                        : colorScheme.onSurface,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+              KadroBadge(
+                label: 'Gün ${planner.cycleDay}',
+                backgroundColor: colorScheme.surfaceContainerLow,
+                foregroundColor: planner.isViewingPastDay
+                    ? colorScheme.tertiary
+                    : colorScheme.onSurface,
+                borderColor: planner.isViewingPastDay
+                    ? colorScheme.tertiary.withAlpha(140)
+                    : colorScheme.outlineVariant,
               ),
               if (planner.isViewingPastDay)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.tertiaryContainer,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    'Tekrar',
-                    style: textTheme.labelSmall?.copyWith(
-                      color: colorScheme.onTertiaryContainer,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                const KadroBadge(
+                  label: 'Tekrar',
+                  tone: KadroBadgeTone.tertiary,
                 ),
               Text(
                 prefs.hasActiveStudyProgram

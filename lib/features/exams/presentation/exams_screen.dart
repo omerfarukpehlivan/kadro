@@ -69,7 +69,12 @@ class ExamsScreen extends ConsumerWidget {
         selection: selection,
         customTitle: heroTitle,
       ),
-      icon: const PhosphorIcon(PhosphorIconsFill.play, size: 16),
+      icon: PhosphorIcon(
+        primaryBlueprint.isComingSoon
+            ? PhosphorIconsRegular.lockSimple
+            : PhosphorIconsFill.play,
+        size: 16,
+      ),
       label: Text(primaryBlueprint.primaryButtonLabel),
     );
 
@@ -466,7 +471,7 @@ class _ExamPackCard extends ConsumerWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   color: accentContainerColor,
-                  borderRadius: BorderRadius.circular(11),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: accentColor.withAlpha(80)),
                 ),
                 child: PhosphorIcon(icon, color: accentColor, size: 20),
@@ -493,41 +498,36 @@ class _ExamPackCard extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              isDownloaded
-                  ? Tooltip(
-                      message: 'Cihazda Hazır',
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 7,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.secondaryContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'Cihazda',
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSecondaryContainer,
-                          ),
-                        ),
-                      ),
-                    )
-                  : Tooltip(
-                      message: 'Çevrimdışı İndir',
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(8),
-                        onTap: () => _handleDownload(context, ref),
-                        child: Padding(
-                          padding: const EdgeInsets.all(6),
-                          child: PhosphorIcon(
-                            PhosphorIconsRegular.downloadSimple,
-                            size: 18,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
+              if (blueprint.isComingSoon)
+                const KadroBadge(
+                  label: 'Yakında',
+                  tone: KadroBadgeTone.tertiary,
+                  icon: PhosphorIconsRegular.lockSimple,
+                )
+              else if (isDownloaded)
+                const Tooltip(
+                  message: 'Cihazda Hazır',
+                  child: KadroBadge(
+                    label: 'Cihazda',
+                    tone: KadroBadgeTone.secondary,
+                  ),
+                )
+              else
+                Tooltip(
+                  message: 'Çevrimdışı İndir',
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () => _handleDownload(context, ref),
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: PhosphorIcon(
+                        PhosphorIconsRegular.downloadSimple,
+                        size: 18,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 10),
@@ -535,71 +535,29 @@ class _ExamPackCard extends ConsumerWidget {
             spacing: 6,
             runSpacing: 4,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: accentContainerColor,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  badgeText,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: onAccentContainerColor,
-                  ),
-                ),
+              KadroBadge(
+                label: badgeText,
+                backgroundColor: accentContainerColor,
+                foregroundColor: onAccentContainerColor,
               ),
               if (isProOnly)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isUserPro
-                        ? colorScheme.secondaryContainer
-                        : colorScheme.tertiaryContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      PhosphorIcon(
-                        isUserPro
-                            ? PhosphorIconsFill.checkCircle
-                            : PhosphorIconsFill.crown,
-                        size: 12,
-                        color: isUserPro
-                            ? colorScheme.onSecondaryContainer
-                            : colorScheme.onTertiaryContainer,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        isUserPro ? 'Kadro PRO Açık' : 'Kadro PRO',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: isUserPro
-                              ? colorScheme.onSecondaryContainer
-                              : colorScheme.onTertiaryContainer,
-                        ),
-                      ),
-                    ],
-                  ),
+                KadroBadge(
+                  label: isUserPro ? 'Kadro PRO Açık' : 'Kadro PRO',
+                  icon: isUserPro
+                      ? PhosphorIconsFill.checkCircle
+                      : PhosphorIconsFill.crown,
+                  backgroundColor: isUserPro
+                      ? colorScheme.secondaryContainer
+                      : colorScheme.tertiaryContainer,
+                  foregroundColor: isUserPro
+                      ? colorScheme.onSecondaryContainer
+                      : colorScheme.onTertiaryContainer,
                 ),
               if (solvedExam != null)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    'Çözüldü (${solvedExam.netScore.toStringAsFixed(1)} Net)',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: colorScheme.onSecondaryContainer,
-                    ),
-                  ),
+                KadroBadge(
+                  label:
+                      'Çözüldü (${solvedExam.netScore.toStringAsFixed(1)} Net)',
+                  tone: KadroBadgeTone.secondary,
                 ),
             ],
           ),
@@ -632,20 +590,28 @@ class _ExamPackCard extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    isProOnly && !isUserPro
-                        ? 'PRO ile Başlat'
-                        : 'Denemeyi Başlat',
+                    blueprint.isComingSoon
+                        ? 'Yakında'
+                        : (isProOnly && !isUserPro
+                              ? 'PRO ile Başlat'
+                              : 'Denemeyi Başlat'),
                     style: theme.textTheme.labelLarge?.copyWith(
-                      color: accentColor,
+                      color: blueprint.isComingSoon
+                          ? colorScheme.outline
+                          : accentColor,
                     ),
                   ),
                   const SizedBox(width: 4),
                   PhosphorIcon(
-                    isProOnly && !isUserPro
-                        ? PhosphorIconsFill.crown
-                        : PhosphorIconsBold.arrowRight,
+                    blueprint.isComingSoon
+                        ? PhosphorIconsRegular.lockSimple
+                        : (isProOnly && !isUserPro
+                              ? PhosphorIconsFill.crown
+                              : PhosphorIconsBold.arrowRight),
                     size: 15,
-                    color: accentColor,
+                    color: blueprint.isComingSoon
+                        ? colorScheme.outline
+                        : accentColor,
                   ),
                 ],
               ),

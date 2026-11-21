@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/app/theme.dart';
 import 'package:kadro/shared/widgets/adaptive_overlay.dart';
+import 'package:kadro/shared/widgets/diagram_card_shell.dart';
 import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/shared/widgets/kadro_confirm_dialog.dart';
 import 'package:kadro/shared/widgets/kadro_filter_chips.dart';
@@ -216,5 +217,59 @@ void main() {
         expect(selectedFilter, equals('Tarih'));
       },
     );
+
+    testWidgets(
+      'DiagramCardShell rozet, Büyüt düğmesi ve gövdeyi TactileCard içinde çizer',
+      (tester) async {
+        var zoomCount = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: DiagramCardShell(
+                icon: PhosphorIconsRegular.mountains,
+                badgeLabel: 'Test Şeması',
+                badgeTone: KadroBadgeTone.tertiary,
+                onZoom: () => zoomCount++,
+                children: const [
+                  DiagramTitle('Horst - Graben'),
+                  DiagramNoteStrip(note: 'Eğitici not'),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Test Şeması'), findsOneWidget);
+        expect(find.text('Horst - Graben'), findsOneWidget);
+        expect(find.text('Eğitici not'), findsOneWidget);
+        expect(find.byType(KadroBadge), findsOneWidget);
+
+        await tester.tap(find.text('Büyüt'));
+        expect(zoomCount, equals(1));
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('KadroBadge iconColor verildiğinde ikonu ayrı renkte çizer', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: KadroBadge(
+              label: '3 Gün Seri',
+              icon: PhosphorIconsFill.flame,
+              iconColor: Color(0xFFE28400),
+              tone: KadroBadgeTone.neutral,
+            ),
+          ),
+        ),
+      );
+
+      final icon = tester.widget<PhosphorIcon>(find.byType(PhosphorIcon));
+      expect(icon.color, equals(const Color(0xFFE28400)));
+    });
   });
 }

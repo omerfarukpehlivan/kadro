@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
+import 'package:kadro/shared/widgets/kadro_filter_chips.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
@@ -392,27 +394,38 @@ class _MebAgsModeChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: [
-        ChoiceChip(
-          key: const ValueKey('meb_ags_chip_p1'),
-          label: const Text('AGS-P1 (Genel)'),
-          selected: currentBranch == OabtBranch.none,
-          onSelected: (_) => onChanged(OabtBranch.none),
+    // Seçili puan türü: P1 (genel), P2 (herhangi bir ÖABT branşı) veya P3 (YDS).
+    final String? selectedMode = currentBranch == OabtBranch.none
+        ? 'p1'
+        : currentBranch.isOabtExam
+        ? 'p2'
+        : currentBranch == OabtBranch.ydsDil
+        ? 'p3'
+        : null;
+
+    return KadroFilterChips<String?>(
+      wrap: true,
+      selectedValue: selectedMode,
+      onSelected: (mode) => onChanged(switch (mode) {
+        'p2' => fallbackOabtBranch,
+        'p3' => OabtBranch.ydsDil,
+        _ => OabtBranch.none,
+      }),
+      options: const [
+        KadroFilterOption(
+          key: ValueKey('meb_ags_chip_p1'),
+          value: 'p1',
+          label: 'AGS-P1 (Genel)',
         ),
-        ChoiceChip(
-          key: const ValueKey('meb_ags_chip_p2'),
-          label: const Text('AGS-P2 (ÖABT 50)'),
-          selected: currentBranch.isOabtExam,
-          onSelected: (_) => onChanged(fallbackOabtBranch),
+        KadroFilterOption(
+          key: ValueKey('meb_ags_chip_p2'),
+          value: 'p2',
+          label: 'AGS-P2 (ÖABT 50)',
         ),
-        ChoiceChip(
-          key: const ValueKey('meb_ags_chip_p3'),
-          label: const Text('AGS-P3 (YDS Dil)'),
-          selected: currentBranch == OabtBranch.ydsDil,
-          onSelected: (_) => onChanged(OabtBranch.ydsDil),
+        KadroFilterOption(
+          key: ValueKey('meb_ags_chip_p3'),
+          value: 'p3',
+          label: 'AGS-P3 (YDS Dil)',
         ),
       ],
     );
@@ -628,23 +641,14 @@ class _ScoreOutputTile extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: isBlocked
-                ? colorScheme.errorContainer
-                : colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            row.code,
-            style: textTheme.labelSmall?.copyWith(
-              color: isBlocked
-                  ? colorScheme.onErrorContainer
-                  : colorScheme.onPrimaryContainer,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+        KadroBadge(
+          label: row.code,
+          backgroundColor: isBlocked
+              ? colorScheme.errorContainer
+              : colorScheme.primaryContainer,
+          foregroundColor: isBlocked
+              ? colorScheme.onErrorContainer
+              : colorScheme.onPrimaryContainer,
         ),
         const SizedBox(width: 10),
         Expanded(

@@ -209,7 +209,8 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-162** | **Çalışma Planlayıcı Sayfası ve Manuel Görev Düzenlemenin Kaldırılması & Ana Sayfada Tüm Günlük Görevlerin Eksiksiz Gösterimi** | Ayrı `StudyPlannerScreen` (`/planner`) sayfasının ve manuel görev ekleme/çıkarma diyaloglarının kaldırılması, planlayıcının doğrudan `HomeScreen` üzerindeki `HomeDailyPlanCard` widget'ına indirgenmesi; başlangıç kurulumundaki otomatik program akışının korunması; karttaki `.take(4)` / `.slice(0, 4)` kısıtlamasının kaldırılarak o günkü tüm görevlerin (örn. 5/5) eksiksiz listelenmesi; görev tamamlandığında anında üzeri çizilme (`line-through`) ve yeşil onay ikonu eşlenmesi | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-163** | **Test Sonu Karnesinde Günlük Görev Akışı & Sıradaki Göreve Kesintisiz Geçiş (`QuizResultScreen` / Flow State)** | Günlük plandan bir görev çözülüp bittiğinde test karnesi başlığında `✓ Günlük Görev Tamamlandı · X/Y` onay rozeti ve yeşil akış bandı gösterilmesi; günün sıradaki görevi varsa tek tıkla doğrudan sıradaki testi başlatan **"Sıradaki Göreve Geç: [Görev] →"** birincil butonu ve **"Ana Sayfaya Dön"** ikincil butonu; günün tüm görevleri bittiğinde ise **"Günü Tamamladın! Ana Sayfaya Dön"** kutlama aksiyonu sunulması | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-164** | **🚀 Yayın Öncesi Mağaza Uyumluluk Kapısı (`app-store-compliance` skill denetimi)** | Play Store'a çıkmadan önce zorunlu: canlı `/gizlilik` + `/hesap-silme` sayfaları, hesap silme hatasının kullanıcıya gösterilmesi, AdMob UMP rıza formu, gerçek AdMob/RevenueCat kimliklerinin `--dart-define` ile verilmesi, `POST_NOTIFICATIONS` izni ve izin akışı, Veri Güvenliği formu, 12 test kullanıcısı / 14 gün kapalı test; sonunda `/app-store-audit` yeniden çalıştırılıp kritik bulgu sıfırlanır | ⏳ **Planlandı** | ❌ | ❌ |
-| **TASK-165** | **GY Türkçe Dersinin Aktifleştirilmesi ("Yakında" → Hazır) & GY-GK Kapsam Sorgusu Düzeltmesi** | Canlıdaki 710 Türkçe sorusu (`lisans_gygk`, 11 konu) ile Türkçe'nin KPSS Lisans GY-GK müfredatında diğer dersler gibi açılması (konu testleri, branş denemesi, planlayıcı, pratik merkezi); Matematik "Yakında" kalır; GY-GK modunda GK sorularının buluttan gelmemesine yol açan `contains(exam_scopes)` filtresinin kabul edilen kapsam kümesiyle `overlaps` olarak düzeltilmesi | 🟡 **Kısmi (Web bekliyor)** | ❌ | ✅ |
+| **TASK-165** | **GY Türkçe Dersinin Aktifleştirilmesi ("Yakında" → Hazır) & GY-GK Kapsam Sorgusu Düzeltmesi** | Canlıdaki 710 Türkçe sorusu (`lisans_gygk`, 11 konu) ile Türkçe'nin KPSS Lisans GY-GK müfredatında diğer dersler gibi açılması (konu testleri, branş denemesi, planlayıcı, pratik merkezi); Matematik "Yakında" kalır; GY-GK modunda GK sorularının buluttan gelmemesine yol açan `contains(exam_scopes)` filtresinin kabul edilen kapsam kümesiyle `overlaps` olarak düzeltilmesi | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
+| **TASK-166** | **B Grubunda Tek Profil — "Sadece GK / Tam GY-GK" Ayrımının Kaldırılması** | Gerçek KPSS’de GY ve GK aynı oturumda olduğu için 60/120 seçiminin kaldırılması; B Grubu seçen herkes tüm dersleri görür (Lisans: 4 GK + Türkçe aktif, Matematik Yakında); eski `only_gk` kayıtlarının `full_gygk`’ya normalize edilmesi; Tam GY-GK denemesi Matematik gelene kadar Yakında; `exam_scopes.json` eşleniklik dosyası | 🟡 **Kısmi (Web bekliyor)** | ❌ | ✅ |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** | ❌ | ❌ |
 
 ### 📊 Aktif Mobil & Web Eşleniklik Özeti
@@ -6699,7 +6700,7 @@ ADIM 3: `kadro.app` alan adında iki sayfanın 200 döndüğünü doğrula; `app
 
 ### 📦 TASK-165: GY Türkçe Dersinin Aktifleştirilmesi ("Yakında" → Hazır) & GY-GK Kapsam Sorgusu Düzeltmesi
 
-- **Durum:** 🟡 Kısmi (Web bekliyor) · 🌐 Web ❌ · 📱 Mobil ✅ (Gemini uyguladı, Claude inceledi 2026-11-22: analyze 0, 467 test yeşil)
+- **Durum:** 🟢 Tamamlandı (Eşlenik) · 🌐 Web ✅ · 📱 Mobil ✅ (Gemini uyguladı, Claude inceledi 2026-11-22: analyze 0, 467 test yeşil)
 - **Amaç:** Claude + Gemini ile üretilip canlı Supabase'e yüklenen **710 Türkçe sorusunu** kullanıcıya açmak. KPSS Lisans GY-GK seçen aday Türkçe'yi Tarih/Coğrafya gibi konu konu çözebilsin; "Yakında" rozeti kalksın.
 - **Platform Uygulanabilirliği:** Ortak (iki platform).
 - **Uygulayıcı:** Gemini (mobil kodu yazar) → Claude (inceler). İnceleme bitmeden Mobil kolonu ✅ yapılmaz.
@@ -6799,3 +6800,70 @@ ADIM 3: Ders, konu, branş denemesi ve planlayıcı ekranlarında Türkçe'nin a
 - [x] Claude incelemesi onaylandı (mobil)
 
 > 📝 **Sonraya bırakıldı (bu görevin kapsamı dışı):** Tam 120 soruluk GY-GK denemesi kartları (`mock_exam_blueprint.dart` `b_gygk_tam_1/2`) Matematik soruları gelene kadar "Yakında" gösterilmeli; şu an açık ve 30 Matematik sorusu eksik gelir. Matematik içerik görevinde ele alınacak.
+
+---
+
+## 🧭 53. Dalga 53 [Ürün Kararı]: B Grubunda "Sadece GK / Tam GY-GK" Ayrımının Kaldırılması (`TASK-166`)
+
+### 📦 TASK-166: B Grubunda Tek Profil — Kullanıcı Her Zaman Tüm Dersleri Görür (GK + GY)
+
+- **Durum:** 🟡 Kısmi (Web bekliyor) · 🌐 Web ❌ · 📱 Mobil ✅ (Gemini uyguladı, Claude inceledi 2026-11-22: analyze 0, 477 test yeşil)
+- **Web için not:** `exam_scopes.json` ile hizalanmalı — web şu an Ön Lisans/E-KPSS kabul kümesine `lisans_gk`, ÖABT kümesine `meb_ags` ekliyor; mobil temel küme bunları içermez.
+- **Amaç:** Gerçek KPSS'de GY ve GK aynı oturumda sorulur, ayrı girilmez. Kullanıcıya "60 soru (Sadece GK)" / "120 soru (Tam GY-GK)" seçtirmek anlamsız ve Türkçe'nin varsayılan seçimde "Yakında" görünmesine yol açıyor (2026-11-22 kullanıcı geri bildirimi). B Grubu (Lisans / Ön Lisans / Ortaöğretim) seçen herkes tüm dersleri tek listede görür.
+- **Platform Uygulanabilirliği:** Ortak (iki platform).
+- **Ön koşul:** Tasarım tutarlılığı oturumunun commit'lenmemiş değişiklikleri (aynı dosyalara dokunuyor) önce commit'lenmeli.
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Ürün kuralı (kesin):** B Grubu için tek profil vardır: `full_gygk`. Sınav seçicide, onboarding'de ve profil ayarlarında 60/120 seçimi **kaldırılır**.
+- **Geriye uyumluluk:** Kayıtlı tercihlerde (`user_preferences`, yerel depolama, Supabase profil satırı) `b_group_profile = only_gk` görülürse okuma anında `full_gygk`'ya normalize edilir. Enum/tip değeri eski verileri okuyabilmek için kod içinde kalabilir ama UI'da gösterilmez ve yeni kayıtlarda yazılmaz.
+- **Kapsam anahtarı:** B Grubu `scopeKey` her zaman `<düzey>_gygk` (`lisans_gygk`, `onlisans_gygk`, `ortaogretim_gygk`). Soru kabul kümesi TASK-165'teki gibi `<düzey>_gk` etiketli GK sorularını da içerir; soru verisine ve `exam_scopes` etiketlerine dokunulmaz.
+- **Ders görünürlüğü:**
+  - Lisans: Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler, **Türkçe** aktif; Matematik & Geometri "Yakında".
+  - Ön Lisans / Ortaöğretim: GK dersleri aktif; Türkçe ve Matematik "Yakında" (Türkçe soruları Lisans düzeyine göre yazıldı; düzey genişletme ayrı içerik kararı).
+- **Denemeler:** "GK Oturum Denemesi (60 soru / 65 dk)" ders bazlı alıştırma denemesi olarak kalır. "Tam GY-GK Denemesi (120 soru / 130 dk)" Matematik soruları gelene kadar "Yakında" gösterilir (TASK-165 sonraya bırakılan notu bu görevle kapanır). Türkçe branş denemesi (30 soru) açık.
+- **Puan hesaplayıcı:** Değişmez (GY ve GK girişleri zaten ayrı; P3/P93/P94 formülleri aynı).
+- **Geçmiş veri:** `quiz_sessions` / `question_attempt_logs` içinde `lisans_gk` kapsamlı eski kayıtlar istatistik, karne ve yanlış defterinde görünmeye devam eder (kapsam filtresi varsa `<düzey>_gk` ve `<düzey>_gygk` birlikte kabul edilir).
+- **Supabase:** Şema değişikliği yok. (İsteğe bağlı: mevcut profil satırlarını `full_gygk`'ya çeviren tek seferlik `UPDATE` migration'ı `docs/supabase_migrations/08_b_group_single_profile.sql` — yazılırsa kullanıcı uygular.)
+- **Kurallar dosyası:** `GEMINI.md` B Grubu satırındaki "Tam 120 soru / 130 dk veya Sadece GK 60 soru / 65 dk" ifadesi "Tek oturum GY-GK 120 soru / 130 dk (GK oturum denemesi 60 soru alıştırma olarak)" diye güncellenir.
+- **Eşleniklik örnekleri:** `docs/parity_fixtures/exam_scopes.json` eklenir: seçim → beklenen `scopeKey` ve kabul kümesi (en az: Lisans/Ön Lisans/Ortaöğretim B Grubu, eski `only_gk` girdisinin normalize sonucu, E-KPSS Lisans, DHBT Lisans, MEB-AGS ÖABT tarih, MEB-AGS YDS). Mobil `test/parity_fixtures_test.dart` ve web `tests/parity/parity.test.ts` bu dosyayı okur.
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-166 — B Grubunda Tek Profil: Tüm Dersler Her Zaman Görünür (Mobil / Flutter)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma. Soru verisine, puan formüllerine dokunma; yeni paket ekleme. Bitince flutter-verify adımlarını çalıştır; Mobil kolonunu Claude incelemesi onaylanana kadar ❌ bırak.
+
+ADIM 1: Seçim modeli
+- lib/features/exams/data/models/exam_selection.dart: B Grubu için varsayılan ve tek geçerli profil fullGyGk. `ExamSelection.initial` ve `bGrubuLisans` varsayılanı fullGyGk. fromJson / prefs okuma yolunda `only_gk` → fullGyGk normalize et (B Grubu dışında profil alanı anlamsız, olduğu gibi kalsın). `isDefaultLisansGk` gibi yardımcıların anlamını gözden geçir; çağıranları (grep) yeni kurala göre düzelt.
+ADIM 2: UI'dan 60/120 seçimini kaldır
+- lib/shared/widgets/exam_target_picker_view.dart (≈ satır 73, 227), onboarding_screen.dart, target_exam_selector_bottom_sheet.dart ve profil ayarları: profil seçici/segment kaldırılır; B Grubu kartı "GY-GK · 120 Soru · 130 dk" olarak tek seçenek gösterir.
+ADIM 3: Müfredat
+- lib/features/lessons/data/curriculum_registry.dart `_resolveBGrubu`: onlyGk dalı kaldırılır; TASK-165'teki Lisans GY-GK dalı tek yol olur; Ön Lisans/Ortaöğretim GK aktif, GY "Yakında".
+ADIM 4: Denemeler & diğer çağıranlar
+- mock_exam_blueprint.dart: Tam GY-GK kartları Matematik "Yakında" iken kilitli/"Yakında" gösterilir; GK oturum denemesi (`_selectionForBlueprint` mantığı) çalışmaya devam eder.
+- question_repository.dart, map_practice_repository.dart, map_practice_hub_screen.dart, workshop_scope_bridge_banner.dart, study_task_launcher.dart, blueprint_exam_launcher.dart: onlyGk/`lisans_gk` varsayımlarını kaldır; kabul kümesi ve geçmiş veri kuralına uy.
+- İstatistik/karne/yanlış defteri: eski `lisans_gk` oturumları görünmeye devam etsin.
+ADIM 5: Eşleniklik dosyası ve testler
+- docs/parity_fixtures/exam_scopes.json'ı Ortak Sözleşme'deki vakalarla yaz; test/parity_fixtures_test.dart'a okuyucuyu ekle.
+- onlyGk'ya bağlı testleri yeni kurala göre güncelle (silme). Yeni test: eski `only_gk` kaydı okununca fullGyGk; Lisans'ta Türkçe aktif; seçicide 60/120 seçeneği yok.
+- dart format (değişen dosyalar), flutter analyze 0, node tools/affected_tests.mjs --run, sonra tam flutter test.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-166 — B Grubunda Tek Profil: Tüm Dersler Her Zaman Görünür (Web / Next.js)
+ÖNEMLİ: kadro-web/AGENTS.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma. Bitince lint/test adımlarını çalıştır ve ../gunisigi/docs/task-board.md içinde yalnızca "Web de Yapıldı" kolonunu güncelle.
+
+ADIM 1: src/domain/exam-selection.ts: B Grubu varsayılan ve tek profil full_gygk; okunan only_gk → full_gygk normalize.
+ADIM 2: Sınav seçici, onboarding sihirbazı ve profil sayfasından 60/120 seçimini kaldır.
+ADIM 3: src/domain/curriculum.ts ve exam-blueprints.ts: only_gk dallarını kaldır; Tam GY-GK denemesi Matematik gelene kadar "Yakında"; GK oturum denemesi kalır.
+ADIM 4: tests/parity/parity.test.ts ../gunisigi/docs/parity_fixtures/exam_scopes.json'ı okusun (getExamScopeKey + getAcceptedQuestionScopes); npm run lint, npm run test:parity yeşil.
+```
+
+#### ✅ Kabul Kriterleri
+- [ ] Yeni kullanıcı ve eski "Sadece GK" kullanıcısı, Lisans seçince Dersler'de 5 aktif ders (4 GK + Türkçe) ve "Yakında" Matematik görüyor
+- [ ] Sınav seçici / onboarding / profilde 60–120 seçimi yok
+- [ ] Eski `lisans_gk` test oturumları istatistik ve geçmişte görünüyor
+- [ ] Tam GY-GK denemesi "Yakında"; GK oturum denemesi ve Türkçe branş denemesi çalışıyor
+- [ ] `exam_scopes.json` eşleniklik vakaları iki depoda yeşil
+- [ ] GEMINI.md B Grubu satırı güncellendi
+- [ ] Mobilde flutter analyze 0, tam flutter test yeşil; Claude incelemesi onaylandı

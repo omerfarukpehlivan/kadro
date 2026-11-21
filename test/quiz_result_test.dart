@@ -302,7 +302,7 @@ void main() {
 
           // 1. Karne Başlığı Rozeti
           expect(
-            find.text('✓ Günlük Görev Tamamlandı · 1/3 Görev'),
+            find.text('Günlük Görev Tamamlandı · 1/3 Görev'),
             findsOneWidget,
           );
 
@@ -317,7 +317,7 @@ void main() {
             ),
             findsOneWidget,
           );
-          expect(find.text('Sıradaki Göreve Başla →'), findsOneWidget);
+          expect(find.text('Sıradaki Göreve Başla'), findsOneWidget);
 
           // 3. Birincil ve İkincil Butonlar
           expect(
@@ -369,14 +369,14 @@ void main() {
 
           // 1. Rozet
           expect(
-            find.text('✓ Günlük Görev Tamamlandı · 3/3 Görev'),
+            find.text('Günlük Görev Tamamlandı · 3/3 Görev'),
             findsOneWidget,
           );
 
           // 2. Dinamik Görev Akış Bandı
           expect(find.text('Harika bir disiplin!'), findsOneWidget);
           expect(
-            find.text('Gün 2 için planlanan tüm görevleri tamamladın! 🎉'),
+            find.text('Gün 2 için planlanan tüm görevleri tamamladın!'),
             findsOneWidget,
           );
 
@@ -413,10 +413,7 @@ void main() {
           await tester.pumpAndSettle();
 
           // Akış rozeti ve bandı olmamalı
-          expect(
-            find.textContaining('✓ Günlük Görev Tamamlandı'),
-            findsNothing,
-          );
+          expect(find.textContaining('Günlük Görev Tamamlandı'), findsNothing);
           expect(find.textContaining('Sıradaki Göreve Geç'), findsNothing);
           expect(
             find.textContaining('Günü Tamamladın! Ana Sayfaya Dön'),

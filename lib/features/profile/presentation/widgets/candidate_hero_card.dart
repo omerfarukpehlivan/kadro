@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/features/auth/data/auth_notifier.dart';
 import 'package:kadro/features/onboarding/presentation/onboarding_screen.dart';
@@ -106,21 +107,9 @@ class CandidateHeroCard extends ConsumerWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         if (prefs.isPro)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.tertiaryContainer,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              'PRO',
-                              style: textTheme.labelSmall?.copyWith(
-                                color: colorScheme.onTertiaryContainer,
-                              ),
-                            ),
+                          const KadroBadge(
+                            label: 'PRO',
+                            tone: KadroBadgeTone.tertiary,
                           ),
                       ],
                     ),

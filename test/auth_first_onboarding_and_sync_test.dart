@@ -85,7 +85,7 @@ void main() {
           // Adım 3: Hedef & Odak
           await tester.tap(find.text('90+ Puan'));
           await tester.pumpAndSettle();
-          await tester.tap(find.text('Coğrafya · 18 Soru (%30 Ağırlık)'));
+          await tester.tap(find.text('Coğrafya · 18 Soru (%20 Ağırlık)'));
           await tester.pumpAndSettle();
           await tester.tap(find.text('Programımı Kur ve Başla'));
           await tester.pumpAndSettle();
@@ -234,7 +234,10 @@ void main() {
 
         final plannerState = container.read(studyPlannerProvider);
         expect(plannerState.tasks, isNotEmpty);
-        expect(plannerState.tasks.first.id, startsWith('auto_dk30_d1_'));
+        expect(
+          plannerState.tasks.first.id,
+          startsWith('auto_lisans_gygk_dk30_d1_'),
+        );
       });
 
       test('6. Senaryo (Hesap İzolasyonu): Çıkış yapıldıktan sonra cihazda kalan genel önbellek temizlenir ve farklı hesap önceki kullanıcının planını devralmaz', () async {

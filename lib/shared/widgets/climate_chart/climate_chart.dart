@@ -39,13 +39,13 @@ class ClimateChart extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildLegendItem(
+              _LegendItem(
                 color: const Color(0xFF2563EB),
                 label: 'Aylık Yağış (mm)',
                 isSquare: true,
                 textColor: secondaryTextColor,
               ),
-              _buildLegendItem(
+              _LegendItem(
                 color: const Color(0xFFDC2626),
                 label: 'Sıcaklık (°C)',
                 isSquare: false,
@@ -72,13 +72,28 @@ class ClimateChart extends StatelessWidget {
       ],
     );
   }
+}
 
-  Widget _buildLegendItem({
-    required Color color,
-    required String label,
-    required bool isSquare,
-    required Color textColor,
-  }) {
+/// İklim grafiği lejant öğesi (yağış için kare, sıcaklık için çizgi + nokta).
+///
+/// Seri renkleri tuvaldeki (`ClimateChartPainter`) çizimle eşleşmek zorunda
+/// olduğundan bilimsel çizim istisnası kapsamında sabittir; yazı stili ise
+/// `textTheme.labelSmall` üzerinden gelir.
+class _LegendItem extends StatelessWidget {
+  final Color color;
+  final String label;
+  final bool isSquare;
+  final Color textColor;
+
+  const _LegendItem({
+    required this.color,
+    required this.label,
+    required this.isSquare,
+    required this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -107,11 +122,8 @@ class ClimateChart extends StatelessWidget {
         const SizedBox(width: 5),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 10.5,
-            fontWeight: FontWeight.w600,
-            color: textColor,
-          ),
+          style: Theme.of(context).textTheme.labelSmall
+              ?.copyWith(fontWeight: FontWeight.w600, color: textColor),
         ),
       ],
     );

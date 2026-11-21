@@ -395,12 +395,11 @@ class QuestionRepository {
     MockExamBlueprint blueprint,
   ) {
     if (blueprint.family == KpssExamFamily.bGrubu &&
-        blueprint.scopeKey.endsWith('_gk') &&
-        base.scopeKey != blueprint.scopeKey) {
+        blueprint.scopeKey.endsWith('_gk')) {
       return ExamSelection(
         family: KpssExamFamily.bGrubu,
         educationLevel: base.educationLevel,
-        bGroupProfile: BGroupProfile.onlyGk,
+        bGroupProfile: BGroupProfile.fullGyGk,
         disabilityGroup: base.disabilityGroup,
         examCycleYear: base.examCycleYear,
         includeExtraTime: base.includeExtraTime,
@@ -432,7 +431,6 @@ class QuestionRepository {
             blueprint.id.startsWith('practice_gk_2') ||
             blueprint.id.startsWith('practice_gk_3')) &&
         effectiveSelection.family == KpssExamFamily.bGrubu &&
-        effectiveSelection.bGroupProfile == BGroupProfile.onlyGk &&
         effectiveSelection.educationLevel == EducationLevel.lisans &&
         resolvedVariant == null &&
         assetLoader == null;
@@ -697,13 +695,18 @@ class QuestionRepository {
   Future<({List<Question> questions, bool isDedicatedScopeAsset})>
   _loadLocalPoolForSelection(ExamSelection? selection) async {
     if (selection != null) {
-      try {
-        final scoped = await _loadAndParseAssetFile(
-          scopedAssetPathFor(selection),
-        );
-        return (questions: scoped, isDedicatedScopeAsset: true);
-      } catch (_) {
-        // Kapsam dosyası henüz paketlenmediyse çekirdek JSON yedeğine düş.
+      final candidatePaths = <String>[
+        scopedAssetPathFor(selection),
+        if (selection.family == KpssExamFamily.bGrubu)
+          'assets/data/scopes/${selection.educationLevel.key}_gk.json',
+      ];
+      for (final path in candidatePaths) {
+        try {
+          final scoped = await _loadAndParseAssetFile(path);
+          return (questions: scoped, isDedicatedScopeAsset: true);
+        } catch (_) {
+          // İlgili kapsam dosyası bulunamadıysa sıradaki adaya veya çekirdek JSON'a geç.
+        }
       }
     }
     final pool = await loadSampleQuestions();
@@ -1199,23 +1202,14 @@ ExamSelection _selectionFromScopeKey(
   }
   switch (scopeKey) {
     case 'lisans_gk':
-      return ExamSelection.initial;
     case 'lisans_gygk':
-      return const ExamSelection(bGroupProfile: BGroupProfile.fullGyGk);
+      return ExamSelection.initial;
     case 'onlisans_gk':
-      return const ExamSelection(educationLevel: EducationLevel.onlisans);
     case 'onlisans_gygk':
-      return const ExamSelection(
-        educationLevel: EducationLevel.onlisans,
-        bGroupProfile: BGroupProfile.fullGyGk,
-      );
+      return const ExamSelection(educationLevel: EducationLevel.onlisans);
     case 'ortaogretim_gk':
-      return const ExamSelection(educationLevel: EducationLevel.ortaogretim);
     case 'ortaogretim_gygk':
-      return const ExamSelection(
-        educationLevel: EducationLevel.ortaogretim,
-        bGroupProfile: BGroupProfile.fullGyGk,
-      );
+      return const ExamSelection(educationLevel: EducationLevel.ortaogretim);
     case 'dhbt_lisans':
       return const ExamSelection(
         family: KpssExamFamily.dhbt,

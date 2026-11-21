@@ -122,7 +122,9 @@ enum EducationLevel {
   );
 }
 
-/// B Grubu kapsam profili: Sadece Genel Kültür (60 soru) veya Tam GY-GK (120 soru).
+/// B Grubu kapsam profili (`TASK-166`: B Grubu'nda tek profil `full_gygk`'dır;
+/// `onlyGk` enum değeri yalnızca eski kayıtlarla geriye dönük uyumluluk için korunur
+/// ve `fromKey` / `fromJson` okuma anında `fullGyGk`'ya normalize edilir).
 enum BGroupProfile {
   onlyGk(
     key: 'only_gk',
@@ -145,12 +147,8 @@ enum BGroupProfile {
     required this.shortLabel,
   });
 
-  static BGroupProfile fromKey(String? rawKey) => _enumFromKey(
-    BGroupProfile.values,
-    (v) => v.key,
-    rawKey,
-    BGroupProfile.onlyGk,
-  );
+  /// Eski kayıtlı `'only_gk'` değerini otomatik olarak [BGroupProfile.fullGyGk] olarak normalize eder (`TASK-166`).
+  static BGroupProfile fromKey(String? rawKey) => BGroupProfile.fullGyGk;
 }
 
 /// E-KPSS resmi kitapçık ve engel grubu uyarlama türleri.
@@ -371,7 +369,7 @@ class ExamSelection {
   const ExamSelection({
     this.family = KpssExamFamily.bGrubu,
     this.educationLevel = EducationLevel.lisans,
-    this.bGroupProfile = BGroupProfile.onlyGk,
+    this.bGroupProfile = BGroupProfile.fullGyGk,
     this.oabtBranch = OabtBranch.none,
     this.disabilityGroup = DisabilityGroup.genel,
     this.selectedFieldLessons = const [],
@@ -379,12 +377,12 @@ class ExamSelection {
     this.includeExtraTime = false,
   });
 
-  /// Varsayılan KPSS Lisans GK seçimi.
+  /// Varsayılan KPSS Lisans GY-GK seçimi (`TASK-166`).
   static const ExamSelection initial = ExamSelection();
 
   /// KPSS Lisans B Grubu kısa kurucusu.
   const ExamSelection.bGrubuLisans({
-    BGroupProfile bGroupProfile = BGroupProfile.onlyGk,
+    BGroupProfile bGroupProfile = BGroupProfile.fullGyGk,
     int examCycleYear = 2027,
   }) : this(
          family: KpssExamFamily.bGrubu,
@@ -396,7 +394,7 @@ class ExamSelection {
   /// KPSS B Grubu (Lisans / Ön Lisans / Ortaöğretim) kısa kurucusu.
   const ExamSelection.bGrubu({
     EducationLevel educationLevel = EducationLevel.lisans,
-    BGroupProfile bGroupProfile = BGroupProfile.onlyGk,
+    BGroupProfile bGroupProfile = BGroupProfile.fullGyGk,
     int examCycleYear = 2027,
   }) : this(
          family: KpssExamFamily.bGrubu,
@@ -456,28 +454,28 @@ class ExamSelection {
         return const ExamSelection(
           family: KpssExamFamily.bGrubu,
           educationLevel: EducationLevel.lisans,
-          bGroupProfile: BGroupProfile.onlyGk,
+          bGroupProfile: BGroupProfile.fullGyGk,
           examCycleYear: 2027,
         );
       case KpssExamTarget.lisans2028:
         return const ExamSelection(
           family: KpssExamFamily.bGrubu,
           educationLevel: EducationLevel.lisans,
-          bGroupProfile: BGroupProfile.onlyGk,
+          bGroupProfile: BGroupProfile.fullGyGk,
           examCycleYear: 2028,
         );
       case KpssExamTarget.onlisans:
         return const ExamSelection(
           family: KpssExamFamily.bGrubu,
           educationLevel: EducationLevel.onlisans,
-          bGroupProfile: BGroupProfile.onlyGk,
+          bGroupProfile: BGroupProfile.fullGyGk,
           examCycleYear: 2028,
         );
       case KpssExamTarget.ortaogretim:
         return const ExamSelection(
           family: KpssExamFamily.bGrubu,
           educationLevel: EducationLevel.ortaogretim,
-          bGroupProfile: BGroupProfile.onlyGk,
+          bGroupProfile: BGroupProfile.fullGyGk,
           examCycleYear: 2028,
         );
       case KpssExamTarget.dhbt:
@@ -516,13 +514,14 @@ class ExamSelection {
 
   /// Veritabanı `exam_scopes` sorguları ve müfredat kayıt defteri için kanonik kapsam anahtarı.
   ///
-  /// Örnekler: `'lisans_gk'`, `'lisans_gygk'`, `'onlisans_gygk'`, `'ortaogretim_gygk'`,
+  /// Örnekler: `'lisans_gygk'`, `'onlisans_gygk'`, `'ortaogretim_gygk'`,
   /// `'ekpss_lisans'`, `'dhbt_onlisans'`, `'meb_ags'`, `'meb_ags_oabt_tarih'`, `'a_grubu_p48'`.
+  /// Not (`TASK-166`): B Grubu'nda tek profil `full_gygk` olduğu için `scopeKey`
+  /// her zaman `<düzey>_gygk` döner.
   String get scopeKey {
     switch (family) {
       case KpssExamFamily.bGrubu:
-        final suffix = bGroupProfile == BGroupProfile.fullGyGk ? 'gygk' : 'gk';
-        return '${educationLevel.key}_$suffix';
+        return '${educationLevel.key}_gygk';
       case KpssExamFamily.aGrubu:
         if (_isDefaultOrP48FieldSet) {
           return 'a_grubu_p48';
@@ -555,11 +554,10 @@ class ExamSelection {
     return _slugifyAscii(scopeKey);
   }
 
-  /// Aktif seçimin çekirdek KPSS Lisans Genel Kültür (60 soru) modu olup olmadığı.
+  /// Aktif seçimin çekirdek KPSS Lisans B Grubu modu olup olmadığı (`TASK-166`).
   bool get isDefaultLisansGk =>
       family == KpssExamFamily.bGrubu &&
-      educationLevel == EducationLevel.lisans &&
-      bGroupProfile == BGroupProfile.onlyGk;
+      educationLevel == EducationLevel.lisans;
 
   /// MEB-AGS seçiminde AGS + YDS (AGS-P3) rotasının aktif olup olmadığı.
   bool get includeYdsForAgsP3 =>
@@ -579,20 +577,11 @@ class ExamSelection {
       case KpssExamFamily.bGrubu:
         switch (educationLevel) {
           case EducationLevel.lisans:
-            if (bGroupProfile == BGroupProfile.fullGyGk) {
-              return '$examCycleYear KPSS Lisans (GY-GK)';
-            }
-            return examCycleYear >= 2028
-                ? '$examCycleYear KPSS Lisans (B Grubu)'
-                : '$examCycleYear KPSS Lisans (Genel Kültür)';
+            return '$examCycleYear KPSS Lisans (GY-GK)';
           case EducationLevel.onlisans:
-            return bGroupProfile == BGroupProfile.fullGyGk
-                ? '$examCycleYear KPSS Ön Lisans (GY-GK)'
-                : '$examCycleYear KPSS Ön Lisans';
+            return '$examCycleYear KPSS Ön Lisans (GY-GK)';
           case EducationLevel.ortaogretim:
-            return bGroupProfile == BGroupProfile.fullGyGk
-                ? '$examCycleYear KPSS Ortaöğretim (GY-GK)'
-                : '$examCycleYear KPSS Ortaöğretim';
+            return '$examCycleYear KPSS Ortaöğretim (GY-GK)';
         }
       case KpssExamFamily.aGrubu:
         return '$examCycleYear KPSS A Grubu (Alan Bilgisi)';
@@ -669,9 +658,14 @@ class ExamSelection {
   DateTime resolveExamDate([AppRemoteConfig? config]) {
     final overrides = config?.examDateOverrides ?? const <String, DateTime>{};
     if (overrides.isNotEmpty) {
+      final legacyGkScope = family == KpssExamFamily.bGrubu
+          ? '${educationLevel.key}_gk'
+          : null;
       final candidates = <String>[
         '${scopeKey}_$examCycleYear',
+        if (legacyGkScope != null) '${legacyGkScope}_$examCycleYear',
         scopeKey,
+        ?legacyGkScope,
         '${family.key}_${educationLevel.key}_$examCycleYear',
         '${family.key}_${educationLevel.key}',
         '${family.key}_$examCycleYear',
@@ -765,7 +759,7 @@ class ExamSelection {
     return {
       'family': family.key,
       'educationLevel': educationLevel.key,
-      'bGroupProfile': bGroupProfile.key,
+      'bGroupProfile': BGroupProfile.fullGyGk.key,
       'oabtBranch': oabtBranch.key,
       'disabilityGroup': disabilityGroup.key,
       'selectedFieldLessons': selectedFieldLessons,
@@ -796,9 +790,7 @@ class ExamSelection {
       educationLevel: EducationLevel.fromKey(
         (json['educationLevel'] ?? json['education_level']) as String?,
       ),
-      bGroupProfile: BGroupProfile.fromKey(
-        (json['bGroupProfile'] ?? json['b_group_profile']) as String?,
-      ),
+      bGroupProfile: BGroupProfile.fullGyGk,
       oabtBranch: OabtBranch.fromKey(
         (json['oabtBranch'] ?? json['oabt_branch']) as String?,
       ),
@@ -844,7 +836,8 @@ class ExamSelection {
     return other is ExamSelection &&
         other.family == family &&
         other.educationLevel == educationLevel &&
-        other.bGroupProfile == bGroupProfile &&
+        (family == KpssExamFamily.bGrubu ||
+            other.bGroupProfile == bGroupProfile) &&
         other.oabtBranch == oabtBranch &&
         other.disabilityGroup == disabilityGroup &&
         other.examCycleYear == examCycleYear &&
@@ -853,7 +846,7 @@ class ExamSelection {
   }
 
   /// Bu sınav seçimi için veritabanı veya yerel soru havuzunda kabul edilen
-  /// `exam_scopes` kapsam etiketleri kümesi (`TASK-165`).
+  /// `exam_scopes` kapsam etiketleri kümesi (`TASK-165` & `TASK-166`).
   ///
   /// Angular/Web Karşılığı: Supabase `.overlaps('exam_scopes', ...)` sorgusuna ve
   /// istemci tarafı `Question.matchesSelection` süzgecine geçilen kanonik kapsam kümesi.
@@ -864,15 +857,11 @@ class ExamSelection {
     return <String>{
       targetScope,
       '${family.key}_common',
-      if (family == KpssExamFamily.bGrubu &&
-          bGroupProfile == BGroupProfile.fullGyGk) ...{
+      if (family == KpssExamFamily.bGrubu) ...{
         '${educationLevel.key}_gk',
         'b_grubu_gygk',
         'b_grubu_gk',
       },
-      if (family == KpssExamFamily.bGrubu &&
-          bGroupProfile == BGroupProfile.onlyGk)
-        'b_grubu_gk',
       if (family == KpssExamFamily.dhbt) ...{'dhbt_common', 'dhbt_1'},
     };
   }
@@ -890,7 +879,7 @@ class ExamSelection {
   }
 
   /// İçeriğin `examScopes` ve `subBranch` etiketlerinin bu seçimle eşleşip
-  /// eşleşmediğini tek merkezden denetler (`TASK-138`).
+  /// eşleşmediğini tek merkezden denetler (`TASK-138` & `TASK-166`).
   bool matchesContentMetadata({
     required List<String> examScopes,
     String? subBranch,
@@ -909,22 +898,11 @@ class ExamSelection {
         normalizedSubBranch != null && normalizedSubBranch.isNotEmpty;
 
     final acceptedScopes = <String>{
-      targetScope,
-      '${family.key}_common',
-      if (family == KpssExamFamily.bGrubu &&
-          bGroupProfile == BGroupProfile.fullGyGk) ...{
-        '${educationLevel.key}_gk',
-        'b_grubu_gygk',
-        'b_grubu_gk',
-      },
-      if (family == KpssExamFamily.bGrubu &&
-          bGroupProfile == BGroupProfile.onlyGk)
-        'b_grubu_gk',
+      ...acceptedQuestionScopes,
       if (family == KpssExamFamily.mebAgs && oabtBranch != OabtBranch.none) ...{
         if (!hasSubBranch || normalizedSubBranch == 'meb_ags') 'meb_ags',
         if (oabtBranch.isOabtExam) ...{'meb_ags_oabt', 'oabt'},
       },
-      if (family == KpssExamFamily.dhbt) ...{'dhbt_common', 'dhbt_1'},
     };
 
     if (effectiveScopes.intersection(acceptedScopes).isEmpty) {
@@ -975,7 +953,7 @@ class ExamSelection {
   int get hashCode => Object.hash(
     family,
     educationLevel,
-    bGroupProfile,
+    family == KpssExamFamily.bGrubu ? BGroupProfile.fullGyGk : bGroupProfile,
     oabtBranch,
     disabilityGroup,
     examCycleYear,

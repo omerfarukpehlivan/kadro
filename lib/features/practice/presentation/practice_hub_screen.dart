@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/current_affairs/presentation/current_affairs_screen.dart';
@@ -397,24 +398,14 @@ class _PrimaryPracticeTile extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: isHighlighted
-                      ? colorScheme.onPrimary.withAlpha(38)
-                      : colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  meta,
-                  style: textTheme.labelSmall?.copyWith(
-                    color: isHighlighted
-                        ? colorScheme.onPrimary
-                        : colorScheme.onTertiaryContainer,
-                    letterSpacing: 0.6,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+              KadroBadge(
+                label: meta,
+                backgroundColor: isHighlighted
+                    ? colorScheme.onPrimary.withAlpha(38)
+                    : colorScheme.tertiaryContainer,
+                foregroundColor: isHighlighted
+                    ? colorScheme.onPrimary
+                    : colorScheme.onTertiaryContainer,
               ),
               const SizedBox(height: 10),
               Text(
@@ -495,7 +486,7 @@ class _PracticeListRow extends StatelessWidget {
               height: 38,
               decoration: BoxDecoration(
                 color: accentColor.withAlpha(24),
-                borderRadius: BorderRadius.circular(11),
+                borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: accentColor.withAlpha(65)),
               ),
               child: PhosphorIcon(icon, size: 19, color: accentColor),
@@ -652,22 +643,10 @@ class _PracticeToolCard extends StatelessWidget {
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: accentColor.withAlpha(22),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        meta,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: accentColor,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                    KadroBadge(
+                      label: meta,
+                      backgroundColor: accentColor.withAlpha(22),
+                      foregroundColor: accentColor,
                     ),
                   ],
                 ),
@@ -829,7 +808,7 @@ class _MockExamSelectorBottomSheet extends StatelessWidget {
                                   ? colorScheme.tertiary
                                   : colorScheme.primary)
                               .withAlpha(24),
-                      borderRadius: BorderRadius.circular(11),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(
                         color:
                             (option.isMiniPractice
@@ -916,7 +895,7 @@ class _LessonSelectorTile extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               color: accent.withAlpha(24),
-              borderRadius: BorderRadius.circular(11),
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(color: accent.withAlpha(65)),
             ),
             alignment: Alignment.center,
@@ -939,21 +918,9 @@ class _LessonSelectorTile extends StatelessWidget {
                       ),
                     ),
                     if (lessonSpec.isComingSoon)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          'Yakında',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
+                      const KadroBadge(
+                        label: 'Yakında',
+                        tone: KadroBadgeTone.neutral,
                       ),
                   ],
                 ),

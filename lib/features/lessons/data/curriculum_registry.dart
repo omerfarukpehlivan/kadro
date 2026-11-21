@@ -382,28 +382,11 @@ abstract final class CurriculumRegistry {
 
   static ExamCurriculum _resolveBGrubu(ExamSelection selection) {
     final gkLessons = _buildGkLessons();
+    final isLisans = selection.educationLevel == EducationLevel.lisans;
 
-    if (selection.bGroupProfile == BGroupProfile.fullGyGk) {
-      final isLisans = selection.educationLevel == EducationLevel.lisans;
-      if (isLisans) {
-        final activeLessons = [...gkLessons, _buildReadyLisansTurkceSpec()];
-        final upcomingLessons = _buildGyUpcomingLessons(excludeTurkce: true);
-        return ExamCurriculum(
-          scopeKey: selection.scopeKey,
-          title: 'KPSS ${selection.educationLevel.label} (GY-GK)',
-          summaryLabel: '6 ders · Genel Yetenek & Genel Kültür (120 Soru)',
-          totalQuestions: 120,
-          standardDurationMinutes: 130,
-          availability: CurriculumAvailability.partial,
-          activeSectionTitle: 'KPSS Genel Kültür + GY Türkçe (90 Soru)',
-          upcomingSectionTitle:
-              'KPSS Genel Yetenek · Matematik (30 Soru · Yakında)',
-          activeLessons: activeLessons,
-          upcomingLessons: upcomingLessons,
-        );
-      }
-
-      final gyLessons = _buildGyUpcomingLessons();
+    if (isLisans) {
+      final activeLessons = [...gkLessons, _buildReadyLisansTurkceSpec()];
+      final upcomingLessons = _buildGyUpcomingLessons(excludeTurkce: true);
       return ExamCurriculum(
         scopeKey: selection.scopeKey,
         title: 'KPSS ${selection.educationLevel.label} (GY-GK)',
@@ -411,26 +394,22 @@ abstract final class CurriculumRegistry {
         totalQuestions: 120,
         standardDurationMinutes: 130,
         availability: CurriculumAvailability.partial,
-        activeSectionTitle: 'KPSS Genel Kültür (60 Soru)',
-        upcomingSectionTitle: 'KPSS Genel Yetenek (60 Soru · Yakında)',
-        activeLessons: gkLessons,
-        upcomingLessons: gyLessons,
+        activeSectionTitle: 'KPSS Genel Kültür + GY Türkçe (90 Soru)',
+        upcomingSectionTitle:
+            'KPSS Genel Yetenek · Matematik (30 Soru · Yakında)',
+        activeLessons: activeLessons,
+        upcomingLessons: upcomingLessons,
       );
     }
 
     final gyLessons = _buildGyUpcomingLessons();
-    final titlePrefix = selection.educationLevel == EducationLevel.lisans
-        ? 'KPSS Genel Kültür'
-        : 'KPSS ${selection.educationLevel.label} · Genel Kültür';
-
     return ExamCurriculum(
       scopeKey: selection.scopeKey,
-      title: titlePrefix,
-      summaryLabel:
-          '${gkLessons.length} ders · Sınavdaki soru ağırlık dağılımı',
-      totalQuestions: 60,
-      standardDurationMinutes: 65,
-      availability: CurriculumAvailability.ready,
+      title: 'KPSS ${selection.educationLevel.label} (GY-GK)',
+      summaryLabel: '6 ders · Genel Yetenek & Genel Kültür (120 Soru)',
+      totalQuestions: 120,
+      standardDurationMinutes: 130,
+      availability: CurriculumAvailability.partial,
       activeSectionTitle: 'KPSS Genel Kültür (60 Soru)',
       upcomingSectionTitle: 'KPSS Genel Yetenek (60 Soru · Yakında)',
       activeLessons: gkLessons,

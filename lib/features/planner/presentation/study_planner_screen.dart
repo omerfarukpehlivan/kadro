@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
+import 'package:kadro/shared/widgets/kadro_filter_chips.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
@@ -378,25 +380,16 @@ class _PlannerSummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
               ],
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: planner.isViewingPastDay
-                      ? colorScheme.tertiaryContainer
-                      : colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  planner.isViewingPastDay
-                      ? 'Gün ${planner.cycleDay} · Tekrar'
-                      : 'Gün ${planner.cycleDay}',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: planner.isViewingPastDay
-                        ? colorScheme.onTertiaryContainer
-                        : colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
+              KadroBadge(
+                label: planner.isViewingPastDay
+                    ? 'Gün ${planner.cycleDay} · Tekrar'
+                    : 'Gün ${planner.cycleDay}',
+                backgroundColor: planner.isViewingPastDay
+                    ? colorScheme.tertiaryContainer
+                    : colorScheme.primaryContainer,
+                foregroundColor: planner.isViewingPastDay
+                    ? colorScheme.onTertiaryContainer
+                    : colorScheme.onPrimaryContainer,
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -410,33 +403,11 @@ class _PlannerSummaryCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
-                decoration: BoxDecoration(
-                  color: colorScheme.tertiaryContainer,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: colorScheme.tertiary.withAlpha(100),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    PhosphorIcon(
-                      PhosphorIconsFill.clock,
-                      size: 13,
-                      color: colorScheme.onTertiaryContainer,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Toplam ${planner.totalEstimatedMinutes} dk',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onTertiaryContainer,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
+              KadroBadge(
+                label: 'Toplam ${planner.totalEstimatedMinutes} dk',
+                icon: PhosphorIconsFill.clock,
+                tone: KadroBadgeTone.tertiary,
+                borderColor: colorScheme.tertiary.withAlpha(100),
               ),
             ],
           ),
@@ -778,17 +749,14 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
             ),
           ),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: _lessons.map((lesson) {
-              return ChoiceChip(
-                label: Text(lesson),
-                selected: _selectedLesson == lesson,
-                onSelected: (selected) {
-                  if (selected) setState(() => _selectedLesson = lesson);
-                },
-              );
-            }).toList(),
+          KadroFilterChips<String>(
+            wrap: true,
+            selectedValue: _selectedLesson,
+            onSelected: (lesson) => setState(() => _selectedLesson = lesson),
+            options: [
+              for (final lesson in _lessons)
+                KadroFilterOption(value: lesson, label: lesson),
+            ],
           ),
           const SizedBox(height: 16),
           Text(
@@ -798,17 +766,14 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
             ),
           ),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: _durations.map((duration) {
-              return ChoiceChip(
-                label: Text('$duration dk'),
-                selected: _selectedMinutes == duration,
-                onSelected: (selected) {
-                  if (selected) setState(() => _selectedMinutes = duration);
-                },
-              );
-            }).toList(),
+          KadroFilterChips<int>(
+            wrap: true,
+            selectedValue: _selectedMinutes,
+            onSelected: (minutes) => setState(() => _selectedMinutes = minutes),
+            options: [
+              for (final duration in _durations)
+                KadroFilterOption(value: duration, label: '$duration dk'),
+            ],
           ),
           const SizedBox(height: 20),
           FilledButton.icon(

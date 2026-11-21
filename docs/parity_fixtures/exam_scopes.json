@@ -1,0 +1,143 @@
+{
+  "$comment": "Mobil (gunisigi) ve Web (kadro-web) için ExamSelection -> scopeKey ve acceptedQuestionScopes ortak beklenen çıktıları (TASK-166).",
+  "cases": [
+    {
+      "description": "KPSS Lisans B Grubu varsayılan seçim",
+      "input": {
+        "family": "b_grubu",
+        "educationLevel": "lisans"
+      },
+      "expected": {
+        "bGroupProfile": "full_gygk",
+        "scopeKey": "lisans_gygk",
+        "acceptedQuestionScopes": [
+          "b_grubu_common",
+          "b_grubu_gk",
+          "b_grubu_gygk",
+          "lisans_gk",
+          "lisans_gygk"
+        ]
+      }
+    },
+    {
+      "description": "Eski only_gk kaydı okununca full_gygk ve lisans_gygk olarak normalize edilir",
+      "input": {
+        "family": "b_grubu",
+        "educationLevel": "lisans",
+        "bGroupProfile": "only_gk"
+      },
+      "expected": {
+        "bGroupProfile": "full_gygk",
+        "scopeKey": "lisans_gygk",
+        "acceptedQuestionScopes": [
+          "b_grubu_common",
+          "b_grubu_gk",
+          "b_grubu_gygk",
+          "lisans_gk",
+          "lisans_gygk"
+        ]
+      }
+    },
+    {
+      "description": "KPSS Ön Lisans B Grubu (eski only_gk ile gelse bile onlisans_gygk)",
+      "input": {
+        "family": "b_grubu",
+        "educationLevel": "onlisans",
+        "bGroupProfile": "only_gk"
+      },
+      "expected": {
+        "bGroupProfile": "full_gygk",
+        "scopeKey": "onlisans_gygk",
+        "acceptedQuestionScopes": [
+          "b_grubu_common",
+          "b_grubu_gk",
+          "b_grubu_gygk",
+          "onlisans_gk",
+          "onlisans_gygk"
+        ]
+      }
+    },
+    {
+      "description": "KPSS Ortaöğretim B Grubu",
+      "input": {
+        "family": "b_grubu",
+        "educationLevel": "ortaogretim",
+        "bGroupProfile": "full_gygk"
+      },
+      "expected": {
+        "bGroupProfile": "full_gygk",
+        "scopeKey": "ortaogretim_gygk",
+        "acceptedQuestionScopes": [
+          "b_grubu_common",
+          "b_grubu_gk",
+          "b_grubu_gygk",
+          "ortaogretim_gk",
+          "ortaogretim_gygk"
+        ]
+      }
+    },
+    {
+      "description": "E-KPSS Lisans",
+      "input": {
+        "family": "ekpss",
+        "educationLevel": "lisans"
+      },
+      "expected": {
+        "bGroupProfile": "full_gygk",
+        "scopeKey": "ekpss_lisans",
+        "acceptedQuestionScopes": [
+          "ekpss_common",
+          "ekpss_lisans"
+        ]
+      }
+    },
+    {
+      "description": "KPSS DHBT Lisans",
+      "input": {
+        "family": "dhbt",
+        "educationLevel": "lisans"
+      },
+      "expected": {
+        "bGroupProfile": "full_gygk",
+        "scopeKey": "dhbt_lisans",
+        "acceptedQuestionScopes": [
+          "dhbt_1",
+          "dhbt_common",
+          "dhbt_lisans"
+        ]
+      }
+    },
+    {
+      "description": "MEB-AGS ÖABT Tarih",
+      "input": {
+        "family": "meb_ags",
+        "educationLevel": "lisans",
+        "oabtBranch": "tarih"
+      },
+      "expected": {
+        "bGroupProfile": "full_gygk",
+        "scopeKey": "meb_ags_oabt_tarih",
+        "acceptedQuestionScopes": [
+          "meb_ags_common",
+          "meb_ags_oabt_tarih"
+        ]
+      }
+    },
+    {
+      "description": "MEB-AGS + YDS (P3)",
+      "input": {
+        "family": "meb_ags",
+        "educationLevel": "lisans",
+        "oabtBranch": "yds_dil"
+      },
+      "expected": {
+        "bGroupProfile": "full_gygk",
+        "scopeKey": "meb_ags_yds",
+        "acceptedQuestionScopes": [
+          "meb_ags_common",
+          "meb_ags_yds"
+        ]
+      }
+    }
+  ]
+}

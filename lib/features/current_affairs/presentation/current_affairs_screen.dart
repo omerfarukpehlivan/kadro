@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
+import 'package:kadro/shared/widgets/kadro_filter_chips.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/current_affairs/data/current_affairs_repository.dart';
@@ -293,25 +295,12 @@ class _BulletinBody extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          Container(
+                          KadroBadge(
                             key: const ValueKey(
                               'current_affairs_progress_pill',
                             ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.secondaryContainer,
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            child: Text(
-                              '$readCount/$totalCount Okundu',
-                              style: textTheme.labelMedium?.copyWith(
-                                color: colorScheme.onSecondaryContainer,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
+                            label: '$readCount/$totalCount Okundu',
+                            tone: KadroBadgeTone.secondary,
                           ),
                         ],
                       ),
@@ -330,22 +319,17 @@ class _BulletinBody extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (var i = 0; i < bulletins.length; i++) ...[
-                    if (i > 0) const SizedBox(width: 8),
-                    ChoiceChip(
-                      key: ValueKey('month_chip_${bulletins[i].yearMonth}'),
-                      label: Text(bulletins[i].shortMonthLabel),
-                      selected:
-                          bulletins[i].yearMonth == activeBulletin.yearMonth,
-                      onSelected: (_) => onSelectMonth(bulletins[i].yearMonth),
-                    ),
-                  ],
-                ],
-              ),
+            KadroFilterChips<String>(
+              selectedValue: activeBulletin.yearMonth,
+              onSelected: onSelectMonth,
+              options: [
+                for (final bulletin in bulletins)
+                  KadroFilterOption(
+                    key: ValueKey('month_chip_${bulletin.yearMonth}'),
+                    value: bulletin.yearMonth,
+                    label: bulletin.shortMonthLabel,
+                  ),
+              ],
             ),
             const SizedBox(height: 12),
             Wrap(

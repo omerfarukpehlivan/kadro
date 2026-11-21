@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/lessons/data/curriculum_registry.dart';
@@ -353,28 +354,14 @@ class _AutoStudyProgramModalState extends ConsumerState<AutoStudyProgramModal> {
                                               : colorScheme.onSurface,
                                         ),
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: isSelected
-                                              ? colorScheme.primary
-                                              : colorScheme.secondaryContainer,
-                                          borderRadius: BorderRadius.circular(
-                                            6,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          pace.badgeText,
-                                          style: textTheme.labelSmall?.copyWith(
-                                            color: isSelected
-                                                ? colorScheme.onPrimary
-                                                : colorScheme
-                                                      .onSecondaryContainer,
-                                          ),
-                                        ),
+                                      KadroBadge(
+                                        label: pace.badgeText,
+                                        backgroundColor: isSelected
+                                            ? colorScheme.primary
+                                            : colorScheme.secondaryContainer,
+                                        foregroundColor: isSelected
+                                            ? colorScheme.onPrimary
+                                            : colorScheme.onSecondaryContainer,
                                       ),
                                     ],
                                   ),
@@ -548,28 +535,14 @@ class _ActivityChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: colorScheme.outlineVariant),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          PhosphorIcon(icon, size: 13, color: colorScheme.primary),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: textTheme.labelSmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
+    return KadroBadge(
+      label: label,
+      icon: icon,
+      iconColor: colorScheme.primary,
+      backgroundColor: colorScheme.surfaceContainerLow,
+      foregroundColor: colorScheme.onSurfaceVariant,
+      borderColor: colorScheme.outlineVariant,
     );
   }
 }

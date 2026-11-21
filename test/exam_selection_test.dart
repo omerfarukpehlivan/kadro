@@ -52,9 +52,9 @@ void main() {
     );
 
     test('scopeKey ve curriculumNamespace tüm sınav aileleri için kanonik üretilmeli', () {
-      const lisansGk = ExamSelection();
-      expect(lisansGk.scopeKey, 'lisans_gk');
-      expect(lisansGk.curriculumNamespace, 'lisans_gk');
+      const lisansDefault = ExamSelection();
+      expect(lisansDefault.scopeKey, 'lisans_gygk');
+      expect(lisansDefault.curriculumNamespace, 'lisans_gygk');
 
       const lisansGyGk = ExamSelection(
         family: KpssExamFamily.bGrubu,
@@ -173,7 +173,17 @@ void main() {
       });
       expect(fallbackParsed.family, KpssExamFamily.bGrubu);
       expect(fallbackParsed.educationLevel, EducationLevel.lisans);
+      expect(fallbackParsed.bGroupProfile, BGroupProfile.fullGyGk);
       expect(fallbackParsed.oabtBranch, OabtBranch.none);
+
+      // Eski only_gk kaydı okununca fullGyGk olarak normalize edilmeli (TASK-166)
+      final legacyOnlyGkParsed = ExamSelection.fromJson(const {
+        'family': 'b_grubu',
+        'educationLevel': 'lisans',
+        'bGroupProfile': 'only_gk',
+      });
+      expect(legacyOnlyGkParsed.bGroupProfile, BGroupProfile.fullGyGk);
+      expect(legacyOnlyGkParsed.scopeKey, 'lisans_gygk');
     });
 
     test('AppRemoteConfig.examDateOverrides en özel anahtardan genele doğru tarih ezmeli', () {
@@ -226,7 +236,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('2027 KPSS Lisans (Genel Kültür)'), findsOneWidget);
+        expect(find.text('2027 KPSS Lisans (GY-GK)'), findsOneWidget);
         expect(find.textContaining('KPSS 2027:'), findsNothing);
         expect(find.textContaining('Toplam 100 gün kaldı'), findsOneWidget);
       },

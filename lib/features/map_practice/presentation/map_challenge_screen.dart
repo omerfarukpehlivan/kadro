@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/map_practice/data/models/map_challenge.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/shared/widgets/kadro_confirm_dialog.dart';
 import 'package:kadro/shared/widgets/turkey_map/turkey_map.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -145,8 +146,8 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildStatItem('Soru', '${widget.challenges.length}'),
-            _buildStatItem('Kazanılan Puan', '+$_score XP'),
+            _StatItem(label: 'Soru', value: '${widget.challenges.length}'),
+            _StatItem(label: 'Kazanılan Puan', value: '+$_score XP'),
           ],
         ),
       ),
@@ -156,27 +157,6 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
         Navigator.of(context).pop();
       }
     });
-  }
-
-  Widget _buildStatItem(String label, String value) {
-    final theme = Theme.of(context);
-    return Column(
-      children: [
-        Text(
-          value,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
-            color: theme.colorScheme.primary,
-          ),
-        ),
-        Text(
-          label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ],
-    );
   }
 
   /// Haritayı neredeyse tam ekran genişliğinde ve `5.0x`'e kadar yakınlaştırılabilir
@@ -446,21 +426,9 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  'Soru ${_currentIndex + 1}/${widget.challenges.length} • ${challenge.tag}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: colorScheme.onPrimaryContainer,
-                  ),
-                ),
+              child: KadroBadge(
+                label:
+                    'Soru ${_currentIndex + 1}/${widget.challenges.length} • ${challenge.tag}',
               ),
             ),
             if (challenge.hint.isNotEmpty && !_hasAnswered) ...[
@@ -712,7 +680,7 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
                               .withValues(alpha: 0.12),
                           child: Text(
                             String.fromCharCode(65 + idx),
-                            style: TextStyle(
+                            style: theme.textTheme.labelLarge?.copyWith(
                               fontWeight: FontWeight.w700,
                               color: textColor ?? colorScheme.primary,
                             ),
@@ -810,7 +778,7 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
                         _isCorrect
                             ? 'Tebrikler! Doğru Cevap'
                             : 'Doğru Cevap: ${challenge.targetProvinceId.toUpperCase()}',
-                        style: TextStyle(
+                        style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                           color: _isCorrect
                               ? colorScheme.secondary
@@ -880,34 +848,12 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
             Padding(
               padding: const EdgeInsets.only(right: 12.0),
               child: Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 9,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: colorScheme.tertiaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: colorScheme.tertiary),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      PhosphorIcon(
-                        PhosphorIconsFill.flame,
-                        size: 14,
-                        color: colorScheme.tertiary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '$_streak Seri',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: colorScheme.tertiary,
-                        ),
-                      ),
-                    ],
-                  ),
+                child: KadroBadge(
+                  label: '$_streak Seri',
+                  icon: PhosphorIconsFill.flame,
+                  tone: KadroBadgeTone.tertiary,
+                  foregroundColor: colorScheme.tertiary,
+                  borderColor: colorScheme.tertiary,
                 ),
               ),
             ),
@@ -996,6 +942,38 @@ class _MapChallengeScreenState extends ConsumerState<MapChallengeScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Tamamlama diyaloğundaki tek bir istatistik sütunu (değer + etiket).
+///
+/// Web/Angular Karşılığı: `@Input() label/value` alan küçük sunum bileşeni.
+class _StatItem extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _StatItem({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        Text(
+          value,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        Text(
+          label,
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
     );
   }
 }

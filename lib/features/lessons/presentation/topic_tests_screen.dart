@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/services/offline_download_service.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
@@ -254,7 +255,6 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
     required List<Question> chunk,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     final stats = ref.watch(studyStatsProvider);
     final solvedSession = stats.findLatestSessionForTest(
@@ -295,75 +295,19 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
                 spacing: 8,
                 runSpacing: 6,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'TEST ${index + 1}',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: badgeBg,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        PhosphorIcon(tier.icon, size: 12, color: badgeFg),
-                        const SizedBox(width: 4),
-                        Text(
-                          tier.title,
-                          style: textTheme.labelSmall?.copyWith(
-                            color: badgeFg,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
+                  KadroBadge(label: 'TEST ${index + 1}'),
+                  KadroBadge(
+                    label: tier.title,
+                    icon: tier.icon,
+                    backgroundColor: badgeBg,
+                    foregroundColor: badgeFg,
                   ),
                   if (solvedSession != null)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.secondaryContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          PhosphorIcon(
-                            PhosphorIconsFill.checkCircle,
-                            size: 13,
-                            color: colorScheme.onSecondaryContainer,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Çözüldü · ${solvedSession.correctCount}D ${solvedSession.wrongCount}Y (${solvedSession.netScore.toStringAsFixed(1)} Net)',
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSecondaryContainer,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
+                    KadroBadge(
+                      label:
+                          'Çözüldü · ${solvedSession.correctCount}D ${solvedSession.wrongCount}Y (${solvedSession.netScore.toStringAsFixed(1)} Net)',
+                      icon: PhosphorIconsFill.checkCircle,
+                      tone: KadroBadgeTone.secondary,
                     ),
                 ],
               ),

@@ -151,7 +151,10 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('KPSS Genel Kültür (60 Soru)'), findsOneWidget);
+        expect(
+          find.text('KPSS Genel Kültür + GY Türkçe (90 Soru)'),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
       },
     );

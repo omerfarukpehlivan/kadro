@@ -82,30 +82,30 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        // Temel sınav düzeni metinleri
+        // Temel sınav düzeni metinleri (B Grubu Tam GY-GK 120 Soru / 130 dk)
         expect(find.text('Deneme sınavları'), findsOneWidget);
         expect(find.text('Sınav düzeni'), findsOneWidget);
         expect(find.text('Soru sayısı'), findsOneWidget);
-        expect(find.text('60'), findsOneWidget);
+        expect(find.text('120'), findsOneWidget);
         expect(find.text('Süre'), findsOneWidget);
-        expect(find.text('65 dakika'), findsOneWidget);
+        expect(find.text('130 dakika'), findsOneWidget);
         expect(find.text('Net hesabı'), findsOneWidget);
         expect(find.text('4 yanlış 1 doğruyu götürür'), findsOneWidget);
-        expect(find.text('Genel Kültür Denemesi Başlat'), findsOneWidget);
+        expect(find.text('Matematik Havuzu Yakında'), findsWidgets);
 
         // Hazır deneme paketleri
         expect(find.text('Hazır Deneme Paketleri'), findsOneWidget);
-        expect(find.text('Türkiye Geneli GK Provası #1'), findsWidgets);
+        expect(find.text('Genel Kültür Bölümü Denemesi #1'), findsWidgets);
         expect(find.text('Tarih & Coğrafya Kamp Denemesi'), findsOneWidget);
         expect(find.text('15 Dakika Hızlı Mola Denemesi'), findsOneWidget);
 
         // Bir deneme paketine tıklandığında QuizScreen açılır
-        await tester.tap(find.text('Türkiye Geneli GK Provası #1'));
+        await tester.tap(find.text('Genel Kültür Bölümü Denemesi #1'));
         await tester.pump();
         await tester.pump(const Duration(milliseconds: 300));
 
         expect(find.byType(QuizScreen), findsOneWidget);
-        expect(find.text('Türkiye Geneli GK Provası #1'), findsWidgets);
+        expect(find.text('Genel Kültür Bölümü Denemesi #1'), findsWidgets);
       },
     );
   });

@@ -31,6 +31,10 @@ class KadroBadge extends StatelessWidget {
   final String label;
   final KadroBadgeTone tone;
   final IconData? icon;
+
+  /// İkon için ayrı vurgu rengi (örn. nötr rozette altın alev). Verilmezse
+  /// metin rengi ([foregroundColor] veya tonun ön plan rengi) kullanılır.
+  final Color? iconColor;
   final Color? backgroundColor;
   final Color? foregroundColor;
   final Color? borderColor;
@@ -42,6 +46,7 @@ class KadroBadge extends StatelessWidget {
     required this.label,
     this.tone = KadroBadgeTone.primary,
     this.icon,
+    this.iconColor,
     this.backgroundColor,
     this.foregroundColor,
     this.borderColor,
@@ -68,7 +73,11 @@ class KadroBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            PhosphorIcon(icon!, size: 13, color: foregroundColor ?? colors.$2),
+            PhosphorIcon(
+              icon!,
+              size: 13,
+              color: iconColor ?? foregroundColor ?? colors.$2,
+            ),
             const SizedBox(width: 4),
           ],
           Flexible(

@@ -199,7 +199,7 @@ void main() {
           overrides: [
             lessonTopicTestCountsProvider(
               const TopicCountQueryKey(
-                scopeKey: 'lisans_gk',
+                scopeKey: 'lisans_gygk',
                 lessonName: 'Tarih',
               ),
             ).overrideWith((ref) async => {'İslamiyet Öncesi Türk Tarihi': 2}),

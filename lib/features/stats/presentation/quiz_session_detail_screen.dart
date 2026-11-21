@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
@@ -91,23 +92,7 @@ class QuizSessionDetailScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Oturum Karnesi', style: textTheme.titleMedium),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '+${session.earnedXp} XP',
-                        style: textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
+                    KadroBadge(label: '+${session.earnedXp} XP'),
                   ],
                 ),
                 const SizedBox(height: 16),

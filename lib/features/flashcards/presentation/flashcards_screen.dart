@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/app/router.dart';
 import 'package:kadro/core/theme/app_spacing.dart';
 import 'package:kadro/core/utils/leitner_scheduler.dart';
@@ -882,44 +883,22 @@ class _FlashcardFace extends StatelessWidget {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isBack
-                          ? colorScheme.primary
-                          : colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      isBack ? 'HAP BİLGİ' : 'SORU / KAVRAM',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: isBack
-                            ? colorScheme.onPrimary
-                            : colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                  KadroBadge(
+                    label: isBack ? 'HAP BİLGİ' : 'SORU / KAVRAM',
+                    backgroundColor: isBack
+                        ? colorScheme.primary
+                        : colorScheme.surfaceContainerLow,
+                    foregroundColor: isBack
+                        ? colorScheme.onPrimary
+                        : colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                  KadroBadge(
+                    label: LeitnerScheduler.boxBadgeLabel(reviewBox),
+                    backgroundColor: colorScheme.tertiaryContainer.withAlpha(
+                      160,
                     ),
-                    decoration: BoxDecoration(
-                      color: colorScheme.tertiaryContainer.withAlpha(160),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      LeitnerScheduler.boxBadgeLabel(reviewBox),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colorScheme.onTertiaryContainer,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    foregroundColor: colorScheme.onTertiaryContainer,
                   ),
                 ],
               ),

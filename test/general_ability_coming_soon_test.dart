@@ -39,9 +39,9 @@ void main() {
     });
   });
 
-  group('TASK-111: LessonsScreen Genel Yetenek "Yakında" Vitrini', () {
+  group('TASK-111 & TASK-166: LessonsScreen Lisans GY-GK Türkçe Aktif ve Matematik "Yakında" Vitrini', () {
     testWidgets(
-      'Genel Kültür ve Genel Yetenek bölümleri doğru başlıklarla gösterilir',
+      'Varsayılan Lisans seçiminde Genel Kültür + GY Türkçe aktif, Matematik Yakında gösterilir',
       (WidgetTester tester) async {
         tester.view.physicalSize = const Size(800, 1800);
         tester.view.devicePixelRatio = 1.0;
@@ -57,9 +57,12 @@ void main() {
         await tester.pumpAndSettle();
 
         // Bölüm başlıkları
-        expect(find.text('KPSS Genel Kültür (60 Soru)'), findsOneWidget);
         expect(
-          find.text('KPSS Genel Yetenek (60 Soru · Yakında)'),
+          find.text('KPSS Genel Kültür + GY Türkçe (90 Soru)'),
+          findsOneWidget,
+        );
+        expect(
+          find.text('KPSS Genel Yetenek · Matematik (30 Soru · Yakında)'),
           findsOneWidget,
         );
 
@@ -67,15 +70,14 @@ void main() {
         expect(find.text('Türkçe'), findsOneWidget);
         expect(find.text('Matematik & Geometri'), findsOneWidget);
 
-        // "Yakında" rozetleri (hem kartlarda hem bölüm başlığında yer alır)
+        // "Yakında" rozetleri ve kilit ikonu (Matematik için)
         expect(find.text('Yakında'), findsWidgets);
-        // Kilit ikonları
-        expect(find.byIcon(PhosphorIconsRegular.lockSimple), findsWidgets);
+        expect(find.byIcon(PhosphorIconsRegular.lockSimple), findsOneWidget);
       },
     );
 
     testWidgets(
-      'Genel Yetenek kartına tıklandığında bilgilendirici alt çekmece açılır',
+      'Yakında olan Matematik & Geometri kartına tıklandığında bilgilendirici alt çekmece açılır',
       (WidgetTester tester) async {
         tester.view.physicalSize = const Size(800, 1800);
         tester.view.devicePixelRatio = 1.0;
@@ -90,8 +92,8 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // Türkçe kartına tıkla
-        await tester.tap(find.text('Türkçe'));
+        // Matematik & Geometri kartına tıkla
+        await tester.tap(find.text('Matematik & Geometri'));
         await tester.pumpAndSettle();
 
         // Alt çekmecenin açıldığını doğrula

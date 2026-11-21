@@ -55,16 +55,22 @@ class LocalStorageService {
     required String lesson,
     required String topic,
   }) {
-    if (scopeNamespace != 'lisans_gk') return null;
+    if (scopeNamespace != 'lisans_gk' && scopeNamespace != 'lisans_gygk') {
+      return null;
+    }
     return 'topic_${lesson}_$topic';
   }
 
   static String? _deriveLegacyLisansGkPackageId(String packageId) {
-    const prefix = 'topic_lisans_gk_';
-    if (!packageId.startsWith(prefix)) return null;
-    final remainder = packageId.substring(prefix.length);
-    if (remainder.isEmpty) return null;
-    return 'topic_$remainder';
+    for (final prefix in const ['topic_lisans_gk_', 'topic_lisans_gygk_']) {
+      if (packageId.startsWith(prefix)) {
+        final remainder = packageId.substring(prefix.length);
+        if (remainder.isNotEmpty) {
+          return 'topic_$remainder';
+        }
+      }
+    }
+    return null;
   }
 
   static String? _resolveExistingPackageStorageKey(
