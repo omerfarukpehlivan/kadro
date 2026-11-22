@@ -63,7 +63,7 @@ void main() {
       expect(curriculum.allLessons.length, 6);
     });
 
-    test('TASK-165: Lisans GY-GK Türkçe aktif (71 test, 11 konu), Ön Lisans/E-KPSS Yakında, Yalnız GK Türkçe içermez', () {
+    test('TASK-165 & TASK-167: B Grubu üç düzeyde de (Lisans, Ön Lisans, Ortaöğretim) Türkçe aktif (71 test, 11 konu), E-KPSS Yakında', () {
       const lisansGyGk = ExamSelection(
         family: KpssExamFamily.bGrubu,
         educationLevel: EducationLevel.lisans,
@@ -97,21 +97,30 @@ void main() {
       );
       expect(lisansCurriculum.upcomingLessons.single.isComingSoon, isTrue);
 
-      // Ön Lisans fullGyGk -> Türkçe hâlâ upcoming ve comingSoon
-      const onlisansGyGk = ExamSelection(
-        family: KpssExamFamily.bGrubu,
-        educationLevel: EducationLevel.onlisans,
-        bGroupProfile: BGroupProfile.fullGyGk,
-      );
-      final onlisansCurriculum = CurriculumRegistry.resolve(onlisansGyGk);
-      expect(
-        onlisansCurriculum.activeLessons.any((l) => l.name == 'Türkçe'),
-        isFalse,
-      );
-      final onlisansTurkce = onlisansCurriculum.upcomingLessons.firstWhere(
-        (l) => l.name == 'Türkçe',
-      );
-      expect(onlisansTurkce.isComingSoon, isTrue);
+      // Ön Lisans ve Ortaöğretim B Grubu -> 4 GK + Türkçe aktif (5 ders), Matematik Yakında
+      for (final edu in [EducationLevel.onlisans, EducationLevel.ortaogretim]) {
+        final subSelection = ExamSelection(
+          family: KpssExamFamily.bGrubu,
+          educationLevel: edu,
+          bGroupProfile: BGroupProfile.fullGyGk,
+        );
+        final subCurriculum = CurriculumRegistry.resolve(subSelection);
+        expect(subCurriculum.activeLessons.length, 5);
+        expect(subCurriculum.upcomingLessons.length, 1);
+        expect(
+          subCurriculum.activeSectionTitle,
+          'KPSS Genel Kültür + GY Türkçe (90 Soru)',
+        );
+        expect(
+          subCurriculum.upcomingSectionTitle,
+          'KPSS Genel Yetenek · Matematik (30 Soru · Yakında)',
+        );
+        final subTurkce = subCurriculum.activeLessons.firstWhere(
+          (l) => l.name == 'Türkçe',
+        );
+        expect(subTurkce.isComingSoon, isFalse);
+        expect(subTurkce.totalTestCount, 71);
+      }
 
       // E-KPSS -> Türkçe hâlâ upcoming ve comingSoon
       const ekpssSel = ExamSelection(

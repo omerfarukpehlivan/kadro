@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kadro/features/exams/data/mock_difficulty_cap.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/exams/data/models/mock_exam_blueprint.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
@@ -240,6 +241,169 @@ void main() {
         QuizSessionRecord.fromMap(multi.toMap()).examScope,
         equals('dhbt_onlisans'),
       );
+    });
+
+    test('TASK-167: Ortaöğretim GK oturum denemesinde her bölümde zor soru <= tavan olur, Lisans denemesinde tavan uygulanmaz ve kolay+orta yetmezse deneme tam üretilir', () async {
+      // Her GK dersinde ilk soruların büyük kısmı zor ('3'), kalanları orta ('2') olan sahte havuz
+      final fakePool = <Map<String, dynamic>>[];
+
+      void addLessonQuestions(
+        String lesson,
+        String topic, {
+        required int hardCount,
+        required int mediumCount,
+      }) {
+        for (var i = 0; i < hardCount; i++) {
+          fakePool.add({
+            'id': '${lesson}_hard_$i',
+            'lesson': lesson,
+            'topic': topic,
+            'text': '$lesson zor soru $i',
+            'options': ['A', 'B', 'C', 'D', 'E'],
+            'correctIndex': 0,
+            'explanation': 'Açıklama',
+            'difficulty': '3',
+            'exam_scopes': ['b_grubu_gk', 'lisans_gk'],
+          });
+        }
+        for (var i = 0; i < mediumCount; i++) {
+          fakePool.add({
+            'id': '${lesson}_med_$i',
+            'lesson': lesson,
+            'topic': topic,
+            'text': '$lesson orta soru $i',
+            'options': ['A', 'B', 'C', 'D', 'E'],
+            'correctIndex': 0,
+            'explanation': 'Açıklama',
+            'difficulty': '2',
+            'exam_scopes': ['b_grubu_gk', 'lisans_gk'],
+          });
+        }
+      }
+
+      // Her ders için bolca zor soru (ilk sırada) ve yeterli orta soru ekle
+      addLessonQuestions(
+        'Tarih',
+        'Osmanlı Kültür ve Uygarlığı',
+        hardCount: 25,
+        mediumCount: 30,
+      );
+      addLessonQuestions(
+        'Coğrafya',
+        "Türkiye'nin Coğrafi Konumu",
+        hardCount: 15,
+        mediumCount: 20,
+      );
+      addLessonQuestions(
+        'Vatandaşlık',
+        '1982 Anayasası ve Temel İlkeler',
+        hardCount: 8,
+        mediumCount: 12,
+      );
+      addLessonQuestions(
+        'Güncel Bilgiler',
+        'Türkiye ve Dünya Gündemi',
+        hardCount: 6,
+        mediumCount: 8,
+      );
+
+      final repo = QuestionRepository(
+        assetLoader: (_) async => jsonEncode(fakePool),
+      );
+
+      const ortaogretimSelection = ExamSelection(
+        family: KpssExamFamily.bGrubu,
+        educationLevel: EducationLevel.ortaogretim,
+      );
+      final gkBlueprint = ExamBlueprintRegistry.forSelection(
+        ortaogretimSelection,
+      ).firstWhere((b) => b.id == 'b_gk_oturum_1');
+
+      final ortaGenerated = await repo.generateMockExamFromBlueprint(
+        gkBlueprint,
+        selection: ortaogretimSelection,
+      );
+
+      expect(ortaGenerated.questions.length, equals(60));
+      for (final range in ortaGenerated.sectionRanges) {
+        final sectionQuestions = ortaGenerated.questions.sublist(
+          range.startIndex,
+          range.endIndex,
+        );
+        final hardInSection = sectionQuestions
+            .where((q) => q.difficultyLevel == 3)
+            .length;
+        final cap = maxHardQuestionsForSection(
+          EducationLevel.ortaogretim,
+          range.section.questionCount,
+        )!;
+        expect(
+          hardInSection,
+          lessThanOrEqualTo(cap),
+          reason:
+              '${range.section.lesson} bölümünde zor soru sayısı ($hardInSection) tavanı ($cap) aşmamalı',
+        );
+      }
+
+      // Lisans denemesinde tavan uygulanmaz (ilk sıradaki zor sorular doğrudan seçilir)
+      const lisansSelection = ExamSelection(
+        family: KpssExamFamily.bGrubu,
+        educationLevel: EducationLevel.lisans,
+      );
+      final lisansGkBlueprint = ExamBlueprintRegistry.forSelection(
+        lisansSelection,
+      ).firstWhere((b) => b.id == 'b_gk_oturum_1');
+      final lisansGenerated = await repo.generateMockExamFromBlueprint(
+        lisansGkBlueprint,
+        selection: lisansSelection,
+      );
+      expect(lisansGenerated.questions.length, equals(60));
+      final lisansTarihHard = lisansGenerated.questions
+          .where((q) => q.lesson == 'Tarih' && q.difficultyLevel == 3)
+          .length;
+      expect(lisansTarihHard, greaterThan(4));
+
+      // Kolay+orta havuzu yetmezse eksik kalan yer zor sorularla doldurulur (deneme tam üretilir)
+      final onlyHardPool = <Map<String, dynamic>>[
+        for (var i = 0; i < 18; i++)
+          {
+            'id': 'only_hard_cog_$i',
+            'lesson': 'Coğrafya',
+            'topic': "Türkiye'nin Coğrafi Konumu",
+            'text': 'Zor Coğrafya $i',
+            'options': ['A', 'B', 'C', 'D', 'E'],
+            'correctIndex': 0,
+            'explanation': 'Açıklama',
+            'difficulty': '3',
+            'exam_scopes': ['b_grubu_gk'],
+          },
+      ];
+      final onlyHardRepo = QuestionRepository(
+        assetLoader: (_) async => jsonEncode(onlyHardPool),
+      );
+      const cogOnlyBlueprint = MockExamBlueprint(
+        id: 'test_cog_18',
+        title: 'Coğrafya Denemesi',
+        subtitle: '18 Soru',
+        badgeLabel: '18 Soru',
+        family: KpssExamFamily.bGrubu,
+        scopeKey: 'ortaogretim_gygk',
+        sections: [
+          ExamSectionSpec(
+            id: 'cografya',
+            lesson: 'Coğrafya',
+            title: 'Coğrafya',
+            questionCount: 18,
+          ),
+        ],
+        standardDurationMinutes: 20,
+      );
+      final fallbackGenerated = await onlyHardRepo
+          .generateMockExamFromBlueprint(
+            cogOnlyBlueprint,
+            selection: ortaogretimSelection,
+          );
+      expect(fallbackGenerated.questions.length, equals(18));
     });
   });
 }

@@ -1,0 +1,95 @@
+{
+  "$comment": "Mobil (gunisigi) ve Web (kadro-web) için B Grubu deneme bölümü zor soru tavanı (maxHardQuestionsForSection) ortak beklenen çıktıları (TASK-167).",
+  "cases": [
+    {
+      "description": "Lisans Türkçe (30 soru) -> tavan yok (null)",
+      "input": { "level": "lisans", "sectionQuestionCount": 30 },
+      "expectedMaxHard": null
+    },
+    {
+      "description": "Lisans Tarih (27 soru) -> tavan yok (null)",
+      "input": { "level": "lisans", "sectionQuestionCount": 27 },
+      "expectedMaxHard": null
+    },
+    {
+      "description": "Lisans Coğrafya (18 soru) -> tavan yok (null)",
+      "input": { "level": "lisans", "sectionQuestionCount": 18 },
+      "expectedMaxHard": null
+    },
+    {
+      "description": "Lisans Vatandaşlık (9 soru) -> tavan yok (null)",
+      "input": { "level": "lisans", "sectionQuestionCount": 9 },
+      "expectedMaxHard": null
+    },
+    {
+      "description": "Lisans Güncel Bilgiler (6 soru) -> tavan yok (null)",
+      "input": { "level": "lisans", "sectionQuestionCount": 6 },
+      "expectedMaxHard": null
+    },
+    {
+      "description": "Lisans Hızlı Mola (15 soru) -> tavan yok (null)",
+      "input": { "level": "lisans", "sectionQuestionCount": 15 },
+      "expectedMaxHard": null
+    },
+    {
+      "description": "Ön Lisans Türkçe (30 soru) -> floor(30 * 0.15) = 4",
+      "input": { "level": "onlisans", "sectionQuestionCount": 30 },
+      "expectedMaxHard": 4
+    },
+    {
+      "description": "Ön Lisans Tarih (27 soru) -> floor(27 * 0.15) = 4",
+      "input": { "level": "onlisans", "sectionQuestionCount": 27 },
+      "expectedMaxHard": 4
+    },
+    {
+      "description": "Ön Lisans Coğrafya (18 soru) -> floor(18 * 0.15) = 2",
+      "input": { "level": "onlisans", "sectionQuestionCount": 18 },
+      "expectedMaxHard": 2
+    },
+    {
+      "description": "Ön Lisans Vatandaşlık (9 soru) -> floor(9 * 0.15) = 1",
+      "input": { "level": "onlisans", "sectionQuestionCount": 9 },
+      "expectedMaxHard": 1
+    },
+    {
+      "description": "Ön Lisans Güncel Bilgiler (6 soru) -> floor(6 * 0.15) = 0",
+      "input": { "level": "onlisans", "sectionQuestionCount": 6 },
+      "expectedMaxHard": 0
+    },
+    {
+      "description": "Ön Lisans Hızlı Mola (15 soru) -> floor(15 * 0.15) = 2",
+      "input": { "level": "onlisans", "sectionQuestionCount": 15 },
+      "expectedMaxHard": 2
+    },
+    {
+      "description": "Ortaöğretim Türkçe (30 soru) -> floor(30 * 0.15) = 4",
+      "input": { "level": "ortaogretim", "sectionQuestionCount": 30 },
+      "expectedMaxHard": 4
+    },
+    {
+      "description": "Ortaöğretim Tarih (27 soru) -> floor(27 * 0.15) = 4",
+      "input": { "level": "ortaogretim", "sectionQuestionCount": 27 },
+      "expectedMaxHard": 4
+    },
+    {
+      "description": "Ortaöğretim Coğrafya (18 soru) -> floor(18 * 0.15) = 2",
+      "input": { "level": "ortaogretim", "sectionQuestionCount": 18 },
+      "expectedMaxHard": 2
+    },
+    {
+      "description": "Ortaöğretim Vatandaşlık (9 soru) -> floor(9 * 0.15) = 1",
+      "input": { "level": "ortaogretim", "sectionQuestionCount": 9 },
+      "expectedMaxHard": 1
+    },
+    {
+      "description": "Ortaöğretim Güncel Bilgiler (6 soru) -> floor(6 * 0.15) = 0",
+      "input": { "level": "ortaogretim", "sectionQuestionCount": 6 },
+      "expectedMaxHard": 0
+    },
+    {
+      "description": "Ortaöğretim Hızlı Mola (15 soru) -> floor(15 * 0.15) = 2",
+      "input": { "level": "ortaogretim", "sectionQuestionCount": 15 },
+      "expectedMaxHard": 2
+    }
+  ]
+}

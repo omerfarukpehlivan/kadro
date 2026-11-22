@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kadro/core/config/supabase_config.dart';
+import 'package:kadro/features/exams/data/mock_difficulty_cap.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/exams/data/models/mock_exam_blueprint.dart';
 import 'package:kadro/features/games/data/models/concept_match_set.dart';
@@ -472,11 +473,19 @@ class QuestionRepository {
       }
 
       final startIndex = collected.length;
+      final maxHardQuestions =
+          effectiveSelection.family == KpssExamFamily.bGrubu
+          ? maxHardQuestionsForSection(
+              effectiveSelection.educationLevel,
+              section.questionCount,
+            )
+          : null;
       final picked = _pickSectionQuestions(
         pool: sectionPool,
         section: section,
         mockNumber: effectiveMockNumber,
         alreadyUsedIds: usedIds,
+        maxHardQuestions: maxHardQuestions,
       );
 
       collected.addAll(picked);
@@ -561,11 +570,21 @@ class QuestionRepository {
     required ExamSectionSpec section,
     required int mockNumber,
     required Set<String> alreadyUsedIds,
+    int? maxHardQuestions,
   }) {
     final available = pool
         .where((q) => !alreadyUsedIds.contains(q.id))
         .toList();
     if (available.isEmpty) return const [];
+
+    if (maxHardQuestions != null) {
+      return _pickSectionQuestionsWithHardCap(
+        available: available,
+        section: section,
+        mockNumber: mockNumber,
+        maxHardQuestions: maxHardQuestions,
+      );
+    }
 
     final targetCount = section.questionCount;
     final picked = <Question>[];
@@ -640,6 +659,174 @@ class QuestionRepository {
         final candidate = available[(offset + i) % available.length];
         if (pickedIds.add(candidate.id)) {
           picked.add(candidate);
+        }
+      }
+    }
+
+    return picked;
+  }
+
+  /// Ön Lisans ve Ortaöğretim B Grubu denemelerinde her bölümde zor soru
+  /// (`difficultyLevel == 3`) sayısını en fazla [maxHardQuestions] (`floor(count * 0.15)`)
+  /// ile sınırlar; önce kolay+orta (`1..2`) soruları seçer, kolay+orta havuzu
+  /// yetmezse deneme eksik kalmasın diye kalan yeri zor sorularla doldurur (`TASK-167`).
+  List<Question> _pickSectionQuestionsWithHardCap({
+    required List<Question> available,
+    required ExamSectionSpec section,
+    required int mockNumber,
+    required int maxHardQuestions,
+  }) {
+    final targetCount = section.questionCount;
+    final picked = <Question>[];
+    final pickedIds = <String>{};
+    var hardCount = 0;
+
+    bool canAccept(Question q, {required bool enforceHardCap}) {
+      if (pickedIds.contains(q.id)) return false;
+      if (enforceHardCap && q.difficultyLevel == 3) {
+        return hardCount < maxHardQuestions;
+      }
+      return true;
+    }
+
+    void acceptQuestion(Question q) {
+      if (pickedIds.add(q.id)) {
+        picked.add(q);
+        if (q.difficultyLevel == 3) {
+          hardCount += 1;
+        }
+      }
+    }
+
+    // Kolay+orta (1..2) soruları öne, zor (3) soruları arkaya alarak tavanı aşmadan
+    // doğal konu dağılımıyla seçim yapılmasını sağlar.
+    List<Question> prioritizeEasyMedium(List<Question> items) {
+      final easyMedium = <Question>[];
+      final hard = <Question>[];
+      for (final item in items) {
+        if (item.difficultyLevel == 3) {
+          hard.add(item);
+        } else {
+          easyMedium.add(item);
+        }
+      }
+      return [...easyMedium, ...hard];
+    }
+
+    final quotas = _balancedGkTopicQuotas[section.lesson];
+    final standardQuotaTotal = quotas?.fold<int>(0, (s, q) => s + q.$2);
+
+    if (quotas != null &&
+        section.topicFilter == null &&
+        standardQuotaTotal == targetCount) {
+      for (final quota in quotas) {
+        final rawTopicItems = available
+            .where((q) => q.topic == quota.$1 && !pickedIds.contains(q.id))
+            .toList();
+        if (rawTopicItems.isEmpty) continue;
+
+        final easyMediumTopic = rawTopicItems
+            .where((q) => q.difficultyLevel != 3)
+            .toList();
+        final hardTopic = rawTopicItems
+            .where((q) => q.difficultyLevel == 3)
+            .toList();
+
+        var takenInTopic = 0;
+        if (easyMediumTopic.isNotEmpty) {
+          final offset = ((mockNumber - 1) * quota.$2) % easyMediumTopic.length;
+          for (
+            var i = 0;
+            i < easyMediumTopic.length && takenInTopic < quota.$2;
+            i++
+          ) {
+            final item = easyMediumTopic[(offset + i) % easyMediumTopic.length];
+            if (canAccept(item, enforceHardCap: true)) {
+              acceptQuestion(item);
+              takenInTopic += 1;
+            }
+          }
+        }
+
+        if (takenInTopic < quota.$2 && hardTopic.isNotEmpty) {
+          final offset = ((mockNumber - 1) * quota.$2) % hardTopic.length;
+          for (
+            var i = 0;
+            i < hardTopic.length && takenInTopic < quota.$2;
+            i++
+          ) {
+            final item = hardTopic[(offset + i) % hardTopic.length];
+            if (canAccept(item, enforceHardCap: true)) {
+              acceptQuestion(item);
+              takenInTopic += 1;
+            }
+          }
+        }
+      }
+    } else {
+      final byTopic = <String, List<Question>>{};
+      for (final q in available) {
+        byTopic.putIfAbsent(q.topic, () => <Question>[]).add(q);
+      }
+      final topicQueues = byTopic.values.map(prioritizeEasyMedium).toList();
+      final topicCursors = List<int>.generate(topicQueues.length, (i) {
+        final qList = topicQueues[i];
+        return ((mockNumber - 1) * 2) % qList.length;
+      });
+      final topicConsumed = List<int>.filled(topicQueues.length, 0);
+
+      var progressed = true;
+      while (picked.length < targetCount && progressed) {
+        progressed = false;
+        for (var t = 0; t < topicQueues.length; t++) {
+          if (picked.length >= targetCount) break;
+          final list = topicQueues[t];
+          if (topicConsumed[t] >= list.length) continue;
+          for (var step = 0; step < list.length; step++) {
+            final idx = (topicCursors[t] + step) % list.length;
+            topicConsumed[t] += 1;
+            final candidate = list[idx];
+            if (canAccept(candidate, enforceHardCap: true)) {
+              acceptQuestion(candidate);
+              topicCursors[t] = (idx + 1) % list.length;
+              progressed = true;
+              break;
+            }
+            if (topicConsumed[t] >= list.length) break;
+          }
+        }
+      }
+    }
+
+    // 1. Tamamlama turu: Önce kalan kolay+orta ve tavan dahilindeki zor sorulardan tamamla.
+    if (picked.length < targetCount) {
+      final prioritizedPool = prioritizeEasyMedium(available);
+      final offset = ((mockNumber - 1) * 3) % prioritizedPool.length;
+      for (
+        var i = 0;
+        i < prioritizedPool.length && picked.length < targetCount;
+        i++
+      ) {
+        final candidate =
+            prioritizedPool[(offset + i) % prioritizedPool.length];
+        if (canAccept(candidate, enforceHardCap: true)) {
+          acceptQuestion(candidate);
+        }
+      }
+    }
+
+    // 2. Fallback turu: Kolay+orta havuzu yetmezse deneme eksik kalmasın diye
+    // kalan boşlukları zor sorularla doldur.
+    if (picked.length < targetCount) {
+      final offset = ((mockNumber - 1) * 3) % available.length;
+      for (
+        var i = 0;
+        i < available.length && picked.length < targetCount;
+        i++
+      ) {
+        final candidate = available[(offset + i) % available.length];
+        if (canAccept(candidate, enforceHardCap: false)) {
+          acceptQuestion(candidate);
         }
       }
     }

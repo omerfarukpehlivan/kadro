@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kadro/core/utils/leitner_scheduler.dart';
+import 'package:kadro/features/exams/data/mock_difficulty_cap.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/score_calculator/data/kpss_score_calculator.dart';
 
@@ -129,6 +130,25 @@ void main() {
             (expected['acceptedQuestionScopes'] as List).cast<String>().toList()
               ..sort();
         expect(actualScopes, expectedScopes);
+      });
+    }
+  });
+
+  group('Eşleniklik: Deneme zor soru tavanı (mock_difficulty_cap.json)', () {
+    final fixture = _loadFixture('mock_difficulty_cap.json');
+    final cases = (fixture['cases'] as List).cast<Map<String, dynamic>>();
+
+    for (final c in cases) {
+      test(c['description'] as String, () {
+        final input = c['input'] as Map<String, dynamic>;
+        final level = EducationLevel.fromKey(input['level'] as String);
+        final sectionQuestionCount = input['sectionQuestionCount'] as int;
+        final expectedMaxHard = c['expectedMaxHard'] as int?;
+
+        expect(
+          maxHardQuestionsForSection(level, sectionQuestionCount),
+          equals(expectedMaxHard),
+        );
       });
     }
   });

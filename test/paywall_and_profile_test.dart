@@ -271,7 +271,7 @@ void main() {
         expect(find.text('Hedef Puan & Öncelikli Dersin'), findsOneWidget);
         await tester.tap(find.text('90+ Puan'));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Coğrafya · 18 Soru (%30 Ağırlık)'));
+        await tester.tap(find.text('Coğrafya · 18 Soru (%20 Ağırlık)'));
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Rotamı Oluştur'));
