@@ -9,6 +9,8 @@ import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/features/topic_lessons/data/topic_lesson_repository.dart';
+import 'package:kadro/features/topic_lessons/presentation/topic_lesson_screen.dart';
 
 class MockQuestionRepository extends QuestionRepository {
   final List<Question> mockQuestions;
@@ -201,6 +203,69 @@ void main() {
 
         // Çözülmemiş Test 2 ve Test 3 için 'Test Çöz' görünmeli
         expect(find.text('Test Çöz'), findsNWidgets(2));
+      },
+    );
+    testWidgets(
+      'TopicTestsScreen konu anlatımı varsa testlerin en üstünde "Konu Anlatımı" girişini gösterir, yoksa gizler',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 1600);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() => tester.view.resetPhysicalSize());
+
+        Future<void> pumpFor(String topic) async {
+          final fakeLessons = TopicLessonRepository(
+            remoteFetcherOverride: ({required lesson, required topic}) async {
+              if (topic != 'İslamiyet Öncesi Türk Tarihi') return const [];
+              return [
+                {
+                  'id': 'tarih.islamiyet_oncesi_turk_tarihi.01',
+                  'lesson': 'Tarih',
+                  'topic': 'İslamiyet Öncesi Türk Tarihi',
+                  'unit_order': 1,
+                  'title': 'Bölüm 1',
+                  'estimated_minutes': 5,
+                  'blocks': [
+                    {'type': 'paragraph', 'text': 'Metin.'},
+                  ],
+                  'exam_scopes': ['b_grubu_gk'],
+                  'is_published': true,
+                },
+              ];
+            },
+          );
+          TopicLessonRepository.clearMemoryCache();
+          await tester.pumpWidget(
+            ProviderScope(
+              overrides: [
+                questionRepositoryProvider.overrideWithValue(
+                  MockQuestionRepository(sampleQuestions),
+                ),
+                topicLessonRepositoryProvider.overrideWithValue(fakeLessons),
+              ],
+              child: MaterialApp(
+                home: TopicTestsScreen(lessonName: 'Tarih', topic: topic),
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+        }
+
+        await pumpFor('İlk Türk-İslam Devletleri');
+        expect(find.byKey(const ValueKey('open_topic_lesson')), findsNothing);
+
+        await pumpFor('İslamiyet Öncesi Türk Tarihi');
+        final entry = find.byKey(const ValueKey('open_topic_lesson'));
+        expect(entry, findsOneWidget);
+        expect(find.text('Konu Anlatımı'), findsOneWidget);
+        // Giriş, ilk testin üstünde durur
+        expect(
+          tester.getTopLeft(entry).dy,
+          lessThan(tester.getTopLeft(find.text('TEST 1')).dy),
+        );
+
+        await tester.tap(entry);
+        await tester.pumpAndSettle();
+        expect(find.byType(TopicLessonScreen), findsOneWidget);
       },
     );
   });

@@ -10,7 +10,6 @@ import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/presentation/quiz_result_screen.dart';
 import 'package:kadro/features/topic_lessons/data/models/topic_lesson_models.dart';
 import 'package:kadro/features/topic_lessons/data/topic_lesson_repository.dart';
-import 'package:kadro/features/topic_lessons/presentation/topic_lesson_screen.dart';
 import 'package:kadro/features/topic_lessons/presentation/topic_lesson_unit_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -296,7 +295,7 @@ void main() {
     );
 
     testWidgets(
-      'LessonTopicsScreen içeriği olan konuda Konu Anlatımı butonunu gösterir, olmayan konuda gizler ve QuizResultScreen Konuyu Tekrar Oku bağlantısı sunar',
+      'LessonTopicsScreen konu satırında Konu Anlatımı butonu göstermez ve QuizResultScreen Konuyu Tekrar Oku bağlantısı sunar',
       (tester) async {
         tester.view.physicalSize = const Size(800, 1400);
         tester.view.devicePixelRatio = 1.0;
@@ -330,6 +329,8 @@ void main() {
           },
         );
 
+        // Konu Anlatımı girişi artık konu satırında değil, TopicTestsScreen'in
+        // en üstünde (bkz. test/topic_tests_screen_test.dart).
         final tarihLesson = kpssLessons.firstWhere((l) => l.name == 'Tarih');
         await tester.pumpWidget(
           ProviderScope(
@@ -343,19 +344,7 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-
-        // 1. konu (İslamiyet Öncesi Türk Tarihi) için örnek konu anlatımı var -> buton görünür
-        expect(
-          find.byKey(const ValueKey('open_topic_lesson_1')),
-          findsOneWidget,
-        );
-        // 2. konu için henüz konu anlatımı yok -> buton gizlenir
-        expect(find.byKey(const ValueKey('open_topic_lesson_2')), findsNothing);
-
-        // Konu Anlatımı butonuna tıklanınca TopicLessonScreen açılır
-        await tester.tap(find.byKey(const ValueKey('open_topic_lesson_1')));
-        await tester.pumpAndSettle();
-        expect(find.byType(TopicLessonScreen), findsOneWidget);
+        expect(find.byKey(const ValueKey('open_topic_lesson_1')), findsNothing);
 
         // QuizResultScreen zayıf konu kartında 'Konuyu Tekrar Oku' butonu bulunur
         const resultWithWeakTopic = QuizResult(

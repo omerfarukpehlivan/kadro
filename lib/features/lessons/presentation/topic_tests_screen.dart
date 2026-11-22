@@ -11,6 +11,9 @@ import 'package:kadro/features/quiz/data/models/test_difficulty_tier.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/features/topic_lessons/data/models/topic_lesson_models.dart';
+import 'package:kadro/features/topic_lessons/data/topic_lesson_repository.dart';
+import 'package:kadro/features/topic_lessons/presentation/topic_lesson_screen.dart';
 import 'package:kadro/shared/widgets/empty_state_view.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
@@ -207,6 +210,11 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
                     ),
                   ),
                   AppSpacing.gapMd,
+                  _TopicLessonEntryCard(
+                    lessonName: widget.lessonName,
+                    topic: widget.topic,
+                    selection: _effectiveSelection,
+                  ),
                   for (var i = 0; i < _testChunks.length; i++)
                     _buildTestCard(
                       context: context,
@@ -324,6 +332,89 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
                 ),
               ),
               child: Text(solvedSession != null ? 'Tekrar Çöz' : 'Test Çöz'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Konunun yayınlanmış bir anlatımı varsa test listesinin en üstünde gösterilen
+/// sade "Konu Anlatımı" girişi (`TASK-168`). İçerik yoksa hiç yer kaplamaz.
+///
+/// Angular/Web Karşılığı: `*ngIf="units.length"` ile koşullu gösterilen,
+/// tıklanınca okuyucu sayfasına `routerLink` veren kart bileşeni.
+class _TopicLessonEntryCard extends ConsumerWidget {
+  final String lessonName;
+  final String topic;
+  final ExamSelection selection;
+
+  const _TopicLessonEntryCard({
+    required this.lessonName,
+    required this.topic,
+    required this.selection,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final units =
+        ref
+            .watch(
+              topicLessonUnitsProvider(
+                TopicLessonQueryKey(
+                  scopeKey: selection.scopeKey,
+                  lessonName: lessonName,
+                  topic: topic,
+                ),
+              ),
+            )
+            .value ??
+        const <TopicLessonUnit>[];
+    if (units.isEmpty) return const SizedBox.shrink();
+
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    void open() {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => TopicLessonScreen(
+            lessonName: lessonName,
+            topic: topic,
+            selection: selection,
+          ),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: AppSpacing.cardMarginBottom,
+      child: TactileCard(
+        key: const ValueKey('open_topic_lesson'),
+        onTap: open,
+        backgroundColor: colorScheme.primaryContainer.withAlpha(60),
+        borderColor: colorScheme.primary.withAlpha(140),
+        lipColor: colorScheme.primary.withAlpha(160),
+        child: Row(
+          children: [
+            PhosphorIcon(
+              PhosphorIconsRegular.bookOpenText,
+              color: colorScheme.primary,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Konu Anlatımı',
+                style: textTheme.titleSmall?.copyWith(
+                  color: colorScheme.onSurface,
+                ),
+              ),
+            ),
+            PhosphorIcon(
+              PhosphorIconsRegular.caretRight,
+              size: 18,
+              color: colorScheme.onSurfaceVariant,
             ),
           ],
         ),
