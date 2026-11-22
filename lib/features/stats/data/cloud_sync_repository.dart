@@ -5,6 +5,7 @@ import 'package:kadro/features/flashcards/data/models/flashcard_review_progress.
 import 'package:kadro/features/planner/data/models/planner_sync_snapshot.dart';
 import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
+import 'package:kadro/features/topic_lessons/data/models/topic_lesson_models.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show UserAttributes;
 
 /// Kullanıcının çözdüğü test oturumlarını, soru loglarını, profil istatistiklerini,
@@ -587,6 +588,50 @@ class CloudSyncRepository {
       }).toList();
     } catch (e) {
       debugPrint('Supabase fetchFlashcardReviews hatası: $e');
+      return const [];
+    }
+  }
+
+  /// Konu anlatımı bölüm ilerlemesini `public.user_topic_lesson_progress`
+  /// tablosuna kaydeder (`TASK-168`).
+  Future<void> upsertTopicLessonProgress(
+    TopicLessonUnitProgress progress,
+  ) async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return;
+
+    try {
+      await client
+          .from('user_topic_lesson_progress')
+          .upsert(
+            progress.toSupabaseRow(userId),
+            onConflict: 'user_id,unit_id',
+          );
+    } catch (e) {
+      debugPrint('Supabase upsertTopicLessonProgress hatası: $e');
+    }
+  }
+
+  /// Giriş yapmış kullanıcının tüm konu anlatımı ilerlemelerini buluttan çeker (`TASK-168`).
+  Future<List<TopicLessonUnitProgress>> fetchTopicLessonProgress() async {
+    final client = SupabaseConfig.clientOrNull;
+    final userId = client?.auth.currentUser?.id;
+    if (client == null || userId == null) return const [];
+
+    try {
+      final List<dynamic> response = await client
+          .from('user_topic_lesson_progress')
+          .select('unit_id, exam_scope, completed_at, last_opened_at')
+          .eq('user_id', userId);
+
+      return response
+          .whereType<Map<String, dynamic>>()
+          .map(TopicLessonUnitProgress.fromJson)
+          .where((e) => e.unitId.isNotEmpty)
+          .toList();
+    } catch (e) {
+      debugPrint('Supabase fetchTopicLessonProgress hatası: $e');
       return const [];
     }
   }

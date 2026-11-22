@@ -212,8 +212,8 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-165** | **GY Türkçe Dersinin Aktifleştirilmesi ("Yakında" → Hazır) & GY-GK Kapsam Sorgusu Düzeltmesi** | Canlıdaki 710 Türkçe sorusu (`lisans_gygk`, 11 konu) ile Türkçe'nin KPSS Lisans GY-GK müfredatında diğer dersler gibi açılması (konu testleri, branş denemesi, planlayıcı, pratik merkezi); Matematik "Yakında" kalır; GY-GK modunda GK sorularının buluttan gelmemesine yol açan `contains(exam_scopes)` filtresinin kabul edilen kapsam kümesiyle `overlaps` olarak düzeltilmesi | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-166** | **B Grubunda Tek Profil — "Sadece GK / Tam GY-GK" Ayrımının Kaldırılması** | Gerçek KPSS’de GY ve GK aynı oturumda olduğu için 60/120 seçiminin kaldırılması; B Grubu seçen herkes tüm dersleri görür (Lisans: 4 GK + Türkçe aktif, Matematik Yakında); eski `only_gk` kayıtlarının `full_gygk`’ya normalize edilmesi; Tam GY-GK denemesi Matematik gelene kadar Yakında; `exam_scopes.json` eşleniklik dosyası | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-167** | **B Grubu Ortak Soru Havuzu — Lisans / Ön Lisans / Ortaöğretim & Alt Düzey Deneme Zor Soru Tavanı** | Üç B Grubu düzeyinin tek GY-GK havuzunu paylaşması (`09` SQL: `b_grubu_gk` / `b_grubu_gygk` etiketleri, Türkçe `education_level` NULL); Türkçe’nin üç düzeyde aktif olması; Ön Lisans/Ortaöğretim denemelerinde bölüm başına zor soru ≤ %15 tavanı; `mock_difficulty_cap.json` eşleniklik dosyası | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
-| **TASK-168** | **Konu Anlatımı Altyapısı — Veri Modeli, Okuyucu & İlerleme** | `10` SQL (`topic_lesson_units`, `user_topic_lesson_progress`, RLS); blok tabanlı okuyucu (tablo, zaman çizgisi, ÖSYM tuzak kutusu, Akılda Kalsın, satır içi kontrol soruları); bölüm/konu ilerlemesi ve senkron; konu testine geçiş; web’de herkese açık SEO sayfaları; `topic_lesson_units.json` eşleniklik dosyası | ⏳ **Planlandı** | ❌ | ❌ |
-| **TASK-169** | **Konu Anlatımı Üretim Hattı — Dönüştürücü, Doğrulayıcı & Pilot Konu** | `docs/konu_anlatimi/FORMAT.md` biçimindeki Markdown’ı doğrulayıp SQL’e çeviren `tools/konu_anlatimi_to_sql.mjs`; pilot: Tarih · İslamiyet Öncesi Türk Tarihi | ⏳ **Planlandı** | ➖ | ❌ |
+| **TASK-168** | **Konu Anlatımı Altyapısı — Veri Modeli, Okuyucu & İlerleme** | `10` SQL (`topic_lesson_units`, `user_topic_lesson_progress`, RLS); blok tabanlı okuyucu (tablo, zaman çizgisi, ÖSYM tuzak kutusu, Akılda Kalsın, satır içi kontrol soruları); bölüm/konu ilerlemesi ve senkron; konu testine geçiş; web’de herkese açık SEO sayfaları; `topic_lesson_units.json` eşleniklik dosyası | 🟡 **Kısmi (Web bekliyor)** | ❌ | ✅ |
+| **TASK-169** | **Konu Anlatımı Üretim Hattı — Dönüştürücü, Doğrulayıcı & Pilot Konu** | `docs/konu_anlatimi/FORMAT.md` biçimindeki Markdown’ı doğrulayıp SQL’e çeviren `tools/konu_anlatimi_to_sql.mjs`; pilot: Tarih · İslamiyet Öncesi Türk Tarihi | 🟡 **Kısmi (canlıya SQL bekliyor)** | ➖ | ✅ |
 | **TASK-170** | **Konu Anlatımı İçerik Partileri (GK + GY Türkçe)** | 30 konu: Tarih 7, Vatandaşlık 6, Türkçe 11, Coğrafya 6; her parti Gemini yazar → doğrulayıcı → Claude incelemesi → canlıya SQL | ⏳ **Planlandı** | ➖ | ❌ |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** | ❌ | ❌ |
 
@@ -6935,7 +6935,7 @@ ADIM 3: tests/parity/parity.test.ts ../gunisigi/docs/parity_fixtures/mock_diffic
 
 ### 📦 TASK-168: Konu Anlatımı Altyapısı — Veri Modeli, Okuyucu Ekranı & İlerleme Takibi
 
-- **Durum:** ⏳ Planlandı · 🌐 Web ❌ · 📱 Mobil ❌
+- **Durum:** 🟡 Kısmi (Web bekliyor) · 🌐 Web ❌ · 📱 Mobil ✅ (Gemini uyguladı, Claude inceledi 2026-11-22: analyze 0, 511 test yeşil; gömülü örnek içerik kaldırıldı)
 - **Amaç:** Dersler → Ders → Konu ekranında "Konu Anlatımı" girişi; bölüm bölüm okunan, ilerlemesi kaydedilen, sonunda konu testine bağlanan okuyucu.
 - **Platform Uygulanabilirliği:** Ortak. Web ek olarak herkese açık SEO sayfaları sunar.
 
@@ -7005,7 +7005,7 @@ ADIM 4: tests/parity/parity.test.ts topic_lesson_units.json'ı okusun. npm run l
 
 ### 📦 TASK-169: Konu Anlatımı Üretim Hattı — Dönüştürücü, Doğrulayıcı & Pilot Konu
 
-- **Durum:** ⏳ Planlandı · 🌐 Web ➖ · 📱 Mobil ❌ (araç ve içerik `gunisigi` deposunda tutulur)
+- **Durum:** 🟡 Kısmi (canlıya SQL bekliyor) · 🌐 Web ➖ · 📱 Mobil ✅ (betik + 11 test; pilot Claude incelemesinden sonra 8 bilgi düzeltmesiyle onaylandı 2026-11-22) (araç ve içerik `gunisigi` deposunda tutulur)
 - **Amaç:** İçeriği Markdown olarak yazıp tek komutla doğrulamak ve SQL'e çevirmek; tüm kalite kurallarını makineye denetletmek; bir pilot konuyla formatı kanıtlamak.
 
 #### 🔗 Ortak Sözleşme

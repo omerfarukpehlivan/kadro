@@ -8,6 +8,7 @@ import 'package:kadro/features/mistakes/data/mistake_repository.dart';
 import 'package:kadro/features/planner/data/study_planner_notifier.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/features/topic_lessons/data/topic_lesson_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -120,7 +121,7 @@ class AuthNotifier extends Notifier<AuthUserState> {
       } catch (_) {}
       if (!ref.mounted) return;
 
-      // 4. Hata defteri & bilgi kartı Leitner tekrarları buluttan eşitlenir.
+      // 4. Hata defteri, bilgi kartı Leitner tekrarları ve konu anlatımı ilerlemesi buluttan eşitlenir.
       try {
         await const MistakeRepository().hydrateFromCloud();
         final activeScope = ref
@@ -128,6 +129,10 @@ class AuthNotifier extends Notifier<AuthUserState> {
             .examSelection
             .scopeKey;
         await const FlashcardReviewRepository().hydrateFromCloud(activeScope);
+        await const TopicLessonProgressRepository().hydrateFromCloud();
+        if (ref.mounted) {
+          ref.read(topicLessonProgressProvider.notifier).refresh();
+        }
       } catch (_) {}
     } finally {
       _activeHydration = null;
@@ -172,6 +177,8 @@ class AuthNotifier extends Notifier<AuthUserState> {
           ref.read(studyPlannerProvider.notifier).reset();
           const MistakeRepository().clearLocal();
           const FlashcardReviewRepository().clearLocal();
+          const TopicLessonProgressRepository().clearLocal();
+          ref.read(topicLessonProgressProvider.notifier).refresh();
         }
       });
 
@@ -450,6 +457,8 @@ class AuthNotifier extends Notifier<AuthUserState> {
     ref.read(studyPlannerProvider.notifier).reset();
     const MistakeRepository().clearLocal();
     const FlashcardReviewRepository().clearLocal();
+    const TopicLessonProgressRepository().clearLocal();
+    ref.read(topicLessonProgressProvider.notifier).refresh();
   }
 
   /// Google Play Data Safety & KVKK: Hesabı ve ilişkili tüm sınav verilerini kalıcı olarak siler.
@@ -474,6 +483,8 @@ class AuthNotifier extends Notifier<AuthUserState> {
       ref.read(studyPlannerProvider.notifier).reset();
       const MistakeRepository().clearLocal();
       const FlashcardReviewRepository().clearLocal();
+      const TopicLessonProgressRepository().clearLocal();
+      ref.read(topicLessonProgressProvider.notifier).refresh();
 
       try {
         final prefs = await SharedPreferences.getInstance();

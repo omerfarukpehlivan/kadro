@@ -20,6 +20,7 @@ import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/features/score_calculator/presentation/kpss_score_calculator_screen.dart';
 import 'package:kadro/features/stats/presentation/stats_screen.dart';
+import 'package:kadro/features/topic_lessons/presentation/topic_lesson_screen.dart';
 
 /// Test ekranına gönderilebilecek opsiyonel parametreler.
 ///
@@ -211,6 +212,18 @@ GoRouter createAppRouter({String initialLocation = '/'}) {
         builder: (context, state) => CurrentAffairsScreen(
           initialMonthParam: state.uri.queryParameters['ay'],
         ),
+      ),
+      GoRoute(
+        path: '/lessons/:lesson/topics/:topic/anlatim',
+        builder: (context, state) {
+          final lesson = Uri.decodeComponent(
+            state.pathParameters['lesson'] ?? '',
+          );
+          final topic = Uri.decodeComponent(
+            state.pathParameters['topic'] ?? '',
+          );
+          return TopicLessonScreen(lessonName: lesson, topic: topic);
+        },
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

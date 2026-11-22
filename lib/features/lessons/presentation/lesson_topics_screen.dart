@@ -15,6 +15,9 @@ import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/paywall_screen.dart';
 import 'package:kadro/features/quiz/data/question_repository.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/features/topic_lessons/data/models/topic_lesson_models.dart';
+import 'package:kadro/features/topic_lessons/data/topic_lesson_repository.dart';
+import 'package:kadro/features/topic_lessons/presentation/topic_lesson_screen.dart';
 import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/shared/widgets/kadro_confirm_dialog.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
@@ -459,6 +462,32 @@ class _TopicPathNode extends ConsumerWidget {
         solvedTestCount > 0 && solvedTestCount < totalTests;
     final isAllTestsSolved = totalTests > 0 && solvedTestCount >= totalTests;
 
+    final topicUnitsAsync = ref.watch(
+      topicLessonUnitsProvider(
+        TopicLessonQueryKey(
+          scopeKey: selection.scopeKey,
+          lessonName: lessonName,
+          topic: topic,
+        ),
+      ),
+    );
+    final topicUnits = topicUnitsAsync.value ?? const <TopicLessonUnit>[];
+    final hasTopicLesson = topicUnits.isNotEmpty;
+    final progressMap = ref.watch(topicLessonProgressProvider);
+    final completedUnits = topicUnits
+        .where((u) => progressMap[u.id]?.isCompleted ?? false)
+        .length;
+    final lessonProgressPercent = hasTopicLesson
+        ? TopicLessonDomain.computeProgressPercent(
+            completedCount: completedUnits,
+            totalPublishedCount: topicUnits.length,
+          )
+        : 0;
+    final totalReadingMinutes = topicUnits.fold<int>(
+      0,
+      (sum, u) => sum + u.estimatedMinutes,
+    );
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -601,20 +630,81 @@ class _TopicPathNode extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: FilledButton.tonal(
-                        onPressed: () => _startTopicTest(context, ref),
-                        style: FilledButton.styleFrom(
-                          minimumSize: const Size(0, 38),
-                          visualDensity: VisualDensity.compact,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 6,
+                    Wrap(
+                      alignment: WrapAlignment.end,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        if (hasTopicLesson)
+                          OutlinedButton.icon(
+                            key: ValueKey('open_topic_lesson_${index + 1}'),
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => TopicLessonScreen(
+                                    lessonName: lessonName,
+                                    topic: topic,
+                                    selection: selection,
+                                  ),
+                                ),
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(0, 38),
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                            ),
+                            icon: SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  CircularProgressIndicator(
+                                    value: (lessonProgressPercent / 100.0)
+                                        .clamp(0.0, 1.0),
+                                    strokeWidth: 2.2,
+                                    backgroundColor:
+                                        colorScheme.surfaceContainerHighest,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      lessonProgressPercent >= 100
+                                          ? colorScheme.secondary
+                                          : colorScheme.primary,
+                                    ),
+                                  ),
+                                  PhosphorIcon(
+                                    lessonProgressPercent >= 100
+                                        ? PhosphorIconsBold.check
+                                        : PhosphorIconsBold.bookOpenText,
+                                    size: 10,
+                                    color: lessonProgressPercent >= 100
+                                        ? colorScheme.secondary
+                                        : colorScheme.primary,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            label: Text(
+                              'Konu Anlatımı (${topicUnits.length} Bölüm · $totalReadingMinutes dk)',
+                            ),
                           ),
+                        FilledButton.tonal(
+                          onPressed: () => _startTopicTest(context, ref),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size(0, 38),
+                            visualDensity: VisualDensity.compact,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 6,
+                            ),
+                          ),
+                          child: const Text('Test Çöz'),
                         ),
-                        child: const Text('Test Çöz'),
-                      ),
+                      ],
                     ),
                   ],
                 ),

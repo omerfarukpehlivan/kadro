@@ -1,0 +1,149 @@
+{
+  "$comment": "Mobil (gunisigi) ve Web (kadro-web) için Konu Anlatımı blok ayrıştırma, otomatik kontrol sorusu seçimi ve ilerleme yüzdesi ortak beklenen çıktıları (TASK-168).",
+  "blockParsingCases": [
+    {
+      "description": "Her blok türünden birer örnek içeren bölüm ayrıştırılır ve bilinmeyen blok türü sessizce atlanır",
+      "unit": {
+        "id": "tarih.islamiyet_oncesi_turk_tarihi.01",
+        "lesson": "Tarih",
+        "topic": "İslamiyet Öncesi Türk Tarihi",
+        "unit_order": 1,
+        "title": "Bölüm 1: Orta Asya Kültür Merkezleri",
+        "summary": "Orta Asya kültür merkezlerini ve ilk Türk devletlerini özetler.",
+        "estimated_minutes": 6,
+        "exam_scopes": ["b_grubu_gk"],
+        "is_published": true,
+        "blocks": [
+          { "type": "heading", "text": "Başlıca Kültür Merkezleri" },
+          { "type": "paragraph", "text": "Orta Asya''nın bilinen en eski kültürü **Anav**, Türklere ait en eski kültür ise *Afanesyova*''dır." },
+          { "type": "bullets", "items": ["Anav: En eski Orta Asya kültürü", "Karasuk: Demir ilk kez işlendi"] },
+          {
+            "type": "table",
+            "headers": ["Kültür", "Özellik"],
+            "rows": [
+              ["Anav", "En eski Orta Asya"],
+              ["Afanesyova", "En eski Türk"]
+            ]
+          },
+          {
+            "type": "timeline",
+            "items": [
+              { "label": "MÖ 220", "text": "Asya Hun Devleti kuruldu." },
+              { "label": "552", "text": "I. Göktürk Devleti kuruldu." }
+            ]
+          },
+          { "type": "callout", "kind": "info", "text": "Kut anlayışı kan yoluyla hanedana geçer." },
+          { "type": "callout", "kind": "mnemonic", "text": "**AAA-KT** -> Anav, Afanesyova, Andronova, Karasuk, Tagar" },
+          { "type": "callout", "kind": "trap", "text": "Anav ile Afanesyova ayrımına dikkat et." },
+          { "type": "callout", "kind": "example", "text": "Örnek: İkili teşkilatta doğu üstündür." },
+          { "type": "unknown_future_widget", "payload": { "foo": "bar" } },
+          { "type": "key_points", "items": ["Anav en eski Orta Asya kültürüdür.", "Demir Karasuk''ta işlendi."] },
+          { "type": "check_questions", "question_ids": [] }
+        ]
+      },
+      "expected": {
+        "blockTypes": [
+          "heading",
+          "paragraph",
+          "bullets",
+          "table",
+          "timeline",
+          "callout",
+          "callout",
+          "callout",
+          "callout",
+          "key_points",
+          "check_questions"
+        ],
+        "checkQuestionCount": 2
+      }
+    }
+  ],
+  "autoCheckQuestionCases": [
+    {
+      "description": "unit_order = 1 -> difficulty <= 2 olanlar order_index (eşitse id) sırasıyla dizilir ve 0, 1 indeksli sorular seçilir",
+      "unitOrder": 1,
+      "explicitQuestionIds": [],
+      "questions": [
+        { "id": "q_hard_1", "difficulty": "3", "order_index": 1 },
+        { "id": "q_med_2", "difficulty": "2", "order_index": 2 },
+        { "id": "q_easy_1", "difficulty": "1", "order_index": 1 },
+        { "id": "q_med_3b", "difficulty": "2", "order_index": 3 },
+        { "id": "q_easy_3a", "difficulty": "1", "order_index": 3 },
+        { "id": "q_easy_4", "difficulty": "1", "order_index": 4 }
+      ],
+      "expectedQuestionIds": ["q_easy_1", "q_med_2"]
+    },
+    {
+      "description": "unit_order = 2 -> aynı sıralı listeden 2 ve 3 indeksli (order_index eşitliğinde id sıralı) sorular seçilir",
+      "unitOrder": 2,
+      "explicitQuestionIds": [],
+      "questions": [
+        { "id": "q_hard_1", "difficulty": "3", "order_index": 1 },
+        { "id": "q_med_2", "difficulty": "2", "order_index": 2 },
+        { "id": "q_easy_1", "difficulty": "1", "order_index": 1 },
+        { "id": "q_med_3b", "difficulty": "2", "order_index": 3 },
+        { "id": "q_easy_3a", "difficulty": "1", "order_index": 3 },
+        { "id": "q_easy_4", "difficulty": "1", "order_index": 4 }
+      ],
+      "expectedQuestionIds": ["q_easy_3a", "q_med_3b"]
+    },
+    {
+      "description": "unit_order = 3 -> liste kısaysa modulo ile başa sarar (indeks 4 ve 0)",
+      "unitOrder": 3,
+      "explicitQuestionIds": [],
+      "questions": [
+        { "id": "q_hard_1", "difficulty": "3", "order_index": 1 },
+        { "id": "q_med_2", "difficulty": "2", "order_index": 2 },
+        { "id": "q_easy_1", "difficulty": "1", "order_index": 1 },
+        { "id": "q_med_3b", "difficulty": "2", "order_index": 3 },
+        { "id": "q_easy_3a", "difficulty": "1", "order_index": 3 },
+        { "id": "q_easy_4", "difficulty": "1", "order_index": 4 }
+      ],
+      "expectedQuestionIds": ["q_easy_4", "q_easy_1"]
+    },
+    {
+      "description": "Açık question_ids verildiyse verilen kimlik sırasıyla döner",
+      "unitOrder": 1,
+      "explicitQuestionIds": ["q_easy_4", "q_med_2"],
+      "questions": [
+        { "id": "q_med_2", "difficulty": "2", "order_index": 2 },
+        { "id": "q_easy_1", "difficulty": "1", "order_index": 1 },
+        { "id": "q_easy_4", "difficulty": "1", "order_index": 4 }
+      ],
+      "expectedQuestionIds": ["q_easy_4", "q_med_2"]
+    }
+  ],
+  "progressCases": [
+    {
+      "description": "Hiç bölüm tamamlanmadıysa %0",
+      "completedCount": 0,
+      "totalPublishedCount": 4,
+      "expectedPercent": 0
+    },
+    {
+      "description": "2 / 4 bölüm tamamlandıysa %50",
+      "completedCount": 2,
+      "totalPublishedCount": 4,
+      "expectedPercent": 50
+    },
+    {
+      "description": "1 / 3 bölüm tamamlandıysa yuvarlanmış %33",
+      "completedCount": 1,
+      "totalPublishedCount": 3,
+      "expectedPercent": 33
+    },
+    {
+      "description": "Tüm bölümler tamamlandıysa %100",
+      "completedCount": 5,
+      "totalPublishedCount": 5,
+      "expectedPercent": 100
+    },
+    {
+      "description": "Yayınlanmış bölüm yoksa (0) %0",
+      "completedCount": 0,
+      "totalPublishedCount": 0,
+      "expectedPercent": 0
+    }
+  ]
+}

@@ -17,6 +17,7 @@ import 'package:kadro/features/planner/presentation/study_task_launcher.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/quiz/data/models/quiz_result.dart';
 import 'package:kadro/features/quiz/presentation/widgets/victory_story_card.dart';
+import 'package:kadro/features/topic_lessons/presentation/topic_lesson_screen.dart';
 import 'package:kadro/shared/widgets/kadro_badge.dart';
 import 'package:kadro/shared/widgets/kadro_confirm_dialog.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
@@ -971,6 +972,29 @@ class _TopicBreakdownReportCard extends StatelessWidget {
                       size: 15,
                     ),
                     label: const Text('Zayıf Konunun Testlerini Aç'),
+                  ),
+                  const SizedBox(height: 6),
+                  OutlinedButton.icon(
+                    key: const ValueKey('quiz_result_review_topic_lesson_btn'),
+                    onPressed: () {
+                      Navigator.of(
+                        context,
+                        rootNavigator: true,
+                      ).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) => TopicLessonScreen(
+                            lessonName: weak.lesson,
+                            topic: weak.topic,
+                            selection: selection ?? ExamSelection.initial,
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const PhosphorIcon(
+                      PhosphorIconsBold.bookOpenText,
+                      size: 15,
+                    ),
+                    label: const Text('Konuyu Tekrar Oku'),
                   ),
                 ],
               ),

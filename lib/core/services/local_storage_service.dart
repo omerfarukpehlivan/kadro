@@ -8,6 +8,7 @@ import 'package:kadro/features/planner/data/models/study_task.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
+import 'package:kadro/features/topic_lessons/data/models/topic_lesson_models.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Misafir modunda ve çevrimdışıyken bile verilerin cihazda kalıcı olarak saklanmasını sağlayan servis.
@@ -34,6 +35,9 @@ class LocalStorageService {
       'kadro_current_affairs_read_ids';
   static const String _keyCurrentAffairsBookmarkedIds =
       'kadro_current_affairs_bookmarked_ids';
+  static const String _keyTopicLessonProgress = 'kadro_topic_lesson_progress';
+  static String _keyTopicLessonUnitsCache(String lesson, String topic) =>
+      'kadro_topic_lesson_units_${lesson.trim().toLowerCase()}_${topic.trim().toLowerCase()}';
   static const String _keyDownloadedPackages = 'kadro_downloaded_packages';
   static String _keyOfflinePackage(String packageId) =>
       'offline_pkg_$packageId';
@@ -712,6 +716,91 @@ class LocalStorageService {
   Future<Set<String>> loadCurrentAffairsBookmarkedIds() =>
       _loadStringIdSet(_keyCurrentAffairsBookmarkedIds);
 
+  // --- 8. Konu Anlatımı Bölümleri & Kullanıcı İlerlemesi (`TASK-168`) ---
+
+  /// Kullanıcının konu anlatımı bölüm ilerlemelerini (`unitId -> progress`) yerel hafızaya kaydeder.
+  Future<void> saveTopicLessonProgressMap(
+    Map<String, TopicLessonUnitProgress> entries,
+  ) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return;
+      final list = entries.values.map((e) => e.toJson()).toList();
+      await prefs.setString(_keyTopicLessonProgress, jsonEncode(list));
+    } catch (e) {
+      debugPrint('saveTopicLessonProgressMap hatası: $e');
+    }
+  }
+
+  /// Yerel hafızada kayıtlı konu anlatımı ilerlemelerini (`unitId -> progress`) okur.
+  Future<Map<String, TopicLessonUnitProgress>>
+  loadTopicLessonProgressMap() async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return const {};
+      final raw = prefs.getString(_keyTopicLessonProgress);
+      if (raw == null || raw.isEmpty) return const {};
+      final list = jsonDecode(raw) as List<dynamic>;
+      final map = <String, TopicLessonUnitProgress>{};
+      for (final item in list) {
+        if (item is Map) {
+          final parsed = TopicLessonUnitProgress.fromJson(
+            Map<String, dynamic>.from(item),
+          );
+          if (parsed.unitId.isNotEmpty) {
+            map[parsed.unitId] = parsed;
+          }
+        }
+      }
+      return map;
+    } catch (e) {
+      debugPrint('loadTopicLessonProgressMap hatası: $e');
+      return const {};
+    }
+  }
+
+  /// Çevrimdışı erişim için bir konunun konu anlatımı bölümlerini yerel önbelleğe yazar.
+  Future<void> saveTopicLessonUnitsCache(
+    String lesson,
+    String topic,
+    List<TopicLessonUnit> units,
+  ) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return;
+      final list = units.map((u) => u.toJson()).toList();
+      await prefs.setString(
+        _keyTopicLessonUnitsCache(lesson, topic),
+        jsonEncode(list),
+      );
+    } catch (e) {
+      debugPrint('saveTopicLessonUnitsCache hatası: $e');
+    }
+  }
+
+  /// Yerel önbellekten bir konunun konu anlatımı bölümlerini okur.
+  Future<List<TopicLessonUnit>> loadTopicLessonUnitsCache(
+    String lesson,
+    String topic,
+  ) async {
+    try {
+      final prefs = await _getPrefs();
+      if (prefs == null) return const [];
+      final raw = prefs.getString(_keyTopicLessonUnitsCache(lesson, topic));
+      if (raw == null || raw.isEmpty) return const [];
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .whereType<Map>()
+          .map((m) => TopicLessonUnit.fromJson(Map<String, dynamic>.from(m)))
+          .where((u) => u.id.isNotEmpty && u.isPublished)
+          .toList()
+        ..sort((a, b) => a.unitOrder.compareTo(b.unitOrder));
+    } catch (e) {
+      debugPrint('loadTopicLessonUnitsCache hatası: $e');
+      return const [];
+    }
+  }
+
   /// Test izolasyonu veya fabrika ayarlarına dönüş için aktif oturum anahtarlarını temizler.
   /// Cihaz günlük kota sayacı (`kadro_device_daily_quota`) suistimali önlemek için korunur.
   Future<void> clearAll() async {
@@ -732,13 +821,15 @@ class LocalStorageService {
       await prefs.remove(_keyPlannerSnapshot);
       await prefs.remove(_keyCurrentAffairsReadIds);
       await prefs.remove(_keyCurrentAffairsBookmarkedIds);
+      await prefs.remove(_keyTopicLessonProgress);
       final allKeys = prefs.getKeys();
       for (final key in allKeys) {
         if (key.startsWith('kadro_planner_day_tasks_') ||
             key.startsWith('kadro_planner_snapshot_') ||
             key.startsWith('kadro_user_prefs_') ||
             key.startsWith('kadro_study_stats_account_') ||
-            key.startsWith('kadro_flashcard_reviews_')) {
+            key.startsWith('kadro_flashcard_reviews_') ||
+            key.startsWith('kadro_topic_lesson_units_')) {
           await prefs.remove(key);
         }
       }
