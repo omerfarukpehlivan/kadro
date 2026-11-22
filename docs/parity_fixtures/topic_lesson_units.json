@@ -11,34 +11,93 @@
         "title": "Bölüm 1: Orta Asya Kültür Merkezleri",
         "summary": "Orta Asya kültür merkezlerini ve ilk Türk devletlerini özetler.",
         "estimated_minutes": 6,
-        "exam_scopes": ["b_grubu_gk"],
+        "exam_scopes": [
+          "b_grubu_gk"
+        ],
         "is_published": true,
         "blocks": [
-          { "type": "heading", "text": "Başlıca Kültür Merkezleri" },
-          { "type": "paragraph", "text": "Orta Asya''nın bilinen en eski kültürü **Anav**, Türklere ait en eski kültür ise *Afanesyova*''dır." },
-          { "type": "bullets", "items": ["Anav: En eski Orta Asya kültürü", "Karasuk: Demir ilk kez işlendi"] },
+          {
+            "type": "heading",
+            "text": "Başlıca Kültür Merkezleri"
+          },
+          {
+            "type": "paragraph",
+            "text": "Orta Asya''nın bilinen en eski kültürü **Anav**, Türklere ait en eski kültür ise *Afanesyova*''dır."
+          },
+          {
+            "type": "bullets",
+            "items": [
+              "Anav: En eski Orta Asya kültürü",
+              "Karasuk: Demir ilk kez işlendi"
+            ]
+          },
           {
             "type": "table",
-            "headers": ["Kültür", "Özellik"],
+            "headers": [
+              "Kültür",
+              "Özellik"
+            ],
             "rows": [
-              ["Anav", "En eski Orta Asya"],
-              ["Afanesyova", "En eski Türk"]
+              [
+                "Anav",
+                "En eski Orta Asya"
+              ],
+              [
+                "Afanesyova",
+                "En eski Türk"
+              ]
             ]
           },
           {
             "type": "timeline",
             "items": [
-              { "label": "MÖ 220", "text": "Asya Hun Devleti kuruldu." },
-              { "label": "552", "text": "I. Göktürk Devleti kuruldu." }
+              {
+                "label": "MÖ 220",
+                "text": "Asya Hun Devleti kuruldu."
+              },
+              {
+                "label": "552",
+                "text": "I. Göktürk Devleti kuruldu."
+              }
             ]
           },
-          { "type": "callout", "kind": "info", "text": "Kut anlayışı kan yoluyla hanedana geçer." },
-          { "type": "callout", "kind": "mnemonic", "text": "**AAA-KT** -> Anav, Afanesyova, Andronova, Karasuk, Tagar" },
-          { "type": "callout", "kind": "trap", "text": "Anav ile Afanesyova ayrımına dikkat et." },
-          { "type": "callout", "kind": "example", "text": "Örnek: İkili teşkilatta doğu üstündür." },
-          { "type": "unknown_future_widget", "payload": { "foo": "bar" } },
-          { "type": "key_points", "items": ["Anav en eski Orta Asya kültürüdür.", "Demir Karasuk''ta işlendi."] },
-          { "type": "check_questions", "question_ids": [] }
+          {
+            "type": "callout",
+            "kind": "info",
+            "text": "Kut anlayışı kan yoluyla hanedana geçer."
+          },
+          {
+            "type": "callout",
+            "kind": "mnemonic",
+            "text": "**AAA-KT** -> Anav, Afanesyova, Andronova, Karasuk, Tagar"
+          },
+          {
+            "type": "callout",
+            "kind": "trap",
+            "text": "Anav ile Afanesyova ayrımına dikkat et."
+          },
+          {
+            "type": "callout",
+            "kind": "example",
+            "text": "Örnek: İkili teşkilatta doğu üstündür."
+          },
+          {
+            "type": "unknown_future_widget",
+            "payload": {
+              "foo": "bar"
+            }
+          },
+          {
+            "type": "key_points",
+            "items": [
+              "Anav en eski Orta Asya kültürüdür.",
+              "Demir Karasuk''ta işlendi."
+            ]
+          },
+          {
+            "type": "check_questions",
+            "question_ids": []
+          }
         ]
       },
       "expected": {
@@ -65,53 +124,206 @@
       "unitOrder": 1,
       "explicitQuestionIds": [],
       "questions": [
-        { "id": "q_hard_1", "difficulty": "3", "order_index": 1 },
-        { "id": "q_med_2", "difficulty": "2", "order_index": 2 },
-        { "id": "q_easy_1", "difficulty": "1", "order_index": 1 },
-        { "id": "q_med_3b", "difficulty": "2", "order_index": 3 },
-        { "id": "q_easy_3a", "difficulty": "1", "order_index": 3 },
-        { "id": "q_easy_4", "difficulty": "1", "order_index": 4 }
+        {
+          "id": "q_hard_1",
+          "difficulty": "3",
+          "order_index": 1
+        },
+        {
+          "id": "q_med_2",
+          "difficulty": "2",
+          "order_index": 2
+        },
+        {
+          "id": "q_easy_1",
+          "difficulty": "1",
+          "order_index": 1
+        },
+        {
+          "id": "q_med_3b",
+          "difficulty": "2",
+          "order_index": 3
+        },
+        {
+          "id": "q_easy_3a",
+          "difficulty": "1",
+          "order_index": 3
+        },
+        {
+          "id": "q_easy_4",
+          "difficulty": "1",
+          "order_index": 4
+        }
       ],
-      "expectedQuestionIds": ["q_easy_1", "q_med_2"]
+      "expectedQuestionIds": [
+        "q_easy_1",
+        "q_med_2"
+      ]
     },
     {
       "description": "unit_order = 2 -> aynı sıralı listeden 2 ve 3 indeksli (order_index eşitliğinde id sıralı) sorular seçilir",
       "unitOrder": 2,
       "explicitQuestionIds": [],
       "questions": [
-        { "id": "q_hard_1", "difficulty": "3", "order_index": 1 },
-        { "id": "q_med_2", "difficulty": "2", "order_index": 2 },
-        { "id": "q_easy_1", "difficulty": "1", "order_index": 1 },
-        { "id": "q_med_3b", "difficulty": "2", "order_index": 3 },
-        { "id": "q_easy_3a", "difficulty": "1", "order_index": 3 },
-        { "id": "q_easy_4", "difficulty": "1", "order_index": 4 }
+        {
+          "id": "q_hard_1",
+          "difficulty": "3",
+          "order_index": 1
+        },
+        {
+          "id": "q_med_2",
+          "difficulty": "2",
+          "order_index": 2
+        },
+        {
+          "id": "q_easy_1",
+          "difficulty": "1",
+          "order_index": 1
+        },
+        {
+          "id": "q_med_3b",
+          "difficulty": "2",
+          "order_index": 3
+        },
+        {
+          "id": "q_easy_3a",
+          "difficulty": "1",
+          "order_index": 3
+        },
+        {
+          "id": "q_easy_4",
+          "difficulty": "1",
+          "order_index": 4
+        }
       ],
-      "expectedQuestionIds": ["q_easy_3a", "q_med_3b"]
+      "expectedQuestionIds": [
+        "q_easy_3a",
+        "q_med_3b"
+      ]
     },
     {
       "description": "unit_order = 3 -> liste kısaysa modulo ile başa sarar (indeks 4 ve 0)",
       "unitOrder": 3,
       "explicitQuestionIds": [],
       "questions": [
-        { "id": "q_hard_1", "difficulty": "3", "order_index": 1 },
-        { "id": "q_med_2", "difficulty": "2", "order_index": 2 },
-        { "id": "q_easy_1", "difficulty": "1", "order_index": 1 },
-        { "id": "q_med_3b", "difficulty": "2", "order_index": 3 },
-        { "id": "q_easy_3a", "difficulty": "1", "order_index": 3 },
-        { "id": "q_easy_4", "difficulty": "1", "order_index": 4 }
+        {
+          "id": "q_hard_1",
+          "difficulty": "3",
+          "order_index": 1
+        },
+        {
+          "id": "q_med_2",
+          "difficulty": "2",
+          "order_index": 2
+        },
+        {
+          "id": "q_easy_1",
+          "difficulty": "1",
+          "order_index": 1
+        },
+        {
+          "id": "q_med_3b",
+          "difficulty": "2",
+          "order_index": 3
+        },
+        {
+          "id": "q_easy_3a",
+          "difficulty": "1",
+          "order_index": 3
+        },
+        {
+          "id": "q_easy_4",
+          "difficulty": "1",
+          "order_index": 4
+        }
       ],
-      "expectedQuestionIds": ["q_easy_4", "q_easy_1"]
+      "expectedQuestionIds": [
+        "q_easy_4",
+        "q_easy_1"
+      ]
     },
     {
       "description": "Açık question_ids verildiyse verilen kimlik sırasıyla döner",
       "unitOrder": 1,
-      "explicitQuestionIds": ["q_easy_4", "q_med_2"],
-      "questions": [
-        { "id": "q_med_2", "difficulty": "2", "order_index": 2 },
-        { "id": "q_easy_1", "difficulty": "1", "order_index": 1 },
-        { "id": "q_easy_4", "difficulty": "1", "order_index": 4 }
+      "explicitQuestionIds": [
+        "q_easy_4",
+        "q_med_2"
       ],
-      "expectedQuestionIds": ["q_easy_4", "q_med_2"]
+      "questions": [
+        {
+          "id": "q_med_2",
+          "difficulty": "2",
+          "order_index": 2
+        },
+        {
+          "id": "q_easy_1",
+          "difficulty": "1",
+          "order_index": 1
+        },
+        {
+          "id": "q_easy_4",
+          "difficulty": "1",
+          "order_index": 4
+        }
+      ],
+      "expectedQuestionIds": [
+        "q_easy_4",
+        "q_med_2"
+      ]
+    },
+    {
+      "description": "Açık question_ids hiçbiri havuzda yoksa otomatik seçime düşülür",
+      "unitOrder": 1,
+      "explicitQuestionIds": [
+        "olmayan-uuid"
+      ],
+      "questions": [
+        {
+          "id": "q_med_2",
+          "difficulty": "2",
+          "order_index": 2
+        },
+        {
+          "id": "q_easy_1",
+          "difficulty": "1",
+          "order_index": 1
+        },
+        {
+          "id": "q_hard_9",
+          "difficulty": "3",
+          "order_index": 0
+        }
+      ],
+      "expectedQuestionIds": [
+        "q_easy_1",
+        "q_med_2"
+      ]
+    },
+    {
+      "description": "order_index boş olan sorular sona alınır ve kimliğe göre (karakter sırası) dizilir",
+      "unitOrder": 1,
+      "explicitQuestionIds": [],
+      "questions": [
+        {
+          "id": "b1-ff",
+          "difficulty": "1",
+          "order_index": null
+        },
+        {
+          "id": "a9-00",
+          "difficulty": "2",
+          "order_index": null
+        },
+        {
+          "id": "a10-0",
+          "difficulty": "1",
+          "order_index": null
+        }
+      ],
+      "expectedQuestionIds": [
+        "a10-0",
+        "a9-00"
+      ]
     }
   ],
   "progressCases": [
