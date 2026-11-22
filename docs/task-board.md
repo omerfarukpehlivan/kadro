@@ -212,6 +212,9 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-165** | **GY Türkçe Dersinin Aktifleştirilmesi ("Yakında" → Hazır) & GY-GK Kapsam Sorgusu Düzeltmesi** | Canlıdaki 710 Türkçe sorusu (`lisans_gygk`, 11 konu) ile Türkçe'nin KPSS Lisans GY-GK müfredatında diğer dersler gibi açılması (konu testleri, branş denemesi, planlayıcı, pratik merkezi); Matematik "Yakında" kalır; GY-GK modunda GK sorularının buluttan gelmemesine yol açan `contains(exam_scopes)` filtresinin kabul edilen kapsam kümesiyle `overlaps` olarak düzeltilmesi | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-166** | **B Grubunda Tek Profil — "Sadece GK / Tam GY-GK" Ayrımının Kaldırılması** | Gerçek KPSS’de GY ve GK aynı oturumda olduğu için 60/120 seçiminin kaldırılması; B Grubu seçen herkes tüm dersleri görür (Lisans: 4 GK + Türkçe aktif, Matematik Yakında); eski `only_gk` kayıtlarının `full_gygk`’ya normalize edilmesi; Tam GY-GK denemesi Matematik gelene kadar Yakında; `exam_scopes.json` eşleniklik dosyası | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-167** | **B Grubu Ortak Soru Havuzu — Lisans / Ön Lisans / Ortaöğretim & Alt Düzey Deneme Zor Soru Tavanı** | Üç B Grubu düzeyinin tek GY-GK havuzunu paylaşması (`09` SQL: `b_grubu_gk` / `b_grubu_gygk` etiketleri, Türkçe `education_level` NULL); Türkçe’nin üç düzeyde aktif olması; Ön Lisans/Ortaöğretim denemelerinde bölüm başına zor soru ≤ %15 tavanı; `mock_difficulty_cap.json` eşleniklik dosyası | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
+| **TASK-168** | **Konu Anlatımı Altyapısı — Veri Modeli, Okuyucu & İlerleme** | `10` SQL (`topic_lesson_units`, `user_topic_lesson_progress`, RLS); blok tabanlı okuyucu (tablo, zaman çizgisi, ÖSYM tuzak kutusu, Akılda Kalsın, satır içi kontrol soruları); bölüm/konu ilerlemesi ve senkron; konu testine geçiş; web’de herkese açık SEO sayfaları; `topic_lesson_units.json` eşleniklik dosyası | ⏳ **Planlandı** | ❌ | ❌ |
+| **TASK-169** | **Konu Anlatımı Üretim Hattı — Dönüştürücü, Doğrulayıcı & Pilot Konu** | `docs/konu_anlatimi/FORMAT.md` biçimindeki Markdown’ı doğrulayıp SQL’e çeviren `tools/konu_anlatimi_to_sql.mjs`; pilot: Tarih · İslamiyet Öncesi Türk Tarihi | ⏳ **Planlandı** | ➖ | ❌ |
+| **TASK-170** | **Konu Anlatımı İçerik Partileri (GK + GY Türkçe)** | 30 konu: Tarih 7, Vatandaşlık 6, Türkçe 11, Coğrafya 6; her parti Gemini yazar → doğrulayıcı → Claude incelemesi → canlıya SQL | ⏳ **Planlandı** | ➖ | ❌ |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** | ❌ | ❌ |
 
 ### 📊 Aktif Mobil & Web Eşleniklik Özeti
@@ -6921,3 +6924,128 @@ ADIM 3: tests/parity/parity.test.ts ../gunisigi/docs/parity_fixtures/mock_diffic
 - [ ] Ön Lisans/Ortaöğretim denemelerinde her bölümde zor soru ≤ tavan; Lisans denemeleri değişmedi
 - [ ] `mock_difficulty_cap.json` vakaları iki depoda yeşil
 - [ ] Mobilde flutter analyze 0, tam flutter test yeşil; web lint/tsc/build yeşil; Claude incelemesi onaylandı
+
+---
+
+## 📖 55. Dalga 55 [Yeni Modül]: Konu Anlatımı (`TASK-168` – `TASK-170`)
+
+> **Ürün kararı (2026-11-22):** Kadro'ya soru çözümünün yanında **konu anlatımı** eklenir. Kullanıcı bir konuyu önce okur, bölüm sonlarındaki mini sorularla kendini yoklar, sonra o konunun kolay → orta → zor testlerine geçer. İçerik ve kod Gemini'ye yazdırılır, Claude inceler. İçerik biçimi: [`docs/konu_anlatimi/FORMAT.md`](konu_anlatimi/FORMAT.md).
+>
+> **Sıra:** `TASK-168` (altyapı, örnek veriyle) → `TASK-169` (üretim hattı + 1 pilot konu) → `TASK-170` (içerik partileri). 168 ve 169 aynı anda yürüyebilir; 170, pilot onaylanmadan başlamaz.
+
+### 📦 TASK-168: Konu Anlatımı Altyapısı — Veri Modeli, Okuyucu Ekranı & İlerleme Takibi
+
+- **Durum:** ⏳ Planlandı · 🌐 Web ❌ · 📱 Mobil ❌
+- **Amaç:** Dersler → Ders → Konu ekranında "Konu Anlatımı" girişi; bölüm bölüm okunan, ilerlemesi kaydedilen, sonunda konu testine bağlanan okuyucu.
+- **Platform Uygulanabilirliği:** Ortak. Web ek olarak herkese açık SEO sayfaları sunar.
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Supabase — yeni migration `docs/supabase_migrations/10_topic_lessons.sql`:**
+  - `public.topic_lesson_units` (içerik, herkese okunur):
+    - `id text primary key` — slug: `<ders_slug>.<konu_slug>.<bolum_no>` (ör. `tarih.islamiyet_oncesi_turk_tarihi.01`)
+    - `lesson text not null`, `topic text not null` — soru havuzundaki kanonik adlarla birebir
+    - `unit_order int not null` (1'den başlar), `title text not null`, `summary text` (1–2 cümle)
+    - `estimated_minutes int not null` (dönüştürücü hesaplar: `ceil(kelime / 180)`, en az 1)
+    - `blocks jsonb not null` (aşağıdaki blok şeması)
+    - `exam_scopes text[] not null default '{b_grubu_gk}'`
+    - `content_version int not null default 1`, `is_published boolean not null default false`, `updated_at timestamptz not null default now()`
+    - `unique (lesson, topic, unit_order)`; indeks `(lesson, topic)`
+    - RLS: `select` herkese (`anon` + `authenticated`) yalnızca `is_published = true`; yazma yok (içerik SQL ile yüklenir).
+  - `public.user_topic_lesson_progress` (kullanıcı ilerlemesi):
+    - `user_id uuid references auth.users on delete cascade`, `unit_id text references public.topic_lesson_units(id) on delete cascade`
+    - `exam_scope text not null default 'lisans_gygk'`, `completed_at timestamptz`, `last_opened_at timestamptz not null default now()`
+    - `primary key (user_id, unit_id)`; RLS: kullanıcı yalnızca kendi satırını okur/yazar. `delete_user_account()` bu tabloyu da temizler (FK cascade yeterli değilse fonksiyona ekle).
+- **Blok şeması (`blocks` JSON dizisi; bilinmeyen `type` istemcide sessizce atlanır):**
+  - `{ "type": "heading", "text": "..." }`
+  - `{ "type": "paragraph", "text": "..." }` — satır içi yalnızca `**kalın**` ve `*italik*`
+  - `{ "type": "bullets", "items": ["..."] }`
+  - `{ "type": "table", "headers": ["..."], "rows": [["..."]] }`
+  - `{ "type": "timeline", "items": [{ "label": "1071", "text": "..." }] }`
+  - `{ "type": "callout", "kind": "info" | "mnemonic" | "trap" | "example", "text": "..." }` — `trap` soru ekranındaki ÖSYM Çeldirici Tuzağı altın/kehribar rozetiyle aynı görünür
+  - `{ "type": "key_points", "items": ["..."] }` — bölüm sonu "Akılda Kalsın"
+  - `{ "type": "check_questions", "question_ids": ["uuid", ...] }` — boşsa otomatik seçim (aşağıda)
+- **Otomatik kontrol sorusu kuralı (kesin):** `question_ids` boşsa, o konunun aktif çoktan seçmeli sorularından `difficulty <= 2` olanlar `order_index` (eşitse `id`) sırasıyla dizilir; `unit_order = k` olan bölüm bu listenin `(k-1)*2` ve `(k-1)*2+1` indeksli sorularını alır (liste kısaysa başa sarar). Kontrol soruları günlük soru kotasından **düşmez**, yanlış defterine **yazılır**, istatistiğe konu testi olarak **sayılmaz**.
+- **Bölüm tamamlama kuralı:** Bölüm, kullanıcı son bloğa kadar kaydırıp "Bölümü Bitir"e bastığında tamamlanır (kontrol sorularını çözmek zorunlu değil). Konu ilerlemesi = tamamlanan bölüm / toplam yayınlanmış bölüm.
+- **Erişim (varsayılan karar, değiştirilebilir):** Konu anlatımlarının **tamamı ücretsiz**; misafir kullanıcı okuyabilir, ilerleme yerelde tutulur ve girişte buluta taşınır (mevcut misafir senkron akışı). Gerekçe: web'de SEO trafiği ve güven. PRO'ya özel bir ek sonradan eklenebilir (ör. çevrimdışı indirme).
+- **Kapsam eşlemesi:** İçerik B Grubu'nun üç düzeyinde ortaktır (`b_grubu_gk` / Türkçe `b_grubu_gygk`); kabul kümesi `exam_scopes.json` ile aynıdır.
+- **Eşleniklik örnekleri:** `docs/parity_fixtures/topic_lesson_units.json`: (1) her blok türünden birer örnek içeren bir bölüm → beklenen render özeti (`blockTypes`, `checkQuestionCount`), bilinmeyen tür atlanır; (2) otomatik kontrol sorusu seçimi: sahte soru listesi + `unit_order` → beklenen 2 soru kimliği; (3) konu ilerleme yüzdesi örnekleri.
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-168 — Konu Anlatımı Altyapısı (Mobil / Flutter)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma. Yeni paket ekleme (markdown paketi YOK; satır içi kalın/italik için küçük bir ayrıştırıcı yaz). Bitince flutter-verify adımlarını çalıştır; Mobil kolonunu Claude incelemesi onaylanana kadar ❌ bırak. Commit etme.
+
+ADIM 1: Migration — docs/supabase_migrations/10_topic_lessons.sql'i Ortak Sözleşme'deki gibi yaz (idempotent, RLS dahil) ve 2 adet örnek yayınlanmış bölüm ekle (Tarih · İslamiyet Öncesi Türk Tarihi, her blok türünden en az bir örnek). Kullanıcı canlıya elle uygular.
+ADIM 2: Veri katmanı — lib/features/topic_lessons/data/: modeller (TopicLessonUnit, TopicLessonBlock sealed/sınıf hiyerarşisi, bilinmeyen tür → null), TopicLessonRepository (Supabase'ten konu bölümlerini çek + yerel önbellek; hata durumunda anlamlı boş durum), ilerleme deposu (yerel + mevcut bulut senkron deseniyle user_topic_lesson_progress), otomatik kontrol sorusu seçimi saf fonksiyon olarak.
+ADIM 3: Okuyucu — lib/features/topic_lessons/presentation/: TopicLessonScreen (bölüm listesi + ilerleme yüzdesi), TopicLessonUnitScreen (blok render; her blok ayrı StatelessWidget; trap callout soru ekranındaki distractorTrap stilini yeniden kullanır; check_questions mevcut OptionTile ile satır içi; alt bar: "Bölümü Bitir" / "Sonraki Bölüm" / son bölümde "Konu Testine Geç →").
+ADIM 4: Giriş noktaları — lesson_topics_screen.dart konu satırında "Konu Anlatımı" (bölüm sayısı + okuma süresi + ilerleme halkası) ve "Testler" ayrımı; içerik yoksa giriş gizlenir. Quiz sonuç ekranında yanlış yapılan konu için "Konuyu Tekrar Oku" bağlantısı. Router'a /lessons/:lesson/topics/:topic/anlatim rotası.
+ADIM 5: Tasarım — design-system/kadro/MASTER.md: Outfit başlık, DM Sans gövde, okunaklı satır yüksekliği (≥1.5), tablet'te en çok ~720px metin genişliği, TactileCard callout'lar, phosphor ikonlar, liste girişlerinde animasyon yok.
+ADIM 6: Testler — parity fixture okuyucusu (test/parity_fixtures_test.dart), blok ayrıştırma (bilinmeyen tür atlanır), otomatik kontrol sorusu seçimi, ilerleme yüzdesi, okuyucu widget testi (her blok türü render; uzun paragrafta taşma yok). dart format, flutter analyze 0, node tools/affected_tests.mjs --run, tam flutter test.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-168 — Konu Anlatımı Altyapısı (Web / Next.js)
+ÖNEMLİ: kadro-web/AGENTS.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma; migration mobil görevde yazılır, web yalnızca kullanır. Bitince lint/test/build çalıştır ve task-board'da yalnızca "Web de Yapıldı" kolonunu güncelle. Commit etme.
+
+ADIM 1: src/domain/topic-lessons.ts — tipler, blok ayrıştırma (bilinmeyen tür atlanır), otomatik kontrol sorusu seçimi ve ilerleme yüzdesi saf fonksiyonları; database.types.ts'e yeni tablolar.
+ADIM 2: Herkese açık SEO sayfaları — src/app/(public)/konu-anlatimi/[ders]/[konu]/page.tsx (konu özeti + bölüm listesi) ve .../[bolum]/page.tsx (bölüm içeriği, sunucu tarafında render, generateMetadata, schema.org Article/LearningResource JSON-LD, sitemap.ts'e ekle). Kontrol soruları ve ilerleme yalnızca istemci bileşeninde.
+ADIM 3: Uygulama içi — /dersler konu satırına "Konu Anlatımı" girişi; okuyucu "Bölümü Bitir" ile ilerlemeyi kaydeder (misafirde guest-store, girişte senkron); son bölümde konu testine geçiş; quiz sonucunda "Konuyu Tekrar Oku".
+ADIM 4: tests/parity/parity.test.ts topic_lesson_units.json'ı okusun. npm run lint, npx tsc --noEmit, npm run test:parity, npm run build yeşil.
+```
+
+#### ✅ Kabul Kriterleri
+- [ ] 10 migration canlıya uygulandı; örnek 2 bölüm iki platformda aynı görünüyor
+- [ ] Bilinmeyen blok türü iki platformda da çökme olmadan atlanıyor
+- [ ] Bölüm tamamlama ve konu ilerlemesi iki platform arasında senkron (aynı hesap)
+- [ ] Web konu anlatımı sayfaları giriş yapmadan açılıyor, sitemap'te var, sunucu tarafında render ediliyor
+- [ ] `topic_lesson_units.json` eşleniklik vakaları iki depoda yeşil; mobil analyze 0 / tam test yeşil; web lint/tsc/build yeşil; Claude incelemesi onaylandı
+
+---
+
+### 📦 TASK-169: Konu Anlatımı Üretim Hattı — Dönüştürücü, Doğrulayıcı & Pilot Konu
+
+- **Durum:** ⏳ Planlandı · 🌐 Web ➖ · 📱 Mobil ❌ (araç ve içerik `gunisigi` deposunda tutulur)
+- **Amaç:** İçeriği Markdown olarak yazıp tek komutla doğrulamak ve SQL'e çevirmek; tüm kalite kurallarını makineye denetletmek; bir pilot konuyla formatı kanıtlamak.
+
+#### 🔗 Ortak Sözleşme
+- Format ve kurallar: `docs/konu_anlatimi/FORMAT.md` (blok türleri, zorunlu bloklar, uzunluk, özgünlük).
+- Çıktı: `topic_lesson_units` satırları (`TASK-168` şeması); `is_published` varsayılan `true`, `content_version` dosyadaki ön bilgiden (yoksa 1).
+
+#### 📱 Kapsam (`gunisigi`)
+```text
+GÖREV: TASK-169 — Konu Anlatımı Üretim Hattı & Pilot (gunisigi)
+ÖNEMLİ: GEMINI.md kurallarına uy. Python değil Node yaz (tools/ altındaki diğer betikler gibi, bağımlılık yok). Commit etme.
+
+ADIM 1: tools/konu_anlatimi_to_sql.mjs — docs/konu_anlatimi/<ders>/*.md dosyalarını okur, FORMAT.md'deki yazımı blok JSON'una çevirir ve docs/supabase_migrations/konu_anlatimi/<ders>_<NN>.sql üretir (insert ... on conflict (id) do update; idempotent).
+ADIM 2: Doğrulayıcı (aynı betik, --check bayrağı; hata varsa çıkış kodu 1):
+  - lesson/topic adları lib/features/lessons/data/kpss_lessons.dart'taki kanonik adlarla birebir
+  - bölüm başına 600–1.400 kelime (uyarı), konu başına 3–8 bölüm (hata)
+  - bölüm başına ≥1 :::tuzak, sonda :::akilda-kalsin (3–5 madde) ve :::kontrol (hata); konu başına ≥1 :::kodlama (hata)
+  - yalnızca izinli bloklar ve satır içi biçim; tablo ≤5 sütun/≤10 satır; HTML/link/görsel/emoji yok
+  - :::kontrol içindeki UUID'ler biçimce geçerli
+  - estimated_minutes hesaplanır
+ADIM 3: Pilot içerik — docs/konu_anlatimi/tarih/01_islamiyet_oncesi_turk_tarihi.md (FORMAT.md'deki kurallarla, özgün metin; konu kapsamı docs/soru_kaynaklari/konu_matrisi.md + docs/soru_havuzu/tarih/01_islamiyet_oncesi_turk_tarihi.md açıklamaları ve çeldirici notları). Betikten geçir, SQL'i üret.
+ADIM 4: test/ altında betik için Node test (node --test): örnek .md → beklenen blok JSON; kural ihlali örnekleri → beklenen hata mesajları.
+```
+
+#### ✅ Kabul Kriterleri
+- [ ] `node tools/konu_anlatimi_to_sql.mjs --check` pilot dosyada 0 hata
+- [ ] Pilot SQL canlıya uygulandı ve iki platformda okunuyor (TASK-168 bittiyse)
+- [ ] Claude incelemesi: FORMAT.md §6 kontrol listesi pilot konuda geçti (olgu doğrulama, soru kapsamı, özgünlük)
+
+---
+
+### 📦 TASK-170: Konu Anlatımı İçerik Partileri (GK + GY Türkçe)
+
+- **Durum:** ⏳ Planlandı (pilot onayından sonra) · 🌐 Web ➖ · 📱 Mobil ❌
+- **Amaç:** 30 konunun anlatımını yazmak: Tarih 7, Coğrafya 6, Vatandaşlık 6, Türkçe 11. (Güncel Bilgiler bülten modülüyle karşılanır; Matematik soru havuzu gelince ayrı parti.)
+- **Akış (her parti = 1 ders veya ~3 konu):** Gemini yazar → `--check` 0 hata → Claude FORMAT.md §6 incelemesi → düzeltme → SQL kullanıcı tarafından canlıya uygulanır → task board'da parti işaretlenir.
+- **Parti sırası (öneri):** 1) Tarih (en çok soru, en net olgular) · 2) Vatandaşlık (Anayasa metnine dayalı, doğrulaması kolay) · 3) Türkçe (kural + örnek ağırlıklı) · 4) Coğrafya.
+
+| Parti | Ders | Konular | Durum |
+|---|---|---|---|
+| P1 | Tarih | 7 | ⏳ |
+| P2 | Vatandaşlık | 6 | ⏳ |
+| P3 | Türkçe | 11 | ⏳ |
+| P4 | Coğrafya | 6 | ⏳ |
