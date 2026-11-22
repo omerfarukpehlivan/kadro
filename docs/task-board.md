@@ -215,6 +215,7 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-168** | **Konu Anlatımı Altyapısı — Veri Modeli, Okuyucu & İlerleme** | `10` SQL (`topic_lesson_units`, `user_topic_lesson_progress`, RLS); blok tabanlı okuyucu (tablo, zaman çizgisi, ÖSYM tuzak kutusu, Akılda Kalsın, satır içi kontrol soruları); bölüm/konu ilerlemesi ve senkron; konu testine geçiş; web’de herkese açık SEO sayfaları; `topic_lesson_units.json` eşleniklik dosyası | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-169** | **Konu Anlatımı Üretim Hattı — Dönüştürücü, Doğrulayıcı & Pilot Konu** | `docs/konu_anlatimi/FORMAT.md` biçimindeki Markdown’ı doğrulayıp SQL’e çeviren `tools/konu_anlatimi_to_sql.mjs`; pilot: Tarih · İslamiyet Öncesi Türk Tarihi | 🟢 **Tamamlandı** | ➖ | ✅ |
 | **TASK-170** | **Konu Anlatımı İçerik Partileri (GK + GY Türkçe)** | 30 konu: Tarih 7, Vatandaşlık 6, Türkçe 11, Coğrafya 6; her parti Gemini yazar → doğrulayıcı → Claude incelemesi → canlıya SQL | 🟢 **Tamamlandı** | ➖ | ✅ |
+| **TASK-171** | **Web’de Konu Anlatımı Panel İçinde Açılsın** | Uygulama içinden açılan konu anlatımının herkese açık SEO sayfası yerine `(app)` kabuğunda açılması: `/dersler/[ders]/[konu]/anlatim[/bolum]` rotaları, ortak içerik bileşenleri, `buildAppTopicLessonHref`; SEO sayfaları değişmez | ⏳ **Planlandı** | ❌ | ➖ |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** | ❌ | ❌ |
 
 ### 📊 Aktif Mobil & Web Eşleniklik Özeti
@@ -7049,3 +7050,51 @@ ADIM 4: test/ altında betik için Node test (node --test): örnek .md → bekle
 | P2 | Vatandaşlık | 6 | ✅ (29 bölüm) |
 | P3 | Türkçe | 11 | ✅ (45 bölüm) |
 | P4 | Coğrafya | 6 | ✅ (24 bölüm) |
+
+---
+
+## 🧭 56. Dalga 56 [Web UX]: Konu Anlatımının Uygulama Panelinde Açılması (`TASK-171`)
+
+### 📦 TASK-171: Web'de Konu Anlatımı Panel İçinde Açılsın (Landing Sayfasına Atmasın)
+
+- **Durum:** ⏳ Planlandı · 🌐 Web ❌ · 📱 Mobil ➖ (mobilde konu anlatımı zaten uygulama içinde açılıyor)
+- **Sorun (2026-11-22 kullanıcı geri bildirimi):** Giriş yapmış kullanıcı `/dersler` içindeki "Konu Anlatımı"na tıklayınca herkese açık SEO sayfasına (`/konu-anlatimi/...`, `(public)` düzeni) gidiyor. Üst menü, kenar paneli ve uygulama kabuğu kayboluyor; kullanıcı kendini landing sayfasında buluyor.
+- **Hedef:** Uygulama içinden açılan konu anlatımı, uygulama kabuğu (`(app)/layout.tsx`: panel menüsü, üst çubuk) içinde açılsın. Herkese açık SEO sayfaları Google ve giriş yapmamış ziyaretçiler için olduğu gibi kalsın.
+
+#### 🔗 Ortak Sözleşme
+- **Veri, kurallar, bileşenler değişmez:** Aynı `topic_lesson_units` içeriği, aynı blok render'ı, aynı kontrol sorusu seçimi ve ilerleme kuralı (TASK-168). Şema değişikliği yok, eşleniklik dosyası değişmez.
+- **İki giriş yolu, tek içerik:**
+  - Herkese açık (SEO): `/konu-anlatimi/[ders]/[konu]` ve `/konu-anlatimi/[ders]/[konu]/[bolum]` — `(public)` düzeni, sitemap'te, indekslenebilir. Değişmez.
+  - Uygulama içi (yeni): `/dersler/[ders]/[konu]/anlatim` ve `/dersler/[ders]/[konu]/anlatim/[bolum]` — `(app)` düzeni, `robots: noindex`, `canonical` herkese açık adrese.
+- **Kural:** Uygulama içindeki hiçbir bağlantı herkese açık `/konu-anlatimi/...` adresine gitmez.
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-171 — Konu Anlatımı Panel İçinde Açılsın (Web / Next.js)
+ÖNEMLİ: kadro-web/AGENTS.md kurallarına birebir uy. Veriye, şemaya, blok/ilerleme kurallarına dokunma. Bitince lint/test/build çalıştır ve ../gunisigi/docs/task-board.md içinde yalnızca TASK-171'in "Web de Yapıldı" kolonunu güncelle. Commit etme.
+
+ADIM 1: Ortak içerik bileşeni
+- src/app/(public)/konu-anlatimi/[ders]/[konu]/page.tsx ve .../[bolum]/page.tsx içindeki sayfa gövdesini (konu özeti + bölüm listesi; bölüm içeriği + TopicLessonUnitInteractive) src/features/topic-lessons/ altında iki ortak sunucu bileşenine taşı (ör. TopicLessonOverview, TopicLessonUnitView). Bu bileşenler bağlantıları kendileri üretmesin; "bölüm adresi", "konu adresi" ve "geri" bağlantısı için href üreten bir fonksiyon (veya basePath) prop olarak alsın.
+- Herkese açık sayfalar bu bileşenleri mevcut adreslerle kullanmaya devam etsin (davranış, metadata, JSON-LD, sitemap aynen kalsın).
+
+ADIM 2: Uygulama içi rotalar
+- src/app/(app)/dersler/[ders]/[konu]/anlatim/page.tsx ve src/app/(app)/dersler/[ders]/[konu]/anlatim/[bolum]/page.tsx oluştur; aynı ortak bileşenleri uygulama içi adreslerle kullansın. (app) düzeni sayesinde panel menüsü ve üst çubuk görünür kalır.
+- generateMetadata: robots { index: false }, alternates.canonical herkese açık adres.
+- Slug çözümü toTopicLessonSlug ile; bulunamazsa notFound().
+
+ADIM 3: Bağlantılar
+- src/domain/topic-lessons.ts: buildAppTopicLessonHref(lesson, topic, unitOrder?) → /dersler/<ders>/<konu>/anlatim[/<bolum>]. buildTopicLessonHref (herkese açık) yalnızca public sayfalar ve sitemap'te kalsın.
+- Uygulama içindeki tüm bağlantıları yeni fonksiyona çevir: src/features/lessons/lessons-studio-workspace.tsx (konu satırındaki "Konu Anlatımı"), src/features/quiz/quiz-studio-workspace.tsx ("Konuyu Tekrar Oku"), src/features/topic-lessons/topic-lesson-unit-interactive.tsx ("Sonraki Bölüm", bölüm listesi, "Konu Testine Geç" — test bağlantısı /coz olarak kalır). Interactive bileşen hangi modda olduğunu prop'tan alsın (public mi app mi), kendi tahmin etmesin.
+- Herkese açık sayfada oturum açmış kullanıcıya küçük bir "Panelde aç" bağlantısı göster (isteğe bağlı ama önerilir).
+
+ADIM 4: Doğrulama
+- npm run lint, npx tsc --noEmit, npm run test:parity, npm run build yeşil.
+- Elle kontrol: giriş yapmış kullanıcı /dersler → Tarih → İslamiyet Öncesi Türk Tarihi → Konu Anlatımı → Bölüm 1 → Sonraki Bölüm → Konu Testine Geç akışının tamamında panel menüsü görünür; adres hep /dersler/... ile başlar. Giriş yapmadan /konu-anlatimi/tarih/islamiyet-oncesi-turk-tarihi açılmaya devam eder.
+- Bağlantı taraması: src/ altında (app) rotaları ve uygulama bileşenlerinde buildTopicLessonHref / "/konu-anlatimi" geçen yer kalmamalı (public sayfalar ve sitemap hariç).
+```
+
+#### ✅ Kabul Kriterleri
+- [ ] Panelden açılan konu anlatımı ve bütün bölüm geçişleri uygulama kabuğu içinde kalıyor
+- [ ] Herkese açık SEO sayfaları, sitemap ve metadata değişmeden çalışıyor
+- [ ] Uygulama içi sayfalar noindex, canonical herkese açık adrese
+- [ ] lint / tsc / test:parity / build yeşil; Claude incelemesi onaylandı
