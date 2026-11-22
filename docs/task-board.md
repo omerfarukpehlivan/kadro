@@ -214,7 +214,7 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-167** | **B Grubu Ortak Soru Havuzu — Lisans / Ön Lisans / Ortaöğretim & Alt Düzey Deneme Zor Soru Tavanı** | Üç B Grubu düzeyinin tek GY-GK havuzunu paylaşması (`09` SQL: `b_grubu_gk` / `b_grubu_gygk` etiketleri, Türkçe `education_level` NULL); Türkçe’nin üç düzeyde aktif olması; Ön Lisans/Ortaöğretim denemelerinde bölüm başına zor soru ≤ %15 tavanı; `mock_difficulty_cap.json` eşleniklik dosyası | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-168** | **Konu Anlatımı Altyapısı — Veri Modeli, Okuyucu & İlerleme** | `10` SQL (`topic_lesson_units`, `user_topic_lesson_progress`, RLS); blok tabanlı okuyucu (tablo, zaman çizgisi, ÖSYM tuzak kutusu, Akılda Kalsın, satır içi kontrol soruları); bölüm/konu ilerlemesi ve senkron; konu testine geçiş; web’de herkese açık SEO sayfaları; `topic_lesson_units.json` eşleniklik dosyası | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-169** | **Konu Anlatımı Üretim Hattı — Dönüştürücü, Doğrulayıcı & Pilot Konu** | `docs/konu_anlatimi/FORMAT.md` biçimindeki Markdown’ı doğrulayıp SQL’e çeviren `tools/konu_anlatimi_to_sql.mjs`; pilot: Tarih · İslamiyet Öncesi Türk Tarihi | 🟡 **Kısmi (canlıya SQL bekliyor)** | ➖ | ✅ |
-| **TASK-170** | **Konu Anlatımı İçerik Partileri (GK + GY Türkçe)** | 30 konu: Tarih 7, Vatandaşlık 6, Türkçe 11, Coğrafya 6; her parti Gemini yazar → doğrulayıcı → Claude incelemesi → canlıya SQL | ⏳ **Planlandı** | ➖ | ❌ |
+| **TASK-170** | **Konu Anlatımı İçerik Partileri (GK + GY Türkçe)** | 30 konu: Tarih 7, Vatandaşlık 6, Türkçe 11, Coğrafya 6; her parti Gemini yazar → doğrulayıcı → Claude incelemesi → canlıya SQL | 🟢 **Tamamlandı** | ➖ | ✅ |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** | ❌ | ❌ |
 
 ### 📊 Aktif Mobil & Web Eşleniklik Özeti
@@ -7005,7 +7005,7 @@ ADIM 4: tests/parity/parity.test.ts topic_lesson_units.json'ı okusun. npm run l
 
 ### 📦 TASK-169: Konu Anlatımı Üretim Hattı — Dönüştürücü, Doğrulayıcı & Pilot Konu
 
-- **Durum:** 🟡 Kısmi (canlıya SQL bekliyor) · 🌐 Web ➖ · 📱 Mobil ✅ (betik + 11 test; pilot Claude incelemesinden sonra 8 bilgi düzeltmesiyle onaylandı 2026-11-22) (araç ve içerik `gunisigi` deposunda tutulur)
+- **Durum:** 🟢 Tamamlandı · 🌐 Web ➖ · 📱 Mobil ✅ (betik + 11 test; pilot Claude incelemesinden sonra 8 bilgi düzeltmesiyle onaylandı 2026-11-22) (araç ve içerik `gunisigi` deposunda tutulur)
 - **Amaç:** İçeriği Markdown olarak yazıp tek komutla doğrulamak ve SQL'e çevirmek; tüm kalite kurallarını makineye denetletmek; bir pilot konuyla formatı kanıtlamak.
 
 #### 🔗 Ortak Sözleşme
@@ -7038,14 +7038,14 @@ ADIM 4: test/ altında betik için Node test (node --test): örnek .md → bekle
 
 ### 📦 TASK-170: Konu Anlatımı İçerik Partileri (GK + GY Türkçe)
 
-- **Durum:** ⏳ Planlandı (pilot onayından sonra) · 🌐 Web ➖ · 📱 Mobil ❌
+- **Durum:** 🟢 Tamamlandı (2026-11-22) · 🌐 Web ➖ · 📱 Mobil ✅ — 30 konu, 141 bölüm canlıda; her parti Claude incelemesinden geçti
 - **Amaç:** 30 konunun anlatımını yazmak: Tarih 7, Coğrafya 6, Vatandaşlık 6, Türkçe 11. (Güncel Bilgiler bülten modülüyle karşılanır; Matematik soru havuzu gelince ayrı parti.)
 - **Akış (her parti = 1 ders veya ~3 konu):** Gemini yazar → `--check` 0 hata → Claude FORMAT.md §6 incelemesi → düzeltme → SQL kullanıcı tarafından canlıya uygulanır → task board'da parti işaretlenir.
 - **Parti sırası (öneri):** 1) Tarih (en çok soru, en net olgular) · 2) Vatandaşlık (Anayasa metnine dayalı, doğrulaması kolay) · 3) Türkçe (kural + örnek ağırlıklı) · 4) Coğrafya.
 
 | Parti | Ders | Konular | Durum |
 |---|---|---|---|
-| P1 | Tarih | 7 | ⏳ |
-| P2 | Vatandaşlık | 6 | ⏳ |
-| P3 | Türkçe | 11 | ⏳ |
-| P4 | Coğrafya | 6 | ⏳ |
+| P1 | Tarih | 7 | ✅ (43 bölüm) |
+| P2 | Vatandaşlık | 6 | ✅ (29 bölüm) |
+| P3 | Türkçe | 11 | ✅ (45 bölüm) |
+| P4 | Coğrafya | 6 | ✅ (24 bölüm) |
