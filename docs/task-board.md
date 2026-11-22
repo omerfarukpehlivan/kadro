@@ -215,7 +215,7 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-168** | **Konu Anlatımı Altyapısı — Veri Modeli, Okuyucu & İlerleme** | `10` SQL (`topic_lesson_units`, `user_topic_lesson_progress`, RLS); blok tabanlı okuyucu (tablo, zaman çizgisi, ÖSYM tuzak kutusu, Akılda Kalsın, satır içi kontrol soruları); bölüm/konu ilerlemesi ve senkron; konu testine geçiş; web’de herkese açık SEO sayfaları; `topic_lesson_units.json` eşleniklik dosyası | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
 | **TASK-169** | **Konu Anlatımı Üretim Hattı — Dönüştürücü, Doğrulayıcı & Pilot Konu** | `docs/konu_anlatimi/FORMAT.md` biçimindeki Markdown’ı doğrulayıp SQL’e çeviren `tools/konu_anlatimi_to_sql.mjs`; pilot: Tarih · İslamiyet Öncesi Türk Tarihi | 🟢 **Tamamlandı** | ➖ | ✅ |
 | **TASK-170** | **Konu Anlatımı İçerik Partileri (GK + GY Türkçe)** | 30 konu: Tarih 7, Vatandaşlık 6, Türkçe 11, Coğrafya 6; her parti Gemini yazar → doğrulayıcı → Claude incelemesi → canlıya SQL | 🟢 **Tamamlandı** | ➖ | ✅ |
-| **TASK-171** | **Web’de Konu Anlatımı Panel İçinde Açılsın** | Uygulama içinden açılan konu anlatımının herkese açık SEO sayfası yerine `(app)` kabuğunda açılması: `/dersler/[ders]/[konu]/anlatim[/bolum]` rotaları, ortak içerik bileşenleri, `buildAppTopicLessonHref`; SEO sayfaları değişmez | ⏳ **Planlandı** | ❌ | ➖ |
+| **TASK-171** | **Web’de Konu Anlatımı Panel İçinde Açılsın** | Uygulama içinden açılan konu anlatımının herkese açık SEO sayfası yerine `(app)` kabuğunda açılması: `/dersler/[ders]/[konu]/anlatim[/bolum]` rotaları, ortak içerik bileşenleri, `buildAppTopicLessonHref`; SEO sayfaları değişmez | 🟢 **Tamamlandı (Web)** | ✅ | ➖ |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** | ❌ | ❌ |
 
 ### 📊 Aktif Mobil & Web Eşleniklik Özeti
@@ -7057,7 +7057,7 @@ ADIM 4: test/ altında betik için Node test (node --test): örnek .md → bekle
 
 ### 📦 TASK-171: Web'de Konu Anlatımı Panel İçinde Açılsın (Landing Sayfasına Atmasın)
 
-- **Durum:** ⏳ Planlandı · 🌐 Web ❌ · 📱 Mobil ➖ (mobilde konu anlatımı zaten uygulama içinde açılıyor)
+- **Durum:** 🟢 Tamamlandı (Web) · 🌐 Web ✅ · 📱 Mobil ➖ (mobilde konu anlatımı zaten uygulama içinde açılıyor)
 - **Sorun (2026-11-22 kullanıcı geri bildirimi):** Giriş yapmış kullanıcı `/dersler` içindeki "Konu Anlatımı"na tıklayınca herkese açık SEO sayfasına (`/konu-anlatimi/...`, `(public)` düzeni) gidiyor. Üst menü, kenar paneli ve uygulama kabuğu kayboluyor; kullanıcı kendini landing sayfasında buluyor.
 - **Hedef:** Uygulama içinden açılan konu anlatımı, uygulama kabuğu (`(app)/layout.tsx`: panel menüsü, üst çubuk) içinde açılsın. Herkese açık SEO sayfaları Google ve giriş yapmamış ziyaretçiler için olduğu gibi kalsın.
 
