@@ -1,5 +1,5 @@
 {
-  "$comment": "Mobil (gunisigi) ve Web (kadro-web) için Konu Anlatımı blok ayrıştırma, otomatik kontrol sorusu seçimi ve ilerleme yüzdesi ortak beklenen çıktıları (TASK-168).",
+  "$comment": "Mobil (gunisigi) ve Web (kadro-web) için Konu Anlatımı blok ayrıştırma, otomatik kontrol sorusu seçimi ve ilerleme yüzdesi ortak beklenen çıktıları (TASK-168). TASK-172: 'figure' bloğu ({type, svg, caption?}) — svg, math_text.json figureSvg güvenlik kuralına uymazsa blok atlanır.",
   "blockParsingCases": [
     {
       "description": "Her blok türünden birer örnek içeren bölüm ayrıştırılır ve bilinmeyen blok türü sessizce atlanır",
@@ -115,6 +115,63 @@
           "check_questions"
         ],
         "checkQuestionCount": 2
+      }
+    },
+    {
+      "description": "TASK-172: 'figure' bloğu güvenli SVG ile ayrıştırılır; svg'si eksik veya güvenlik kuralına uymayan figure bloğu sessizce atlanır; paragraftaki $...$ matematik korunur",
+      "unit": {
+        "id": "matematik.dogruda_ve_ucgende_acilar_ucgenler.01",
+        "lesson": "Matematik & Geometri",
+        "topic": "Doğruda ve Üçgende Açılar, Üçgenler",
+        "unit_order": 1,
+        "title": "Bölüm 1: Dik Üçgen ve Pisagor Bağıntısı",
+        "summary": "Dik üçgende kenarlar arasındaki bağıntıyı özetler.",
+        "estimated_minutes": 5,
+        "exam_scopes": [
+          "b_grubu_gygk"
+        ],
+        "is_published": true,
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Dik üçgende $a^2 + b^2 = c^2$ bağıntısı geçerlidir."
+          },
+          {
+            "type": "figure",
+            "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 326.7 260\" width=\"326.7\" height=\"260\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" font-family=\"DM Sans, Arial, sans-serif\" font-size=\"14\"><polygon points=\"30,230 296.7,230 296.7,30\"/><polyline points=\"285.7,230 285.7,219 296.7,219\" stroke-width=\"1.4\"/><line x1=\"30\" y1=\"230\" x2=\"296.7\" y2=\"230\"/><text x=\"163.3\" y=\"246.6\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-size=\"13\">4</text><line x1=\"296.7\" y1=\"230\" x2=\"296.7\" y2=\"30\"/><text x=\"310.6\" y=\"134.6\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-size=\"13\">3</text><text x=\"16.9\" y=\"239.8\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-weight=\"600\">A</text><text x=\"307.9\" y=\"243.3\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-weight=\"600\">B</text><text x=\"304.4\" y=\"23.3\" fill=\"currentColor\" stroke=\"none\" text-anchor=\"middle\" font-weight=\"600\">C</text></svg>",
+            "caption": "Şekil 1. Dik kenarları 3 ve 4 olan üçgen"
+          },
+          {
+            "type": "figure",
+            "caption": "SVG'si olmayan şekil atlanır"
+          },
+          {
+            "type": "figure",
+            "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><script>alert(1)</script></svg>"
+          },
+          {
+            "type": "key_points",
+            "items": [
+              "Hipotenüs en uzun kenardır.",
+              "$3, 4, 5$ özel bir üçlüdür."
+            ]
+          },
+          {
+            "type": "check_questions",
+            "question_ids": []
+          }
+        ]
+      },
+      "expected": {
+        "blockTypes": [
+          "paragraph",
+          "figure",
+          "key_points",
+          "check_questions"
+        ],
+        "checkQuestionCount": 2,
+        "paragraphText": "Dik üçgende $a^2 + b^2 = c^2$ bağıntısı geçerlidir.",
+        "figureCaption": "Şekil 1. Dik kenarları 3 ve 4 olan üçgen"
       }
     }
   ],

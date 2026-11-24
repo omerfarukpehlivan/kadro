@@ -11,6 +11,9 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSy
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
+import { renderFigure } from "./math/figure.mjs";
+import { lintMathText } from "./math/latex_lint.mjs";
+
 const ROOT = resolve(dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1")), "..");
 const DEFAULT_INPUT_DIR = join(ROOT, "docs", "konu_anlatimi");
 const DEFAULT_OUTPUT_DIR = join(ROOT, "docs", "supabase_migrations", "konu_anlatimi");
@@ -327,6 +330,22 @@ export function parseSectionBlocks(sectionBody, sectionLabel = "Bölüm") {
         continue;
       }
 
+      // TASK-172: Şekil bloğu. Yönerge satırının devamı alt yazıdır; içerik şekil tarifidir (JSON).
+      //   :::sekil Şekil 1. Dik üçgende kenarlar
+      //   { "kind": "geometry", ... }
+      //   :::
+      if (directive === ":::sekil") {
+        const caption = trimmed.slice(directive.length).trim();
+        const jsonText = innerText.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```$/, "").trim();
+        try {
+          const svg = renderFigure(JSON.parse(jsonText));
+          blocks.push(caption ? { type: "figure", svg, caption } : { type: "figure", svg });
+        } catch (e) {
+          parseErrors.push(`${sectionLabel}: ':::sekil' çizilemedi → ${e.message}`);
+        }
+        continue;
+      }
+
       parseErrors.push(`${sectionLabel}: Bilinmeyen yönerge blok türü "${directive}".`);
       continue;
     }
@@ -449,6 +468,7 @@ export function parseTopicMarkdown(markdownContent, sourceFileName = "topic.md")
 function collectTextStringsForFormatCheck(block) {
   const texts = [];
   if (block.text) texts.push(block.text);
+  if (block.caption) texts.push(block.caption);
   if (Array.isArray(block.items)) {
     for (const item of block.items) {
       if (typeof item === "string") texts.push(item);
@@ -581,6 +601,8 @@ export function validateParsedTopic(parsed, canonicalCurriculum, sourceName = "t
         if (EMOJI_RE.test(text)) {
           errors.push(`${label}: Emoji kullanılamaz ("${text.slice(0, 60)}").`);
         }
+        // TASK-172: $...$ matematik yazımı (izinli komutlar, kapanmamış $ vb.)
+        errors.push(...lintMathText(text, label));
       }
     }
   }

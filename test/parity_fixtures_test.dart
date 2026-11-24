@@ -171,6 +171,18 @@ void main() {
           equals((expected['blockTypes'] as List).cast<String>()),
         );
         expect(unit.checkQuestionCount, equals(expected['checkQuestionCount']));
+        // TASK-172: paragraftaki $...$ matematik korunur; figure alt yazısı okunur.
+        if (expected['paragraphText'] != null) {
+          final paragraph = unit.blocks
+              .whereType<TopicLessonParagraphBlock>()
+              .first;
+          expect(paragraph.text, equals(expected['paragraphText']));
+        }
+        if (expected['figureCaption'] != null) {
+          final figure = unit.blocks.whereType<TopicLessonFigureBlock>().first;
+          expect(figure.caption, equals(expected['figureCaption']));
+          expect(figure.svg, startsWith('<svg '));
+        }
       });
     }
 

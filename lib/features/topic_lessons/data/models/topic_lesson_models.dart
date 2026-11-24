@@ -1,3 +1,4 @@
+import 'package:kadro/core/utils/figure_svg.dart';
 import 'package:kadro/features/quiz/data/models/question.dart';
 
 /// Konu anlatımı içindeki uyarı/bilgi kutusu (`callout`) türleri (`TASK-168`).
@@ -123,6 +124,16 @@ sealed class TopicLessonBlock {
       case 'check_questions':
         final questionIds = _parseStringList(json['question_ids']);
         return TopicLessonCheckQuestionsBlock(questionIds: questionIds);
+
+      case 'figure':
+        // TASK-172: Güvenlik kuralına uymayan veya eksik SVG sessizce atlanır.
+        final svg = (json['svg'] ?? '').toString().trim();
+        if (!isSafeFigureSvg(svg)) return null;
+        final caption = (json['caption'] ?? '').toString().trim();
+        return TopicLessonFigureBlock(
+          svg: svg,
+          caption: caption.isEmpty ? null : caption,
+        );
 
       default:
         // Bilinmeyen blok türü istemcide sessizce atlanır.
@@ -269,6 +280,27 @@ final class TopicLessonCheckQuestionsBlock extends TopicLessonBlock {
 
   @override
   Map<String, dynamic> toJson() => {'type': type, 'question_ids': questionIds};
+}
+
+/// Matematik/geometri şekli (`figure`) bloğu (TASK-172).
+///
+/// [svg], `tools/math/figure.mjs` ile JSON tariften üretilmiş, `currentColor`
+/// kullanan güvenli SVG'dir; [caption] şeklin altındaki isteğe bağlı açıklamadır.
+final class TopicLessonFigureBlock extends TopicLessonBlock {
+  final String svg;
+  final String? caption;
+
+  const TopicLessonFigureBlock({required this.svg, this.caption});
+
+  @override
+  String get type => 'figure';
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'svg': svg,
+    if (caption != null) 'caption': caption,
+  };
 }
 
 /// Bir konunun 6–12 dakikada okunabilen tek bir konu anlatımı bölümünü (`public.topic_lesson_units`)

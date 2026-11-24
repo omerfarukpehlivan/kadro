@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:kadro/core/utils/figure_svg.dart';
+import 'package:kadro/core/utils/math_text.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/shared/widgets/climate_chart/climate_chart_models.dart';
 import 'package:kadro/shared/widgets/geo_diagram/geo_diagram_models.dart';
@@ -28,6 +30,11 @@ class Question {
   /// Coğrafya ve diğer derslerdeki harita, tablo, grafik veya şekil görseli URL'si.
   /// Boş veya null ise soru yalnızca metin olarak render edilir.
   final String? imageUrl;
+
+  /// TASK-172: Matematik/geometri sorularının şekli (güvenli, `currentColor`
+  /// kullanan SVG; Supabase `figure_svg`). Elle yazılmaz, JSON tariften
+  /// `tools/math/compile_questions.mjs` üretir. `QuestionFigureCard` gösterir.
+  final String? figureSvg;
 
   /// Soruda yer alan dinamik ve interaktif Türkiye vektör haritası konfigürasyonu.
   /// (İl/bölge boyama, Romen rakamlı marker'lar, koordinat işaretleyicileri).
@@ -77,6 +84,7 @@ class Question {
     this.difficulty = 'medium',
     this.distractorTrap,
     this.imageUrl,
+    this.figureSvg,
     this.mapConfig,
     this.climateConfig,
     this.geoConfig,
@@ -225,6 +233,14 @@ class Question {
     return trimmed.toLowerCase();
   }
 
+  /// Boş/`'null'` değerleri ve güvenlik denetiminden geçmeyen SVG'leri eler.
+  static String? _normalizeFigureSvg(String? raw) {
+    if (raw == null) return null;
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty || trimmed == 'null') return null;
+    return isSafeFigureSvg(trimmed) ? trimmed : null;
+  }
+
   static List<String> _parseExamScopes(dynamic raw) {
     if (raw is List) {
       final parsed = raw
@@ -257,6 +273,7 @@ class Question {
     String? difficulty,
     String? distractorTrap,
     String? imageUrl,
+    String? figureSvg,
     TurkeyMapConfig? mapConfig,
     ClimateChartConfig? climateConfig,
     GeoDiagramConfig? geoConfig,
@@ -280,6 +297,7 @@ class Question {
       difficulty: difficulty ?? this.difficulty,
       distractorTrap: distractorTrap ?? this.distractorTrap,
       imageUrl: imageUrl ?? this.imageUrl,
+      figureSvg: figureSvg ?? this.figureSvg,
       mapConfig: mapConfig ?? this.mapConfig,
       climateConfig: climateConfig ?? this.climateConfig,
       geoConfig: geoConfig ?? this.geoConfig,
@@ -969,60 +987,11 @@ class Question {
   /// Angular'daki `Object.assign(new Question(), json)` veya mapper fonksiyonu gibi düşünebilirsin.
   /// Soru metinlerindeki LaTeX ($\rightarrow$, arrow), Markdown (**...**) ve
   /// gereksiz tırnak/boşluk kalıntılarını temizleyen sağlam sanitizer metodu.
-  static String cleanText(String raw) {
-    if (raw.isEmpty) return raw;
-
-    var text = raw;
-
-    // 0. String içindeki kaçışlı literal \n karakterlerini gerçek satır sonuna çevir
-    text = text.replaceAll(r'\n', '\n').replaceAll('\r', '');
-
-    // 1. Ok işaretleri ve LaTeX yön göstergeleri
-    // $\rightarrow$, $\Rightarrow$, \rightarrow, \Rightarrow, \to, -->, ->, &rarr;
-    text = text.replaceAll(
-      RegExp(r'\$(\\rightarrow|\\Rightarrow|\\to)\$'),
-      ' → ',
-    );
-    text = text.replaceAll(RegExp(r'\\(rightarrow|Rightarrow|to)\b'), ' → ');
-    text = text.replaceAll('&rarr;', ' → ');
-    text = text.replaceAll('-->', ' → ');
-    text = text.replaceAll('->', ' → ');
-
-    // Sol ok işaretleri: $\leftarrow$, \leftarrow, <--, <-
-    text = text.replaceAll(RegExp(r'\$(\\leftarrow|\\Leftarrow)\$'), ' ← ');
-    text = text.replaceAll(RegExp(r'\\(leftarrow|Leftarrow)\b'), ' ← ');
-    text = text.replaceAll('&larr;', ' ← ');
-    text = text.replaceAll('<--', ' ← ');
-    text = text.replaceAll('<-', ' ← ');
-
-    // 2. LaTeX inline math dolar işaretleri: $x$ -> x
-    text = text.replaceAllMapped(RegExp(r'\$([^\$]+)\$'), (m) => m.group(1)!);
-
-    // 3. Markdown kalın ve altı çizili: **metin** -> metin, __metin__ -> metin
-    text = text.replaceAllMapped(RegExp(r'\*\*(.+?)\*\*'), (m) => m.group(1)!);
-    text = text.replaceAllMapped(RegExp(r'__(.+?)__'), (m) => m.group(1)!);
-    // Başıboş kalan ** veya __ temizliği
-    text = text.replaceAll('**', '');
-
-    // 4. Markdown italik ve tırnak temizliği: *"metin"* -> "metin", *metin* -> metin
-    text = text
-        .replaceAllMapped(RegExp(r'\*"(.+?)"\*'), (m) => '"${m.group(1)}"')
-        .replaceAllMapped(RegExp(r'\*([^\*\n]+)\*'), (m) => m.group(1)!);
-
-    // 5. Çiftlenmiş veya kaçışlı tırnaklar: \" -> ", "" -> ", '' -> '
-    text = text.replaceAll(r'\"', '"');
-    text = text.replaceAll(RegExp(r'"{2,}'), '"');
-    text = text.replaceAll(RegExp(r"'{2,}"), "'");
-
-    // 6. Satır içi çoklu boşlukları ([ \t]{2,}) tek boşluğa indirge, paragraf sonlarını (\n\n) koru
-    final lines = text.split('\n');
-    final cleanedLines = lines.map((line) {
-      return line.replaceAll(RegExp(r'[ \t]{2,}'), ' ').trim();
-    });
-    text = cleanedLines.join('\n');
-
-    return text.trim();
-  }
+  ///
+  /// TASK-172'den itibaren matematik parçaları (`$...$`, `$$...$$`) korunur ve
+  /// ekranda `MathText` ile render edilir; temizlik yalnızca yazı parçalarına
+  /// uygulanır. Kurallar: `docs/parity_fixtures/math_text.json`.
+  static String cleanText(String raw) => cleanQuestionText(raw);
 
   factory Question.fromJson(Map<String, dynamic> json) {
     final rawText = json['text'] as String? ?? '';
@@ -1032,6 +1001,8 @@ class Question {
     final rawOptions = List<String>.from(json['options'] as List? ?? const []);
     final rawImage =
         json['image_url'] as String? ?? json['imageUrl'] as String?;
+    final rawFigure =
+        json['figure_svg'] as String? ?? json['figureSvg'] as String?;
 
     TurkeyMapConfig? mapConfig;
     if (json['map_config'] is Map<String, dynamic>) {
@@ -1101,6 +1072,7 @@ class Question {
       imageUrl: (rawImage != null && rawImage.isNotEmpty && rawImage != 'null')
           ? rawImage
           : null,
+      figureSvg: _normalizeFigureSvg(rawFigure),
       mapConfig: mapConfig,
       climateConfig: climateConfig,
       geoConfig: geoConfig,
@@ -1140,6 +1112,8 @@ class Question {
         row['distractor_trap'] as String? ?? row['distractorTrap'] as String?;
     final rawImage =
         row['image_url']?.toString() ?? row['imageUrl']?.toString();
+    final rawFigure =
+        row['figure_svg']?.toString() ?? row['figureSvg']?.toString();
 
     TurkeyMapConfig? mapConfig;
     if (interaction['map_config'] is Map<String, dynamic>) {
@@ -1189,6 +1163,7 @@ class Question {
       imageUrl: (rawImage != null && rawImage.isNotEmpty && rawImage != 'null')
           ? rawImage
           : null,
+      figureSvg: _normalizeFigureSvg(rawFigure),
       mapConfig: mapConfig,
       climateConfig: climateConfig,
       geoConfig: geoConfig,
@@ -1229,6 +1204,9 @@ class Question {
     }
     if (imageUrl != null) {
       map['image_url'] = imageUrl;
+    }
+    if (figureSvg != null) {
+      map['figure_svg'] = figureSvg;
     }
     if (examScopes.length != 1 || examScopes.first != 'lisans_gk') {
       map['exam_scopes'] = examScopes;

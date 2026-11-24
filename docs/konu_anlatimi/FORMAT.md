@@ -94,8 +94,27 @@ Türklerin ana yurdu olarak kabul edilen Orta Asya, ... (özgün paragraf)
 | `:::ornek` … `:::` | `callout` (`kind: example`) | Kural için kısa örnek (özellikle Türkçe dil bilgisi). | Gri örnek kutusu |
 | `:::akilda-kalsin` … `:::` | `key_points` | **Her bölümün sonunda zorunlu**, 3–5 madde. | Bölüm sonu özet kartı |
 | `:::kontrol` … `:::` | `check_questions` | Her bölümün sonunda zorunlu. **Boş bırakılır** → uygulama o konudan otomatik 2 kolay/orta soru seçer (kural `TASK-168`). İstenirse içine satır satır soru UUID'si (`questions.id`) yazılabilir. | Satır içi mini soru |
+| `:::sekil Alt yazı` … `:::` | `figure` | (TASK-172) Matematik/geometri şekli, grafik, tablo görseli, Venn şeması, sayı doğrusu. İçine şekil tarifi (JSON) yazılır; dönüştürücü bunu tema uyumlu SVG'ye çizer. Tarif biçimi: `docs/soru_havuzu/matematik/FORMAT.md` §6. Yönerge satırındaki metin alt yazıdır (isteğe bağlı). | Ortalanmış şekil + alt yazı |
 
-**Satır içi biçim:** yalnızca `**kalın**` ve `*italik*`. Link, görsel, HTML, emoji **yok** (görsel desteği ileride ayrı görev).
+**Satır içi biçim:** `**kalın**`, `*italik*` ve (TASK-172) matematik: `$...$` satır içi, `$$...$$` ayrı satırda ortalanmış LaTeX. İzinli LaTeX komutları ve yazım kuralları `docs/soru_havuzu/matematik/FORMAT.md` §3'tedir (kimya formülü gibi dik yazılacak harfler: `$\mathrm{H_2O}$`). Dönüştürücü matematik yazımını da denetler. Link, resim, HTML, emoji **yok**.
+
+Şekil örneği:
+
+```markdown
+:::sekil Şekil 1. Dik üçgende kenarlar
+{
+  "kind": "geometry",
+  "points": { "A": [0, 0], "B": [4, 0], "C": [4, 3] },
+  "shapes": [
+    { "type": "polygon", "points": ["A", "B", "C"] },
+    { "type": "angle", "vertex": "B", "from": "A", "to": "C", "right": true },
+    { "type": "segment", "from": "A", "to": "B", "label": "4" },
+    { "type": "segment", "from": "B", "to": "C", "label": "3" },
+    { "type": "segment", "from": "A", "to": "C", "label": "5" }
+  ]
+}
+:::
+```
 
 ## 5. İçerik Kuralları
 

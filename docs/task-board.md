@@ -216,6 +216,8 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-169** | **Konu Anlatımı Üretim Hattı — Dönüştürücü, Doğrulayıcı & Pilot Konu** | `docs/konu_anlatimi/FORMAT.md` biçimindeki Markdown’ı doğrulayıp SQL’e çeviren `tools/konu_anlatimi_to_sql.mjs`; pilot: Tarih · İslamiyet Öncesi Türk Tarihi | 🟢 **Tamamlandı** | ➖ | ✅ |
 | **TASK-170** | **Konu Anlatımı İçerik Partileri (GK + GY Türkçe)** | 30 konu: Tarih 7, Vatandaşlık 6, Türkçe 11, Coğrafya 6; her parti Gemini yazar → doğrulayıcı → Claude incelemesi → canlıya SQL | 🟢 **Tamamlandı** | ➖ | ✅ |
 | **TASK-171** | **Web’de Konu Anlatımı Panel İçinde Açılsın** | Uygulama içinden açılan konu anlatımının herkese açık SEO sayfası yerine `(app)` kabuğunda açılması: `/dersler/[ders]/[konu]/anlatim[/bolum]` rotaları, ortak içerik bileşenleri, `buildAppTopicLessonHref`; SEO sayfaları değişmez | 🟢 **Tamamlandı (Web)** | ✅ | ➖ |
+| **TASK-172** | **Matematik Gösterimi Altyapısı — LaTeX, Şekil (SVG) & Soru Derleyicisi** | Soru ve konu anlatımında `$...$` / `$$...$$` LaTeX (mobil `flutter_math_fork`, web KaTeX), tema uyumlu güvenli SVG şekiller (`questions.figure_svg`, `12` SQL, konu anlatımı `figure` bloğu), JSON tariften şekil çizici ve cevap anahtarını hesaplayarak doğrulayan soru derleyicisi (`tools/math/`); ortak sözleşme `math_text.json` | 🟢 **Tamamlandı** (`12` SQL canlıya uygulanmalı) | ✅ | ✅ |
+| **TASK-173** | **Matematik & Geometri Soru Üretim Partileri (14 konu, ilk tur ≈ 560 soru)** | Gemini `docs/soru_havuzu/matematik/GEMINI_PROMPT.md` ile yazar → `compile_questions.mjs --check` → Claude incelemesi → SQL → canlı; pilot: 01, 08, 11, 12 numaralı konulardan 42 soru | ⏳ **Planlandı** | ➖ | ➖ |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** | ❌ | ❌ |
 
 ### 📊 Aktif Mobil & Web Eşleniklik Özeti
@@ -7098,3 +7100,52 @@ ADIM 4: Doğrulama
 - [ ] Herkese açık SEO sayfaları, sitemap ve metadata değişmeden çalışıyor
 - [ ] Uygulama içi sayfalar noindex, canonical herkese açık adrese
 - [ ] lint / tsc / test:parity / build yeşil; Claude incelemesi onaylandı
+
+---
+
+## 🧮 57. Dalga 57 [Yeni İçerik Türü]: Matematik Gösterimi ve Matematik Soru Havuzu (`TASK-172` – `TASK-173`)
+
+> **Sıra:** `TASK-172` (altyapı, Claude yaptı) → `12_math_figures.sql` canlıya → web deploy → `TASK-173` (Gemini soru partileri). Web, `figure_svg` sütununu seçtiği için **migration 12 uygulanmadan web yayına alınmamalı** (yoksa soru sorguları hata verir). Mobil `select()` tüm sütunları aldığı için sıralamadan etkilenmez.
+
+### 📦 TASK-172: Matematik Gösterimi Altyapısı — LaTeX, Şekil (SVG) & Soru Derleyicisi
+
+- **Durum:** 🟢 Tamamlandı · 📱 Mobil ✅ · 🌐 Web ✅ · `12_math_figures.sql` canlıya uygulandı.
+- **Neden:** Matematik kaynaklarındaki soruların çoğu resim; kök, kesir, üs ve geometri şekilleri düz metinle yazılamıyor. Resim (PNG) yerine metin tabanlı LaTeX + vektör şekil seçildi: tema uyumlu (koyu mod), keskin, küçük, aranabilir ve iki platformda aynı.
+
+#### 🔗 Ortak Sözleşme
+- **Matematik yazımı:** `$...$` satır içi, `$$...$$` ayrık (tek satırda kapanır, boş olamaz), `\$` düz dolar. Kapanmayan `$` düz yazıdır. Eski içerikteki `$ → $` / `$\rightarrow$` düz oka çevrilir. Markdown/ok/tırnak temizliği yalnızca matematik dışındaki yazıya uygulanır; kaçışlı `\n` yalnızca yazıda satır sonudur (`\neq` bozulmaz). Temizleyici idempotenttir.
+- **İzinli LaTeX komutları** ve her birinin render örnekleri `docs/parity_fixtures/math_text.json` içindedir (`latexCommands`, `latexRenderSamples`); mobil `flutter_math_fork` ve web KaTeX bu örneklerin hepsini hatasız çizer (testli).
+- **Şekil:** `questions.figure_svg text` (migration `12`), konu anlatımında `{ "type": "figure", "svg": "...", "caption": "..." }` bloğu. SVG yalnızca `math_text.json → figureSvg` beyaz listesindeki etiket/öznitelikleri içerir, renk yerine `currentColor` + `fill-opacity` kullanır; kurala uymayan SVG istemcide gösterilmez, DB'de CHECK ile reddedilir. Şekiller elle yazılmaz: JSON tariften `tools/math/figure.mjs` üretir.
+- **Soru kimliği:** Derleyici `mat-NN-SSS` kimliğinden sabit UUID v5 üretir; SQL `on conflict (id) do update` ile idempotenttir.
+- **Eşleniklik dosyaları:** `math_text.json` (yeni), `topic_lesson_units.json` (`figure` bloğu vakası eklendi). Mobil `test/math_text_test.dart` + `test/parity_fixtures_test.dart`, web `npm run test:parity`, araçlar `node --test tools/math/`.
+
+#### 📱 Mobil Kapsamı (yapıldı)
+- `lib/core/utils/math_text.dart` (`parseMathSegments`, `cleanQuestionText`, `mathToPlainText`), `lib/core/utils/figure_svg.dart` (`isSafeFigureSvg`).
+- `lib/shared/widgets/math_text.dart` (`MathText`, `buildMathInlineSpans`; uzun formül `texBreak` ile satıra bölünür), `lib/shared/widgets/question_figure.dart` (`QuestionFigure`, `QuestionFigureCard` — `DiagramCardShell` + yakınlaştırma).
+- `Question.figureSvg` (`fromSupabase`/`fromJson`/`toJson`), `Question.cleanText` → `cleanQuestionText`.
+- Bağlanan ekranlar: soru kartı, şıklar (`OptionTile`), çözüm açıklaması ve tuzak, Yanlış Defteri, konu anlatımı satır içi biçimi (`InlineFormattedText`: önce kalın/italik, sonra matematik) ve kontrol soruları, `TopicLessonFigureBlock` / `TopicLessonFigureWidget`.
+- Paketler: `flutter_math_fork ^0.7.4`, `flutter_svg ^2.5.0`.
+
+#### 🌐 Web Kapsamı (yapıldı)
+- `src/domain/math-text.ts` (ayrıştırıcı, temizleyici, `isSafeFigureSvg`, `normalizeFigureSvg`); `question.ts` temizleyiciyi buradan alır, `QUESTION_ROW_SELECT` + `figure_svg`, `StudioQuestion.figureSvg`.
+- `src/components/math-text.tsx` (KaTeX, `trust: false`), `src/components/question-figure.tsx` (beyaz liste sonrası satır içi SVG, `text-foreground`).
+- Bağlanan ekranlar: soru stüdyosu (soru, şık, açıklama, tuzak, şekil), Yanlış Defteri, konu anlatımı satır içi biçimi + `figure` bloğu + kontrol soruları. `database.types.ts` güncellendi. Paket: `katex ^0.16.22`.
+
+#### 🛠️ İçerik Araçları (`tools/math/`)
+- `compile_questions.mjs` — Markdown soru dosyası → doğrulama → SQL (+ `--preview` HTML önizleme). Denetler: kanonik konu, kimlik, 5 farklı şık, zorunlu bölümler, tuzakta şık harfi, LaTeX (izinli komut, kapanmamış `$`, KaTeX ile gerçek render), şekil, **cevap anahtarının hesaplanarak doğrulanması** (`dogrulama` ifadesi doğru şıkkın değerine eşit olmalı, şıklar sayısal olarak farklı olmalı), metin tekrarı.
+- `figure.mjs` (8 şekil türü: geometry, bar, line, pie, table, venn, numberline, flow), `expr.mjs` (güvenli ifade hesaplayıcı), `option_value.mjs` (şık → sayı), `latex_lint.mjs`, `mathtext.mjs`; `konu_anlatimi_to_sql.mjs` artık `:::sekil` bloğunu ve LaTeX yazımını da işler.
+- Belgeler: `docs/soru_havuzu/matematik/FORMAT.md` (yazar kılavuzu), `ornek/*.md` (her özelliği gösteren doğrulanmış örnekler), `docs/konu_anlatimi/FORMAT.md` (`:::sekil` + matematik).
+
+#### ✅ Kabul Kriterleri
+- [x] `node --test tools/math/` yeşil; örnek sorular derleyiciden hatasız geçiyor
+- [x] Mobil: `flutter analyze` (0 sorun) ve tüm test paketi (559/559) yeşil; tüm izinli komutlar `flutter_math_fork` ile çiziliyor
+- [x] Web: lint, `tsc --noEmit`, `test:parity` (91/91), `build` yeşil; tüm izinli komutlar KaTeX ile çiziliyor
+- [x] `12_math_figures.sql` canlıya uygulandı (kullanıcı) → sonra web deploy
+
+### 📦 TASK-173: Matematik & Geometri Soru Üretim Partileri
+
+- **Durum:** ⏳ Planlandı · içerik görevi (📱/🌐 ➖; iki platform da canlı veriyi okur).
+- **Akış:** Gemini `docs/soru_havuzu/matematik/GEMINI_PROMPT.md` ile `NN_konu.md` dosyalarını yazar → `node tools/math/compile_questions.mjs --check` 0 hata → Claude incelemesi (cevaplar, şekiller, tuzaklar, özgünlük) → `node tools/math/compile_questions.mjs` ile SQL → kullanıcı Supabase'de çalıştırır.
+- **Pilot:** 01 (12), 08 (12), 12 (10, şekilli), 11 (8, grafik/tablo/şema) = 42 soru. Pilot onaylanmadan sonraki partiye geçilmez.
+- **Hedef (ilk tur):** 01:40 · 02:35 · 03:30 · 04:30 · 05:35 · 06:35 · 07:50 · 08:70 · 09:35 · 10:35 · 11:60 · 12:40 · 13:35 · 14:30 ≈ 560 soru; zorluk ≈ %30/%50/%20.
+- **Not:** Ders "Yakında" durumundan çıkarıldığında (soru sayısı yeterli olunca) mobil/web ders listesi ve denemelerdeki matematik payı ayrıca kontrol edilir.

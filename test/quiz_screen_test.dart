@@ -435,9 +435,11 @@ void main() {
           ),
           equals('Batı ← Doğu ← Merkez ← Başkent'),
         );
+        // TASK-172: Gerçek matematik parçaları artık silinmez; MathText ile
+        // render edilmek üzere ayraçlarıyla korunur.
         expect(
           Question.cleanText(r'$x$ ve $y$ faktörleri'),
-          equals('x ve y faktörleri'),
+          equals(r'$x$ ve $y$ faktörleri'),
         );
       },
     );

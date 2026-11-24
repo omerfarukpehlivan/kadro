@@ -22,6 +22,8 @@ import 'package:kadro/shared/widgets/kadro_filter_chips.dart';
 import 'package:kadro/shared/widgets/responsive_grid.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
+import 'package:kadro/shared/widgets/math_text.dart';
+import 'package:kadro/shared/widgets/question_figure.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Yanlış yapılan soruların biriktiği ve tekrar çözülebildiği Yanlış Defteri ekranı.
@@ -661,12 +663,16 @@ class _MistakeQuestionCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            Text(
+            MathText(
               question.text,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w500,
               ),
             ),
+            if (question.figureSvg != null) ...[
+              const SizedBox(height: 10),
+              QuestionFigure(svg: question.figureSvg!, maxScale: 1),
+            ],
             const SizedBox(height: 12),
 
             Container(
@@ -693,7 +699,7 @@ class _MistakeQuestionCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Expanded(
-                        child: Text(
+                        child: MathText(
                           'Doğru Cevap: ${question.options[question.correctIndex]}',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurface,
@@ -705,7 +711,7 @@ class _MistakeQuestionCard extends StatelessWidget {
                   ),
                   if (question.explanation.isNotEmpty) ...[
                     const SizedBox(height: 6),
-                    Text(
+                    MathText(
                       question.explanation,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
@@ -748,7 +754,7 @@ class _MistakeQuestionCard extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 3),
-                          Text(
+                          MathText(
                             question.distractorTrap!,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onTertiaryContainer,

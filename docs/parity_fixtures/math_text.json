@@ -1,0 +1,101 @@
+{
+  "$comment": "TASK-172 — Matematik gösterimi ortak sözleşmesi. Mobil (lib/core/utils/math_text.dart) ve Web (src/domain/math-text.ts) bu dosyaya karşı test edilir. 'cleanCases': soru metni temizleyicisi; 'segmentCases': metni yazı/matematik parçalarına bölen ayrıştırıcı; 'latexCommands': içerikte izin verilen LaTeX komutları (iki platformda da render testi yapılır).",
+  "rules": {
+    "inlineMath": "$...$ (tek satır, boş olamaz)",
+    "displayMath": "$$...$$ (ayrı satırda ortalanır)",
+    "literalDollar": "\\$",
+    "unmatchedDollar": "düz yazı olarak kalır",
+    "escapedNewline": "Kaçışlı \\n yalnızca matematik dışındaki yazıda satır sonuna çevrilir",
+    "idempotent": "Temizlenmiş metin yeniden temizlendiğinde değişmez (her cleanCases örneği için test edilir)",
+    "legacyArrowMath": "$ → $, $\\rightarrow$ gibi yalnızca ok içeren matematik parçaları düz oka (→ / ←) çevrilir",
+    "cleanupScope": "Markdown, ok ve tırnak temizlikleri yalnızca yazı parçalarına uygulanır; matematik parçaları olduğu gibi korunur"
+  },
+  "cleanCases": [
+    { "description": "Matematiksiz düz metin değişmez", "input": "Aşağıdakilerden hangisi doğrudur?", "expected": "Aşağıdakilerden hangisi doğrudur?" },
+    { "description": "Satır içi matematik korunur", "input": "$\\sqrt{75} + \\sqrt[3]{8}$ işleminin sonucu kaçtır?", "expected": "$\\sqrt{75} + \\sqrt[3]{8}$ işleminin sonucu kaçtır?" },
+    { "description": "Eşitsizlikteki <- matematik içinde bozulmaz", "input": "$x<-1$ ve $y->2$ olduğuna göre", "expected": "$x<-1$ ve $y->2$ olduğuna göre" },
+    { "description": "Matematik dışındaki -> oka çevrilir", "input": "Oğuş -> Urug", "expected": "Oğuş → Urug" },
+    { "description": "Eski içerikteki yalnızca ok içeren matematik parçası düz oka çevrilir", "input": "Oğuş $ → $ Urug $\\rightarrow$ Boy", "expected": "Oğuş → Urug → Boy" },
+    { "description": "Markdown kalınlık yalnızca yazıda temizlenir", "input": "**Buna göre** $a \\cdot b$ kaçtır?", "expected": "Buna göre $a \\cdot b$ kaçtır?" },
+    { "description": "Kaçışlı satır sonu gerçek satır sonuna çevrilir", "input": "I. $x>0$\\nII. $y<0$", "expected": "I. $x>0$\nII. $y<0$" },
+    { "description": "Matematikteki \\neq, \\notin komutları satır sonu sanılmaz", "input": "Satır\\n$a \\neq b$ ve $x \\notin A$", "expected": "Satır\n$a \\neq b$ ve $x \\notin A$" },
+    { "description": "Temizlik iki kez uygulansa da sonuç değişmez", "input": "I. $x \\ne 0$\n**II.** a -> b", "expected": "I. $x \\ne 0$\nII. a → b" },
+    { "description": "Kaçışlı dolar korunur", "input": "Fiyatı 5 \\$ olan ürün", "expected": "Fiyatı 5 \\$ olan ürün" },
+    { "description": "Fazla boşluklar yazıda sadeleşir", "input": "A  ve   B   kümeleri", "expected": "A ve B kümeleri" },
+    { "description": "Ayrık matematik bloğu korunur", "input": "Buna göre\\n$$\\frac{a+b}{2}$$\\nkaçtır?", "expected": "Buna göre\n$$\\frac{a+b}{2}$$\nkaçtır?" }
+  ],
+  "segmentCases": [
+    { "description": "Matematiksiz metin tek yazı parçasıdır", "input": "Düz metin", "expected": [{ "type": "text", "value": "Düz metin" }] },
+    { "description": "Satır içi matematik", "input": "Sonuç $x^2$ olur.", "expected": [{ "type": "text", "value": "Sonuç " }, { "type": "math", "value": "x^2", "display": false }, { "type": "text", "value": " olur." }] },
+    { "description": "Yalnızca matematik", "input": "$\\frac{1}{2}$", "expected": [{ "type": "math", "value": "\\frac{1}{2}", "display": false }] },
+    { "description": "Ayrık matematik", "input": "a $$\\sqrt{2}$$ b", "expected": [{ "type": "text", "value": "a " }, { "type": "math", "value": "\\sqrt{2}", "display": true }, { "type": "text", "value": " b" }] },
+    { "description": "Kaçışlı dolar yazı olarak kalır", "input": "5 \\$ ve $y$", "expected": [{ "type": "text", "value": "5 $ ve " }, { "type": "math", "value": "y", "display": false }] },
+    { "description": "Kapanmayan dolar yazıdır", "input": "Fiyat $5", "expected": [{ "type": "text", "value": "Fiyat $5" }] },
+    { "description": "Boş matematik yazıdır", "input": "a $$ b", "expected": [{ "type": "text", "value": "a $$ b" }] },
+    { "description": "Satır sonu içeren matematik yazı sayılır", "input": "$a\nb$", "expected": [{ "type": "text", "value": "$a\nb$" }] },
+    { "description": "Art arda iki matematik", "input": "$a$$b$", "expected": [{ "type": "math", "value": "a", "display": false }, { "type": "math", "value": "b", "display": false }] }
+  ],
+  "latexCommands": [
+    "frac", "dfrac", "tfrac", "sqrt", "cdot", "times", "div", "pm", "mp",
+    "leq", "geq", "neq", "le", "ge", "ne", "approx", "equiv", "sim", "cong",
+    "parallel", "perp", "angle", "triangle", "circ", "infty",
+    "pi", "alpha", "beta", "gamma", "theta", "lambda", "mu", "sigma", "Delta",
+    "in", "notin", "subset", "subseteq", "supset", "cup", "cap", "emptyset", "setminus",
+    "mathbb", "mathrm", "text", "left", "right", "lvert", "rvert", "lfloor", "rfloor", "lceil", "rceil",
+    "overline", "underline", "hat", "widehat", "bar", "vec",
+    "quad", "qquad", "ldots", "cdots", "log", "ln", "sin", "cos", "tan", "cot",
+    "binom", "Rightarrow", "Leftrightarrow", "rightarrow", "leftarrow", "to", "displaystyle", "mid"
+  ],
+  "latexSymbols": [",", ";", "!", " ", "%", "$", "{", "}", "|"],
+  "latexRenderSamples": [
+    "\\frac{1}{2} + \\dfrac{3}{4} - \\tfrac{5}{6}",
+    "\\sqrt{75} + \\sqrt[3]{8} = 5\\sqrt{3} + 2",
+    "2 \\cdot 3 \\times 4 \\div 6 \\pm 1 \\mp 2",
+    "a \\leq b \\geq c \\neq d \\le e \\ge f \\ne g",
+    "x \\approx 3{,}14 \\equiv y \\sim z",
+    "\\triangle ABC \\cong \\triangle DEF",
+    "d_1 \\parallel d_2 \\perp d_3",
+    "m(\\widehat{ABC}) = 40^\\circ, \\angle A = 90^\\circ",
+    "x \\to \\infty",
+    "\\pi r^2 + \\alpha + \\beta + \\gamma + \\theta + \\lambda + \\mu + \\sigma + \\Delta",
+    "x \\in A, y \\notin B, A \\subset B \\subseteq C \\supset D",
+    "A \\cup B \\cap C = \\emptyset, A \\setminus B",
+    "x \\in \\mathbb{R}, \\mathbb{Z}, \\mathbb{N}",
+    "\\mathrm{Fe_2O_3}, 5 \\text{ cm}",
+    "\\left( \\frac{1}{2} \\right)^{2} + \\left| x - 3 \\right| + \\lvert y \\rvert",
+    "\\lfloor 2{,}7 \\rfloor + \\lceil 2{,}1 \\rceil",
+    "\\overline{AB} + \\underline{x} + \\hat{a} + \\bar{b} + \\vec{v}",
+    "a \\quad b \\qquad c, 1, 2, \\ldots, n, 1 + 2 + \\cdots + n",
+    "\\log_2 8 + \\ln e + \\sin 30^\\circ + \\cos 60^\\circ + \\tan 45^\\circ + \\cot 45^\\circ",
+    "\\binom{5}{2} = C(5, 2)",
+    "p \\Rightarrow q \\Leftrightarrow r, a \\rightarrow b \\leftarrow c, x \\to 0",
+    "\\displaystyle \\frac{a}{b}",
+    "\\{ x \\mid x > 0 \\}, \\%25, \\$5, a\\,b\\;c\\!d\\ e, \\|x\\|"
+  ],
+  "figureSvg": {
+    "$comment": "questions.figure_svg ve konu anlatımı 'figure' bloğu için güvenlik kuralı. İstemciler bu kurala uymayan SVG'yi göstermez (DB'de de CHECK kısıtı vardır).",
+    "maxLength": 60000,
+    "allowedTags": ["svg", "g", "path", "line", "polyline", "polygon", "circle", "rect", "text"],
+    "allowedAttributes": [
+      "xmlns", "viewBox", "width", "height", "fill", "stroke", "stroke-width", "stroke-dasharray",
+      "stroke-linecap", "stroke-linejoin", "fill-opacity", "stroke-opacity", "opacity", "d", "x", "y",
+      "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", "points", "font-family", "font-size", "font-weight",
+      "font-style", "text-anchor", "transform"
+    ],
+    "forbiddenPatterns": ["<!", "<?", "javascript:", "data:", "&#", "url("],
+    "cases": [
+      { "description": "Üreticinin çıktısı gibi sade SVG güvenlidir", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 10 10\" width=\"10\" height=\"10\" fill=\"none\" stroke=\"currentColor\"><g transform=\"translate(2 2)\"><circle cx=\"5\" cy=\"5\" r=\"2\"/><text x=\"1\" y=\"9\" fill=\"currentColor\" text-anchor=\"middle\">A &amp; B</text></g></svg>", "safe": true },
+      { "description": "script etiketi", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><script>alert(1)</script></svg>", "safe": false },
+      { "description": "olay özniteliği", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" onload=\"alert(1)\"></svg>", "safe": false },
+      { "description": "dış görsel", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><image href=\"https://x\"/></svg>", "safe": false },
+      { "description": "bağlantı", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><a href=\"javascript:alert(1)\"><text>x</text></a></svg>", "safe": false },
+      { "description": "foreignObject", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><foreignObject></foreignObject></svg>", "safe": false },
+      { "description": "stil özniteliği", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" style=\"background:url(x)\"></svg>", "safe": false },
+      { "description": "XML bildirimi", "svg": "<?xml version=\"1.0\"?><svg xmlns=\"http://www.w3.org/2000/svg\"></svg>", "safe": false },
+      { "description": "sayısal karakter başvurusu", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><text>&#60;</text></svg>", "safe": false },
+      { "description": "tırnaksız öznitelik", "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle r=5/></svg>", "safe": false },
+      { "description": "SVG ile başlamayan içerik", "svg": "<div></div>", "safe": false },
+      { "description": "boş metin", "svg": "", "safe": false }
+    ]
+  }
+}

@@ -369,7 +369,7 @@ insert into public.topic_lesson_units (
     "type": "bullets",
     "items": [
       "**Çernozyom (Kara Toprak):** Erzurum-Kars-Ardahan platolarında yaz yağışlarıyla gürleşen alpin çayırların altında oluşan, humusça **en zengin ve en verimli** topraktır; ancak iklim çok soğuk olduğu için tarımdan ziyade büyükbaş mera hayvancılığında kullanılır.",
-      "**Terra Rossa (Kırmızı Akdeniz Toprağı):** Kalker (kireç taşı) üzerinde oluşur; kırmızı rengini kireçten değil, bünyesindeki **demir oksitten ($Fe_2O_3$)** alır ve humusça fakirdir.",
+      "**Terra Rossa (Kırmızı Akdeniz Toprağı):** Kalker (kireç taşı) üzerinde oluşur; kırmızı rengini kireçten değil, bünyesindeki **demir oksitten ($\\mathrm{Fe_2O_3}$)** alır ve humusça fakirdir.",
       "**Vertisol (Dönen / Taş Doğuran / Kepir):** Killi depolar üzerinde Ergene Havzası, Muş Ovası ve Konya''da görülür; ayçiçeği tarımına uygundur.",
       "**Regosol:** Volkanik tüf ve kumlu depolar üzerinde **Nevşehir–Niğde–Ürgüp** çevresinde yaygındır; geçirgen yapısıyla **patates** tarımı için elverişlidir.",
       "**Alüvyal ve Kahverengi Orman Toprakları:** Akarsuların taşıyıp delta ve taban ovalarında biriktirdiği **alüvyal topraklar** (Çukurova, Bafra, Çarşamba, Gediz) mineralce zengin taşınmış (azonal) topraklardır ve her türlü tarıma uygundur. **Kahverengi orman toprakları** ise nemli Karadeniz ormanlarının altında humusça zengin olarak gelişir. Kurak İç Anadolu''da ise tuzlu göl kıyılarında tarıma elverişsiz **halomorfik (tuzlu)** topraklar görülür."

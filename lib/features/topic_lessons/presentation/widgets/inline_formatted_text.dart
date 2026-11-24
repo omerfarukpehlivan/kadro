@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:kadro/shared/widgets/math_text.dart';
 
-/// Konu anlatımı metinlerindeki satır içi `**kalın**` ve `*italik*` biçimlendirmesini
+/// Konu anlatımı metinlerindeki satır içi `**kalın**`, `*italik*` ve (TASK-172)
+/// `$...$` matematik biçimlendirmesini
 /// ekstra paket gerektirmeden `RichText` / `TextSpan` ağacına dönüştüren bileşen (`TASK-168`).
 ///
 /// Angular/Web Karşılığı: Satır içi markdown parçacıklarını güvenli şekilde
@@ -74,11 +76,22 @@ class InlineFormattedText extends StatelessWidget {
         Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.55) ??
         const TextStyle(height: 1.55);
 
+    // TASK-172: Önce **kalın** / *italik* ayrılır, sonra her parçadaki $...$
+    // matematik o parçanın stiliyle çizilir (ör. "**demir oksit ($Fe_2O_3$)**").
+    final children = <InlineSpan>[];
+    for (final span in parseSpans(text, effectiveStyle)) {
+      final value = span.text ?? '';
+      if (value.contains(r'$')) {
+        children.addAll(
+          buildMathInlineSpans(value, span.style ?? effectiveStyle),
+        );
+      } else {
+        children.add(span);
+      }
+    }
+
     return Text.rich(
-      TextSpan(
-        style: effectiveStyle,
-        children: parseSpans(text, effectiveStyle),
-      ),
+      TextSpan(style: effectiveStyle, children: children),
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,

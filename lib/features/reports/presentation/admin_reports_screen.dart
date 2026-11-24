@@ -7,6 +7,7 @@ import 'package:kadro/features/reports/data/question_report_repository.dart';
 import 'package:kadro/shared/widgets/empty_state_view.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/responsive_grid.dart';
+import 'package:kadro/shared/widgets/math_text.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -170,7 +171,7 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    MathText(
                       report.questionText,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurface,

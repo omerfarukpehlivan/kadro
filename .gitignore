@@ -49,3 +49,6 @@ app.*.map.json
 
 # graphify bilgi grafiği (yerel, yeniden üretilebilir)
 graphify-out/
+
+# TASK-172 soru derleyicisi önizlemesi (yerel, yeniden üretilebilir)
+_onizleme.html

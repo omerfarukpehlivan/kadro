@@ -5,6 +5,8 @@ import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
 import 'package:kadro/features/topic_lessons/data/models/topic_lesson_models.dart';
 import 'package:kadro/features/topic_lessons/presentation/widgets/inline_formatted_text.dart';
 import 'package:kadro/shared/widgets/kadro_badge.dart';
+import 'package:kadro/shared/widgets/math_text.dart';
+import 'package:kadro/shared/widgets/question_figure.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -70,6 +72,45 @@ class TopicLessonParagraphWidget extends StatelessWidget {
           color: colorScheme.onSurface,
           height: 1.58,
         ),
+      ),
+    );
+  }
+}
+
+/// Matematik/geometri şeklini (`figure`) ve isteğe bağlı alt yazısını çizen
+/// `StatelessWidget` (TASK-172).
+///
+/// Angular/Web Karşılığı: `<figure><svg/><figcaption/></figure>`.
+class TopicLessonFigureWidget extends StatelessWidget {
+  final TopicLessonFigureBlock block;
+
+  const TopicLessonFigureWidget({super.key, required this.block});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return TactileCard(
+      backgroundColor: colorScheme.surface,
+      borderColor: colorScheme.outlineVariant,
+      padding: const EdgeInsets.fromLTRB(12, 14, 12, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          QuestionFigure(svg: block.svg),
+          if (block.caption != null) ...[
+            const SizedBox(height: 8),
+            InlineFormattedText(
+              text: block.caption!,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
@@ -663,7 +704,11 @@ class _InlineCheckQuestionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          Text(
+          if (question.figureSvg != null) ...[
+            QuestionFigure(svg: question.figureSvg!),
+            const SizedBox(height: 10),
+          ],
+          MathText(
             question.text,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: colorScheme.onSurface,
@@ -705,7 +750,7 @@ class _InlineCheckQuestionCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  MathText(
                     question.explanation,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurface,

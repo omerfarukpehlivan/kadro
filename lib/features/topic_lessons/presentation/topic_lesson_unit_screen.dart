@@ -194,6 +194,7 @@ class _TopicLessonUnitScreenState extends ConsumerState<TopicLessonUnitScreen> {
       TopicLessonTimelineBlock() => TopicLessonTimelineWidget(block: block),
       TopicLessonCalloutBlock() => TopicLessonCalloutWidget(block: block),
       TopicLessonKeyPointsBlock() => TopicLessonKeyPointsWidget(block: block),
+      TopicLessonFigureBlock() => TopicLessonFigureWidget(block: block),
       TopicLessonCheckQuestionsBlock() => TopicLessonCheckQuestionsWidget(
         questions: TopicLessonDomain.selectCheckQuestions(
           topicQuestions: _topicQuestions,

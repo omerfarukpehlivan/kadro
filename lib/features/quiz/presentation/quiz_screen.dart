@@ -30,6 +30,8 @@ import 'package:kadro/shared/widgets/population_pyramid/population_pyramid_card.
 import 'package:kadro/shared/widgets/sun_diagram/sun_diagram_card.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/turkey_map/turkey_map.dart';
+import 'package:kadro/shared/widgets/math_text.dart';
+import 'package:kadro/shared/widgets/question_figure.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Varsayılan olarak gösterilen 3 özgün KPSS Lisans Genel Kültür sorusu.
@@ -900,6 +902,8 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
       );
     } else if (question.effectiveSunConfig != null) {
       visualAidCard = SunDiagramCard(config: question.effectiveSunConfig!);
+    } else if (question.figureSvg != null) {
+      visualAidCard = QuestionFigureCard(svg: question.figureSvg!);
     } else if (question.imageUrl != null && question.imageUrl!.isNotEmpty) {
       visualAidCard = _QuestionImageCard(imageUrl: question.imageUrl!);
     } else {
@@ -1273,7 +1277,7 @@ class _QuestionCard extends StatelessWidget {
           ? const EdgeInsets.symmetric(horizontal: 18, vertical: 12)
           : const EdgeInsets.all(16),
       child: SelectionArea(
-        child: Text(
+        child: MathText(
           text,
           style: theme.textTheme.bodyLarge?.copyWith(
             color: colorScheme.onSurface,
@@ -1571,7 +1575,7 @@ class _ExplanationCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                MathText(
                   explanation,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurface,
@@ -1611,7 +1615,7 @@ class _ExplanationCard extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 6),
-                        Text(
+                        MathText(
                           distractorTrap!,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: colorScheme.onTertiaryContainer,

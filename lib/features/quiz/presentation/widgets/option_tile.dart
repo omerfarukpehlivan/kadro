@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kadro/core/utils/responsive_layout.dart';
+import 'package:kadro/shared/widgets/math_text.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Test ekranındaki şıkların durumunu temsil eden enum.
@@ -166,7 +167,7 @@ class OptionTile extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
+                    child: MathText(
                       text,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: isEliminated
