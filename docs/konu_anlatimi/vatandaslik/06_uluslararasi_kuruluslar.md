@@ -63,6 +63,8 @@ Soru mantığı: "Anayasa m. 90'a göre temel hak ve özgürlüklere ilişkin bi
 :::
 
 :::kontrol
+04cffc8b-24d7-4c76-a6f8-4aa22ed9edc6
+07f6bdee-e472-4734-a065-6b2381fe6bc7
 :::
 
 ## Bölüm 2: Avrupa Konseyi, AİHM ve Avrupa Birliği (AB)
@@ -109,6 +111,8 @@ Soru mantığı: "Türkiye'nin kurucu üyesi olduğu ve Rusya'nın 2022'de ihra�
 :::
 
 :::kontrol
+0d8d91c4-99e0-4311-8195-beffc423fd43
+0da13bb2-e6a1-4a48-8e68-059cdbcab4cf
 :::
 
 ## Bölüm 3: Güvenlik ve Ekonomi Örgütleri (NATO, AGİT, OECD, G-20, INTERPOL)
@@ -152,6 +156,8 @@ Soru mantığı: "NATO'nun en son katılan 31. ve 32. üyeleri kimlerdir ve G-20
 :::
 
 :::kontrol
+0ffdf584-1f60-4d0c-8e52-1343b30f5d1b
+17ce1867-c7f1-488d-a60d-1662da85bf9c
 :::
 
 ## Bölüm 4: Türkiye'nin Öncü Olduğu Bölgesel ve İslam Dünyası Örgütleri
@@ -195,4 +201,6 @@ Soru mantığı: "1992'de İstanbul'da kurulan, merkezi İstanbul olan ve Karade
 :::
 
 :::kontrol
+1920c1dd-8d2f-4963-b9d4-3e1efbd9ed38
+1b3e0b0c-3388-4f9b-b53a-3ed2d8380694
 :::

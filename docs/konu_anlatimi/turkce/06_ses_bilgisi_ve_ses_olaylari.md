@@ -44,6 +44,8 @@ Büyük ünlü uyumunu bozan yedi eki (**-yor, -ken, -ki, -leyin, -mtırak, -gil
 :::
 
 :::kontrol
+2563362a-3f43-45a1-ad94-1357ca664349
+344a7856-c4a6-4c1d-b093-dd2db243e6c1
 :::
 
 ## Bölüm 2: Ünlü Olayları (Ünlü Düşmesi, Daralması, Türemesi, Değişimi)
@@ -82,6 +84,8 @@ Daralma ve düşme testi: "**Diyorlar**" sözcüğü `de-` fiiline `-yor` eki ge
 :::
 
 :::kontrol
+4454354d-0b83-4713-8811-51a0a2a3024f
+4c3c8e61-f0f1-4747-bbfc-7e929f77fc28
 :::
 
 ## Bölüm 3: Ünsüz Olayları (Yumuşama, Sertleşme/Benzeşme, Düşme, Türeme)
@@ -120,6 +124,8 @@ Benzeşme ve düşme testi: "**Kitapçı**" sözcüğünde `kitap` (`p` sert ün
 :::
 
 :::kontrol
+5624606a-ed6c-401c-9495-55e8e38de2ea
+5bc68e6b-afbd-4b68-9cb3-b2d1f0675020
 :::
 
 ## Bölüm 4: Kaynaştırma, Ulama ve Dudak Ünsüzleri Benzeşmesi (n-b)
@@ -157,4 +163,6 @@ Kaynaştırma ve ulama sorularında iki ince ayrıntı belirleyicidir:
 :::
 
 :::kontrol
+8681da5c-f809-49e5-9388-6b1b0e01efe3
+8c5dd99b-059f-46c5-a897-c67291fe3606
 :::

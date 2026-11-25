@@ -45,6 +45,8 @@ Soru mantığı: "Üç Tarz-ı Siyaset eseri kime aittir ve 'Dilde, fikirde, iş
 :::
 
 :::kontrol
+001d8685-ada9-4d78-86bf-4359c6a64740
+02b12711-f1e3-4a70-9632-3bf28e68a119
 :::
 
 ## Bölüm 2: II. Dünya Savaşı (1939-1945) ve Türkiye'nin Savaş Yılları
@@ -91,6 +93,8 @@ Soru mantığı: "Fransa'nın II. Dünya Savaşı öncesinde Almanya sınırına
 :::
 
 :::kontrol
+02fd1c13-9c96-438f-af21-e8b8d29f0535
+0679237c-a0ca-441d-99d8-178eb4d96415
 :::
 
 ## Bölüm 3: Soğuk Savaş Dönemi ve Bloklaşma (1945-1960)
@@ -129,6 +133,8 @@ Soru mantığı: "Doğu Bloku'ndan Kominform'dan ihraç edilerek ilk kopan ülke
 :::
 
 :::kontrol
+0a52fe73-6541-4ff5-adf5-ab56fc3aec8e
+13b6c3dd-83a9-4aa9-8b1a-70ae3de338f2
 :::
 
 ## Bölüm 4: Demokrat Parti Dönemi ve Çok Partili Siyaset (1945-1960)
@@ -158,6 +164,8 @@ Soru mantığı: "1950 seçimlerinde iktidarın demokratik yolla el değiştirme
 :::
 
 :::kontrol
+15e3c862-f000-43cc-ba92-e72fe5a838f8
+16166b54-3c6c-4b35-84b5-e65b70e1a51c
 :::
 
 ## Bölüm 5: Yumuşama (Detant) Dönemi ve Kıbrıs Sorunu
@@ -193,6 +201,8 @@ Soru mantığı: "Küba Füze Krizi'nde Türkiye'den sökülen füze hangisidir 
 :::
 
 :::kontrol
+175b079d-05de-4529-bfc0-77de5ddee3e5
+18c62740-26bf-489b-9786-263ad5afd517
 :::
 
 ## Bölüm 6: Küreselleşen Dünya, SSCB'nin Dağılması ve Türk Dünyası
@@ -232,4 +242,6 @@ Soru mantığı: "Türk cumhuriyetlerinde okul, hastane ve teknik kalkınma proj
 :::
 
 :::kontrol
+1daff306-2ae9-4666-8cc1-7797189007d3
+22723f73-3110-46eb-b831-f9c793597d5b
 :::

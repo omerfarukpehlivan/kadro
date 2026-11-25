@@ -78,7 +78,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "012aa24c-6c3a-4957-ac3b-c2bddb07441c",
+      "06e66c30-a7b6-494f-97de-829634c9a4ee"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],
@@ -183,7 +186,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "0b23e4de-8b89-47ad-a2cb-838aa01f053b",
+      "0b4e1ad4-00e8-4455-b57a-8d6ac17f8aa6"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],
@@ -312,7 +318,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "0db1845a-bab5-4681-9106-2789f2b87c8e",
+      "0ec783cd-f8da-47a1-8b55-6c9f3d945ee0"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],
@@ -436,7 +445,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "1227fac6-b65f-4978-8d6a-ea08c6a318b1",
+      "12e9e96f-7532-4351-9be5-aea5ce05b956"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],
@@ -575,7 +587,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "1338f6b1-296d-4bd2-a025-7ebd33546710",
+      "16220755-5bf2-4b61-a836-aae2cd68b8d4"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],
@@ -674,7 +689,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "16c3370c-cc36-413e-b32d-bdac0e967270",
+      "1710703c-8065-4802-a457-d249c8d89e59"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],
@@ -768,7 +786,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "18cef3d5-26d2-41e3-a841-e3ff6dfc7159",
+      "1c79aced-3626-4fdd-bea1-5a87914cd593"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],

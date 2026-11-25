@@ -43,6 +43,8 @@ Soru mantığı: "Aşağıdaki illerden hangisi Mondros'un 24. maddesindeki Vila
 :::
 
 :::kontrol
+05034b13-88f5-43c7-b596-5cbad9bc6844
+068ba555-03db-4436-bf61-df49492a108b
 :::
 
 ## Bölüm 2: İşgallere Tepki: Raporlar, Cemiyetler ve Amasya Genelgesi
@@ -82,6 +84,8 @@ Soru mantığı: "Aşağıdaki cemiyetlerden hangisi adını tarihi bir bölgede
 :::
 
 :::kontrol
+09aad42d-cc26-4a83-b1bd-e32094b7d91f
+0ea43e6e-ac53-41dc-8c4b-6af3a8793779
 :::
 
 ## Bölüm 3: Kongreler, Amasya Görüşmeleri ve Misak-ı Milli
@@ -124,6 +128,8 @@ Soru mantığı: "Temsil Heyeti'ni ilk tanıyan, TBMM'yi tanıyan ilk devlet, il
 :::
 
 :::kontrol
+0f881488-8024-4003-a246-27478c778598
+106ae68d-0db4-4cef-aa41-e6f4f9792b23
 :::
 
 ## Bölüm 4: I. TBMM, İsyanlar ve Sevr Antlaşması
@@ -154,6 +160,8 @@ Soru mantığı: "I. TBMM'nin olağanüstü ve kurucu nitelik taşımasının ka
 :::
 
 :::kontrol
+148b94d2-c037-4a5c-a8e2-fcbdce3822e8
+153916b3-cbcf-4618-98ee-c63d02188ce5
 :::
 
 ## Bölüm 5: Doğu ve Güney Cepheleri ile Düzenli Orduya Geçiş
@@ -189,6 +197,8 @@ Soru mantığı: "Gediz Taarruzu'nun sonucu nedir?" Disiplinsizlik yüzünden ya
 :::
 
 :::kontrol
+1c522b9a-5b34-4dbc-a800-47f69252cd51
+1febf524-208e-46ed-b943-ff09d2f30e3d
 :::
 
 ## Bölüm 6: Batı Cephesi: İnönü Savaşları, Sakarya ve Büyük Taarruz
@@ -231,6 +241,8 @@ Soru mantığı: "TBMM'nin Misak-ı Milli'den verdiği üç taviz sırasıyla ha
 :::
 
 :::kontrol
+263c6fc1-6c45-421c-9e10-02d4d6c91fb1
+27536fd5-c320-462b-93ad-a86be593a032
 :::
 
 ## Bölüm 7: Mudanya Ateşkesi ve Lozan Barış Antlaşması
@@ -267,4 +279,6 @@ Soru mantığı: "Mudanya Ateşkesi ile savaş yapılmadan kurtarılan bölgeler
 :::
 
 :::kontrol
+2874aadf-4640-4a1d-a30a-b214ff87576b
+28e4b2e8-dc17-4ed4-b7cd-52b2d872c3d6
 :::

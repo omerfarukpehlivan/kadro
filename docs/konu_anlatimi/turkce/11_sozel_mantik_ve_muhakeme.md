@@ -63,6 +63,8 @@ Sıralama sorularında iki klasik tuzağa dikkat et:
 :::
 
 :::kontrol
+0f61d6a9-7495-401a-a7d3-d8af7f9cd818
+1bf76656-228d-45e3-abcf-f2ca9573906f
 :::
 
 ## Bölüm 2: Tablo Oluşturma ve Çok Boyutlu Eşleştirme (Gün, Kişi, Etkinlik)
@@ -126,6 +128,8 @@ Tablo sorularında iki hataya dikkat et:
 :::
 
 :::kontrol
+239d4ae6-74a7-4c60-b104-589fe3bca2f6
+25c4e188-17bd-43a1-835d-f9e1b3f6d636
 :::
 
 ## Bölüm 3: Doğruluk-Yalan, Koşul Zinciri ve Küme/Çıkarım Muhakemesi
@@ -180,6 +184,8 @@ Bu üç kişiden **yalnızca biri doğru** söylediğine göre anahtarı kim alm
 :::
 
 :::kontrol
+2e605fa2-ca5a-40fb-ad98-6cb63048f92f
+4210b57a-86df-4665-9a6f-14c8950d3b05
 :::
 
 ## Bölüm 4: Gün-Tarih Hesaplama ve Sayısal-Sözel Denklem Muhakemesi
@@ -227,4 +233,6 @@ Gün ve denklem sorularında iki yaygın hata görülür:
 :::
 
 :::kontrol
+454868d9-d27e-468a-99b1-9a2b49315887
+4672b7af-4adc-404e-8920-972dbb7aa1e2
 :::

@@ -51,6 +51,8 @@ Soru mantığı: "Yerine getirilmeyen bir özel hukuk borcunun devlet gücüyle 
 :::
 
 :::kontrol
+01b5dd7c-afb4-418b-bb90-2d845c6c5d59
+01cbf200-5791-40b2-8e3b-b7f8815c4e71
 :::
 
 ## Bölüm 2: Hukukun Kaynakları, Normlar Hiyerarşisi ve Boşluk Türleri
@@ -90,6 +92,8 @@ Soru mantığı: "Bir davada yazılı kanunlarda hüküm bulunamamış ancak ör
 :::
 
 :::kontrol
+03ef7a1c-30df-488b-aaa5-67f2a492a284
+07231ce6-a7b5-5585-bc94-08f53f1579bf
 :::
 
 ## Bölüm 3: Kişilik, Ehliyetler ve Kişiliğin Sona Ermesi
@@ -137,6 +141,8 @@ Soru mantığı: "15 yaşını doldurmuş bir küçük kendi isteği ve velisini
 :::
 
 :::kontrol
+12ebf169-b0a3-4c14-b371-9d523c76c559
+136058f3-1664-41be-8b6f-f7ba959e01fe
 :::
 
 ## Bölüm 4: Hısımlık, Hak Kavramı, Kazanma ve Koruma
@@ -183,6 +189,8 @@ Soru mantığı: "Ahmet, kendi dayısının kızı olan Ayşe ile kaçıncı der
 :::
 
 :::kontrol
+1467680a-1866-4bea-a204-0f2c06576366
+16ae476e-2728-4ad2-acae-5822306f16c2
 :::
 
 ## Bölüm 5: Borçlar Hukukunun Temel Kavramları
@@ -227,4 +235,6 @@ Soru mantığı: "Bir alacaklı 10 yıllık genel zamanaşımı süresi geçtikt
 :::
 
 :::kontrol
+17bbf652-6004-481a-a5f6-305027d069bc
+184f1cd5-22b0-563a-903d-823164a2f449
 :::

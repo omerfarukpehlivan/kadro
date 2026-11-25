@@ -102,7 +102,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "cdc0a0c7-38a6-4ff2-95c7-7df37c2a9cce",
+      "8c3bd812-ae65-4192-bf65-93ef744cf404"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],
@@ -202,7 +205,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "9810d6a1-468f-4d12-bdb6-80b489dea6a8",
+      "ed589317-6993-43cd-8a1c-6fd8180a967d"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],
@@ -306,7 +312,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "399b309a-5d81-4c75-8cd5-4f11fa381b9a",
+      "6c248bc7-3d14-4134-98b1-567a9ebcae50"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],
@@ -411,7 +420,10 @@ insert into public.topic_lesson_units (
   },
   {
     "type": "check_questions",
-    "question_ids": []
+    "question_ids": [
+      "f2e9ba80-b665-42fc-b249-3b8ac82b7a0b",
+      "770c8e04-f746-4568-b98b-25a419fc315c"
+    ]
   }
 ]'::jsonb,
   '{"b_grubu_gk"}'::text[],

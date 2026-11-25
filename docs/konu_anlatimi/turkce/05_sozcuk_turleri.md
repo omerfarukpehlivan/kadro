@@ -44,6 +44,8 @@ Sıfat ve adlaşmış sıfat ayrımı: "**Güzel** bir şarkıydı." cümlesinde
 :::
 
 :::kontrol
+03baf5e8-df83-435c-94b0-88ae2d1fc300
+1a42555f-29ce-4f73-bae2-7462c4d7a4e2
 :::
 
 ## Bölüm 2: Zamir (Adıl) ve Zarf (Belirteç) Türleri
@@ -90,6 +92,8 @@ Zamir ve zarf sorularında ÖSYM üç tuzağı sık kullanır:
 :::
 
 :::kontrol
+2f07b317-cf7f-403e-9dc6-c209d66cd6e6
+341478ee-9c73-4e36-83fc-7d6f9f0c2fc2
 :::
 
 ## Bölüm 3: Edat (İlgeç), Bağlaç ve Ünlem
@@ -130,6 +134,8 @@ Edat ve bağlaç sorularında iki klasik tuzak öne çıkar:
 :::
 
 :::kontrol
+3cd7a125-12de-4774-850a-1fca3e405aa8
+483179bb-56e6-4225-be35-83f3a583bf90
 :::
 
 ## Bölüm 4: Fiil (Eylem), Kip, Kişi, Ek-Fiil ve Anlam Kayması
@@ -168,6 +174,8 @@ Fiil konusunda ÖSYM şu iki noktayı tuzak yapar:
 :::
 
 :::kontrol
+509ad596-dcbd-427d-9a8d-83283f935fd8
+6c155989-a096-4a24-ac5d-3a572063719f
 :::
 
 ## Bölüm 5: Fiilimsiler (Eylemsiler) ve Fiilde Çatı
@@ -207,4 +215,6 @@ Fiilimsi ve çatı sorularında üç kritik tuzağa dikkat et:
 :::
 
 :::kontrol
+7029870d-a073-4961-9434-5485d400f88f
+738ad015-3814-4145-9c2c-3f5c3c3819ef
 :::

@@ -42,6 +42,8 @@ Virgül ve noktalı virgül sorularında iki tuzağa dikkat et:
 :::
 
 :::kontrol
+097f0cad-a25b-4aa8-839e-42501160c8c6
+13fdcefd-d496-4e60-a23d-921fdc25c108
 :::
 
 ## Bölüm 2: İki Nokta, Üç Nokta, Soru ve Ünlem İşaretleri
@@ -80,6 +82,8 @@ Bu dört işarette ÖSYM iki tuzağı sık kullanır:
 :::
 
 :::kontrol
+14806684-3328-45a8-a05b-e1e993958bdb
+15126d91-daec-4253-8737-502971b0cb87
 :::
 
 ## Bölüm 3: Kesme İşareti ve Tırnak İşareti
@@ -116,6 +120,8 @@ Kesme ve tırnak işaretinde iki tuzağa dikkat et:
 :::
 
 :::kontrol
+158f9b87-4fd8-4e86-a8d7-22b655c3229f
+1a764f88-7b73-4142-9bbf-9222358ad5e9
 :::
 
 ## Bölüm 4: Kısa Çizgi, Uzun Çizgi, Yay Ayraç ve Eğik Çizgi
@@ -160,4 +166,6 @@ Yardımcı noktalama işaretlerinde iki yaygın hataya dikkat et:
 :::
 
 :::kontrol
+1dab53b5-2cc6-40ca-875e-46cd887bf300
+26235e5d-65eb-420e-a75c-01ccbcd2992e
 :::

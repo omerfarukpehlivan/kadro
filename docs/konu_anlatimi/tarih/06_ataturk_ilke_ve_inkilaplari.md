@@ -41,6 +41,8 @@ Soru mantığı: "Erkan-ı Harbiye Vekaleti'nin kaldırılıp Genelkurmay Başka
 :::
 
 :::kontrol
+02664667-cbd5-4ebf-bb40-0b4df4cc6415
+02829eb1-11fb-5f8d-8377-e2cfd558ea56
 :::
 
 ## Bölüm 2: Çok Partili Hayat Denemeleri ve Rejim Karşıtı Olaylar
@@ -75,6 +77,8 @@ Soru mantığı: "Şeyh Sait İsyanı çıktığında başbakan kimdi ve isyanı
 :::
 
 :::kontrol
+05c798a5-6f4d-452c-b427-b4c5cabdc988
+089f5230-9013-4857-8c34-a572db40a6d0
 :::
 
 ## Bölüm 3: Hukuk ve Eğitim-Kültür Alanındaki İnkılaplar
@@ -121,6 +125,8 @@ Soru mantığı: "1926 Medeni Kanunu aşağıdakilerden hangisini sağlamamışt
 :::
 
 :::kontrol
+09d5cb86-633f-4e29-9ff0-4425d4d1f365
+0aeb844d-67a1-4a15-bb69-8f3f357a9803
 :::
 
 ## Bölüm 4: Toplumsal ve Ekonomik Alandaki İnkılaplar
@@ -166,6 +172,8 @@ Soru mantığı: "1927 Teşvik-i Sanayi Kanunu'ndan beklenen sonucun alınamamas
 :::
 
 :::kontrol
+0b10b422-2bb0-4dca-a382-9846043d6d7d
+0c5d3fed-7398-425d-aa77-cba0f876d813
 :::
 
 ## Bölüm 5: Atatürk İlkeleri (Kavram ve Eşleştirme Rehberi)
@@ -200,6 +208,8 @@ Soru mantığı: "1) Kabotaj Kanunu, 2) Aşar vergisinin kaldırılması, 3) Sü
 :::
 
 :::kontrol
+0c6f8341-00f3-482d-a46b-d847e148863b
+0d026f53-7b9b-476f-a05a-290acf279f4c
 :::
 
 ## Bölüm 6: Atatürk Dönemi Türk Dış Politikası (1923-1938)
@@ -242,4 +252,6 @@ Soru mantığı: "Türkiye'yi Milletler Cemiyeti'ne üyelik için teklif eden de
 :::
 
 :::kontrol
+0e74e46e-8c12-40b6-9db5-24f4ff024bf9
+159c32a6-154a-4840-b99e-8955aedae200
 :::

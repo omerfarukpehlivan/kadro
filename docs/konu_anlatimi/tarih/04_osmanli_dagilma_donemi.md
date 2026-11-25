@@ -41,6 +41,8 @@ Soru mantığı: "Bizans'ın yeniden dirilmesini önlemek amacıyla Fatih'in fet
 :::
 
 :::kontrol
+012aa24c-6c3a-4957-ac3b-c2bddb07441c
+06e66c30-a7b6-494f-97de-829634c9a4ee
 :::
 
 ## Bölüm 2: 17. Yüzyıl Duraklama Dönemi, Antlaşmalar ve Islahatlar
@@ -84,6 +86,8 @@ Soru mantığı: "Aşağıdakilerden hangisi duraklamanın iç nedenlerinden bir
 :::
 
 :::kontrol
+0b23e4de-8b89-47ad-a2cb-838aa01f053b
+0b4e1ad4-00e8-4455-b57a-8d6ac17f8aa6
 :::
 
 ## Bölüm 3: 18. Yüzyıl Gerileme Dönemi ve Batı Etkili Islahatlar
@@ -130,6 +134,8 @@ Soru mantığı: "Lale Devri'nde aşağıdakilerden hangisi yapılmamıştır?" 
 :::
 
 :::kontrol
+0db1845a-bab5-4681-9106-2789f2b87c8e
+0ec783cd-f8da-47a1-8b55-6c9f3d945ee0
 :::
 
 ## Bölüm 4: 19. Yüzyıl Dağılma Süreci, İsyanlar ve Savaşlar
@@ -175,6 +181,8 @@ Soru mantığı: "Osmanlı ilk dış borcunu hangi savaştan ve hangi ülkeden a
 :::
 
 :::kontrol
+1227fac6-b65f-4978-8d6a-ea08c6a318b1
+12e9e96f-7532-4351-9be5-aea5ce05b956
 :::
 
 ## Bölüm 5: II. Mahmut ve Tanzimat-Islahat Dönemi Modernleşmesi
@@ -222,6 +230,8 @@ Soru mantığı: "Tanzimat Fermanı ile Islahat Fermanı'nı metinden nasıl ay�
 :::
 
 :::kontrol
+1338f6b1-296d-4bd2-a025-7ebd33546710
+16220755-5bf2-4b61-a836-aae2cd68b8d4
 :::
 
 ## Bölüm 6: II. Abdülhamit, Meşrutiyetler ve Fikir Akımları
@@ -260,6 +270,8 @@ Soru mantığı: "Mecelle hakkında hangisi söylenemez?" Seçeneklerde mutlaka 
 :::
 
 :::kontrol
+16c3370c-cc36-413e-b32d-bdac0e967270
+1710703c-8065-4802-a457-d249c8d89e59
 :::
 
 ## Bölüm 7: Trablusgarp ve Balkan Savaşları (1911-1913)
@@ -297,4 +309,6 @@ Soru mantığı: "II. Balkan Savaşı'nın sonunda Balkan devletlerinin kendi ar
 :::
 
 :::kontrol
+18cef3d5-26d2-41e3-a841-e3ff6dfc7159
+1c79aced-3626-4fdd-bea1-5a87914cd593
 :::

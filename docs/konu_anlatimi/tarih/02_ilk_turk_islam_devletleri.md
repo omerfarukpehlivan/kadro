@@ -60,6 +60,8 @@ Soru mantığı: "Karahanlılarda halifeden menşur alınması mı yoksa Hakaniy
 :::
 
 :::kontrol
+0f6664b9-b237-464a-aaf9-acc0d468c665
+14db3af1-aad9-50c0-bf59-f90e55ba3aca
 :::
 
 ## Bölüm 2: Mısır'da Kurulan Türk-İslam Devletleri ve Çağdaş Türk Devletleri
@@ -109,6 +111,8 @@ Soru mantığı: "Moğolları Ayn Calut Savaşı ile durduran devlet hangisidir?
 :::
 
 :::kontrol
+155cc0e8-968e-4f71-9abe-f9be29083774
+1e81cc2e-4676-5790-84db-b45502717cc7
 :::
 
 ## Bölüm 3: Büyük Selçuklu Devleti ve Yıkılış Süreci
@@ -162,6 +166,8 @@ Soru mantığı: "Sultan Alparslan'ın kılıç hakkı politikası aşağıdakil
 :::
 
 :::kontrol
+20aac4b8-a638-49dc-b8bf-211e898df9e3
+280ab09f-d691-4d06-a668-860c89aa6d6d
 :::
 
 ## Bölüm 4: Anadolu'nun Türkleşmesi: I. Beylikler ve Türkiye Selçuklu
@@ -216,6 +222,8 @@ Soru mantığı: "Anadolu'nun ilk denizci beyi kimdir?" Seçeneklerde Osmanlı'n
 :::
 
 :::kontrol
+2978e7f8-43f7-4b7b-8ac4-c8e38fe420bb
+2a1999e7-fac6-4bbc-a18b-361d4b3aff39
 :::
 
 ## Bölüm 5: Devlet Yönetimi, Ordu, Toprak ve Sosyal Hayat
@@ -261,6 +269,8 @@ Soru mantığı: "Gaziyan-ı Rum alpler, Abdalan-ı Rum dervişler, Bacıyan-ı 
 :::
 
 :::kontrol
+2a454ae3-e23b-490e-bff6-a0e75f5fff54
+2cf6000c-34cb-4c56-acba-9bc9a3dcd697
 :::
 
 ## Bölüm 6: Türk-İslam Bilim, Edebiyat ve Sanat Mirası
@@ -314,4 +324,6 @@ Soru mantığı: "Cebir ilminin kurucusu ve sıfır rakamını işlemlerde kulla
 :::
 
 :::kontrol
+3b1d1cf8-db00-4bf9-a331-7fe2a38118b6
+3c252fdd-b246-407b-9011-00f71f7d5b1c
 :::

@@ -46,6 +46,8 @@ Nüfus politikaları ve istatistiklerde iki yanılgıya düşme:
 :::
 
 :::kontrol
+18e59348-5951-4bb5-862c-6eb185480682
+b6969d7f-acac-47f1-811e-fe6f4cfe6db7
 :::
 
 ## Bölüm 2: Nüfus Yoğunlukları ve Dağılışını Etkileyen Faktörler
@@ -85,6 +87,8 @@ Yoğunluk kavramlarında iki klasik tuzağa dikkat et:
 :::
 
 :::kontrol
+ad790837-3335-4ed8-901c-f42d6250826b
+6004a920-5aa2-4485-a2b3-45500e79d540
 :::
 
 ## Bölüm 3: Göçler, Kentleşme ve Cinsiyet-Nüfus Dengesi
@@ -123,6 +127,8 @@ Göç sorularında iki tuzağa dikkat et:
 :::
 
 :::kontrol
+f163e82e-ccd8-4c8c-ba49-0d568084c0d0
+c861a02a-c20e-48e4-8e92-5ebe9eb9b9c8
 :::
 
 ## Bölüm 4: Yerleşme Dokusu, Konut Malzemeleri ve Köy Altı Yerleşmeleri
@@ -168,4 +174,6 @@ Köy altı yerleşmelerinde iki ayrım sürekli yoklanır:
 :::
 
 :::kontrol
+b367f392-9252-448e-bb99-59cd3b6dd21f
+79cbf32b-1560-4396-92ca-3bd4282814ab
 :::

@@ -48,6 +48,8 @@ Anlam katmanlarını merkezden dışa açılan üç halka gibi **G-Y-M** sıras�
 :::
 
 :::kontrol
+14ded7d1-0404-44ca-b17e-47ef745833a3
+157d7f70-822f-42ee-8496-a5a736c553a7
 :::
 
 ## Bölüm 2: Sözcükler Arası Anlam İlişkileri (Eş, Yakın, Karşıt, Eş Sesli)
@@ -84,6 +86,8 @@ Doğru ve yanlış karşılaştırması: "**Gelmek** fiilinin zıt anlamlısı *
 :::
 
 :::kontrol
+1851b88f-bd71-4f90-b74d-cf939332fcff
+2515b0ee-f7f9-4c72-b0ce-c4273b469447
 :::
 
 ## Bölüm 3: Ad Aktarması, Dolaylama, Güzel Adlandırma ve Nicel-Nitel Anlam
@@ -124,6 +128,8 @@ Doğru ve yanlış ayrımı: "Rüzgâr yapraklara bir şeyler **fısıldıyordu*
 :::
 
 :::kontrol
+27fd2e85-be55-4d9e-bb35-c420513e56a3
+30fca9ee-c603-4aa0-b2ba-489d5fc67f82
 :::
 
 ## Bölüm 4: Söz Öbekleri, İkilemeler, Deyimler ve Atasözleri
@@ -160,4 +166,6 @@ Söz öbekleri ve deyim sorularında iki yanılgı adayları eler:
 :::
 
 :::kontrol
+3cdf661a-9392-4b0f-ad26-b9c26e51f40f
+3e693ba7-8b43-4432-99d0-1cb28136b6c4
 :::

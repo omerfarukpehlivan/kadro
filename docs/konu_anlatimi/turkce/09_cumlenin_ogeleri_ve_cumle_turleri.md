@@ -48,6 +48,8 @@ Temel öge sorularında iki tuzağa dikkat et:
 :::
 
 :::kontrol
+185bb52f-b9f6-402e-a98c-f2df33c37ed1
+1e589a7d-ac65-42f5-b43d-f0a35d65e459
 :::
 
 ## Bölüm 2: Yardımcı Ögeler (Nesne, Dolaylı Tümleç, Zarf Tümleci, Edat Tümleci)
@@ -86,6 +88,8 @@ Yardımcı ögelerde iki klasik tuzağa dikkat et:
 :::
 
 :::kontrol
+2e1bfd22-14ce-4b58-8c83-cb6549f8da25
+4666532b-5ace-4666-a933-b6bc55927ec0
 :::
 
 ## Bölüm 3: Yüklemin Türüne, Yerine ve Anlamına Göre Cümleler
@@ -124,6 +128,8 @@ Cümle türlerinde iki yaygın yanılgıya dikkat et:
 :::
 
 :::kontrol
+4c86914b-9bad-45d9-aa4d-a80008d9772f
+55f29566-4b28-4f2c-9436-0c119e68eb8c
 :::
 
 ## Bölüm 4: Yapısına Göre Cümleler (Basit, Birleşik, Sıralı, Bağlı)
@@ -163,4 +169,6 @@ Yapı sorularında iki tuzak adayları eler:
 :::
 
 :::kontrol
+5f8d5676-4a1a-4b49-9c2d-edfa6c91b9f0
+6ea01a2d-1c53-44b9-8145-b092f3ac0d81
 :::

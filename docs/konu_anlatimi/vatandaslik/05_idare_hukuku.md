@@ -55,6 +55,8 @@ Soru mantığı: "Valinin ildeki İl Milli Eğitim Müdürünün bir işlemini d
 :::
 
 :::kontrol
+059b2476-cd52-4514-b176-62d9ead5cd31
+0abe586a-35a7-5aaa-98b2-f9486cd41743
 :::
 
 ## Bölüm 2: Mahalli İdareler (Yerel Yönetimler) ve KİT'ler
@@ -100,6 +102,8 @@ Soru mantığı: "Köy İhtiyar Meclisi'nin seçim yapılmaksızın görev gere�
 :::
 
 :::kontrol
+0b728baf-349e-41ae-b349-7820ddb09671
+0ea408ae-73db-4a90-95ba-3c34f84aa0e9
 :::
 
 ## Bölüm 3: Kamu Görevlileri Hukuku (657 Sayılı DMK)
@@ -148,6 +152,8 @@ Soru mantığı: "Disiplin soruşturması yürütülen bir memura savunma yapmas
 :::
 
 :::kontrol
+10227679-0d31-4036-8d9e-9c13a75e10e6
+1532dff7-4fba-47e0-aa3b-211b834d2ec7
 :::
 
 ## Bölüm 4: İdarenin Düzenleyici İşlemleri, Mal Edinme ve Sorumluluğu
@@ -190,6 +196,8 @@ Soru mantığı: "Suç işlenmeden önce önleyici tedbir alan kolluk hangisidir
 :::
 
 :::kontrol
+18b19cff-a67c-46f2-b6a3-aa3c0fd71a89
+1eff38b9-4348-5ccd-bf0c-fc5731c21e33
 :::
 
 ## Bölüm 5: İdari Yargı: İptal, Tam Yargı Davaları ve Süreler
@@ -235,4 +243,6 @@ Soru mantığı: "Bir vatandaşın arazisi belediye tarafından kamulaştırılm
 :::
 
 :::kontrol
+21649eb6-18ef-4869-9e48-5ac5a68bf8cb
+24366d21-7cc5-42a9-b61d-6d6701f28d03
 :::

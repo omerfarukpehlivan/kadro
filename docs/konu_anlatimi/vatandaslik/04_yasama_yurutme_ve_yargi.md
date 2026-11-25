@@ -54,6 +54,8 @@ Soru mantığı: "Dokunulmazlığı TBMM tarafından kaldırılan bir milletveki
 :::
 
 :::kontrol
+0a405eef-35aa-4f8b-a5c1-eca7414bb5b3
+0b184929-0347-49b2-b3ea-3e72d98b4e8f
 :::
 
 ## Bölüm 2: TBMM'nin Çalışma Düzeni, Kanun Yapımı ve Bütçe
@@ -96,6 +98,8 @@ Soru mantığı: "Meclis soruşturması sürecinde Yüce Divan'a sevk için gere
 :::
 
 :::kontrol
+0b6ae126-bd28-498e-b90f-ea849628bb13
+0d2e00ab-cdc2-410b-be4d-b996dbf6f3d8
 :::
 
 ## Bölüm 3: Yürütme Organı: Cumhurbaşkanı, Yardımcıları ve Bakanlar
@@ -138,6 +142,8 @@ Soru mantığı: "Genel seçimlere 1 yıl 8 ay kala Cumhurbaşkanlığı makamı
 :::
 
 :::kontrol
+0f91ce5f-f607-45c3-8572-e11f38fd2cd0
+1036985a-f9f4-4516-9b2b-c37276622397
 :::
 
 ## Bölüm 4: Olağanüstü Hal (OHAL), MGK ve DDK (m. 108, 118, 119)
@@ -173,6 +179,8 @@ Soru mantığı: "Devlet Denetleme Kurulu aşağıdakilerden hangisini denetleye
 :::
 
 :::kontrol
+1282cfbf-fff5-4670-88a2-09b87264e121
+131b2035-98e3-4caf-9227-3ddf4227e086
 :::
 
 ## Bölüm 5: Yargı Organı: Yüksek Mahkemeler, AYM ve HSK
@@ -218,4 +226,6 @@ Soru mantığı: "Danıştay üyelerini ve Yargıtay Cumhuriyet Başsavcısını
 :::
 
 :::kontrol
+2169390a-1340-58ea-af85-d966d207bb66
+28dd4579-2c2c-49ea-80fb-2787e4cfa274
 :::

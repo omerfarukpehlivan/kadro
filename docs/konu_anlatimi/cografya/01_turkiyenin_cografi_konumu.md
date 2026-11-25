@@ -51,6 +51,8 @@ Enlem çözümlemesi: Çizgisel hızı, grup-tan süresi, gece-gündüz süre fa
 :::
 
 :::kontrol
+cdc0a0c7-38a6-4ff2-95c7-7df37c2a9cce
+8c3bd812-ae65-4192-bf65-93ef744cf404
 :::
 
 ## Bölüm 2: Boylam, Yerel Saat, Ulusal Saat ve Ekinoks-Gündönümleri
@@ -87,6 +89,8 @@ Boylam ve saat sorularında üç tuzağa dikkat et:
 :::
 
 :::kontrol
+9810d6a1-468f-4d12-bdb6-80b489dea6a8
+ed589317-6993-43cd-8a1c-6fd8180a967d
 :::
 
 ## Bölüm 3: Göreceli (Özel) Konum ve Enlem-Özel Konum Çelişkileri
@@ -123,6 +127,8 @@ Bakı ve üst/alt sınır çözümlemesi: Bakı etkisindeki güney yamaç daha s
 :::
 
 :::kontrol
+399b309a-5d81-4c75-8cd5-4f11fa381b9a
+6c248bc7-3d14-4134-98b1-567a9ebcae50
 :::
 
 ## Bölüm 4: Türkiye'nin Jeopolitik Konumu, Sınırlar ve Sınır Kapıları
@@ -160,4 +166,6 @@ Jeopolitik ve sınırlar konusunda üç klasik tuzağa dikkat et:
 :::
 
 :::kontrol
+f2e9ba80-b665-42fc-b249-3b8ac82b7a0b
+770c8e04-f746-4568-b98b-25a419fc315c
 :::

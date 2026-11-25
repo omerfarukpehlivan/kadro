@@ -45,6 +45,8 @@ Kök bulma sorularında ÖSYM iki noktayı tuzak olarak kullanır:
 :::
 
 :::kontrol
+28deeb03-8295-464d-bc6b-cbfa93e9dc64
+354898e2-8c9b-42f4-b214-3fec1a12043e
 :::
 
 ## Bölüm 2: Yapım Ekleri ve Dört Yapım Eki Türü
@@ -87,6 +89,8 @@ Yapım eki sorularında iki hata çok sık yapılır:
 :::
 
 :::kontrol
+3bd58929-0b90-4212-8d76-ddd578491ef9
+65bc8e9b-1d11-4328-b980-adeb30b26410
 :::
 
 ## Bölüm 3: Çekim Ekleri (İsim ve Fiil Çekim Ekleri)
@@ -125,6 +129,8 @@ Karıştırılan Ek | Çekim Eki Kullanımı | Yapım Eki veya Farklı Görev
 :::
 
 :::kontrol
+820c2f98-5ac1-42fb-9451-dd0fd1fe7883
+85e81717-b95e-44ff-89ea-eb82a65fe48b
 :::
 
 ## Bölüm 4: Yapı Bakımından Sözcükler (Basit, Türemiş, Birleşik ve Pekiştirme)
@@ -166,4 +172,6 @@ Yapı sorularında ÖSYM üç noktada adayları yanıltır:
 :::
 
 :::kontrol
+85fc075d-9798-4ceb-85d9-9e381478d8ee
+978cd6ef-e45c-46ed-a123-b03da4034c8e
 :::

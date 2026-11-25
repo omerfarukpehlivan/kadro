@@ -59,6 +59,8 @@ Soru mantığı: "Ölçülülük ilkesinin alt unsurları nelerdir?" Cevap **elv
 :::
 
 :::kontrol
+0243f7ed-d652-4077-8b55-2dedca8dadb5
+08568f6d-6dbd-4953-8ec8-07535f9162b9
 :::
 
 ## Bölüm 2: Kişinin Hakları ve Ödevleri (Negatif Statü Hakları)
@@ -98,6 +100,8 @@ Soru mantığı: "Dernek kurma ile toplantı ve gösteri yürüyüşü düzenlem
 :::
 
 :::kontrol
+08c19fd0-8841-41a9-abc6-69f02c9636e0
+09d6ade2-1c5e-49be-93dd-c2e1e12507a7
 :::
 
 ## Bölüm 3: Sosyal ve Ekonomik Haklar ve Ödevler (Pozitif Statü Hakları)
@@ -137,6 +141,8 @@ Soru mantığı: "Devlet, Anayasa'da yer alan sosyal ve ekonomik ödevlerini han
 :::
 
 :::kontrol
+0bdb970b-8b4a-4af3-987f-3bb7b0526c6d
+0c9a34f4-f82f-4c54-a0ce-8f6d62331e3e
 :::
 
 ## Bölüm 4: Siyasi Haklar ve Ödevler (Aktif Statü Hakları)
@@ -177,6 +183,8 @@ Soru mantığı: "Türkiye'de yaşayan bir yabancı vatandaşın TBMM'ye dilekç
 :::
 
 :::kontrol
+116b2e99-65c5-449e-9888-100fbd44c5e9
+1acf1962-81c4-4e90-ab01-a140e9e8a5c8
 :::
 
 ## Bölüm 5: Hakların Korunması: AYM'ye Bireysel Başvuru ve AİHM
@@ -225,4 +233,6 @@ Soru mantığı: "Kesinleşmiş mahkeme kararının öğrenilmesinden sonra AYM'
 :::
 
 :::kontrol
+1bd82b5c-cf81-42d3-b688-1f28c82dc6c2
+21402e60-f5f1-4204-8c10-bd7a573b5687
 :::

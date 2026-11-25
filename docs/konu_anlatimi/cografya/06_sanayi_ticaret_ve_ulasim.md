@@ -45,6 +45,8 @@ Sanayide iki klasik tuzağa dikkat et:
 :::
 
 :::kontrol
+4f2c1d3c-0d17-45e7-8b82-df9459a22b4f
+ad48589f-1ead-46db-9b77-e231e41fc076
 :::
 
 ## Bölüm 2: Türkiye'de Ulaşım Sistemleri, Geçitler ve Limanlar
@@ -89,6 +91,8 @@ Ulaşım sorularında iki klasik tuzağa dikkat et:
 :::
 
 :::kontrol
+b618816c-2c07-4814-9df2-2236258f6626
+66f311c4-566d-4599-b115-d2b3ecd66a77
 :::
 
 ## Bölüm 3: İç ve Dış Ticaret, Serbest Bölgeler ve Boru Hatları
@@ -127,6 +131,8 @@ Dış ticaret ve boru hatlarında iki tuzağa dikkat et:
 :::
 
 :::kontrol
+7a52bdb4-eb2f-4538-a71d-8401756b0615
+c52baad6-200f-40e4-aa81-241a7f86a13d
 :::
 
 ## Bölüm 4: Bölgesel Kalkınma Projeleri
@@ -168,4 +174,6 @@ Bölgesel kalkınma projelerinde iki ayrıntıya dikkat et:
 :::
 
 :::kontrol
+27838bf0-0bef-404f-b01f-a66ca26ff2bb
+0f1e71ab-b5b6-4435-8ed1-fa54cb0ac050
 :::

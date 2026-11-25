@@ -50,6 +50,8 @@ Bu bölümde iki klasik tuzağa dikkat et:
 :::
 
 :::kontrol
+322b09fc-6aea-4d05-accb-792fdb1a3397
+97318e4a-376c-4426-b90d-d64463ffaa88
 :::
 
 ## Bölüm 2: Dış Kuvvetler, Kıyı Tipleri ve Akarsu-Göl Oluşumları
@@ -88,6 +90,8 @@ Dış kuvvetler ve göllerde üç tuzağa dikkat et:
 :::
 
 :::kontrol
+676d8184-4833-463e-bc8a-205744e8b4e6
+ac129637-5c52-4a0d-9977-8632316ebfdd
 :::
 
 ## Bölüm 3: Türkiye'de İklim Elemanları, Basınç Merkezleri ve Rüzgarlar
@@ -130,6 +134,8 @@ Yağış ve rüzgâr çözümlemesi: "Karadeniz en çok yağışı sonbaharda al
 :::
 
 :::kontrol
+5c5e6e96-7ef8-4d66-8e74-59fc2f0abb9a
+8d23cfac-3c68-47ce-a395-3d656ad43599
 :::
 
 ## Bölüm 4: Türkiye İklim Tipleri, Topraklar ve Doğal Bitki Örtüsü
@@ -171,4 +177,6 @@ Bitki ve toprak sorularında iki tuzağa dikkat et:
 :::
 
 :::kontrol
+1ce34ec7-7751-405d-9f10-c74108ce8129
+927205f6-4711-4bea-af02-d70030df7e1b
 :::

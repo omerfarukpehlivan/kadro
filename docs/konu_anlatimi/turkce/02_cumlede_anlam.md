@@ -46,6 +46,8 @@ Neden-Sonuç ve Amaç-Sonuç farkını **G-B** işaretlemesiyle ayır:
 :::
 
 :::kontrol
+037626c3-cc16-41b7-8baa-774d3eb4e17c
+03ed0acc-29c3-47c8-b059-275317cd0e37
 :::
 
 ## Bölüm 2: Öznel-Nesnel Yargılar, Karşılaştırma ve Anlatım Tutumları
@@ -84,6 +86,8 @@ Doğru ve yanlış ayrımı: "Bu bölgede **çok geniş** bir orman alanı var."
 :::
 
 :::kontrol
+06c60777-f458-4b45-b228-179be4f2afcc
+0f35f7a9-90d3-4336-9a56-b497929cddcc
 :::
 
 ## Bölüm 3: Cümle Yorumlama, Yakın Anlamlı ve Çelişen Cümleler
@@ -120,6 +124,8 @@ Yakın anlam ve çelişme sorularında en büyük tehlike **kelime avcılığıd
 :::
 
 :::kontrol
+15002145-3b83-4db3-b1c1-5b101aafb423
+16056bc6-ca47-4b55-884a-6d2142f9c057
 :::
 
 ## Bölüm 4: Cümleden Kesin Olarak Çıkarılabilecek Yargılar
@@ -157,4 +163,6 @@ Kesin yargı sorularında ÖSYM adayları iki yolla yanıltır:
 :::
 
 :::kontrol
+1c18ba2f-a382-4947-acc2-545780b7b79f
+200c6064-c169-4a77-ab6b-60337d00f51e
 :::

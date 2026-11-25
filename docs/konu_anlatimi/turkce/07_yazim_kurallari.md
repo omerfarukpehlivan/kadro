@@ -41,6 +41,8 @@ Büyük harf sorularında ÖSYM iki noktada çok sık çeldirici kurar:
 :::
 
 :::kontrol
+036ad4b9-a28a-4997-a649-f3c74cf12b95
+1a7c950c-4d9a-4755-aae4-ca88eaf5af99
 :::
 
 ## Bölüm 2: "de", "ki", "mi"nin Yazımı ve Sayıların Yazımı
@@ -90,6 +92,8 @@ Bu bölümde üç tuzağa dikkat et:
 :::
 
 :::kontrol
+1d36d4e8-b9e9-4bad-8df4-ea76a2a0f245
+21b591a0-500c-4c36-ae3a-aaa688635ee4
 :::
 
 ## Bölüm 3: Birleşik Sözcüklerin Yazımı (Bitişik ve Ayrı)
@@ -129,6 +133,8 @@ Bitişik-ayrı yazım sorularında şu üç tuzağa dikkat et:
 :::
 
 :::kontrol
+460f321c-1ef9-4363-b115-c9b44a17f2de
+4a95020e-d1c7-470c-8ae1-25c1b4d80b7e
 :::
 
 ## Bölüm 4: Kısaltmaların Yazımı, Eklerin Getirilişi ve Sık Karıştırılan Sözcükler
@@ -165,4 +171,6 @@ Kısaltma ve yazım sorularında iki tuzağa dikkat et:
 :::
 
 :::kontrol
+61321495-7b46-4414-a2ea-b3eecfd3631c
+835ad68a-ca53-4da5-8885-95def54693cc
 :::

@@ -53,6 +53,8 @@ Soru mantığı: "Fatih Sultan Mehmet'in Kardeş Katli yasasını çıkarması v
 :::
 
 :::kontrol
+00214c11-6e9c-4e53-956a-d6a66278512b
+0112e1da-af1f-48a0-8191-1d7011ac0867
 :::
 
 ## Bölüm 2: Merkez Yönetimi: Divan-ı Hümayun ve Yönetici Sınıflar
@@ -101,6 +103,8 @@ Soru mantığı: "Kadıların atanması, örfi hukuk belgelerine tuğra çekilme
 :::
 
 :::kontrol
+044ec80d-77af-4a4f-bf84-1bbe0bf66128
+05cee021-7b41-4d09-afb2-a49a117cecda
 :::
 
 ## Bölüm 3: Taşra Yönetimi, Eyalet Türleri ve Hukuk Sistemi
@@ -148,6 +152,8 @@ Soru mantığı: "Mısır, Trablusgarp ve Yemen hangi eyalet grubuna girer ve ve
 :::
 
 :::kontrol
+09404c3e-ea52-4586-92ed-b5561df3cfd2
+0e0cdc73-77dc-40f3-9cf8-4e9db5315c60
 :::
 
 ## Bölüm 4: Ordu ve Deniz Gücü (Kapıkulu, Tımarlı Sipahiler ve Donanma)
@@ -192,6 +198,8 @@ Soru mantığı: "Tımarlı sipahilerin beslediği atlı askere ne ad verilir, t
 :::
 
 :::kontrol
+113b3c19-c277-4b2f-bef3-30d2e2ea0d23
+115da3f9-7879-473e-8b6e-ea17b3d20578
 :::
 
 ## Bölüm 5: Toprak Sistemi, Vergiler ve Ekonomi
@@ -243,6 +251,8 @@ Soru mantığı: "Müslümandan alınan ürün vergisi, gayrimüslimden alınan 
 :::
 
 :::kontrol
+12de6cc0-2e52-460e-ad95-2848dc26ec51
+13003e57-8160-4278-ab67-c315b8ee5c52
 :::
 
 ## Bölüm 6: Eğitim, Bilim, Sanat ve Mimari
@@ -290,4 +300,6 @@ Soru mantığı: "Mimar Sinan'ın ustalık eseri hangisidir?" Seçeneklerde mutl
 :::
 
 :::kontrol
+156e5d12-bafa-499a-8612-6075836834c3
+167a3f9b-2292-4b1c-aaca-9b854f71009e
 :::

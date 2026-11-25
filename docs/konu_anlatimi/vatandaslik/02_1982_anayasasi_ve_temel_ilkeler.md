@@ -49,6 +49,8 @@ Soru mantığı: "1982 Anayasası'nın 176. maddesine göre aşağıdakilerden h
 :::
 
 :::kontrol
+023bf8ca-70d6-45db-8dce-623c4601f20b
+071a0106-d69f-4d20-8c14-dd9d7d383ee4
 :::
 
 ## Bölüm 2: 1982 Anayasası'nın Değiştirilemez Hükümleri ve Temel İlkeleri
@@ -87,6 +89,8 @@ Soru mantığı: "Suç işlendikten sonra yalnızca o suça bakmak üzere yeni b
 :::
 
 :::kontrol
+0a32f4aa-06f0-4166-acf0-e2baec355f25
+0f433568-9687-47f6-94f2-eaae66c9f19a
 :::
 
 ## Bölüm 3: Seçim İlkeleri, Yüksek Seçim Kurulu ve Siyasi Partiler
@@ -130,6 +134,8 @@ Soru mantığı: "Bir doğal afet veya salgın durumunda TBMM seçimleri erteley
 :::
 
 :::kontrol
+1749ec78-32fe-414f-bd25-d6745f121415
+176d07f2-8caf-4b9e-b970-d076e8494bc3
 :::
 
 ## Bölüm 4: Anayasanın Değiştirilmesi Usulü (m. 175) ve Anayasa Yargısı
@@ -173,6 +179,8 @@ Soru mantığı: "TBMM'de 375 milletvekilinin gizli oyuyla kabul edilen bir anay
 :::
 
 :::kontrol
+1a0b220a-443d-4a0a-9930-b9068c999416
+1bb2fbba-6054-4dcb-9384-c60c615c8b8d
 :::
 
 ## Bölüm 5: 2017 Anayasa Değişikliği ile Gelen Temel Dönüşüm
@@ -227,4 +235,6 @@ Soru mantığı: "2017 Anayasa değişikliği ile aşağıdakilerden hangisi yü
 :::
 
 :::kontrol
+1bd6819a-6349-463b-ba8f-71c4368a1074
+1ea9bc51-e879-4327-8611-bea58c93f58d
 :::
