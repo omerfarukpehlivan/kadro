@@ -8,11 +8,8 @@
 Projemizin temel direkleri ([GEMINI.md](../GEMINI.md) içinde de kayıtlıdır):
 
 1. **Ürün Odağı & Modüler Çoklu KPSS Mimarisi (`TASK-126` ve sonrası):**
-   - **Aktif Çekirdek (v1 Veri Havuzu) & Çoklu Sınav Genişlemesi:** Mevcut aktif veri seti KPSS Lisans Genel Kültür (60 Soru / 65 Dakika); mimari ise **B Grubu GY-GK, E-KPSS, DHBT, MEB-AGS + 17 ÖABT ve A Grubu (`9 Alan`)** türlerini destekleyecek şekilde genişletilir (toplu soru üretimi son fazdadır):
-     - **Tarih:** 27 Soru
-     - **Coğrafya:** 18 Soru
-     - **Vatandaşlık:** 9 Soru
-     - **Güncel Bilgiler:** 6 Soru
+   - **Aktif Çekirdek (KPSS B Grubu GY-GK):** Lisans (`P1/P2/P3`), Ön Lisans (`P93`) ve Ortaöğretim (`P94`) düzeyleri için 6 derslik tam GY-GK (`Türkçe 30, Matematik & Geometri 30, Tarih 27, Coğrafya 18, Vatandaşlık 9, Güncel Bilgiler 6` — `3.480` soru / `348` test + `189` konu anlatımı bölümü) **yayın odaklı aktif kapsam** olarak yürütülür.
+   - **Çoklu Sınav Altyapısı (`TASK-179` ile Seçime Kilitli "Çok Yakında"):** `E-KPSS`, `DHBT`, `MEB-AGS + 17 ÖABT` ve `KPSS A Grubu (9 Alan)` kod/şema altyapısı korunur; ancak içerik üretimi (`TASK-139, 141–144`) ileri faza ertelenir. Kullanıcı yalnızca **KPSS B Grubu**'nu seçebilir; diğer sınav aileleri kilitli rozetle ve *"Bakım, onarım ve geliştirme süreçleri devam ediyor… Çok yakında!"* mesajıyla gösterilir, aktif geliştirme odağı **UI/UX cila, performans optimizasyonu ve yayın hazırlığına (`TASK-179–182`, `TASK-164`)** kaydırılır.
 2. **Backend & Veri Mimarisi (Supabase BaaS):**
    - **Aşama 1:** Local JSON + Bellek İçi (In-Memory / Mock) Repository.
    - **Aşama 2:** **.NET Web API kullanılmayacaktır!** Doğrudan **Supabase (`supabase_flutter` — Supabase Auth, PostgreSQL, RLS ve Raporlama Tabloları: `docs/supabase_schema.sql`)** kullanılacaktır.
@@ -183,12 +180,12 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-136** | **[Faz D — Altyapı] MEB-AGS + 17 Branş ÖABT Entegrasyonu: Öğretmenlik 1. Oturum (`80 Soru`), Aranabilir 17 Branş + YDS/P3 Seçicisi & `AGS-P1 / P2 / P3` Hesaplayıcısı** | MEB-AGS 1. Oturum (Sözel, Sayısal, Tarih, Coğrafya, *Eğitim Bilimleri & TYMM*, *Mevzuat*) + **17 ÖABT branşının** (Sınıf, Okul Öncesi, Özel Eğitim dahil `30+20` / `50 soru` ve `70`/`90 dk` kuralları) konu ağaçları; aranabilir branş seçici; DKAB/İHL çift puan (`P2-16` / `P2-17`) ve Yabancı Dil `AGS-P3` (%50 YDS) hesaplama motoru *(veri girişi hariç)* | ✅ **Tamamlandı** | ✅ | ✅ |
 | **TASK-137** | **[Faz E — Altyapı] KPSS A Grubu (Kariyer Meslekler) Entegrasyonu: 9 Alan Testi Konu Ağacı, Çoklu Alan Seçici (`P48` Paketi), `P4–P48` Puan Simülatörü & `≥1 Net` Kuralı** | Hukuk (7 alt dal), İktisat, Maliye, Muhasebe, İşletme, Kamu Yönetimi, Uluslararası İlişkiler, ÇEKO, İstatistik konu ağaçları; adayın yalnızca hedeflediği alan testlerini planlayıcı/derslere almasını sağlayan çoklu alan filtresi; `40 Soru / 50–60 dk` deneme şablonları ve **"ilgili her alan testinden ≥1 ham net"** baraj doğrulamalı `P4–P48` puan simülatörü *(veri girişi hariç)* | ✅ **Tamamlandı** | ✅ | ✅ |
 | **TASK-138** | **[Atölyeler & Oyunlar Uyumu] Harita Atölyesi, 60 Saniyede Pençe, Kavram Eşleştirme & Hap Bilgi Kartlarının Çoklu Sınav Kapsamına Uyarlanması** | `MapPracticeHubScreen`, `TrueFalseBlitzScreen`, `ConceptMatchScreen` ve `FlashcardsScreen` modüllerinin aktif `ExamSelection` kapsamına göre filtrelenmesi; henüz özel havuzu olmayan sınav türlerinde çökmeden `"Ortak Genel Kültür / Alan Yakında"` köprüsüyle güvenli boş durum yönetimi | ✅ **Tamamlandı** | ✅ | ✅ |
-| **TASK-139** | **[EN SON FAZ — Veri Girişi Altyapısı] Çoklu Sınav İçerik Doğrulama & Seed Pipeline (`validate_sql.py` + `distractor_trap` & `exam_scopes` Linter)** | Toplu soru üretimine geçmeden önce `tools/validate_sql.py` / parser betiklerinin `exam_scopes`, `sub_branch`, `source_variant`, `distractor_trap` zorunluluğu, mükerrer soru tespiti ve LaTeX temizliği kurallarıyla güncellenmesi | ⏳ **Bekliyor (Veri Fazı Ön Koşulu)** | ❌ | ❌ |
-| **TASK-140** | **[EN SON FAZ — Veri Girişi · Faz A] Ortak GY-GK (Türkçe, Matematik & Geometri + Ön Lisans/Ortaöğretim Seviye Varyantları) Soru & Kart Havuzu Üretimi** | Özgün Türkçe (30 soru dağılımı), Matematik & Geometri soru havuzları, ÖSYM çeldirici tuzağı analizleri ve B-Grubu ortak hap bilgi kartlarının SQL/JSON seed üretimi *(Mimari fazlardan sonra uygulanır)* | ⏳ **Bekliyor (En Son Faz)** | ❌ | ❌ |
-| **TASK-141** | **[EN SON FAZ — Veri Girişi · Faz B] E-KPSS Özgün Soru, `İşitme-1` / `Zihinsel` Sadeleştirilmiş Varyantlar & Engelli Hakları Havuzu Üretimi** | E-KPSS düzeylerine uygun özgün GY-GK soruları, Engelli Hakları Mevzuatı + Türk Kültür/Medeniyetleri soru/kartları ve erişilebilir sadeleştirilmiş metin varyantlarının üretimi | ⏳ **Bekliyor (En Son Faz)** | ❌ | ❌ |
-| **TASK-142** | **[EN SON FAZ — Veri Girişi · Faz C] KPSS DHBT (DHBT-1 Ortak + DHBT-2 3 Öğrenim Düzeyi) Soru, Bilgi Kartı & Eşleştirme Havuzu Üretimi** | DHBT-1 (20 soru dağılımı) ve DHBT-2 (Ortaöğretim İHL / Ön Lisans / Lisans derinlikli 7 ders) özgün soru bankası, fıkıh/kelam/tefsir hap bilgi kartları ve kavram eşleştirme setleri | ⏳ **Bekliyor (En Son Faz)** | ❌ | ❌ |
-| **TASK-143** | **[EN SON FAZ — Veri Girişi · Faz D] MEB-AGS (Eğitim Bilimleri + TYMM + Mevzuat) & Öncelikli ÖABT Branşları Özgün Soru Havuzu Üretimi** | MEB-AGS 1. Oturum Eğitim/TYMM/Mevzuat bankası ile kademeli olarak öncelikli ÖABT branşları (Sınıf, Okul Öncesi, Özel Eğitim, Türkçe, İlköğretim Mat, Sosyal Bilgiler, DKAB/İHL, PDR vb.) özgün soru havuzlarının üretimi | ⏳ **Bekliyor (En Son Faz)** | ❌ | ❌ |
-| **TASK-144** | **[EN SON FAZ — Veri Girişi · Faz E] KPSS A Grubu (Önce Çekirdek `P48`: Hukuk, İktisat, Maliye, Muhasebe; Sonra 5 Alan) Özgün Soru Havuzu Üretimi** | Cari mevzuat uyumlu Hukuk (7 alt dal), İktisat, Maliye, Muhasebe çekirdek paketi (`P48`) ile devamında İşletme, Kamu Yönetimi, Uluslararası İlişkiler, ÇEKO ve İstatistik özgün soru havuzlarının üretimi | ⏳ **Bekliyor (En Son Faz)** | ❌ | ❌ |
+| **TASK-139** | **[ERTELENDİ · İleri Faz — Veri Altyapısı] Çoklu Sınav İçerik Doğrulama & Seed Pipeline (`validate_sql.py` + `distractor_trap` & `exam_scopes` Linter)** | Diğer sınav aileleri (`E-KPSS / DHBT / MEB-AGS / A Grubu`) açıldığında toplu soru üretimi için `tools/validate_sql.py` / parser betiklerinin çoklu sınav allowlist kurallarıyla güncellenmesi | ⏸️ **Ertelendi (Çok Yakında / İleri Faz)** | ❌ | ❌ |
+| **TASK-140** | **[DEĞİŞTİRİLDİ] Ortak GY-GK (Türkçe, Matematik & Geometri + Ön Lisans/Ortaöğretim Seviye Varyantları) Soru & Kart Havuzu** | KPSS B Grubu için `TASK-165`, `TASK-167`, `TASK-173`, `TASK-174`, `TASK-175`, `TASK-177` ve `TASK-178` ile büyük ölçüde tamamlandı; kalan havuz rötuşları `TASK-180`'e taşındı | ⏭️ **Değiştirildi** (`TASK-165..178` & `TASK-180`) | ➖ | ➖ |
+| **TASK-141** | **[ERTELENDİ · İleri Faz — Faz B] E-KPSS Özgün Soru, `İşitme-1` / `Zihinsel` Sadeleştirilmiş Varyantlar & Engelli Hakları Havuzu Üretimi** | `TASK-179` kapsamında seçime kapalı/"Çok yakında" tutulan E-KPSS için ileri faz soru ve sadeleştirilmiş metin varyantları üretimi | ⏸️ **Ertelendi (Çok Yakında / İleri Faz)** | ❌ | ❌ |
+| **TASK-142** | **[ERTELENDİ · İleri Faz — Faz C] KPSS DHBT (DHBT-1 Ortak + DHBT-2 3 Öğrenim Düzeyi) Soru, Bilgi Kartı & Eşleştirme Havuzu Üretimi** | `TASK-179` kapsamında seçime kapalı/"Çok yakında" tutulan KPSS DHBT için ileri faz özgün soru ve kart üretimi | ⏸️ **Ertelendi (Çok Yakında / İleri Faz)** | ❌ | ❌ |
+| **TASK-143** | **[ERTELENDİ · İleri Faz — Faz D] MEB-AGS (Eğitim Bilimleri + TYMM + Mevzuat) & Öncelikli ÖABT Branşları Özgün Soru Havuzu Üretimi** | `TASK-179` kapsamında seçime kapalı/"Çok yakında" tutulan MEB-AGS & ÖABT için ileri faz özgün soru üretimi | ⏸️ **Ertelendi (Çok Yakında / İleri Faz)** | ❌ | ❌ |
+| **TASK-144** | **[ERTELENDİ · İleri Faz — Faz E] KPSS A Grubu (Önce Çekirdek `P48`: Hukuk, İktisat, Maliye, Muhasebe; Sonra 5 Alan) Özgün Soru Havuzu Üretimi** | `TASK-179` kapsamında seçime kapalı/"Çok yakında" tutulan KPSS A Grubu için ileri faz özgün soru üretimi | ⏸️ **Ertelendi (Çok Yakında / İleri Faz)** | ❌ | ❌ |
 | **TASK-145** | **[Web Faz 1 — Çekirdek & Güvenlik] Web Wasm Koşullu Importlar, `PurchaseService`/`AdService` Web Açığı Kapatma, URL Stratejisi & `web/index.html` SEO/Splash** | `kIsWeb` ortamındaki ücretsiz PRO (`return true`) ve mock reklam açığının kapatılması; `dart:io` koşullu importları (`Wasm` uyumu); `usePathUrlStrategy()` (`#` kaldırma); webde lokal JSON/`OfflineDownloadService` kısıtlaması ve `web/index.html` Türkçe meta + erişilebilir viewport/shimmer yenilemesi | ✅ **Tamamlandı (Web Projesi · Mobil'de Yok)** | ✅ | 🚫 |
 | **TASK-146** | **[Web Faz 2 — Masaüstü SaaS Kabuğu] `AdaptiveWebShell`, Sabit `KadroSidebar`, `NavigationRail`, Breadcrumb Üst Bar & `Ctrl+K` Komut Paleti** | `ResponsiveBreakpoints` masaüstü kırılımı (`>= 1024px`); mobilde `AppNavigationBar` korunurken tablette `NavigationRail`, masaüstünde `256px` `KadroSidebar` + aktif sınav değiştirici ve `Ctrl+K / Cmd+K` global `KadroCommandPalette` spotlight arama penceresi | ✅ **Tamamlandı (Web Projesi · Mobil'de Yok)** | ✅ | 🚫 |
 | **TASK-147** | **[Web Faz 2 — Masaüstü Mikro-Etkileşim & Overlay] `TactileCard` / `OptionTile` Hover-İmleç Fiziği, WCAG Odak Halkası & `AdaptiveOverlay`** | `MouseRegion` + `SystemMouseCursors.click` hover yükseltme/renk tepkisi, WCAG `4.5:1` klavye odak halkaları, masaüstü `Scrollbar` / seçilebilir metin (`SelectionArea`) ve `>= 768px` ekranlarda `showModalBottomSheet` yerine `Dialog` / sağ `SideDrawer` açan `AdaptiveOverlay` yardımcısı | ✅ **Tamamlandı (Web Projesi · Mobil'de Yok)** | ✅ | 🚫 |
@@ -217,16 +214,31 @@ Mobil (`gunisigi` = Telefon & Tablet, Flutter) ve Web (`kadro-web`, Next.js) iki
 | **TASK-170** | **Konu Anlatımı İçerik Partileri (GK + GY Türkçe)** | 30 konu: Tarih 7, Vatandaşlık 6, Türkçe 11, Coğrafya 6; her parti Gemini yazar → doğrulayıcı → Claude incelemesi → canlıya SQL | 🟢 **Tamamlandı** | ➖ | ✅ |
 | **TASK-171** | **Web’de Konu Anlatımı Panel İçinde Açılsın** | Uygulama içinden açılan konu anlatımının herkese açık SEO sayfası yerine `(app)` kabuğunda açılması: `/dersler/[ders]/[konu]/anlatim[/bolum]` rotaları, ortak içerik bileşenleri, `buildAppTopicLessonHref`; SEO sayfaları değişmez | 🟢 **Tamamlandı (Web)** | ✅ | ➖ |
 | **TASK-172** | **Matematik Gösterimi Altyapısı — LaTeX, Şekil (SVG) & Soru Derleyicisi** | Soru ve konu anlatımında `$...$` / `$$...$$` LaTeX (mobil `flutter_math_fork`, web KaTeX), tema uyumlu güvenli SVG şekiller (`questions.figure_svg`, `12` SQL, konu anlatımı `figure` bloğu), JSON tariften şekil çizici ve cevap anahtarını hesaplayarak doğrulayan soru derleyicisi (`tools/math/`); ortak sözleşme `math_text.json` | 🟢 **Tamamlandı** (`12` SQL canlıya uygulanmalı) | ✅ | ✅ |
-| **TASK-173** | **Matematik & Geometri Soru Üretim Partileri (14 konu, ilk tur ≈ 560 soru)** | Gemini `docs/soru_havuzu/matematik/GEMINI_PROMPT.md` ile yazar → `compile_questions.mjs --check` → Claude incelemesi → SQL → canlı; pilot: 01, 08, 11, 12 numaralı konulardan 42 soru | ⏳ **Planlandı** | ➖ | ➖ |
+| **TASK-173** | **Matematik & Geometri Soru Üretim Partileri (14 konu, tümü 10'un katı · 590 soru)** | Gemini `docs/soru_havuzu/matematik/GEMINI_PROMPT.md` ile yazar → `compile_questions.mjs --check` → SQL (`00_tum_matematik_sorulari_tek_dosya.sql`) → canlı (`590` soru / 59 test, `168` SVG şekilli) | 🟢 **Tamamlandı (Güncel SQL hazır)** | ➖ | ➖ |
+| **TASK-174** | **Matematik & Geometri Aktivasyonu & 120 Soruluk Tam GY-GK Denemelerinin Açılması** | B Grubu tüm düzeylerde (Lisans, Ön Lisans, Ortaöğretim) `Matematik & Geometri` (`590` soru / `59` test / `168` SVG) "Yakında" kilidinden çıkarılır; `/denemeler` içindeki `120` soruluk Tam GY-GK denemeleri (`b_gygk_tam_1`, `b_gygk_tam_2`) ve Matematik branş denemesi (`30` soru) kullanıma açılır (alt düzey `≤ %15` zor soru tavanı dahil) | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
+| **TASK-175** | **Tüm Derslerde Güncel Test Sayısı & Müfredat Vitrin Hizalaması (`3.480` Soru)** | Tarih (`62 -> 71` test), Vatandaşlık (`63` test), Güncel Bilgiler (`4 -> 8` test/konu) ve Coğrafya (`6` test/konu) gerçek Supabase test sayılarına (`348` test / `3.480` soru) hizalanır; Planlayıcı/Landing/Müfredat ekranlarındaki eski "Matematik Yakında" ve soru sayısı metinleri güncellenir | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
+| **TASK-176** | **Deneme Sınavı Seçim Motorunda Matematik Kotası & Sınav Ayarı Zorluk Karması** | `Tam GY-GK Denemesi` (`b_gygk_tam_1/2`) ve `Matematik Branş Denemesi`nde `30` Matematik sorusunun tamamının `zorluk = 1` kolay sorulardan gelmesi engellenir: 14 konuya ÖSYM ağırlıklı kota (`2,2,2,2,3,2,3,4,2,1,3,2,1,1`) + Lisans'ta `%25 Kolay / %50 Orta / %25 Zor` taraklı seçim (`d2, d1, d2, d3`), alt düzeylerde `≤ %15` zor tavanı korunur; konu testlerindeki kolay→zor sırası değişmez | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
+| **TASK-177** | **Matematik Havuzu KPSS Sınav Ayarı Kalite Revizyonu (Parti 1–3, Mevcut ID'ler Üzerinde)** | Telif ihlali yapmadan PDF & güncel ÖSYM KPSS soru arketipleriyle (`I, II, III` öncüllü, kesinlik/olamaz, harfli/türünden/oran, iki kavramı birleştiren grafik/geometri/problem kurguları) zayıf alıştırma ve ikiz şablonların mevcut `mat-NN-SSS` kimlikleri üzerinde yenilenmesi (Parti 1–3 ✅: `01,02,04–14` · `74` soru yenilendi, `590` aktif) | 🟢 **Tamamlandı (Canlıya Alındı)** | ➖ | ➖ |
+| **TASK-178** | **Matematik & Geometri Eksik Konu Anlatımlarının Tamamlanması (14 Konu, 48 Bölüm)** | Aktif müfredatta konu anlatımı bulunmayan tek ders olan `Matematik & Geometri`'nin `14` kanonik konusu için LaTeX formüllü (`$...$` / `$$...$$`), `:::sekil` SVG diyagramlı ve `:::tuzak`/`:::ornek` bloklu `48` bölüm (`docs/konu_anlatimi/matematik/01..14.md`) yazılıp canlı Supabase'e (`189` toplam `topic_lesson_units`) yüklendi | 🟢 **Tamamlandı (Canlıya Alındı)** | ➖ | ➖ |
+| **TASK-179** | **[Aktif Evre · Faz 1] Sınav Ailesi Kilidi: Yalnızca KPSS B Grubu Aktif & Kilitli Sınavlarda "Bakım, Onarım ve Geliştirme / Çok Yakında!" Kapısı** | Sınav hedefi seçicilerinde (`ExamTargetPickerView`, Onboarding, Profil, Program Modalı; Web: `OnboardingWizardDialog`, `ProfileWorkspace`, `/mufredat` banner) yalnızca **KPSS B Grubu** seçilebilir; `E-KPSS`, `DHBT`, `MEB-AGS + ÖABT` ve `KPSS A Grubu` kilit ikonu (`🔒`) ve *"Bakım, onarım ve geliştirme süreçleri devam ediyor... Çok yakında!"* mesajıyla seçime kapatılır; kayıtlı eski kilitli seçimler güvenli biçimde `KPSS B Grubu`'na normalize edilir | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
+| **TASK-180** | **[Aktif Evre · Faz 2] KPSS B Grubu Havuz & Bülten Kalite Rötuşu (`07` SQL Canlıya Alma, Güncel Bilgiler Yetim Sorular, Eksik `distractor_trap` & Mini Kontrol)** | Canlı `public.questions` içindeki `3` yetim/mükerrer Güncel Bilgiler çoktan seçmeli kaydının pasifleştirilmesi (`483` → `480`), kanonik havuzda eksik kalan `10` MC sorunun `distractor_trap` analizlerinin tamamlanması (`3.480 / 3.480`), `current_affairs_bulletins` tablosunun `15` bülten maddesiyle (`2026-05..07`) tohumlanıp web/mobil bülten + Leitner senkronunun doğrulanması ve `189` `topic_lesson_units` `:::kontrol` bloğuna ikişer kanonik `difficulty <= 2` soru UUID'sinin bağlanması | 🟢 **Tamamlandı (Eşlenik)** | ✅ | ✅ |
+| **TASK-181** | **[Aktif Evre · Faz 3] Mobil & Web UI/UX Cila Paketi (Görsel Hiyerarşi, Çoklu Ekran Taşma Denetimi, Yükleme İskeletleri & Erişilebilirlik)** | `360×640`, standart telefon, tablet ve web kırılımlarında uçtan uca UI/UX taraması: koyu/açık tema kontrast doğrulaması, boş/hata/offline durum ekranlarının tekilleştirilmesi, yükleme iskeletleri (`shimmer`/skeleton), alt çekmece/diyalog ergonomisi ve Matematik LaTeX/SVG mobil küçük ekran sığdırma cilası | ⏳ **Planlandı** | ❌ | ❌ |
+| **TASK-182** | **[Aktif Evre · Faz 4] Performans, Bellek, Ağ & Paket Boyutu Optimizasyonu (Startup, Isolate/Cache, SVG/Asset, Web Vitals & APK/AAB Profiling)** | Soğuk açılış süresi, gereksiz Riverpod/widget rebuild'leri, büyük SVG/HTML/JSON önbellek maliyeti, Supabase sorgu/egress sayıları, 60/120 fps liste/quiz kaydırma akıcılığı, Android Release APK/AAB (`--split-per-abi` / tree-shake-icons / asset temizliği) ve Web Core Web Vitals (`LCP/CLS/RSC`) optimizasyonu | ⏳ **Planlandı** | ❌ | ❌ |
 | *[GELECEK FAZ]* | **"Pazar 20:00" Türkiye Geneli Canlı KPSS Denemesi (Canlı Etkinlik)** | Tüm adayların aynı anda başladığı, canlı geri sayımlı Türkiye sıralaması çıkaran eş zamanlı canlı deneme ekranı | ⏸️ **Kullanıcı Kesin Onayı Bekleniyor (İleri Faz)** | ❌ | ❌ |
 
 ### 📊 Aktif Mobil & Web Eşleniklik Özeti
 
-- **Sonradan İptal Edilen / Başka Görevle Değiştirilen Eski Görevler (`➖` / `➖` — Ele Alınmıyor):** `TASK-11`, `TASK-12`, `TASK-14`–`TASK-17`, `TASK-31`–`TASK-33`, `TASK-56` (*eski tema/Lucide/MascotCoachBanner katmanı -> `TASK-66`, `TASK-67`, `TASK-68`, `TASK-107 - TASK-108`, `TASK-112` ile yenilendi*), `TASK-30` (*eski GK Onboarding -> `TASK-131` ile yenilendi*), `TASK-64` (*tekil konu indirme ikonu -> `TASK-75` ile sadeleştirildi*), `TASK-78` (*Pomodoro Stüdyosu `824eac4` ile kaldırıldı; Geri Sayım `TASK-126`'da*), `TASK-110` (*tempo adaptasyonu -> `TASK-116` ile yenilendi*), `TASK-111` (*GY 'Yakında' vitrini -> `TASK-133` ile gerçek müfredata geçti*), `TASK-119` (*Auth-First kapısı -> `TASK-155` Misafir Öncelikli Açılış ile iptal edildi*), `TASK-156` (*Flutter Web Wasm SEO -> `kadro-web` Next.js ayrışmasıyla iptal edildi*).
-- **🔴 Gerçek Eşleniklik Açığı (Aktif `❌` olan platformlar — önce bunlar kapatılır):** `TASK-40` & `TASK-99` (🌐 Web ödeme — `iyzico`, kullanıcı kararıyla ertelendi), `TASK-152` (🌐 Web Billing + Vercel), `TASK-161` (📱 + 🌐 PDF), `TASK-139`–`TASK-144` (ortak içerik fazı).
+- **Aktif Çalışma Odağı (v1 B Grubu Yayın + UI/UX + Optimizasyon Evresi):**
+  1. `TASK-179`: Sınav seçicilerde yalnızca **KPSS B Grubu** açık, diğer 4 sınav ailesi kilitli + *"Bakım, onarım ve geliştirme süreçleri devam ediyor… Çok yakında!"* mesajı (`🟢 Tamamlandı (Eşlenik): 📱 ✅ · 🌐 ✅`)
+  2. `TASK-180`: B Grubu son içerik rötuşları (`07` SQL canlıya alma, Güncel Bilgiler yetim/bülten, eksik `distractor_trap` & `:::kontrol` bağları) (`📱 ❌ · 🌐 ❌`)
+  3. `TASK-181`: Mobil & Web UI/UX Cila Paketi (`📱 ❌ · 🌐 ❌`)
+  4. `TASK-182`: Performans, Bellek, Ağ & Bundle Optimizasyonu (`📱 ❌ · 🌐 ❌`)
+  5. `TASK-164`: Yayın Öncesi Mağaza Uyumluluk Kapısı (`app-store-audit`) (`📱 ❌ · 🌐 ❌`)
+- **Sonradan İptal Edilen / Başka Görevle Değiştirilen Eski Görevler (`➖` / `➖` — Ele Alınmıyor):** `TASK-11`, `TASK-12`, `TASK-14`–`TASK-17`, `TASK-31`–`TASK-33`, `TASK-56` (*eski tema/Lucide/MascotCoachBanner katmanı -> `TASK-66`, `TASK-67`, `TASK-68`, `TASK-107 - TASK-108`, `TASK-112` ile yenilendi*), `TASK-30` (*eski GK Onboarding -> `TASK-131` ile yenilendi*), `TASK-64` (*tekil konu indirme ikonu -> `TASK-75` ile sadeleştirildi*), `TASK-78` (*Pomodoro Stüdyosu `824eac4` ile kaldırıldı; Geri Sayım `TASK-126`'da*), `TASK-110` (*tempo adaptasyonu -> `TASK-116` ile yenilendi*), `TASK-111` (*GY 'Yakında' vitrini -> `TASK-133` ile gerçek müfredata geçti*), `TASK-119` (*Auth-First kapısı -> `TASK-155` Misafir Öncelikli Açılış ile iptal edildi*), `TASK-140` (*Ortak GY-GK B Grubu üretimi `TASK-165..178` ile tamamlandı; son rötuşlar `TASK-180`'de*), `TASK-156` (*Flutter Web Wasm SEO -> `kadro-web` Next.js ayrışmasıyla iptal edildi*).
+- **⏸️ İleri Faza Ertelenenler ("Çok Yakında" Kapsamı — Şu An Başlanmayacak):** `TASK-139`, `TASK-141`–`TASK-144` (E-KPSS, DHBT, MEB-AGS + ÖABT, KPSS A Grubu veri üretimi & çoklu sınav linter), `*[GELECEK FAZ]*` (Pazar 20:00 Canlı KPSS Denemesi).
+- **Diğer Bekleyen / Kısmi Kalemler:** `TASK-40` & `TASK-99` (🌐 Web ödeme — `iyzico`, kullanıcı kararıyla ertelendi), `TASK-152` (🌐 Web Billing + Vercel), `TASK-161` (📱 + 🌐 Yazdırılabilir A4 Test PDF Oluşturucu — PRO opsiyonel).
 - **🌐 Web'e Özgü, `kadro-web`'de Takip Edilenler (Mobil `🚫`):** `TASK-145`, `TASK-146`, `TASK-147`, `TASK-149`, `TASK-151` (`Web ✅`) ve `TASK-152` (`Web ❌`: `06_web_subscriptions.sql` uygulandı, **`iyzico` Web Billing + Vercel** kullanıcı kararıyla ertelendi). Tablet ortak düzenlerini koruyan `TASK-148` ve `TASK-150` *(iptal edilen Pomodoro hariç)* her iki platformda da `✅`'tir.
-- **Ortak Bekleyen / Henüz Başlanmamış Aktif Fazlar (`Web ❌ · Mobil ❌`):** `TASK-139`–`TASK-144` (En son faz toplu soru/içerik üretimi & SQL linter), `TASK-161` (Yazdırılabilir A4 Test PDF Oluşturucu), `*[GELECEK FAZ]*` (Pazar 20:00 Canlı KPSS Denemesi).
-- **🟡 Kısmi — Mobil'de Aktif Olup Web'de Kalan Ödeme Kalemleri (`Web ❌ · Mobil ✅`):** `TASK-40` & `TASK-99` *(aktif web kredi kartı ödeme adımı `iyzico` kullanıcı talebiyle ertelendi; mevcut `PRO` kontrolleri `profiles.is_pro` ve `user_subscriptions` üzerinden aktiftir)*. Eşlenik hale getirilen **30 görev** (`TASK-29`, `TASK-37`, `TASK-39`, `TASK-47`, `TASK-48`, `TASK-52`, `TASK-57`, `TASK-65`, `TASK-68`, `TASK-76`, `TASK-90`, `TASK-94`, `TASK-113`, `TASK-116`, `TASK-121`, `TASK-124`, `TASK-130`–`TASK-138`, `TASK-154`, `TASK-155`, `TASK-157`, `TASK-158`, `TASK-159`) `kadro-web` üzerinde uygulanıp **`Web ✅`** durumuna geçirildi *(Not: Canlı Supabase'de `07_leitner_and_current_affairs.sql` henüz uygulanmadığından `TASK-158` ve `TASK-160` bulut şeması hazır olduğunda ekstra migrasyonsuz çalışacak şekilde yerel fallback ile ilerler)*.
+- **🟡 Kısmi — Mobil'de Aktif Olup Web'de Kalan Ödeme Kalemleri (`Web ❌ · Mobil ✅`):** `TASK-40` & `TASK-99` *(aktif web kredi kartı ödeme adımı `iyzico` kullanıcı talebiyle ertelendi; mevcut `PRO` kontrolleri `profiles.is_pro` ve `user_subscriptions` üzerinden aktiftir)*. Eşlenik hale getirilen görevler (`TASK-29`, `TASK-37`, `TASK-39`, `TASK-47`, `TASK-48`, `TASK-52`, `TASK-57`, `TASK-65`, `TASK-68`, `TASK-76`, `TASK-90`, `TASK-94`, `TASK-113`, `TASK-116`, `TASK-121`, `TASK-124`, `TASK-130`–`TASK-138`, `TASK-154`, `TASK-155`, `TASK-157`–`TASK-159`, `TASK-162`, `TASK-163`, `TASK-165`–`TASK-168`, `TASK-172`, `TASK-174`–`TASK-176`) `kadro-web` üzerinde uygulanıp **`Web ✅`** durumuna geçirildi.
 - **📱 Mobile Özgü Native / Mağaza Kalemleri (`Web 🚫 · Mobil ✅`):** `TASK-41` & `TASK-88` (AdMob Ödüllü Reklam & Play Store release), `TASK-43` & `TASK-97` (Yerel bildirimler & Sentry), `TASK-54` (App Icon & Native Splash), `TASK-55` (Kadro PRO çevrimdışı indirme), `TASK-96` (`FLAG_SECURE` ekran görüntüsü koruması), `TASK-98` (Google Play In-App Review), `TASK-100 - TASK-106` *(Android keystore/release mobil özgü; Sync, Geri Sayım ve Otomatik Plan her iki tarafta aktif)*.
 
 ---
@@ -5897,14 +5909,14 @@ ADIM 3: Test & Doğrulama
 
 ---
 
-### 📚 BÖLÜM 5 — EN SON FAZ: İÇERİK DOĞRULAMA PIPELINE'I & BULK VERİ GİRİŞİ (`TASK-139` – `TASK-144`)
+### 📚 BÖLÜM 5 — İLERİ FAZ (ERTELENDİ · "ÇOK YAKINDA"): ÇOKLU SINAV İÇERİK DOĞRULAMA & BULK VERİ GİRİŞİ (`TASK-139` – `TASK-144`)
 
 > [!NOTE]
-> **Kullanıcı Kararı Gereği Sıralama:** `TASK-126` – `TASK-138` mimari ve UI/UX görevleri tamamlanıp projede çoklu sınav esnekliği kanıtlanana kadar toplu soru üretimine **başlanmayacaktır**. Tüm içerik/soru veri girişi bu son fazda sırayla yürütülecektir.
+> **Kullanıcı Kararı Gereği Evre Değişikliği (`TASK-179`):** İlk yayında yalnızca **KPSS B Grubu (`Lisans / Ön Lisans / Ortaöğretim`)** içerikleri açık tutulur; `E-KPSS`, `DHBT`, `MEB-AGS + ÖABT` ve `KPSS A Grubu` seçime kilitli *"Bakım, onarım ve geliştirme süreçleri devam ediyor… Çok yakında!"* durumunda tutulur. Bu nedenle `TASK-139` ve `TASK-141`–`TASK-144` ileri faza ertelenmiş, `TASK-140` ise `TASK-165..178` ve `TASK-180` ile B Grubu için karşılanmıştır. Aktif odak **`TASK-179`–`TASK-182`** (Sınav Kilidi, İçerik Rötuşları, UI/UX Cila ve Optimizasyon) evresidir.
 
-### 📦 TASK-139 [Veri Girişi Ön Koşulu]: Çoklu Sınav İçerik Doğrulama & Seed Pipeline (`tools/validate_sql.py` + Şema & `distractor_trap` Linter)
+### 📦 TASK-139 [Ertelendi · İleri Faz]: Çoklu Sınav İçerik Doğrulama & Seed Pipeline (`tools/validate_sql.py` + Şema & `distractor_trap` Linter)
 
-- **Durum:** ⏳ **Bekliyor *(Veri Fazı Ön Koşulu)***
+- **Durum:** ⏸️ **Ertelendi *(Çok Yakında / İleri Faz Veri Ön Koşulu)***
 
 ```text
 GÖREV: TASK-139 — Çoklu Sınav Soru Üretim & Otomatik Kalite Doğrulama Pipeline'ı (tools/validate_sql.py & Şema Linter)
@@ -5915,38 +5927,37 @@ ADIM 1: `tools/` içindeki soru doğrulama ve ayrıştırma betiklerini güncell
 4. Kapsam bazlı JSON parça dosyalarını (`assets/data/scopes/<scope>.json`) üreten export/build betiğini yaz.
 ```
 
-### 📦 TASK-140 [EN SON FAZ — Veri Girişi · Faz A]: Ortak GY-GK (Türkçe, Matematik & Geometri + Ön Lisans/Ortaöğretim Seviye Varyantları) Soru & Kart Havuzu
+### 📦 TASK-140 [Değiştirildi · TASK-165..178]: Ortak GY-GK (Türkçe, Matematik & Geometri + Ön Lisans/Ortaöğretim Seviye Varyantları) Soru & Kart Havuzu
 
-- **Durum:** ⏳ **Bekliyor *(En Son Faz)***
+- **Durum:** ⏭️ **Değiştirildi (`TASK-165..178` & `TASK-180`)**
 - **Kapsam:**
-  - Özgün KPSS Türkçe (30 soru dağılımı: anlam, paragraf, dil bilgisi, sözel mantık) ve Matematik & Geometri (30 soru dağılımı: sayılar, problemler, sayısal mantık, geometri) soru havuzlarının + ÖSYM çeldirici tuzaklarının üretimi.
-  - Mevcut Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler havuzunun SQL UPDATE/seed ile Ön Lisans (`P93`) ve Ortaöğretim (`P94`) hedeflerine uyumlu `exam_scopes` ve seviye varyantlarıyla etiketlenmesi.
-  - `CurriculumAvailability.ready` kilidinin GY modülleri için açılması.
+  - Türkçe (`710` soru, `45` konu anlatımı bölümü -> `TASK-165`, `TASK-170`), Matematik & Geometri (`590` soru / `168` SVG + `48` konu anlatımı bölümü -> `TASK-173`, `TASK-174`, `TASK-177`, `TASK-178`) ve Ön Lisans/Ortaöğretim ortak GY-GK etiketlemesi + zorluk tavanı (`TASK-167`, `TASK-176`) tamamlandı.
+  - Kalan B Grubu havuz/bülten/çeldirici rötuşları `TASK-180`'e devredildi.
 
-### 📦 TASK-141 [EN SON FAZ — Veri Girişi · Faz B]: E-KPSS Özgün Soru, Sadeleştirilmiş (`İşitme-1` / `Zihinsel`) Metin Varyantları & Engelli Hakları Havuzu
+### 📦 TASK-141 [Ertelendi · İleri Faz]: E-KPSS Özgün Soru, Sadeleştirilmiş (`İşitme-1` / `Zihinsel`) Metin Varyantları & Engelli Hakları Havuzu
 
-- **Durum:** ⏳ **Bekliyor *(En Son Faz)***
+- **Durum:** ⏸️ **Ertelendi *(Çok Yakında / İleri Faz)***
 - **Kapsam:**
   - Ortaöğretim (`EKPSSP1`), Ön Lisans (`EKPSSP2`), Lisans (`EKPSSP3`) için özgün 30 GY + 30 GK soruları (özellikle **Türk Kültür ve Medeniyetleri** ve **Engelli Hakları Mevzuatı**).
   - `İşitme-1` ve `Zihinsel` adayları için sadeleştirilmiş/yalın cümle yapılı `source_variant = 'simplified'` soru varyantları ve hap bilgi kartları.
 
-### 📦 TASK-142 [EN SON FAZ — Veri Girişi · Faz C]: KPSS DHBT (DHBT-1 Ortak + DHBT-2 3 Öğrenim Düzeyi) Soru, Bilgi Kartı & Eşleştirme Havuzu
+### 📦 TASK-142 [Ertelendi · İleri Faz]: KPSS DHBT (DHBT-1 Ortak + DHBT-2 3 Öğrenim Düzeyi) Soru, Bilgi Kartı & Eşleştirme Havuzu
 
-- **Durum:** ⏳ **Bekliyor *(En Son Faz)***
+- **Durum:** ⏸️ **Ertelendi *(Çok Yakında / İleri Faz)***
 - **Kapsam:**
   - DHBT-1 (5 alan: İnanç, İbadet, Kur'an Bilgisi, Siyer, İslam Ahlakı) ortak soru bankası.
   - DHBT-2 (7 alan: Tefsir, Hadis, Fıkıh, Akaid/Kelam, İslam Tarihi, Dinler/Mezhepler, Hitabet/DİB Mevzuatı) için Ortaöğretim İHL / Ön Lisans / Lisans derinlikli özgün sorular (`distractor_trap` dahil), mezhep/kavram eşleştirme setleri ve hap bilgi kartları.
 
-### 📦 TASK-143 [EN SON FAZ — Veri Girişi · Faz D]: MEB-AGS (Eğitim Bilimleri + TYMM + Mevzuat) & Öncelikli ÖABT Branşları Soru Havuzu
+### 📦 TASK-143 [Ertelendi · İleri Faz]: MEB-AGS (Eğitim Bilimleri + TYMM + Mevzuat) & Öncelikli ÖABT Branşları Soru Havuzu
 
-- **Durum:** ⏳ **Bekliyor *(En Son Faz)***
+- **Durum:** ⏸️ **Ertelendi *(Çok Yakında / İleri Faz)***
 - **Kapsam:**
   - **Öncelik 1 (MEB-AGS 1. Oturum):** Sözel, Sayısal, Tarih, Türkiye Coğrafyası, **Eğitim Bilimleri & 2024 TYMM** ve **Mevzuat (Anayasa, 1739, 222, 7528)** soru bankası.
   - **Öncelik 2 (ÖABT Dalga 1 Branşları):** Aday yoğunluğu en yüksek branşlardan (Sınıf Öğretmenliği, Okul Öncesi, Özel Eğitim, Türkçe, İlköğretim Matematik, Sosyal Bilgiler, DKAB/İHL, PDR) başlayarak 50 soruluk alan paketleri; ardından kalan 9 ÖABT branşının tamamlanması.
 
-### 📦 TASK-144 [EN SON FAZ — Veri Girişi · Faz E]: KPSS A Grubu (Önce Çekirdek `P48`: Hukuk, İktisat, Maliye, Muhasebe; Sonra 5 Alan) Özgün Soru Havuzu
+### 📦 TASK-144 [Ertelendi · İleri Faz]: KPSS A Grubu (Önce Çekirdek `P48`: Hukuk, İktisat, Maliye, Muhasebe; Sonra 5 Alan) Özgün Soru Havuzu
 
-- **Durum:** ⏳ **Bekliyor *(En Son Faz)***
+- **Durum:** ⏸️ **Ertelendi *(Çok Yakında / İleri Faz)***
 - **Kapsam:**
   - **Dalga 1 (`P48` Çekirdek):** Güncel mevzuat uyumlu Hukuk (7 alt hukuk dalı), İktisat, Maliye ve Muhasebe özgün soru bankaları + 40 soruluk alan denemeleri (yargı/mevzuat çeldiricili `distractor_trap` analizleriyle).
   - **Dalga 2 (Tamamlayıcı 5 Alan):** İşletme, Kamu Yönetimi, Uluslararası İlişkiler, Çalışma Ekonomisi ve Endüstri İlişkileri (ÇEKO) ve İstatistik özgün soru havuzlarının üretilip `tools/validate_sql.py` ile doğrulanarak Supabase'e yüklenmesi.
@@ -7144,8 +7155,355 @@ ADIM 4: Doğrulama
 
 ### 📦 TASK-173: Matematik & Geometri Soru Üretim Partileri
 
-- **Durum:** ⏳ Planlandı · içerik görevi (📱/🌐 ➖; iki platform da canlı veriyi okur).
+- **Durum:** 🟢 Tamamlandı · 14 konunun tamamı 10'un katı (**590 soru / 59 test**, **168 SVG şekilli**, zorluk `177/295/118`) olarak [00_tum_matematik_sorulari_tek_dosya.sql](file:///c:/Users/omere/projelerim/gunisigi/docs/soru_havuzu/matematik/00_tum_matematik_sorulari_tek_dosya.sql) ile derlendi (📱/🌐 `➖`; iki platform da canlı veriyi okur).
 - **Akış:** Gemini `docs/soru_havuzu/matematik/GEMINI_PROMPT.md` ile `NN_konu.md` dosyalarını yazar → `node tools/math/compile_questions.mjs --check` 0 hata → Claude incelemesi (cevaplar, şekiller, tuzaklar, özgünlük) → `node tools/math/compile_questions.mjs` ile SQL → kullanıcı Supabase'de çalıştırır.
 - **Pilot:** 01 (12), 08 (12), 12 (10, şekilli), 11 (8, grafik/tablo/şema) = 42 soru. Pilot onaylanmadan sonraki partiye geçilmez.
 - **Hedef (ilk tur):** 01:40 · 02:35 · 03:30 · 04:30 · 05:35 · 06:35 · 07:50 · 08:70 · 09:35 · 10:35 · 11:60 · 12:40 · 13:35 · 14:30 ≈ 560 soru; zorluk ≈ %30/%50/%20.
 - **Not:** Ders "Yakında" durumundan çıkarıldığında (soru sayısı yeterli olunca) mobil/web ders listesi ve denemelerdeki matematik payı ayrıca kontrol edilir.
+
+---
+
+## 🚀 58. Dalga 58 [Yayınlama]: Matematik Dersinin Açılması, Tam GY-GK Denemeleri & Havuz Sayı Hizalaması (`TASK-174` – `TASK-175`)
+
+> **Ön koşul:** `TASK-173` (`590` Matematik & Geometri sorusu, `168` SVG) ve Tarih (+45) / Vatandaşlık (+26) ekleme SQL'leri canlı Supabase veritabanına uygulanmıştır. İki görev arka arkaya mobil ve webde eşlenik uygulanır.
+
+### 📦 TASK-174: Matematik & Geometri Aktivasyonu & 120 Soruluk Tam GY-GK Denemelerinin Açılması
+
+- **Durum:** 🟢 **Tamamlandı (Eşlenik)** · 🌐 Web ✅ · 📱 Mobil ✅
+- **Amaç:** Canlıda 14 konusunun tamamı 10'un katına ulaşan `Matematik & Geometri` dersini (590 soru / 59 test, 168 SVG şekilli) KPSS B Grubu'nda (Lisans, Ön Lisans, Ortaöğretim) `"Yakında"` kilidinden çıkarıp aktif derslere eklemek; bununla birlikte kilitli bekleyen **120 soruluk Tam GY-GK Denemelerini** (`b_gygk_tam_1`, `b_gygk_tam_2`) ve Matematik branş denemesini kullanıma açmak.
+- **Platform Uygulanabilirliği:** Ortak (iki platform).
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Kapsam (`exam_scopes`):** Canlıdaki Matematik & Geometri soruları `['lisans_gygk', 'b_grubu_gygk']` taşır (`TASK-167` ortak havuz modeli). Dolayısıyla B Grubu'nun **üç düzeyinde de** (Lisans, Ön Lisans, Ortaöğretim) `Matematik & Geometri` aktif olur; E-KPSS Matematik (`15` soru, ayrı kitapçık kuralları) `"Yakında"` kalır (`TASK-141`).
+- **Müfredat durumu:** B Grubu için `ExamCurriculum` artık tam hazırdır (`availability: ready`, `activeLessons` 6 ders: Tarih, Coğrafya, Vatandaşlık, Güncel Bilgiler, Türkçe, Matematik & Geometri; `upcomingLessons: []`, `activeSectionTitle: 'KPSS Genel Kültür & Genel Yetenek (120 Soru)'`, `upcomingSectionTitle: ''`).
+- **Matematik konu test dağılımı (14 konu · toplam 59 test / 590 soru):**
+  - `Temel Kavramlar ve Sayı Basamakları`: `4` · `Bölme-Bölünebilme ve EBOB-EKOK`: `4` · `Rasyonel ve Ondalık Sayılar`: `3` · `Basit Eşitsizlikler ve Mutlak Değer`: `3` · `Üslü ve Köklü İfadeler`: `4` · `Çarpanlara Ayırma ve Oran-Orantı`: `4` · `Denklem Çözme ve Sayı-Kesir Problemleri`: `5` · `Yaş, İşçi, Hareket, Yüzde ve Karışım Problemleri`: `7` · `Kümeler, Bağıntı-Fonksiyon ve Modüler Aritmetik`: `4` · `Permütasyon, Kombinasyon ve Olasılık`: `4` · `Sayısal Mantık ve Tablo-Grafik Yorumlama`: `6` · `Doğruda ve Üçgende Açılar, Üçgenler`: `4` · `Çokgenler, Dörtgenler ve Çember-Daire`: `4` · `Analitik Geometri ve Katı Cisimler`: `3`.
+- **Tam GY-GK Denemeleri (`b_gygk_tam_1`, `b_gygk_tam_2`):** `isComingSoon` kaldırılır (`false`). `120` soru / `130` dk (`Türkçe 30`, `Matematik & Geometri 30`, `Tarih 27`, `Coğrafya 18`, `Vatandaşlık 9`, `Güncel Bilgiler 6`). `Ön Lisans` ve `Ortaöğretim` düzeylerinde `TASK-167` zor soru tavanı (`floor(30 * 15 / 100) = 4` maks. zor soru) Matematik bölümüne de uygulanır.
+- **Branş Denemesi & Çeldirici Avı:** `Matematik & Geometri` için `30` soruluk Branş Denemesi ve `Çeldirici Avı` (`distractor_trap`) aktif çalışır.
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-174 — Matematik & Geometri Aktivasyonu ve Tam GY-GK Denemeleri (Mobil / Flutter)
+ÖNEMLİ: GEMINI.md ve Ortak Sözleşme kurallarına birebir uy. Yeni paket ekleme. Bitince flutter-verify çalıştır.
+
+ADIM 1: Müfredat kaydı (lib/features/lessons/data/curriculum_registry.dart)
+- _matematikTopicTestCounts sabitini Ortak Sözleşme'deki 14 konu test sayısıyla (toplam 59 test) ekle.
+- _buildReadyMatematikSpec() yardımcısını ekle (availabilityOverride: CurriculumAvailability.ready, badgeText null).
+- _resolveBGrubu içinde activeLessons: [...gkLessons, _buildReadyLisansTurkceSpec(), _buildReadyMatematikSpec()], upcomingLessons: const [], availability: CurriculumAvailability.ready yap; başlıkları güncel 120 Soru / '' olarak ayarla.
+- E-KPSS GY Matematik (`15 soru`) upcomingLessons içinde comingSoon kalmaya devam etsin.
+
+ADIM 2: Denemeler (lib/features/exams/data/models/mock_exam_blueprint.dart)
+- B Grubu `b_gygk_tam_1` ve `b_gygk_tam_2` kartlarından `isComingSoon: true` ve "Matematik Havuzu Yakında" metinlerini kaldır; badgeLabel ('ÖSYM Tam Oturum · 120 Soru' / 'PRO · 120 Soru') ve primaryButtonLabel ('Tam GY-GK Denemesi Başlat') güncelle.
+- BranchMockExamGenerator ve QuizScreen Matematik branş denemesinde (`30` soru) zor soru tavanı (`TASK-167`) ve MathText/QuestionFigure render'ının sorunsuz çalıştığını doğrula.
+
+ADIM 3: Planlayıcı & Testler
+- CurriculumPlanner / StudyTask üretiminde Matematik & Geometri dersinin kilitli/hariç tutulmadığını kontrol et.
+- test/curriculum_registry_test.dart, test/general_ability_coming_soon_test.dart ve test/mock_exam_blueprint_test.dart testlerini yeni sözleşmeye göre güncelle (E-KPSS testlerini koru).
+- dart format, flutter analyze (0 sorun) ve ilgili testleri çalıştır.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-174 — Matematik & Geometri Aktivasyonu ve Tam GY-GK Denemeleri (Web / Next.js)
+ÖNEMLİ: Ortak Sözleşme kurallarına birebir uy. Bitince lint/tsc/test:parity/build çalıştır.
+
+ADIM 1: Müfredat (src/domain/curriculum.ts)
+- MATEMATIK_TOPIC_TEST_COUNTS sabitini Ortak Sözleşme'deki 14 konu test sayısıyla (toplam 59 test) ekle.
+- buildReadyMatematikLesson() ekle; resolveCurriculum B Grubu dalında activeLessons içine dahil et, upcomingLessons: [], availability: "ready" yap, başlıkları 'KPSS Genel Kültür & Genel Yetenek (120 Soru)' / '' olarak güncelle.
+- E-KPSS GY Matematik coming_soon kalmaya devam etsin.
+
+ADIM 2: Denemeler (src/domain/exam-blueprints.ts, src/app/(app)/denemeler/page.tsx)
+- b_gygk_tam_1 ve b_gygk_tam_2 şablonlarından `isComingSoon: true` ve "Matematik soru havuzu gelince açılacak" metinlerini kaldır; badge ve subtitle'ı aktif tam denemeye göre güncelle (`120 Soru · 130 dk`).
+- coz/page.tsx ve quiz-studio-workspace.tsx üzerinden Matematik konu testleri, Branş Denemesi (30 soru) ve Tam GY-GK Denemesi (120 soru) akışlarını doğrula (`QuestionFigure` + `MathText`).
+
+ADIM 3: Testler & Önbellek
+- tests/curriculum-task165.test.ts (ve ilgili parity testlerini) B Grubu Matematik aktif & Tam GY-GK açık olacak şekilde güncelle; E-KPSS testlerini koru.
+- npm run lint, npx tsc --noEmit, npm run test:parity, npm run build çalıştır.
+```
+
+#### ✅ Kabul Kriterleri
+- [x] B Grubu (Lisans, Ön Lisans, Ortaöğretim) Dersler ekranında 6 dersin tamamı `"Yakında"` kilidi olmadan aktif görünür
+- [x] Matematik & Geometri 14 konu / 59 test ve SVG şekilli soruları mobilde ve webde çözülür
+- [x] `/denemeler` ve mobil Denemeler sekmesinde `120` soruluk Tam GY-GK denemeleri (`#1` ve `#2`) kilit olmadan başlatılır
+- [x] Ön Lisans ve Ortaöğretim Tam GY-GK denemesinde Matematik bölümünde zor soru tavanı (`<= 4`) korunur; E-KPSS GY `"Yakında"` kalır
+
+---
+
+### 📦 TASK-175: Tüm Derslerde Güncel Test Sayısı & Müfredat Vitrin Hizalaması (`3.480` Soru)
+
+- **Durum:** 🟢 **Tamamlandı (Eşlenik)** · 🌐 Web ✅ · 📱 Mobil ✅
+- **Amaç:** Canlı Supabase veritabanındaki **3.480 kanonik soruyu** (`Tarih 710`, `Türkçe 710`, `Vatandaşlık 630`, `Matematik & Geometri 590`, `Güncel Bilgiler 480`, `Coğrafya 360`) her iki istemcideki statik müfredat test sayısı haritaları, fallback değerleri ve vitrin/istatistik sayaçlarıyla %100 eşitlemek.
+- **Platform Uygulanabilirliği:** Ortak (iki platform).
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Konu bazlı kesin test sayıları (her konu 10'un katı · toplam `348` test):**
+  - **Tarih (`71` test / `710` soru):** `İslamiyet Öncesi Türk Tarihi: 9`, `İlk Türk-İslam Devletleri: 9`, `Osmanlı Kültür ve Uygarlığı: 13`, `Osmanlı Dağılma Dönemi: 10`, `Kurtuluş Savaşı Hazırlık ve Cepheler: 9`, `Atatürk İlke ve İnkılapları: 9`, `Çağdaş Türk ve Dünya Tarihi: 12`.
+  - **Vatandaşlık (`63` test / `630` soru):** `Temel Hukuk Kavramları: 11`, `1982 Anayasası ve Temel İlkeler: 10`, `Temel Hak ve Ödevler: 10`, `Yasama, Yürütme ve Yargı: 11`, `İdare Hukuku: 11`, `Uluslararası Kuruluşlar: 10`.
+  - **Coğrafya (`36` test / `360` soru):** 6 konunun tamamı `6` test (`fallbackTestCount: 6`).
+  - **Güncel Bilgiler (`48` test / `480` soru):** 6 kanonik konunun tamamı `8` test (`fallbackTestCount: 8`).
+  - **Türkçe (`71` test / `710` soru):** `5, 9, 31, 2, 3, 2, 3, 3, 3, 3, 7`.
+  - **Matematik & Geometri (`59` test / `590` soru):** `4, 4, 3, 3, 4, 4, 5, 7, 4, 4, 6, 4, 4, 3`.
+- **Bilgilendirme & Vitrin Metinleri:** Web landing/müfredat/planlayıcı ve mobil bilgi kartlarında kalan eski `"Matematik yakında"` veya eski soru toplamı ifadeleri güncel `3.480+ soru · 6 ders` yapısına göre güncellenir.
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-175 — Güncel Test Sayısı & Müfredat Hizalaması (Mobil / Flutter)
+ADIM 1: lib/features/lessons/data/curriculum_registry.dart içinde _tarihTopicTestCounts (71 test), _vatandaslikTopicTestCounts (63 test) ve _gkFallbackCountsByLessonId (guncel: 8, cografya: 6, tarih: 9) sabitlerini Ortak Sözleşme ile eşitle; CurriculumRegistry içindeki tüm aktif derslere defaultTestCountsByTopic bağla.
+ADIM 2: StudyPlanner / Planlayıcı ve ders kartlarında "Yakında" kalıntısı kalmadığını doğrula.
+ADIM 3: test/curriculum_registry_test.dart, test/tarih_standardization_test.dart ve etkilenen testleri güncel sayılara göre güncelle; flutter-verify çalıştır.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-175 — Güncel Test Sayısı & Müfredat Hizalaması (Web / Next.js)
+ADIM 1: src/domain/curriculum.ts içinde TARIH_TOPIC_TEST_COUNTS (71 test), VATANDASLIK_TOPIC_TEST_COUNTS (63 test) ve GK_FALLBACK_COUNTS (cografya: 6, guncel: 8) değerlerini Ortak Sözleşme ile eşitle.
+ADIM 2: src/app/(public)/page.tsx, src/features/curriculum/curriculum-explorer.tsx, src/features/planner/planner-workspace.tsx ve çalışma planı oluşturucularda Matematik & Geometri'nin eksiksiz aktif listelendiğini ve eski soru sayısı/yakında metinlerinin güncellendiğini doğrula.
+ADIM 3: Planlayıcıdaki "Matematik" vs "Matematik & Geometri" ders etiketi tutarlılığını kontrol et; lint, tsc, test ve build çalıştır.
+```
+
+#### ✅ Kabul Kriterleri
+- [x] İki platformda 6 dersin `defaultTestCountsByTopic` toplamı canlı veritabanıyla birebir `348` test (`71 + 36 + 63 + 48 + 71 + 59`) olarak eşleşiyor
+- [x] Tarih `710`, Vatandaşlık `630`, Güncel `480` test dilimleri fallback dahil doğru görünüyor
+- [x] Web landing / müfredat / planlayıcıda `"Matematik yakında"` veya eksik ders/soru sayısı metni kalmıyor
+- [x] Mobil (`flutter analyze`, `flutter test`) ve Web (`lint`, `tsc`, `test`, `build`) yeşil; `task-board.md` kolonları güncel
+
+---
+
+## 🎯 59. Dalga 59 [Sınav Kalibrasyonu]: ÖSYM Deneme Seçimi & Matematik Kalite Revizyonu (`TASK-176` – `TASK-177`)
+
+### 📦 TASK-176: Deneme Sınavı Seçim Motorunda Matematik Kotası & Sınav Ayarı Zorluk Karması
+
+- **Durum:** 🟢 **Tamamlandı (Eşlenik)** · 🌐 Web ✅ · 📱 Mobil ✅
+- **Sorun (2026-11-24 analizi):** Matematik sorularında `order_index` boş olduğu için havuz `difficulty` artan (`1 → 2 → 3`) sıralanır; `Tam GY-GK Denemesi #1` bölüm seçerken `Matematik & Geometri` için konu kotası ve zorluk karması olmadığından 30 sorunun tamamını `difficulty = 1` olan ilk alıştırmalardan çekmektedir.
+- **Amaç:** Konu testlerinin kendi içindeki kolay → orta → zor (`Test 1 → Test 2 → ...`) sırasını bozmadan, **deneme sınavlarında** (`Tam GY-GK`, `Branş Denemesi`) hem 14 konuya ÖSYM ağırlıklı kota dağıtmak hem de sınav ayarı zorluk karması sağlamak.
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Matematik & Geometri 30 Soruluk ÖSYM Deneme Kotası (`topicWeights`):**
+  `Temel Kavramlar ve Sayı Basamakları: 2`, `Bölme-Bölünebilme ve EBOB-EKOK: 2`, `Rasyonel ve Ondalık Sayılar: 2`, `Basit Eşitsizlikler ve Mutlak Değer: 2`, `Üslü ve Köklü İfadeler: 3`, `Çarpanlara Ayırma ve Oran-Orantı: 2`, `Denklem Çözme ve Sayı-Kesir Problemleri: 3`, `Yaş, İşçi, Hareket, Yüzde ve Karışım Problemleri: 4`, `Kümeler, Bağıntı-Fonksiyon ve Modüler Aritmetik: 2`, `Permütasyon, Kombinasyon ve Olasılık: 1`, `Sayısal Mantık ve Tablo-Grafik Yorumlama: 3`, `Doğruda ve Üçgende Açılar, Üçgenler: 2`, `Çokgenler, Dörtgenler ve Çember-Daire: 1`, `Analitik Geometri ve Katı Cisimler: 1` (Toplam = `30`).
+- **Zorluk Taraklı Sıralama (`interleaveByExamDifficulty`):** Deneme seçiminde aday havuzları yalnızca `1 → 2 → 3` sıralı alınmaz; deterministik `[Orta(2), Kolay(1), Orta(2), Zor(3)]` döngüsüyle karıştırılır.
+  - **Lisans (`hardCap = null`):** Doğal olarak ≈ **%25 Kolay · %50 Orta · %25 Zor** dağılımı oluşur; ilk soru her zaman Orta zorlukla başlar.
+  - **Ön Lisans / Ortaöğretim (`hardCap = floor(n * 0.15)`):** `TASK-167` zor soru tavanı **aynen korunur**; kalan sorular yalnızca kolay (`1`) yığını yerine `[Orta(2), Kolay(1)]` karışımından gelir.
+- **Türkçe (`30` soru) Branş & Tam Deneme:** Aynı taraklı zorluk düzeni tüm bölümlerde geçerlidir.
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+- `lib/features/quiz/data/question_repository.dart`: `_balancedGkTopicQuotas` içine `'Matematik & Geometri'` (14 konu = 30 soru) eklenir; `_pickSectionQuestions` ve `_pickSectionQuestionsWithHardCap` içinde aday dilimler `[2, 1, 2, 3]` zorluk döngüsüyle dengelenir (konu testi sıralaması `sortTopicQuestions` değişmez).
+- `test/mock_exam_blueprint_test.dart`: Matematik `30` soruluk Lisans denemesinde `d1/d2/d3` karma dağılımını ve 14 konu dağılımını doğrulayan test eklenir; Ön Lisans tavan (`<= 4` zor) korunur.
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+- `src/domain/question.ts` & `src/domain/exam-blueprints.ts`: `GY_GK_FULL_SECTIONS` içindeki `Matematik & Geometri` bölümüne 14 konuluk `topicWeights` eklenir; `selectBlueprintQuestions` içinde `candidates` listesi `[2, 1, 2, 3]` zorluk döngüsüyle taranır (`hardCap` kuralı değişmez).
+- `tests/curriculum-task165.test.ts`: Lisans `Tam GY-GK Deneme #1` Matematik seçiminde 30 sorunun yalnızca kolaydan değil karma zorluktan geldiğini ve alt düzeylerde `<= 4` zor tavanının korunduğunu test eder.
+
+#### ✅ Kabul Kriterleri
+- [x] `Tam GY-GK Deneme #1` (`b_gygk_tam_1`) Matematik bölümü 14 konuyu kapsıyor ve karma (`%25 Kolay / %50 Orta / %25 Zor`) geliyor
+- [x] Ön Lisans / Ortaöğretim denemelerinde `<= 4` zor tavanı bozulmuyor
+- [x] Konu testleri (`Test 1 → Test 2 → ...`) kolay → zor akışını koruyor
+- [x] Mobil (`flutter analyze`, etkilenen testler) ve Web (`lint`, `tsc`, `test:parity`, `build`) yeşil
+
+---
+
+### 📦 TASK-177: Matematik Havuzu KPSS Sınav Ayarı Kalite Revizyonu (Parti 1–3, Mevcut ID'ler Üzerinde)
+
+- **Durum:** 🟢 **Tamamlandı (Canlıya Alındı)** · 🌐 `➖` · 📱 `➖` *(doğrudan `docs/soru_havuzu/matematik/*.md` → SQL → canlı Supabase güncellemesi)*
+- **Amaç:** İndirilen KPSS çıkmış sorular PDF'i ve güncel ÖSYM kalıpları referans alınarak (birebir kopya olmadan, özgün kurgu ve yeni sayılarla) ders kitabı alıştırması düzeyindeki zayıf soruları ve ikiz kalıpları **aynı `mat-NN-SSS` kimlikleri üzerinde** KPSS sınav ayarı sorularla değiştirmek.
+- **Hedeflenen ÖSYM Kalıpları:**
+  - `I, II, III` öncüllü kesinlik soruları (`"hangileri her zaman doğrudur?"`),
+  - Harfli / türünden / oran / sadeleştirme soruları (`dogrulama: yok` veya parametrik),
+  - Tek formül yerine iki kavramı birleştiren çok adımlı kurgular (grafik→daire açısı, kırılmalı hız grafiği, alan+cebir).
+- **Parti Planı:**
+  - **Parti 1:** `01` (Temel Kavramlar), `02` (Bölme-EBOB), `04` (Eşitsizlik-Mutlak), `05` (Üslü-Köklü), `06` (Çarpanlara Ayırma-Oran) — soyut/öncüllü/harfli soruların güçlendirilmesi.
+  - **Parti 2:** `07` (Denklem-Sayı-Kesir), `08` (Problemler), `11` (Sayısal Mantık-Grafik) — ikiz kalıpların temizlenmesi, grafik dönüşümleri ve çok adımlı KPSS problemleri.
+  - **Parti 3:** `09` (Kümeler-Fonksiyon), `10` (PKO), `12–14` (Geometri) — Venn ifadesi okuma, benzerlik + alan + cebir sentezi soruları.
+- **Doğrulama:** Her parti sonrası `node tools/math/compile_questions.mjs --check`, `node --test tools/math/`, `bundle_sql.mjs` ve canlı Supabase güncellemesi.
+
+#### ✅ Kabul Kriterleri
+- [x] Parti 1 (`01, 02, 04, 05, 06`) revizyonu tamamlandı, derleyici `0` hata ve canlıya uygulandı (`28` soru yenilendi)
+- [x] Parti 2 (`07, 08, 11`) revizyonu tamamlandı, derleyici `0` hata ve canlıya uygulandı (`24` soru yenilendi)
+- [x] Parti 3 (`09, 10, 12, 13, 14`) revizyonu tamamlandı, derleyici `0` hata ve canlıya uygulandı (`22` soru yenilendi)
+- [x] Tekrar eden ikiz şablonlar ve yüzeysel alıştırmalar temizlendi (`74` soru yenilendi), `590` soruluk havuz derleyici + canlı Supabase üzerinde doğrulandı
+
+---
+
+### 📦 TASK-178: Matematik & Geometri Eksik Konu Anlatımlarının Tamamlanması (14 Konu, 48 Bölüm)
+
+- **Durum:** 🟢 **Tamamlandı (Canlıya Alındı)** · 🌐 `➖` · 📱 `➖` *(doğrudan `docs/konu_anlatimi/matematik/*.md` → `docs/supabase_migrations/konu_anlatimi/matematik_*.sql` → canlı Supabase `topic_lesson_units` yüklemesi; hem mobil `TopicLessonRepository` hem web `fetchCachedPublishedTopicLessonUnits` dinamik okur)*
+- **Amaç:** `Tarih` (`43`), `Türkçe` (`45`), `Vatandaşlık` (`29`) ve `Coğrafya` (`24`) sonrası hiç ünitesi bulunmayan `Matematik & Geometri` (`14` kanonik konu) için KPSS GY-GK kapsamlı konu anlatımlarını üretmek (`Güncel Bilgiler` `docs/konu_anlatimi/FORMAT.md` gereği ayrı aylık bülten modülünde tutulduğundan konu anlatımı kapsamı dışındadır).
+- **Üretilen İçerik (`48` Bölüm · `192` dk):**
+  - **Parti 1 (`01–05`, `17` bölüm):** Temel Kavramlar (`4`), Bölme-EBOB (`4`), Rasyonel-Ondalık (`3`), Basit Eşitsizlikler-Mutlak Değer (`3`), Üslü-Köklü İfadeler (`3`).
+  - **Parti 2 (`06–11`, `21` bölüm):** Çarpanlara Ayırma-Oran (`3`), Denklem-Sayı-Kesir (`3`), Yaş-İşçi-Hareket-Yüzde-Karışım (`5`), Kümeler-Fonksiyon-Modüler (`4`), Permütasyon-Kombinasyon-Olasılık (`3`), Sayısal Mantık-Grafik (`3`).
+  - **Parti 3 (`12–14`, `10` bölüm):** Doğruda/Üçgende Açılar-Üçgenler (`4`), Çokgenler-Dörtgenler-Çember-Daire (`3`), Analitik Geometri-Katı Cisimler (`3`).
+- **Doğrulama:** `node tools/konu_anlatimi_to_sql.mjs --check` (`44/44` dosya, `0` hata, `0` uyarı), `14` SQL migration dosyası üretildi ve canlı Supabase (`axfxciyuvcdbavhzsfwu`) üzerinde `topic_lesson_units` toplamı `189` yayında bölüme (`Matematik & Geometri`: `14` konu / `48` bölüm) ulaştı.
+
+#### ✅ Kabul Kriterleri
+- [x] `14` Matematik & Geometri konusu için `48` bölüm Markdown (`docs/konu_anlatimi/matematik/01..14.md`) yazıldı, her bölüm `600–704` kelime ve LaTeX/SVG kurallarına uyumlu
+- [x] `node tools/konu_anlatimi_to_sql.mjs --check` tüm `44` dosyada `0` hata ve `0` uyarı verdi
+- [x] `docs/supabase_migrations/konu_anlatimi/matematik_01..14.sql` üretildi ve canlı Supabase `public.topic_lesson_units` tablosuna yüklendi (`189` toplam bölüm doğrulandı)
+
+---
+
+## 🎯 BÖLÜM 8 — AKTİF EVRE: B GRUBU YAYIN ODAĞI, UI/UX CİLA & OPTİMİZASYON (`TASK-179` – `TASK-182`)
+
+> [!IMPORTANT]
+> Bu bölümdeki görevler **v1 B Grubu ürününü yayına hazırlama** odağıyla sırayla yürütülür: önce kilitli sınav kapısı (`TASK-179`), ardından B Grubu havuz/bülten son rötuşları (`TASK-180`), mobil + web UI/UX cilası (`TASK-181`), performans/paket optimizasyonu (`TASK-182`) ve final mağaza uyumluluk denetimi (`TASK-164`).
+
+### 📦 TASK-179: Sınav Ailesi Kilidi — Yalnızca KPSS B Grubu Aktif & Kilitli Sınavlarda "Bakım, Onarım ve Geliştirme / Çok Yakında!" Kapısı
+
+- **Durum:** 🟢 **Tamamlandı (Eşlenik)** · 🌐 Web ✅ · 📱 Mobil ✅
+- **Amaç:** İçerik üretimi ileri faza ertelenen `E-KPSS`, `DHBT`, `MEB-AGS + ÖABT` ve `KPSS A Grubu` sınav ailelerini tüm çalışma hedefi seçicilerinde kilitli göstererek adayın yalnızca **KPSS B Grubu (`Lisans / Ön Lisans / Ortaöğretim`)** ile sorunsuz çalışmasını sağlamak; kilitli seçeneklere dokunulduğunda net bir bilgilendirme mesajı sunmak.
+- **Platform Uygulanabilirliği:** Ortak (iki platform)
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Supabase:** Veritabanı şema değişikliği yok (`profiles.exam_selection` içinde eski bir kilitli seçim varsa güvenli okuma ile `b_grubu`na normalize edilir; veritabanı kaydı bozulmaz veya güvenli biçimde güncellenir).
+- **Veri formatı:** `ExamSelection` veri şeması (`KpssExamFamily`) silinmez; yalnızca çalışma hedefi seçicilerinde hangi ailelerin seçilebilir olduğu merkezi `isSelectable` / `isExamFamilyLocked(family)` kuralıyla yönetilir.
+- **İş kuralları:**
+  - Aktif seçilebilir tek sınav ailesi: `b_grubu` (**KPSS B Grubu**: `Lisans`, `Ön Lisans`, `Ortaöğretim`).
+  - Kilitli sınav aileleri (`4` adet): `a_grubu`, `dhbt`, `meb_ags`, `ekpss`.
+  - Kullanıcı kilitli bir sınava tıkladığında seçim değişmez; şu bilgilendirme metni gösterilir: **"Bakım, onarım ve geliştirme süreçleri devam ediyor… Çok yakında!"** (ve seçenek kartında/satırında `Çok Yakında` / kilit ikonu görünür).
+  - Mevcut kullanıcının cihazında veya bulut profilinde daha önce `ekpss / dhbt / meb_ags / a_grubu` kayıtlıysa uygulama açılışında / hidrasyonda çalışma kapsamı `b_grubu` (`ExamSelection.initial`) olarak çözülür (boş ders/deneme ekranına düşmez).
+  - *Puan Hesaplama Robotu (`KpssScoreCalculatorScreen` / `/puan-hesapla`):* Saf hesaplama aracı olarak kalabilir veya diğer sınavlara bilgi notu eklenebilir; kilit sadece **çalışma hedefi seçicisi** içindir.
+- **Eşleniklik örnekleri:** Gerekmez (sabit Allowlist: `{'b_grubu'}`).
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-179 — Sınav Ailesi Kilidi: Yalnızca KPSS B Grubu Aktif (Mobil / Flutter)
+ÖNEMLİ: GEMINI.md kurallarına birebir uy. Ortak Sözleşme bölümünün dışına çıkma. Bitince flutter-verify adımlarını çalıştır ve task-board'da yalnızca "Mobil de Yapıldı" kolonunu güncelle.
+
+ADIM 1: `lib/features/exams/data/models/exam_selection.dart` içine kanonik kilitleme yardımcısı ekle:
+- `KpssExamFamily` üzerine `bool get isActiveForStudy => this == KpssExamFamily.bGrubu;` (veya `lockedMaintenanceMessage` sabiti: `'Bakım, onarım ve geliştirme süreçleri devam ediyor… Çok yakında!'`).
+- `UserPreferencesNotifier` yükleme/bulut hidrasyonunda gelen `ExamSelection.family` değeri `!family.isActiveForStudy` ise çalışma seçimini güvenli biçimde `ExamSelection.initial` (`bGrubu`) olarak normalize et.
+
+ADIM 2: `lib/shared/widgets/exam_target_picker_view.dart` ve `lib/shared/widgets/kadro_dropdown.dart` (gerekirse disabled/locked item desteği) güncelle:
+- `ExamTargetPickerView` içindeki `1. Sınav Ailesi` listesinde `KPSS B Grubu` dışındaki 4 aile (`A Grubu`, `DHBT`, `MEB-AGS`, `E-KPSS`) kilit ikonu (`PhosphorIconsRegular.lock`) ve `"Çok Yakında"` rozetiyle soluk gösterilsin; dokunulduğunda seçim değiştirilmesin ve altta/dialog/snackbar olarak `"Bakım, onarım ve geliştirme süreçleri devam ediyor… Çok yakında!"` mesajı verilsin.
+- Böylece Onboarding (`OnboardingScreen`), Hedef Sınav Seçici (`TargetExamSelectorBottomSheet`) ve Otomatik Program Modalı (`AutoStudyProgramModal`) tek yerden otomatik korunur.
+
+ADIM 3: Mevcut sınav seçici testlerini güncelle ve yeni test ekle (`test/exam_target_picker_view_test.dart`, `test/user_preferences_test.dart`):
+- B Grubu (`Lisans / Ön Lisans / Ortaöğretim`) seçilebildiğini, kilitli sınavlara basıldığında seçimin değişmediğini ve bakım/çok yakında mesajının göründüğünü doğrula; kilitli legacy seçimin B Grubu'na düştüğünü test et.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-179 — Sınav Ailesi Kilidi: Yalnızca KPSS B Grubu Aktif (Web / Next.js)
+ÖNEMLİ: Ortak Sözleşme bölümüne birebir uy. Bitince `npm run lint` ve ilgili testleri çalıştır, task-board'da yalnızca "Web de Yapıldı" kolonunu güncelle.
+
+ADIM 1: `src/domain/exam-selection.ts` içine `isExamFamilyActive(family)` (`family === "b_grubu"`) ve kilit mesajı sabitini (`"Bakım, onarım ve geliştirme süreçleri devam ediyor… Çok yakında!"`) ekle; `normalizeLockedExamSelection(selection)` ile kilitli eski seçimleri `DEFAULT_EXAM_SELECTION`'a (`b_grubu`) düşür.
+ADIM 2: `src/components/onboarding-wizard-dialog.tsx` ve `src/features/profile/profile-workspace.tsx` içindeki `EXAM_FAMILIES` seçicilerinde kilitli 4 aileye kilit ikonu (`Lock`), `Çok Yakında` rozeti ve tıklamada/seçimde bakım/geliştirme bilgilendirmesi ekle (seçim state'ini değiştirme).
+ADIM 3: Public `/mufredat` ve ana sayfa `#sinavlar` vitrinindeki diğer 4 sınav kartına "Çok Yakında / Bakım ve Geliştirme Aşamasında" rozeti ekle (`KPSS B Grubu` birincil aktif akış olarak öne çıksın).
+```
+
+#### ✅ Kabul Kriterleri
+- [x] Mobilde Onboarding, Profil/Hedef Sınav Seçici ve Program Modalında yalnızca **KPSS B Grubu** (`Lisans`, `Ön Lisans`, `Ortaöğretim`) seçilebiliyor
+- [x] Kilitli diğer 4 sınav ailesinde (`A Grubu`, `DHBT`, `MEB-AGS`, `E-KPSS`) kilit ikonu ve *"Bakım, onarım ve geliştirme süreçleri devam ediyor… Çok yakında!"* bilgilendirmesi gösteriliyor
+- [x] Web (`OnboardingWizardDialog`, `ProfileWorkspace`, `/mufredat`) aynı kilitleme ve fallback kuralını uyguluyor
+
+---
+
+### 📦 TASK-180: KPSS B Grubu Havuz & Bülten Kalite Rötuşu (`07` SQL Canlıya Alma, Güncel Bilgiler Yetim Sorular, Eksik `distractor_trap` & Mini Kontrol Bağlantıları)
+
+- **Durum:** 🟢 Tamamlandı (Eşlenik) · 🌐 Web ✅ · 📱 Mobil ✅
+- **Amaç:** Aktif tek sınav ailesi olan **KPSS B Grubu**'nun (`3.480` soru + `189` konu anlatımı bölümü) içindeki son veri pürüzlerini gidermek: canlı veritabanındaki yetim Güncel Bilgiler kayıtlarını ve sözel derslerde eksik `distractor_trap` alanlarını tamamlamak, `07_leitner_and_current_affairs.sql` şemasını canlıya almak ve konu anlatımı `:::kontrol` bloklarını gerçek soru ID'leriyle güçlendirmek.
+- **Platform Uygulanabilirliği:** Ortak (ağırlıklı veri/SQL; mobilde `07` SQL şema doğrulaması + offline JSON senkronu)
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Supabase:**
+  - `docs/supabase_migrations/07_leitner_and_current_affairs.sql` canlı Supabase projesinde doğrulanıp uygulanır (`leitner_box`, `next_review_at`, `current_affairs_bulletins`, `user_bulletin_reads`).
+  - Güncel Bilgiler (`lesson = 'Güncel Bilgiler'`) `questions` tablosunda kanonik 6 konu dışındaki/yetim çoktan seçmeli kayıtlar ve `480` soru kotası (`6 × 8 test × 10`) denetlenip temizlenir.
+  - Sözel derslerde (`Tarih`, `Coğrafya`, `Vatandaşlık`, `Türkçe`, `Güncel Bilgiler`) `distractor_trap` alanı boş/eksik olan sorular tespit edilip UWorld kalitesinde çeldirici analizleriyle doldurulur.
+  - `topic_lesson_units` içindeki `check_questions` bloklarına ilgili konunun seçilmiş `1–3` soru UUID'si (`question_ids`) bağlanabilir (canlı test sorgusu `topic_lesson_units` -> `questions` ile doğrulanır).
+- **Veri formatı:** Mevcut şema korunur; `assets/data/*.json` yerel yedekleri güncellenir.
+- **İş kuralları:** Her aktif dersin tüm konuları `10`'un tam katı soru sayısına ve eksiksiz `distractor_trap` analizine sahip olmalıdır.
+- **Eşleniklik örnekleri:** Gerekmez.
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-180 — B Grubu Havuz & Bülten Kalite Rötuşu (Mobil + Supabase Veri)
+ADIM 1: Supabase'de `questions` ve `topic_lesson_units` üzerinde denetim sorgularını çalıştır: yetim Güncel Bilgiler soruları, konu başına 10'un katı olmayan soru dağılımları ve boş `distractor_trap` satırlarını raporla.
+ADIM 2: Eksik `distractor_trap` alanlarını ve yetim Güncel Bilgiler kayıtlarını SQL + yerel JSON varlıklarında tamamla; `07_leitner_and_current_affairs.sql` canlıya uygula ve aylık bülten verilerini seed et.
+ADIM 3: Uygun `topic_lesson_units` `:::kontrol` bloklarını kanonik `question_ids` ile besle (`node tools/konu_anlatimi_to_sql.mjs --check`).
+ADIM 4: Mobil `MistakeRepository` Leitner senkronunu ve `CurrentAffairsScreen` canlı bülten okumasını test et.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-180 — B Grubu Havuz & Bülten Kalite Rötuşu (Web Doğrulama)
+ADIM 1: Canlıya alınan `07_leitner_and_current_affairs.sql` tabloları (`current_affairs_bulletins`, `user_bulletin_reads`, `leitner_box`) ile `/guncel` ve `/yanlislar` sayfalarının gerçek bulut verisiyle hatasız çalıştığını doğrula.
+ADIM 2: Konu anlatımı okuyucusundaki `check_questions` bloklarının bağlı `question_ids` verilerini sorunsuz render ettiğini test et.
+```
+
+#### ✅ Kabul Kriterleri
+- [x] `07_leitner_and_current_affairs.sql` canlı Supabase'de çalışıyor, aylık Güncel Bilgiler bültenleri yayında (`15` madde: `2026-05..07`; Web `/pratik?tab=bulten` `fetchCachedCurrentAffairsBulletins` + Mobil `CurrentAffairsRepository` canlı okuyor)
+- [x] Güncel Bilgiler `3` yetim MC sorusu pasifleştirildi (`483` → `480`) ve tüm B Grubu derslerindeki eksik `10` kanonik `distractor_trap` alanı tamamlandı (`3.480 / 3.480`)
+- [x] Konu anlatımı `:::kontrol` mini soruları (`189 / 189` üniteye `2`'şer `difficulty <= 2` MC UUID, DB + `.md` senkron) ve Leitner bulut senkronu mobil + webde doğrulandı
+
+---
+
+### 📦 TASK-181: Mobil & Web UI/UX Cila Paketi (Görsel Hiyerarşi, Çoklu Ekran Taşma Denetimi, Yükleme İskeletleri & Erişilebilirlik)
+
+- **Durum:** ⏳ Planlandı · 🌐 Web ❌ · 📱 Mobil ❌
+- **Amaç:** Yeni eklenen Matematik LaTeX/SVG bileşenleri ve Konu Anlatımı okuyucusu dahil tüm ekranları `design-system/kadro/MASTER.md` ve `ui-ux-pro-max` standartlarına göre görsel pürüzlerden, taşmalardan, kontrast sorunlarından ve kaba yükleme/hata durumlarından arındırmak.
+- **Platform Uygulanabilirliği:** Ortak (iki platform kendi kırılım ve UI standartlarına göre uygular)
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Supabase:** Değişiklik yok.
+- **Veri formatı:** Değişiklik yok.
+- **İş kuralları:**
+  - Tüm ana akış ekranlarında (Ana Sayfa, Dersler, Konular, Konu Anlatımı Okuyucu, Soru Çözümü, Deneme, Karne, İstatistik, Profil) boş durum, ağ/sunucu hata durumu ve yükleniyor durumu tutarlı tasarım bileşenleriyle sunulur (ham spinner veya kırık metin bırakılmaz).
+  - Matematik `$...$`/`$$...$$` formülleri, kesirler ve SVG diyagramları dar mobil (`360px`) ve masaüstü genişliklerinde yatay taşma üretmez (gerekirse satır içi sarmalama veya yatay kaydırma koruması uygulanır).
+  - Açık ve Koyu temada WCAG en az `4.5:1` metin kontrastı sağlanır.
+- **Eşleniklik örnekleri:** Gerekmez.
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-181 — Mobil UI/UX Cila Paketi (Flutter)
+ÖNEMLİ: GEMINI.md tasarım kurallarına (Theme.of(context), phosphor_flutter, TactileCard, TugrulAvatar, const) birebir uy.
+
+ADIM 1: `360×640` küçük telefon, `412×915` standart telefon ve `768×1024` tablet boyutlarında tüm ana ekranları + `TopicLessonReaderScreen` ve `QuizScreen` (Matematik LaTeX + SVG dahil) taşma (`RenderFlex overflow`) açısından tarayıp düzelt.
+ADIM 2: Yükleme durumlarına yumuşak skeleton/shimmer kartları (`lib/shared/widgets/`), ortak boş/hata durum widget'ına tutarlı retry aksiyonları ekle.
+ADIM 3: Konu Anlatımı okuyucusu (`:::tuzak`, `:::tablo`, `:::sekil`, `:::ornek`) ile Quiz çözüm kartında koyu tema kontrastını ve dokunma hedeflerini (`>= 48dp`) doğrula.
+ADIM 4: Widget altın/ekran boyutu testlerini ve `flutter-verify` adımlarını çalıştır.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-181 — Web UI/UX Cila Paketi (Next.js)
+ADIM 1: `375px` mobil web, `768px` tablet ve `1440px` masaüstü görünümlerinde Dashboard, Konu Anlatımı Okuyucu (`/dersler/[ders]/[konu]/anlatim`), Split-Pane Sınav Stüdyosu ve Landing sayfasında görsel hiyerarşi, KaTeX/SVG taşma ve klavye/focus-ring erişilebilirlik denetimini yap.
+ADIM 2: Yükleme `loading.tsx` iskeletlerini, hata sınırlarını (`error.tsx`) ve koyu/açık tema kontrastlarını cila geçir.
+```
+
+#### ✅ Kabul Kriterleri
+- [ ] `360px` mobilde ve masaüstünde Matematik LaTeX/SVG + tüm ana akışlarda `0` layout overflow
+- [ ] Açık/koyu tema kontrastı, ortak loading skeleton ve empty/error durumları iki platformda cilalandı
+
+---
+
+### 📦 TASK-182: Performans, Bellek, Ağ & Paket Boyutu Optimizasyonu (Startup, Isolate/Cache, SVG/Asset, Web Vitals & APK/AAB Profiling)
+
+- **Durum:** ⏳ Planlandı · 🌐 Web ❌ · 📱 Mobil ❌
+- **Amaç:** Uygulama açılış süresini, liste/sınav kaydırma akıcılığını, Supabase ağ trafiğini (egress) ve son mağaza/web paket boyutunu ölçerek darboğazları ortadan kaldırmak.
+- **Platform Uygulanabilirliği:** Ortak (her platform kendi runtime ve build profiling araçlarıyla uygular)
+
+#### 🔗 Ortak Sözleşme (İki platform birebir uyar)
+- **Supabase:** Yeni tablo yok; gereksiz tekrarlı `SELECT *` veya mükerrer hydration çağrıları TTL/in-memory cache ve dar kolon seçimleriyle azaltılır.
+- **Veri formatı:** Değişiklik yok.
+- **İş kuralları:**
+  - Aynı oturumda çözülen konuya veya açık konu anlatımına tekrar girildiğinde gereksiz ağ isteği atılmaz (TTL önbellek ve ETag/version tabanlı tazeleme korunur).
+  - Büyük listelerde (`TopicTestsScreen`, `QuizHistoryScreen`, `LessonsScreen`) lazy rendering (`ListView.builder` / sanallaştırma) dışına çıkılmaz.
+- **Eşleniklik örnekleri:** Gerekmez.
+
+#### 📱 Mobil Kapsamı (`gunisigi` — Flutter)
+```text
+GÖREV: TASK-182 — Mobil Performans, Bellek & APK/AAB Boyut Optimizasyonu (Flutter)
+ADIM 1: Açılış (`main.dart` / `AppShell` / bulut hidrasyon) yolunu profille; bloklayan senkron I/O veya gereksiz paralel istekleri ertele/tekilleştir.
+ADIM 2: `QuestionRepository` / `TopicLessonRepository` JSON & SVG parse maliyeti, `const` widget'lar ve `RepaintBoundary` (grafik/`TurkeyMap`/büyük SVG kartları) kullanımını optimize et.
+ADIM 3: Kullanılmayan asset/font/bağımlılıkları denetle; `flutter build appbundle --release` çıktısı (`--tree-shake-icons`, ABI bölünmüş APK boyutu) ve soğuk başlatma/frame süresini ölçüp belgele.
+```
+
+#### 🌐 Web Kapsamı (`kadro-web` — Next.js)
+```text
+GÖREV: TASK-182 — Web Performans & Core Web Vitals Optimizasyonu (Next.js)
+ADIM 1: `npm run build` çıktı boyutlarını ve client bundle'a sızan büyük kütüphaneleri/JSON verilerini incele; ağır bileşenleri (`fl_chart`/Recharts muadili, KaTeX vb.) dinamik/lazy yükle.
+ADIM 2: `public-cache.ts` (`unstable_cache` / revalidate) isabet oranını, TTFB, LCP ve CLS metriklerini iyileştir; görsellerde `next/image` boyutlandırmasını doğrula.
+```
+
+#### ✅ Kabul Kriterleri
+- [ ] Mobil soğuk başlangıç, kaydırma FPS ve AAB/APK boyutu ölçüldü ve optimize edildi
+- [ ] Web `npm run build` bundle analizi ve Core Web Vitals / cache isabet iyileştirmeleri doğrulandı
+- [ ] Her iki platformda gereksiz Supabase sorgu tekrarı kaldırıldı
