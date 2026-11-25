@@ -190,10 +190,9 @@ class OptionTile extends StatelessWidget {
                         key: ValueKey('option_eliminate_$label'),
                         onPressed: onToggleEliminate,
                         padding: EdgeInsets.zero,
-                        visualDensity: VisualDensity.compact,
                         constraints: const BoxConstraints(
-                          minWidth: 36,
-                          minHeight: 36,
+                          minWidth: 48,
+                          minHeight: 48,
                         ),
                         icon: PhosphorIcon(
                           isEliminated

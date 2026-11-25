@@ -24,6 +24,7 @@ import 'package:kadro/features/quiz/presentation/widgets/option_tile.dart';
 import 'package:kadro/features/stats/data/models/quiz_session_record.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/shared/widgets/adaptive_overlay.dart';
+import 'package:kadro/shared/widgets/kadro_skeleton.dart';
 import 'package:kadro/shared/widgets/climate_chart/climate_chart_card.dart';
 import 'package:kadro/shared/widgets/geo_diagram/geo_diagram_card.dart';
 import 'package:kadro/shared/widgets/population_pyramid/population_pyramid_card.dart';
@@ -825,7 +826,7 @@ class _QuizScreenState extends ConsumerState<QuizScreen> {
             style: Theme.of(context).textTheme.titleSmall,
           ),
         ),
-        body: const Center(child: CircularProgressIndicator()),
+        body: const SafeArea(child: KadroSkeletonList(itemCount: 4)),
       );
     }
 

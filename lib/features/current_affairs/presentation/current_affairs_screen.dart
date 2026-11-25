@@ -12,6 +12,8 @@ import 'package:kadro/features/lessons/data/curriculum_registry.dart';
 import 'package:kadro/features/quiz/data/models/quiz_mode.dart';
 import 'package:kadro/features/quiz/presentation/quiz_screen.dart';
 import 'package:kadro/shared/widgets/empty_state_view.dart';
+import 'package:kadro/shared/widgets/kadro_error_state.dart';
+import 'package:kadro/shared/widgets/kadro_skeleton.dart';
 import 'package:kadro/shared/widgets/responsive_grid.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
@@ -176,14 +178,18 @@ class _CurrentAffairsScreenState extends ConsumerState<CurrentAffairsScreen> {
         maxWidth: isLargeTablet ? 1200 : 760,
         padding: EdgeInsets.zero,
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : _errorMessage != null || bulletin == null
+            ? const KadroSkeletonList(itemCount: 5)
+            : _errorMessage != null
+            ? KadroErrorState.network(
+                title: 'Bülten şu anda yüklenemedi',
+                description: _errorMessage!,
+                onRetry: _loadData,
+              )
+            : bulletin == null
             ? EmptyStateView(
                 icon: PhosphorIconsRegular.newspaper,
-                title: 'Bülten şu anda yüklenemedi',
-                description:
-                    _errorMessage ??
-                    'Henüz yayınlanmış güncel bülten bulunmuyor.',
+                title: 'Bülten bulunamadı',
+                description: 'Henüz yayınlanmış güncel bülten bulunmuyor.',
                 actionLabel: 'Tekrar Dene',
                 onAction: _loadData,
               )

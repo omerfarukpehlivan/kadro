@@ -194,7 +194,10 @@ class TopicLessonTableWidget extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minWidth: (MediaQuery.sizeOf(context).width - 40).clamp(260, 680),
+              minWidth: ((MediaQuery.sizeOf(context).width - 40).clamp(
+                260.0,
+                680.0,
+              )).clamp(colCount * 120.0, double.infinity),
             ),
             child: Table(
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -207,8 +210,7 @@ class TopicLessonTableWidget extends StatelessWidget {
                 ),
               ),
               columnWidths: {
-                for (var c = 0; c < colCount; c++)
-                  c: const IntrinsicColumnWidth(flex: 1),
+                for (var c = 0; c < colCount; c++) c: const FlexColumnWidth(1),
               },
               children: [
                 if (block.headers.isNotEmpty)

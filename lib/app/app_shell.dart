@@ -14,6 +14,7 @@ import 'package:kadro/features/practice/presentation/practice_hub_screen.dart';
 import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/features/profile/presentation/profile_screen.dart';
 import 'package:kadro/features/stats/presentation/stats_screen.dart';
+import 'package:kadro/shared/widgets/kadro_skeleton.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Uygulama kabuğu (shell): ilk açılışta zorunlu kurulum, ardından 6 sekmeli telefon & tablet düzeni.
@@ -182,7 +183,13 @@ class _CloudHydrationScaffold extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(color: colorScheme.primary),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: const KadroSkeletonList(
+                  itemCount: 3,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
               const SizedBox(height: 20),
               Text(
                 'Verileriniz senkronize ediliyor...',

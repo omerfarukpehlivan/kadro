@@ -15,6 +15,7 @@ import 'package:kadro/features/topic_lessons/data/models/topic_lesson_models.dar
 import 'package:kadro/features/topic_lessons/data/topic_lesson_repository.dart';
 import 'package:kadro/features/topic_lessons/presentation/topic_lesson_screen.dart';
 import 'package:kadro/shared/widgets/empty_state_view.dart';
+import 'package:kadro/shared/widgets/kadro_skeleton.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -151,7 +152,7 @@ class _TopicTestsScreenState extends ConsumerState<TopicTestsScreen> {
     final accent = mood.accentColor(colorScheme);
 
     final content = _isLoading
-        ? const Center(child: CircularProgressIndicator())
+        ? const KadroSkeletonList(itemCount: 5)
         : _testChunks.isEmpty
         ? _TopicTestsEmptyState(
             lessonName: widget.lessonName,

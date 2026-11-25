@@ -10,6 +10,8 @@ import 'package:kadro/features/topic_lessons/data/topic_lesson_repository.dart';
 import 'package:kadro/features/topic_lessons/presentation/topic_lesson_unit_screen.dart';
 import 'package:kadro/shared/widgets/empty_state_view.dart';
 import 'package:kadro/shared/widgets/kadro_badge.dart';
+import 'package:kadro/shared/widgets/kadro_error_state.dart';
+import 'package:kadro/shared/widgets/kadro_skeleton.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -77,15 +79,12 @@ class TopicLessonScreen extends ConsumerWidget {
     final mood = TugrulMoodExtension.fromLesson(lessonName);
     final accent = mood.accentColor(colorScheme);
 
-    final unitsAsync = ref.watch(
-      topicLessonUnitsProvider(
-        TopicLessonQueryKey(
-          scopeKey: activeSelection.scopeKey,
-          lessonName: lessonName,
-          topic: topic,
-        ),
-      ),
+    final queryKey = TopicLessonQueryKey(
+      scopeKey: activeSelection.scopeKey,
+      lessonName: lessonName,
+      topic: topic,
     );
+    final unitsAsync = ref.watch(topicLessonUnitsProvider(queryKey));
     final progressMap = ref.watch(topicLessonProgressProvider);
 
     return Scaffold(
@@ -99,13 +98,13 @@ class TopicLessonScreen extends ConsumerWidget {
         ),
       ),
       body: unitsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => EmptyStateView(
-          icon: PhosphorIconsRegular.bookOpenText,
+        loading: () => const KadroSkeletonList(itemCount: 4),
+        error: (_, _) => KadroErrorState.network(
           title: 'Konu anlatımı yüklenemedi',
-          description: 'Bağlantınızı kontrol edip tekrar deneyebilir veya doğrudan bu konunun testlerine geçebilirsiniz.',
-          actionLabel: 'Konu Testlerine Geç',
-          onAction: () => _openTopicTests(context, activeSelection),
+          description: 'Bağlantını kontrol edip tekrar deneyebilir veya doğrudan bu konunun testlerine geçebilirsin.',
+          onRetry: () => ref.invalidate(topicLessonUnitsProvider(queryKey)),
+          secondaryActionLabel: 'Konu Testlerine Geç',
+          onSecondaryAction: () => _openTopicTests(context, activeSelection),
         ),
         data: (units) {
           if (units.isEmpty) {

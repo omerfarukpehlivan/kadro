@@ -15,6 +15,8 @@ import 'package:kadro/features/stats/data/cloud_sync_repository.dart';
 import 'package:kadro/features/stats/data/study_stats_notifier.dart';
 import 'package:kadro/features/stats/presentation/quiz_history_screen.dart';
 import 'package:kadro/features/stats/presentation/quiz_session_detail_screen.dart';
+import 'package:kadro/shared/widgets/kadro_error_state.dart';
+import 'package:kadro/shared/widgets/kadro_skeleton.dart';
 import 'package:kadro/shared/widgets/tactile_card.dart';
 import 'package:kadro/shared/widgets/tugrul_avatar.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -643,36 +645,23 @@ class _LeaderboardCardState extends State<_LeaderboardCard> {
             future: _leaderboardFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: CircularProgressIndicator(),
-                  ),
+                return const KadroSkeletonList(
+                  itemCount: 3,
+                  padding: EdgeInsets.zero,
                 );
               }
 
               if (snapshot.hasError) {
-                return Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Sıralama yüklenemedi. Yerel ilerlemen güvende.',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          _leaderboardFuture = _cloudSync.fetchLeaderboard(
-                            examFamily: widget.examFamily.key,
-                          );
-                        });
-                      },
-                      child: const Text('Yenile'),
-                    ),
-                  ],
+                return KadroErrorState.network(
+                  title: 'Sıralama yüklenemedi',
+                  description: 'Yerel ilerlemen güvende. Bağlantıyı kontrol edip tekrar dene.',
+                  onRetry: () {
+                    setState(() {
+                      _leaderboardFuture = _cloudSync.fetchLeaderboard(
+                        examFamily: widget.examFamily.key,
+                      );
+                    });
+                  },
                 );
               }
 

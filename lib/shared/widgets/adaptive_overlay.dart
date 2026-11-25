@@ -40,23 +40,34 @@ class AdaptiveOverlay {
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         builder: (sheetCtx) {
-          if (!showMobileHeader) {
-            return Builder(builder: builder);
-          }
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _MobileSheetHeader(
-                title: title,
-                subtitle: subtitle,
-                icon: headerIcon,
-                iconColor: headerIconColor,
-                showCloseButton: showCloseButton,
-                onClose: () => Navigator.of(sheetCtx).pop(),
-              ),
-              Flexible(child: Builder(builder: builder)),
-            ],
+          final bottomInset = MediaQuery.viewInsetsOf(sheetCtx).bottom;
+          final body = !showMobileHeader
+              ? Builder(builder: builder)
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _MobileSheetHeader(
+                      title: title,
+                      subtitle: subtitle,
+                      icon: headerIcon,
+                      iconColor: headerIconColor,
+                      showCloseButton: showCloseButton,
+                      onClose: () => Navigator.of(sheetCtx).pop(),
+                    ),
+                    Flexible(child: Builder(builder: builder)),
+                  ],
+                );
+          // Klavye boşluğu yalnızca burada bir kez uygulanır; içerikteki eski
+          // `viewInsets.bottom` dolgularının ikinci kez eklenmemesi için alt
+          // ağaçtan bu değer silinir (çift boşluk hatası önlenir).
+          return Padding(
+            padding: EdgeInsets.only(bottom: bottomInset),
+            child: MediaQuery.removeViewInsets(
+              context: sheetCtx,
+              removeBottom: true,
+              child: body,
+            ),
           );
         },
       );

@@ -5,6 +5,8 @@ import 'package:kadro/core/utils/responsive_layout.dart';
 import 'package:kadro/features/reports/data/models/question_report.dart';
 import 'package:kadro/features/reports/data/question_report_repository.dart';
 import 'package:kadro/shared/widgets/empty_state_view.dart';
+import 'package:kadro/shared/widgets/kadro_error_state.dart';
+import 'package:kadro/shared/widgets/kadro_skeleton.dart';
 import 'package:kadro/shared/widgets/page_header.dart';
 import 'package:kadro/shared/widgets/responsive_grid.dart';
 import 'package:kadro/shared/widgets/math_text.dart';
@@ -63,17 +65,14 @@ class _AdminReportsScreenState extends State<AdminReportsScreen> {
         future: _reportsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const KadroSkeletonList(itemCount: 5);
           }
 
           if (snapshot.hasError) {
-            return EmptyStateView(
-              mascotMood: TugrulMood.detective,
-              icon: PhosphorIconsRegular.warningCircle,
+            return KadroErrorState.network(
               title: 'Raporlar yüklenemedi',
               description: 'Bağlantı veya sunucu yanıtı alınamadı. Tekrar deneyebilirsin.',
-              actionLabel: 'Tekrar Dene',
-              onAction: _loadReports,
+              onRetry: _loadReports,
             );
           }
 
