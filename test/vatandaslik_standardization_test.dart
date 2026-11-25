@@ -60,27 +60,25 @@ void main() {
       }
     });
 
-    test(
-      'kpss_lessons defaultTopicTestCount Vatandaşlık konuları için 5 dönmeli',
-      () {
-        const topics = [
-          'Temel Hukuk Kavramları',
-          '1982 Anayasası ve Temel İlkeler',
-          'Temel Hak ve Ödevler',
-          'Yasama, Yürütme ve Yargı',
-          'İdare Hukuku',
-          'Uluslararası Kuruluşlar',
-        ];
+    test('kpss_lessons defaultTopicTestCount Vatandaşlık konuları için güncel test sayılarını (63 test) dönmeli', () {
+      const expectedCounts = {
+        'Temel Hukuk Kavramları': 11,
+        '1982 Anayasası ve Temel İlkeler': 10,
+        'Temel Hak ve Ödevler': 10,
+        'Yasama, Yürütme ve Yargı': 11,
+        'İdare Hukuku': 11,
+        'Uluslararası Kuruluşlar': 10,
+      };
 
-        for (final topic in topics) {
-          expect(
-            defaultTopicTestCount('Vatandaşlık', topic),
-            equals(5),
-            reason: '$topic için test sayısı 5 olmalıdır (5x10=50 soru)',
-          );
-        }
-      },
-    );
+      for (final entry in expectedCounts.entries) {
+        expect(
+          defaultTopicTestCount('Vatandaşlık', entry.key),
+          equals(entry.value),
+          reason:
+              '${entry.key} için test sayısı ${entry.value} olmalıdır (${entry.value}x10 soru)',
+        );
+      }
+    });
 
     test('00_tum_vatandaslik_sorulari_tek_dosya.sql master dosyası 300 insert ve order_index içermeli', () async {
       final sqlFile = File(

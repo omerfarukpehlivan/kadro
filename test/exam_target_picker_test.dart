@@ -12,9 +12,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  group('ExamTargetPickerView & Çoklu Sınav Seçimi', () {
+  group('ExamTargetPickerView & KPSS B Grubu Sınav Kilidi (TASK-179)', () {
     testWidgets(
-      '5 sınav ailesi arasında geçiş yapar ve koşullu alanları gösterir',
+      'Yalnızca KPSS B Grubu seçilebilir; diğer 4 sınav kilitli olup bakım mesajı gösterir',
       (tester) async {
         tester.view.physicalSize = const Size(430, 900);
         tester.view.devicePixelRatio = 1.0;
@@ -47,126 +47,55 @@ void main() {
         expect(find.text('GY-GK · 120 Soru · 130 dk'), findsOneWidget);
         expect(current.bGroupProfile, BGroupProfile.fullGyGk);
 
-        // 2. E-KPSS: engel grubu + ek süre anahtarı
+        // B Grubu öğrenim düzeyi değiştirilebilir (Ön Lisans)
+        final bLevelDropdown = find.byKey(const ValueKey('b_level_dropdown'));
+        await tester.ensureVisible(bLevelDropdown);
+        await tester.tap(bLevelDropdown);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Ön Lisans').last);
+        await tester.pumpAndSettle();
+        expect(current.family, KpssExamFamily.bGrubu);
+        expect(current.educationLevel, EducationLevel.onlisans);
+
+        // 2. Kilitli aileler (E-KPSS, DHBT, MEB-AGS, A Grubu) "Çok Yakında" rozeti taşır;
+        // tıklandığında seçimi değiştirmez ve bakım/geliştirme uyarısı gösterir
         final familyDropdown = find.byKey(
           const ValueKey('picker_family_dropdown'),
         );
-        await tester.ensureVisible(familyDropdown);
-        await tester.tap(familyDropdown);
-        await tester.pumpAndSettle();
-        await tester.tap(
-          find
-              .byKey(ValueKey('picker_family_${KpssExamFamily.ekpss.key}'))
-              .last,
-        );
-        await tester.pumpAndSettle();
+        for (final lockedFamily in const [
+          KpssExamFamily.ekpss,
+          KpssExamFamily.dhbt,
+          KpssExamFamily.mebAgs,
+          KpssExamFamily.aGrubu,
+        ]) {
+          await tester.ensureVisible(familyDropdown);
+          await tester.tap(familyDropdown);
+          await tester.pumpAndSettle();
 
-        expect(current.family, KpssExamFamily.ekpss);
-        final gormeGroup = DisabilityGroup.values.firstWhere(
-          (g) => g.label.toLowerCase().contains('görme'),
-        );
-        final ekpssGroupDropdown = find.byKey(
-          const ValueKey('ekpss_group_dropdown'),
-        );
-        await tester.ensureVisible(ekpssGroupDropdown);
-        await tester.tap(ekpssGroupDropdown);
-        await tester.pumpAndSettle();
-        await tester.tap(
-          find.byKey(ValueKey('ekpss_group_${gormeGroup.key}')).last,
-        );
-        await tester.pumpAndSettle();
-        expect(current.disabilityGroup, gormeGroup);
+          expect(find.text('Çok Yakında'), findsNWidgets(4));
 
-        final extraTimeSwitch = find.byKey(
-          const ValueKey('ekpss_extra_time_switch'),
-        );
-        await tester.ensureVisible(extraTimeSwitch);
-        await tester.tap(extraTimeSwitch);
-        await tester.pumpAndSettle();
-        expect(current.includeExtraTime, isTrue);
+          await tester.tap(
+            find.byKey(ValueKey('picker_family_${lockedFamily.key}')).last,
+          );
+          await tester.pumpAndSettle();
 
-        // 3. DHBT: 3 öğrenim düzeyi
-        await tester.ensureVisible(familyDropdown);
-        await tester.tap(familyDropdown);
-        await tester.pumpAndSettle();
-        await tester.tap(
-          find.byKey(ValueKey('picker_family_${KpssExamFamily.dhbt.key}')).last,
-        );
-        await tester.pumpAndSettle();
-        expect(current.family, KpssExamFamily.dhbt);
-        final dhbtLevelDropdown = find.byKey(
-          const ValueKey('dhbt_level_dropdown'),
-        );
-        await tester.ensureVisible(dhbtLevelDropdown);
-        await tester.tap(dhbtLevelDropdown);
-        await tester.pumpAndSettle();
-        await tester.tap(find.text('Ortaöğretim (İHL)').last);
-        await tester.pumpAndSettle();
-        expect(current.educationLevel, EducationLevel.ortaogretim);
-
-        // 4. MEB-AGS + ÖABT branşı ve P3 modu
-        await tester.ensureVisible(familyDropdown);
-        await tester.tap(familyDropdown);
-        await tester.pumpAndSettle();
-        await tester.tap(
-          find
-              .byKey(ValueKey('picker_family_${KpssExamFamily.mebAgs.key}'))
-              .last,
-        );
-        await tester.pumpAndSettle();
-        expect(current.family, KpssExamFamily.mebAgs);
-
-        final agsDropdown = find.byKey(
-          const ValueKey('meb_ags_branch_dropdown'),
-        );
-        await tester.ensureVisible(agsDropdown);
-        await tester.tap(agsDropdown);
-        await tester.pumpAndSettle();
-
-        final turkceBranch = OabtBranch.values.firstWhere(
-          (b) => b.label.contains('Türkçe'),
-        );
-        final turkceItem = find
-            .byKey(ValueKey('oabt_branch_${turkceBranch.key}'))
-            .last;
-        await tester.ensureVisible(turkceItem);
-        await tester.tap(turkceItem);
-        await tester.pumpAndSettle();
-        expect(current.oabtBranch, turkceBranch);
-
-        await tester.tap(agsDropdown);
-        await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const ValueKey('ags_mode_p3')).last);
-        await tester.pumpAndSettle();
-        expect(current.includeYdsForAgsP3, isTrue);
-
-        // 5. A Grubu: ön ayarlar ve çoklu ders seçimi
-        await tester.ensureVisible(familyDropdown);
-        await tester.tap(familyDropdown);
-        await tester.pumpAndSettle();
-        await tester.tap(
-          find
-              .byKey(ValueKey('picker_family_${KpssExamFamily.aGrubu.key}'))
-              .last,
-        );
-        await tester.pumpAndSettle();
-        expect(current.family, KpssExamFamily.aGrubu);
-
-        final siyasalPreset = find.byKey(
-          const ValueKey('a_group_preset_siyasal'),
-        );
-        await tester.ensureVisible(siyasalPreset);
-        await tester.tap(siyasalPreset);
-        await tester.pumpAndSettle();
-        expect(
-          current.selectedFieldLessons,
-          contains('Alan Uluslararası İlişkiler'),
-        );
+          expect(current.family, KpssExamFamily.bGrubu);
+          expect(current.educationLevel, EducationLevel.onlisans);
+          expect(
+            find.byKey(const ValueKey('picker_locked_family_banner')),
+            findsOneWidget,
+          );
+          expect(
+            find.text(KpssExamFamily.lockedMaintenanceMessage),
+            findsOneWidget,
+          );
+          expect(find.text('${lockedFamily.label} · Kilitli'), findsOneWidget);
+        }
       },
     );
 
     testWidgets(
-      'TargetExamSelectorBottomSheet seçimi provider stateine uygular',
+      'TargetExamSelectorBottomSheet kilitli sınavı engeller ve aktif B Grubu seçimini uygular',
       (tester) async {
         tester.view.physicalSize = const Size(430, 900);
         tester.view.devicePixelRatio = 1.0;
@@ -217,16 +146,32 @@ void main() {
           find.byKey(ValueKey('picker_family_${KpssExamFamily.dhbt.key}')).last,
         );
         await tester.pumpAndSettle();
+        expect(
+          find.byKey(const ValueKey('picker_locked_family_banner')),
+          findsOneWidget,
+        );
+
+        final bLevelDropdown = find.byKey(const ValueKey('b_level_dropdown'));
+        await tester.ensureVisible(bLevelDropdown);
+        await tester.tap(bLevelDropdown);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Ortaöğretim').last);
+        await tester.pumpAndSettle();
 
         await tester.tap(
           find.byKey(const ValueKey('exam_selector_confirm_button')),
         );
         await tester.pumpAndSettle();
 
-        expect(returned?.family, KpssExamFamily.dhbt);
+        expect(returned?.family, KpssExamFamily.bGrubu);
+        expect(returned?.educationLevel, EducationLevel.ortaogretim);
         expect(
           container.read(userPreferencesProvider).examSelection.family,
-          KpssExamFamily.dhbt,
+          KpssExamFamily.bGrubu,
+        );
+        expect(
+          container.read(userPreferencesProvider).examSelection.educationLevel,
+          EducationLevel.ortaogretim,
         );
       },
     );

@@ -5,7 +5,9 @@ import 'package:kadro/core/config/app_config_service.dart';
 import 'package:kadro/core/config/app_remote_config.dart';
 import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/home/presentation/home_screen.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:kadro/core/utils/exam_calendar_utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('TASK-126: ExamSelection & Çoklu KPSS Domain Modeli Testleri', () {
@@ -241,5 +243,60 @@ void main() {
         expect(find.textContaining('Toplam 100 gün kaldı'), findsOneWidget);
       },
     );
+
+    test('TASK-179: Yalnızca KPSS B Grubu aktif sayılır; kilitli aileler B Grubu varsayılanına normalize edilir', () {
+      expect(KpssExamFamily.bGrubu.isActiveForStudy, isTrue);
+      expect(KpssExamFamily.aGrubu.isActiveForStudy, isFalse);
+      expect(KpssExamFamily.dhbt.isActiveForStudy, isFalse);
+      expect(KpssExamFamily.mebAgs.isActiveForStudy, isFalse);
+      expect(KpssExamFamily.ekpss.isActiveForStudy, isFalse);
+
+      const onlisans = ExamSelection.bGrubu(
+        educationLevel: EducationLevel.onlisans,
+      );
+      expect(onlisans.normalizeForActiveStudy(), onlisans);
+
+      expect(
+        const ExamSelection.dhbt().normalizeForActiveStudy(),
+        ExamSelection.initial,
+      );
+      expect(
+        const ExamSelection.ekpss().normalizeForActiveStudy(),
+        ExamSelection.initial,
+      );
+      expect(
+        const ExamSelection.mebAgs().normalizeForActiveStudy(),
+        ExamSelection.initial,
+      );
+      expect(
+        const ExamSelection.aGrubu().normalizeForActiveStudy(),
+        ExamSelection.initial,
+      );
+    });
+
+    test('TASK-179: UserPreferencesNotifier kilitli sınav seçimini hem set hem cloud hydration aşamasında B Grubuna normalize eder', () async {
+      SharedPreferences.setMockInitialValues({});
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      final notifier = container.read(userPreferencesProvider.notifier);
+      notifier.setExamSelection(const ExamSelection.dhbt());
+      expect(
+        container.read(userPreferencesProvider).examSelection.family,
+        KpssExamFamily.bGrubu,
+      );
+
+      await notifier.loadFromCloud(
+        cloudPrefsOverride: {
+          'target_exam': 'dhbt',
+          'exam_selection': const ExamSelection.ekpss().toJson(),
+          'has_completed_onboarding': true,
+        },
+      );
+      expect(
+        container.read(userPreferencesProvider).examSelection.family,
+        KpssExamFamily.bGrubu,
+      );
+    });
   });
 }

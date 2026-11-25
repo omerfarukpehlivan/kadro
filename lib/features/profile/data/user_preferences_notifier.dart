@@ -193,6 +193,19 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
     _accountKey = key?.trim().toLowerCase();
   }
 
+  /// Kilitli sınav ailelerinden gelen eski/bulut kayıtlarını aktif KPSS B Grubu'na düşürür (`TASK-179`).
+  UserPreferencesState _normalizeLockedSelectionState(
+    UserPreferencesState candidate,
+  ) {
+    if (candidate.examSelection.isActiveForStudy) return candidate;
+    final normalizedSelection = candidate.examSelection
+        .normalizeForActiveStudy();
+    return candidate.copyWith(
+      examSelection: normalizedSelection,
+      targetExamKey: normalizedSelection.toLegacyTarget().name,
+    );
+  }
+
   @override
   UserPreferencesState build() {
     final preloaded = ref.watch(initialUserPreferencesProvider);
@@ -201,14 +214,16 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
       return const UserPreferencesState();
     }
     unawaited(_mergeDeviceDailyLimit());
+    final normalizedPreloaded = _normalizeLockedSelectionState(preloaded);
     final today = UserPreferencesState.todayDateKey();
-    if (preloaded.dailyQuotaDate != null && preloaded.dailyQuotaDate != today) {
-      return preloaded.copyWith(
+    if (normalizedPreloaded.dailyQuotaDate != null &&
+        normalizedPreloaded.dailyQuotaDate != today) {
+      return normalizedPreloaded.copyWith(
         dailyFreeQuestionLimit: 30,
         dailyQuotaDate: today,
       );
     }
-    return preloaded;
+    return normalizedPreloaded;
   }
 
   Future<void> _mergeDeviceDailyLimit() async {
@@ -243,9 +258,11 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
         saved.effectiveDailyFreeLimit(),
         deviceTodayLimit,
       );
-      state = saved.copyWith(
-        dailyFreeQuestionLimit: normalizedLimit,
-        dailyQuotaDate: today,
+      state = _normalizeLockedSelectionState(
+        saved.copyWith(
+          dailyFreeQuestionLimit: normalizedLimit,
+          dailyQuotaDate: today,
+        ),
       );
     } else if (deviceTodayLimit > state.effectiveDailyFreeLimit()) {
       state = state.copyWith(
@@ -305,9 +322,10 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
 
   /// Kullanıcının çok boyutlu sınav seçimini ([ExamSelection]) ve uyumlu hedef anahtarını günceller.
   void setExamSelection(ExamSelection selection) {
-    final legacyTarget = selection.toLegacyTarget();
+    final activeSelection = selection.normalizeForActiveStudy();
+    final legacyTarget = activeSelection.toLegacyTarget();
     state = state.copyWith(
-      examSelection: selection,
+      examSelection: activeSelection,
       targetExamKey: legacyTarget.name,
       hasSelectedTargetExam: true,
     );
@@ -318,7 +336,7 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
     unawaited(
       _cloudSync.syncUserPreferences(
         targetExam: legacyTarget.name,
-        examSelection: selection.toJson(),
+        examSelection: activeSelection.toJson(),
       ),
     );
   }
@@ -365,12 +383,14 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
     ExamSelection? examSelection,
     StudyProgramPace? studyProgramPace,
   }) {
-    final resolvedSelection =
+    final rawSelection =
         examSelection ??
         (targetExam != null
             ? ExamSelection.fromLegacyTarget(targetExam)
             : state.examSelection);
-    final resolvedTargetKey = examSelection != null
+    final resolvedSelection = rawSelection.normalizeForActiveStudy();
+    final resolvedTargetKey =
+        (examSelection != null || !rawSelection.isActiveForStudy)
         ? resolvedSelection.toLegacyTarget().name
         : (targetExam?.name ?? state.targetExamKey);
 
@@ -491,9 +511,11 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
     }
 
     if (localAccountPrefs != null && cloudPrefs == null) {
-      state = localAccountPrefs.copyWith(
-        dailyFreeQuestionLimit: mergedDailyLimit,
-        dailyQuotaDate: today,
+      state = _normalizeLockedSelectionState(
+        localAccountPrefs.copyWith(
+          dailyFreeQuestionLimit: mergedDailyLimit,
+          dailyQuotaDate: today,
+        ),
       );
       unawaited(_storage.saveUserPreferences(state));
       return;
@@ -509,13 +531,15 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
       final rawCloudSelection = cloudPrefs['exam_selection'];
       final hasCloudSelection =
           rawCloudSelection is Map && rawCloudSelection.isNotEmpty;
-      final effectiveSelection = hasCloudSelection
+      final rawEffectiveSelection = hasCloudSelection
           ? ExamSelection.fromJson(Map<String, dynamic>.from(rawCloudSelection))
           : (targetExamStr != null && targetExamStr.isNotEmpty
                 ? ExamSelection.fromLegacyTarget(
                     KpssExamTarget.fromKey(targetExamStr),
                   )
                 : state.examSelection);
+      final effectiveSelection = rawEffectiveSelection
+          .normalizeForActiveStudy();
       final studyPaceStr = cloudPrefs['study_pace'] as String?;
       final normalizedPaceKey = studyPaceStr != null && studyPaceStr.isNotEmpty
           ? StudyProgramPace.fromKey(studyPaceStr).name
@@ -542,7 +566,8 @@ class UserPreferencesNotifier extends Notifier<UserPreferencesState> {
         dailyFreeQuestionLimit: mergedDailyLimit,
         dailyQuotaDate: today,
         examSelection: effectiveSelection,
-        targetExamKey: hasCloudSelection
+        targetExamKey:
+            hasCloudSelection || !rawEffectiveSelection.isActiveForStudy
             ? effectiveSelection.toLegacyTarget().name
             : (targetExamStr ?? state.targetExamKey),
         hasSelectedTargetExam:

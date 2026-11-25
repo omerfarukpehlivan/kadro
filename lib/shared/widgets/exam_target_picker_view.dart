@@ -37,6 +37,8 @@ class ExamTargetPickerView extends StatefulWidget {
 }
 
 class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
+  KpssExamFamily? _lockedNoticeFamily;
+
   IconData _familyIcon(KpssExamFamily family) {
     switch (family) {
       case KpssExamFamily.bGrubu:
@@ -53,6 +55,13 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
   }
 
   void _selectFamily(KpssExamFamily family) {
+    if (!family.isActiveForStudy) {
+      setState(() => _lockedNoticeFamily = family);
+      return;
+    }
+    if (_lockedNoticeFamily != null) {
+      setState(() => _lockedNoticeFamily = null);
+    }
     final current = widget.value;
     switch (family) {
       case KpssExamFamily.bGrubu:
@@ -122,7 +131,7 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final selection = widget.value;
+    final selection = widget.value.normalizeForActiveStudy();
     final remaining = selection.detailedRemaining();
 
     return Column(
@@ -137,8 +146,86 @@ class _ExamTargetPickerViewState extends State<ExamTargetPickerView> {
           items: KpssExamFamily.values,
           itemKeyBuilder: (family) => ValueKey('picker_family_${family.key}'),
           itemLabelBuilder: (family) => family.shortLabel,
+          isItemDisabled: (family) => !family.isActiveForStudy,
+          onDisabledItemTap: (family) =>
+              setState(() => _lockedNoticeFamily = family),
+          itemTrailingBuilder: (family, isCurrent, isDisabled) {
+            if (!isDisabled) return null;
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colorScheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    'Çok Yakında',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onTertiaryContainer,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                PhosphorIcon(
+                  PhosphorIconsRegular.lock,
+                  size: 14,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ],
+            );
+          },
           onChanged: _selectFamily,
         ),
+        if (_lockedNoticeFamily != null) ...[
+          const SizedBox(height: 10),
+          Container(
+            key: const ValueKey('picker_locked_family_banner'),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: colorScheme.tertiaryContainer.withAlpha(140),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: colorScheme.tertiary, width: 1.2),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PhosphorIcon(
+                  PhosphorIconsFill.lock,
+                  size: 18,
+                  color: colorScheme.onTertiaryContainer,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${_lockedNoticeFamily!.label} · Kilitli',
+                        style: textTheme.labelLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.onTertiaryContainer,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        KpssExamFamily.lockedMaintenanceMessage,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onTertiaryContainer,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
         const SizedBox(height: 12),
 
         // 2. Koşullu Alt Boyut Kartı

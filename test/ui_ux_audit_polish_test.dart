@@ -166,7 +166,11 @@ void main() {
           tester.view.resetDevicePixelRatio();
         });
 
-        const ekpssSelection = ExamSelection.ekpss();
+        // TASK-179: Yalnızca KPSS B Grubu seçilebilir; başlık düzeye göre dinamik değişir.
+        const onlisansSelection = ExamSelection(
+          family: KpssExamFamily.bGrubu,
+          educationLevel: EducationLevel.onlisans,
+        );
 
         await tester.pumpWidget(
           ProviderScope(
@@ -174,7 +178,7 @@ void main() {
               initialUserPreferencesProvider.overrideWithValue(
                 const UserPreferencesState(
                   hasCompletedOnboarding: true,
-                  examSelection: ekpssSelection,
+                  examSelection: onlisansSelection,
                 ),
               ),
             ],
@@ -191,7 +195,7 @@ void main() {
           find.byKey(const ValueKey('profile_target_exam_tile')),
           findsOneWidget,
         );
-        expect(find.text(ekpssSelection.displayTitle), findsWidgets);
+        expect(find.text(onlisansSelection.displayTitle), findsWidgets);
         expect(tester.takeException(), isNull);
       },
     );

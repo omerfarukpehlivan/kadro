@@ -41,7 +41,7 @@ void main() {
         curriculum: gkCurriculum,
       );
 
-      expect(gkBlueprints.length, equals(5));
+      expect(gkBlueprints.length, equals(6));
       expect(
         gkBlueprints.map(
           (b) => (b.sections.first.lesson, b.totalQuestionCount),
@@ -52,6 +52,7 @@ void main() {
           ('Vatandaşlık', 9),
           ('Güncel Bilgiler', 6),
           ('Türkçe', 30),
+          ('Matematik & Geometri', 30),
         ]),
       );
       expect(gkBlueprints.first.isProOnly, isFalse);

@@ -44,7 +44,7 @@ void main() {
         );
         expect(curriculum.totalQuestions, 120);
         expect(curriculum.standardDurationMinutes, 130);
-        expect(curriculum.availability, CurriculumAvailability.partial);
+        expect(curriculum.availability, CurriculumAvailability.ready);
       },
     );
 

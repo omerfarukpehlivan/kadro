@@ -71,12 +71,22 @@ enum KpssExamFamily {
   final String shortLabel;
   final String description;
 
+  /// Geliştirme aşamasındaki kilitli sınav aileleri için standart bilgilendirme metni (`TASK-179`).
+  static const String lockedMaintenanceMessage =
+      'Bakım, onarım ve geliştirme süreçleri devam ediyor… Çok yakında!';
+
   const KpssExamFamily({
     required this.key,
     required this.label,
     required this.shortLabel,
     required this.description,
   });
+
+  /// Mevcut yayında çalışma hedefi seçicilerinde aktif olup olmadığını döner (`TASK-179`).
+  ///
+  /// Angular/Web Karşılığı: `src/domain/exam-selection.ts` içindeki
+  /// `isExamFamilyActive(family)` güvenlik kapısı ile eşleniktir.
+  bool get isActiveForStudy => this == KpssExamFamily.bGrubu;
 
   static KpssExamFamily fromKey(String? rawKey) => _enumFromKey(
     KpssExamFamily.values,
@@ -379,6 +389,13 @@ class ExamSelection {
 
   /// Varsayılan KPSS Lisans GY-GK seçimi (`TASK-166`).
   static const ExamSelection initial = ExamSelection();
+
+  /// Bu seçimin aktif yayındaki çalışma kapsamında açık olup olmadığını döner (`TASK-179`).
+  bool get isActiveForStudy => family.isActiveForStudy;
+
+  /// Kilitli (`!isActiveForStudy`) eski kayıtları güvenli biçimde KPSS B Grubu'na düşürür (`TASK-179`).
+  ExamSelection normalizeForActiveStudy() =>
+      family.isActiveForStudy ? this : ExamSelection.initial;
 
   /// KPSS Lisans B Grubu kısa kurucusu.
   const ExamSelection.bGrubuLisans({

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kadro/features/exams/data/models/exam_selection.dart';
 import 'package:kadro/features/lessons/data/kpss_lessons.dart';
 import 'package:kadro/features/lessons/presentation/lessons_screen.dart';
+import 'package:kadro/features/profile/data/user_preferences_notifier.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -39,9 +41,9 @@ void main() {
     });
   });
 
-  group('TASK-111 & TASK-166: LessonsScreen Lisans GY-GK Türkçe Aktif ve Matematik "Yakında" Vitrini', () {
+  group('TASK-174: LessonsScreen B Grubu Tam GY-GK Aktif & E-KPSS Yakında Vitrini', () {
     testWidgets(
-      'Varsayılan Lisans seçiminde Genel Kültür + GY Türkçe aktif, Matematik Yakında gösterilir',
+      'Varsayılan Lisans B Grubu seçiminde Türkçe ve Matematik & Geometri dahil tüm 6 ders aktif gösterilir',
       (WidgetTester tester) async {
         tester.view.physicalSize = const Size(800, 1800);
         tester.view.devicePixelRatio = 1.0;
@@ -56,28 +58,20 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // Bölüm başlıkları
         expect(
-          find.text('KPSS Genel Kültür + GY Türkçe (90 Soru)'),
-          findsOneWidget,
-        );
-        expect(
-          find.text('KPSS Genel Yetenek · Matematik (30 Soru · Yakında)'),
+          find.text('KPSS Genel Kültür & Genel Yetenek (120 Soru)'),
           findsOneWidget,
         );
 
-        // Genel Yetenek ders isimleri
+        // Genel Yetenek ders isimleri aktif listede
         expect(find.text('Türkçe'), findsOneWidget);
         expect(find.text('Matematik & Geometri'), findsOneWidget);
-
-        // "Yakında" rozetleri ve kilit ikonu (Matematik için)
-        expect(find.text('Yakında'), findsWidgets);
-        expect(find.byIcon(PhosphorIconsRegular.lockSimple), findsOneWidget);
+        expect(find.byIcon(PhosphorIconsRegular.lockSimple), findsNothing);
       },
     );
 
     testWidgets(
-      'Yakında olan Matematik & Geometri kartına tıklandığında bilgilendirici alt çekmece açılır',
+      'TASK-179: Kayıtlı eski E-KPSS seçimi KPSS B Grubu\'na düşer; Matematik & Geometri kilitsiz ve aktif görünür',
       (WidgetTester tester) async {
         tester.view.physicalSize = const Size(800, 1800);
         tester.view.devicePixelRatio = 1.0;
@@ -85,31 +79,28 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
 
         await tester.pumpWidget(
-          const ProviderScope(
-            child: MaterialApp(home: Scaffold(body: LessonsScreen())),
+          ProviderScope(
+            overrides: [
+              initialUserPreferencesProvider.overrideWithValue(
+                const UserPreferencesState(
+                  examSelection: ExamSelection(
+                    family: KpssExamFamily.ekpss,
+                    educationLevel: EducationLevel.lisans,
+                  ),
+                ),
+              ),
+            ],
+            child: const MaterialApp(home: Scaffold(body: LessonsScreen())),
           ),
         );
 
         await tester.pumpAndSettle();
 
-        // Matematik & Geometri kartına tıkla
-        await tester.tap(find.text('Matematik & Geometri'));
-        await tester.pumpAndSettle();
-
-        // Alt çekmecenin açıldığını doğrula
-        expect(find.textContaining('Tuğrul Hazırlıyor!'), findsOneWidget);
-        expect(find.text('Çok Yakında'), findsOneWidget);
-        expect(
-          find.textContaining('ÖSYM formatında özgün soru havuzu'),
-          findsOneWidget,
-        );
-        expect(find.text('Hazırlanan Konu Modülleri:'), findsOneWidget);
-        expect(find.text('Anladım, Takipteyim'), findsOneWidget);
-
-        // Kapatma butonuna basınca çekmece kapanır
-        await tester.tap(find.text('Anladım, Takipteyim'));
-        await tester.pumpAndSettle();
-
+        // Kilitli aile (E-KPSS) yüklenirken aktif B Grubu'na normalize edilir;
+        // bu yüzden "Yakında" vitrini ve kilit ikonu görünmez.
+        expect(find.text('Matematik & Geometri'), findsOneWidget);
+        expect(find.text('Yakında'), findsNothing);
+        expect(find.byIcon(PhosphorIconsRegular.lockSimple), findsNothing);
         expect(find.textContaining('Tuğrul Hazırlıyor!'), findsNothing);
       },
     );

@@ -61,42 +61,36 @@ void main() {
       }
     });
 
-    test(
-      'kpss_lessons defaultTopicTestCount Tarih konuları için doğru dönmeli',
-      () {
-        expect(
-          defaultTopicTestCount('Tarih', 'İslamiyet Öncesi Türk Tarihi'),
-          equals(8),
-        );
-        expect(
-          defaultTopicTestCount('Tarih', 'İlk Türk-İslam Devletleri'),
-          equals(8),
-        );
-        expect(
-          defaultTopicTestCount('Tarih', 'Osmanlı Kültür ve Uygarlığı'),
-          equals(12),
-        );
-        expect(
-          defaultTopicTestCount('Tarih', 'Osmanlı Dağılma Dönemi'),
-          equals(10),
-        );
-        expect(
-          defaultTopicTestCount(
-            'Tarih',
-            'Kurtuluş Savaşı Hazırlık ve Cepheler',
-          ),
-          equals(8),
-        );
-        expect(
-          defaultTopicTestCount('Tarih', 'Atatürk İlke ve İnkılapları'),
-          equals(8),
-        );
-        expect(
-          defaultTopicTestCount('Tarih', 'Çağdaş Türk ve Dünya Tarihi'),
-          equals(8),
-        );
-      },
-    );
+    test('kpss_lessons defaultTopicTestCount Tarih konuları için güncel Supabase test sayılarını (71 test) dönmeli', () {
+      expect(
+        defaultTopicTestCount('Tarih', 'İslamiyet Öncesi Türk Tarihi'),
+        equals(9),
+      );
+      expect(
+        defaultTopicTestCount('Tarih', 'İlk Türk-İslam Devletleri'),
+        equals(9),
+      );
+      expect(
+        defaultTopicTestCount('Tarih', 'Osmanlı Kültür ve Uygarlığı'),
+        equals(13),
+      );
+      expect(
+        defaultTopicTestCount('Tarih', 'Osmanlı Dağılma Dönemi'),
+        equals(10),
+      );
+      expect(
+        defaultTopicTestCount('Tarih', 'Kurtuluş Savaşı Hazırlık ve Cepheler'),
+        equals(9),
+      );
+      expect(
+        defaultTopicTestCount('Tarih', 'Atatürk İlke ve İnkılapları'),
+        equals(9),
+      );
+      expect(
+        defaultTopicTestCount('Tarih', 'Çağdaş Türk ve Dünya Tarihi'),
+        equals(12),
+      );
+    });
 
     test(
       '00_tum_tarih_sorulari_tek_dosya.sql master dosyası 620 insert içermeli',

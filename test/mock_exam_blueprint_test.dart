@@ -26,10 +26,13 @@ void main() {
       expect(gyGkPrimary.standardDurationMinutes, equals(130));
       expect(gyGkPrimary.sections.length, equals(6));
       expect(gyGkPrimary.isMultiSection, isTrue);
-      // Matematik gelene kadar Tam GY-GK denemesi Yakında olarak işaretlenir (TASK-166)
-      expect(gyGkPrimary.isComingSoon, isTrue);
+      // Matematik havuzu eklendikten sonra Tam GY-GK denemeleri açıktır (TASK-174)
+      expect(gyGkPrimary.isComingSoon, isFalse);
 
       final bGroupPacks = ExamBlueprintRegistry.forSelection(bGroupLisans);
+      final tamGygk2 = bGroupPacks.firstWhere((b) => b.id == 'b_gygk_tam_2');
+      expect(tamGygk2.totalQuestionCount, equals(120));
+      expect(tamGygk2.isComingSoon, isFalse);
       final gkSessionPack = bGroupPacks.firstWhere(
         (b) => b.id == 'b_gk_oturum_1',
       );
@@ -404,6 +407,108 @@ void main() {
             selection: ortaogretimSelection,
           );
       expect(fallbackGenerated.questions.length, equals(18));
+    });
+
+    test('TASK-176: Lisans Matematik denemesinde 14 konu kotası ve karma zorluk seçilir, Ön Lisans tavanı (<= 4) korunur', () async {
+      const topics = [
+        'Temel Kavramlar ve Sayı Basamakları',
+        'Bölme-Bölünebilme ve EBOB-EKOK',
+        'Rasyonel ve Ondalık Sayılar',
+        'Basit Eşitsizlikler ve Mutlak Değer',
+        'Üslü ve Köklü İfadeler',
+        'Çarpanlara Ayırma ve Oran-Orantı',
+        'Denklem Çözme ve Sayı-Kesir Problemleri',
+        'Yaş, İşçi, Hareket, Yüzde ve Karışım Problemleri',
+        'Kümeler, Bağıntı-Fonksiyon ve Modüler Aritmetik',
+        'Permütasyon, Kombinasyon ve Olasılık',
+        'Sayısal Mantık ve Tablo-Grafik Yorumlama',
+        'Doğruda ve Üçgende Açılar, Üçgenler',
+        'Çokgenler, Dörtgenler ve Çember-Daire',
+        'Analitik Geometri ve Katı Cisimler',
+      ];
+      // Her konuda 12 kolay (1), 15 orta (2), 8 zor (3) -> sıralı d1 -> d2 -> d3
+      final mathPool = <Map<String, dynamic>>[
+        for (var tIdx = 0; tIdx < topics.length; tIdx++)
+          for (final (diff, cnt) in [(1, 12), (2, 15), (3, 8)])
+            for (var i = 0; i < cnt; i++)
+              {
+                'id': 'm_${tIdx}_d${diff}_$i',
+                'lesson': 'Matematik & Geometri',
+                'topic': topics[tIdx],
+                'text': 'Matematik soru $tIdx $diff $i',
+                'options': ['A', 'B', 'C', 'D', 'E'],
+                'correctIndex': 0,
+                'explanation': 'Açıklama',
+                'difficulty': '$diff',
+                'exam_scopes': ['lisans_gygk', 'b_grubu_gygk'],
+              },
+      ];
+
+      final repo = QuestionRepository(
+        assetLoader: (_) async => jsonEncode(mathPool),
+      );
+
+      const lisansSel = ExamSelection(
+        family: KpssExamFamily.bGrubu,
+        educationLevel: EducationLevel.lisans,
+      );
+      const mathSectionBp = MockExamBlueprint(
+        id: 'b_gygk_tam_1',
+        title: 'Lisans Tam GY-GK Deneme #1',
+        subtitle: 'Matematik bölümü testi',
+        badgeLabel: '30 Soru',
+        family: KpssExamFamily.bGrubu,
+        scopeKey: 'lisans_gygk',
+        sections: [
+          ExamSectionSpec(
+            id: 'matematik',
+            lesson: 'Matematik & Geometri',
+            title: 'Matematik',
+            questionCount: 30,
+          ),
+        ],
+        standardDurationMinutes: 35,
+      );
+
+      final lisansGen = await repo.generateMockExamFromBlueprint(
+        mathSectionBp,
+        selection: lisansSel,
+      );
+      expect(lisansGen.questions.length, equals(30));
+      expect(
+        lisansGen.questions.map((q) => q.topic).toSet().length,
+        equals(14),
+      );
+      final d1Count = lisansGen.questions
+          .where((q) => q.difficultyLevel == 1)
+          .length;
+      final d2Count = lisansGen.questions
+          .where((q) => q.difficultyLevel == 2)
+          .length;
+      final d3Count = lisansGen.questions
+          .where((q) => q.difficultyLevel == 3)
+          .length;
+      expect(d1Count, lessThan(15));
+      expect(d2Count, greaterThanOrEqualTo(12));
+      expect(d3Count, greaterThanOrEqualTo(4));
+
+      const onlisansSel = ExamSelection(
+        family: KpssExamFamily.bGrubu,
+        educationLevel: EducationLevel.onlisans,
+      );
+      final onlisansGen = await repo.generateMockExamFromBlueprint(
+        mathSectionBp,
+        selection: onlisansSel,
+      );
+      expect(onlisansGen.questions.length, equals(30));
+      final onlisansHard = onlisansGen.questions
+          .where((q) => q.difficultyLevel == 3)
+          .length;
+      final onlisansMedium = onlisansGen.questions
+          .where((q) => q.difficultyLevel == 2)
+          .length;
+      expect(onlisansHard, lessThanOrEqualTo(4));
+      expect(onlisansMedium, greaterThanOrEqualTo(10));
     });
   });
 }

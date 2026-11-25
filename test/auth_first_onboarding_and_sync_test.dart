@@ -85,7 +85,7 @@ void main() {
           // Adım 3: Hedef & Odak
           await tester.tap(find.text('90+ Puan'));
           await tester.pumpAndSettle();
-          await tester.tap(find.text('Coğrafya · 18 Soru (%20 Ağırlık)'));
+          await tester.tap(find.text('Coğrafya · 18 Soru (%15 Ağırlık)'));
           await tester.pumpAndSettle();
           await tester.tap(find.text('Programımı Kur ve Başla'));
           await tester.pumpAndSettle();

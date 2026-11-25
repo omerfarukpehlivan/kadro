@@ -61,14 +61,25 @@ ExamCurriculum readOrWatchCurriculum(WidgetRef ref, {bool watch = true}) =>
 /// `ExamSelection` değer nesnesini alıp ilgili sınavın derslerini, soru dağılımını,
 /// süresini ve modül yeteneklerini çözen saf `CurriculumRegistry` servisi.
 abstract final class CurriculumRegistry {
+  /// KPSS Tarih 710 soruluk havuzunun 7 konuya göre 10'ar soruluk gerçek test dağılımı (Toplam 71 Test).
   static const Map<String, int> _tarihTopicTestCounts = {
-    'İslamiyet Öncesi Türk Tarihi': 8,
-    'İlk Türk-İslam Devletleri': 8,
-    'Osmanlı Kültür ve Uygarlığı': 12,
+    'İslamiyet Öncesi Türk Tarihi': 9,
+    'İlk Türk-İslam Devletleri': 9,
+    'Osmanlı Kültür ve Uygarlığı': 13,
     'Osmanlı Dağılma Dönemi': 10,
-    'Kurtuluş Savaşı Hazırlık ve Cepheler': 8,
-    'Atatürk İlke ve İnkılapları': 8,
-    'Çağdaş Türk ve Dünya Tarihi': 8,
+    'Kurtuluş Savaşı Hazırlık ve Cepheler': 9,
+    'Atatürk İlke ve İnkılapları': 9,
+    'Çağdaş Türk ve Dünya Tarihi': 12,
+  };
+
+  /// KPSS Vatandaşlık 630 soruluk havuzunun 6 konuya göre 10'ar soruluk gerçek test dağılımı (Toplam 63 Test).
+  static const Map<String, int> _vatandaslikTopicTestCounts = {
+    'Temel Hukuk Kavramları': 11,
+    '1982 Anayasası ve Temel İlkeler': 10,
+    'Temel Hak ve Ödevler': 10,
+    'Yasama, Yürütme ve Yargı': 11,
+    'İdare Hukuku': 11,
+    'Uluslararası Kuruluşlar': 10,
   };
 
   /// KPSS GY Türkçe 710 soruluk havuzunun 11 konuya göre 10'ar soruluk gerçek test dağılımı (Toplam 71 Test).
@@ -86,12 +97,31 @@ abstract final class CurriculumRegistry {
     'Sözel Mantık ve Muhakeme': 7,
   };
 
+  /// KPSS GY Matematik & Geometri 590 soruluk havuzunun 14 konuya göre 10'ar soruluk gerçek test dağılımı (Toplam 59 Test).
+  static const Map<String, int> _matematikTopicTestCounts = {
+    'Temel Kavramlar ve Sayı Basamakları': 4,
+    'Bölme-Bölünebilme ve EBOB-EKOK': 4,
+    'Rasyonel ve Ondalık Sayılar': 3,
+    'Basit Eşitsizlikler ve Mutlak Değer': 3,
+    'Üslü ve Köklü İfadeler': 4,
+    'Çarpanlara Ayırma ve Oran-Orantı': 4,
+    'Denklem Çözme ve Sayı-Kesir Problemleri': 5,
+    'Yaş, İşçi, Hareket, Yüzde ve Karışım Problemleri': 7,
+    'Kümeler, Bağıntı-Fonksiyon ve Modüler Aritmetik': 4,
+    'Permütasyon, Kombinasyon ve Olasılık': 4,
+    'Sayısal Mantık ve Tablo-Grafik Yorumlama': 6,
+    'Doğruda ve Üçgende Açılar, Üçgenler': 4,
+    'Çokgenler, Dörtgenler ve Çember-Daire': 4,
+    'Analitik Geometri ve Katı Cisimler': 3,
+  };
+
   static const Map<String, int> _gkFallbackCountsByLessonId = {
-    'tarih': 5,
+    'tarih': 9,
     'cografya': 6,
-    'vatandaslik': 5,
-    'guncel': 4,
+    'vatandaslik': 10,
+    'guncel': 8,
     'turkce': 5,
+    'matematik': 4,
   };
 
   static const Map<String, int> _ekpssGkQuestionOverrides = {
@@ -317,21 +347,25 @@ abstract final class CurriculumRegistry {
     String topic,
   ) {
     if (normalizedLesson == 'tarih') {
-      return _tarihTopicTestCounts[topic] ?? 5;
+      return _tarihTopicTestCounts[topic] ?? 9;
     }
     if (normalizedLesson == 'coğrafya' || normalizedLesson == 'cografya') {
       return 6;
     }
     if (normalizedLesson == 'vatandaşlık' ||
         normalizedLesson == 'vatandaslik') {
-      return 5;
+      return _vatandaslikTopicTestCounts[topic] ?? 10;
     }
     if (normalizedLesson == 'güncel bilgiler' ||
         normalizedLesson == 'guncel bilgiler') {
-      return 4;
+      return 8;
     }
     if (normalizedLesson == 'türkçe' || normalizedLesson == 'turkce') {
       return _turkceTopicTestCounts[topic] ?? 5;
+    }
+    if (normalizedLesson == 'matematik' ||
+        normalizedLesson == 'matematik & geometri') {
+      return _matematikTopicTestCounts[topic] ?? 4;
     }
     return 5;
   }
@@ -345,6 +379,8 @@ abstract final class CurriculumRegistry {
             lesson,
             defaultTestCountsByTopic: lesson.id == 'tarih'
                 ? _tarihTopicTestCounts
+                : lesson.id == 'vatandaslik'
+                ? _vatandaslikTopicTestCounts
                 : const {},
             fallbackTestCount: _gkFallbackCountsByLessonId[lesson.id] ?? 5,
             questionCountOverride: questionCountOverrides?[lesson.id],
@@ -365,6 +401,19 @@ abstract final class CurriculumRegistry {
     );
   }
 
+  /// KPSS B Grubu tüm düzeyler için aktif Matematik & Geometri ders tanımını üretir (`TASK-174`).
+  static LessonSpec _buildReadyMatematikSpec() {
+    final legacyMatematik = kpssGeneralAbilityLessons.firstWhere(
+      (lesson) => lesson.id == 'matematik',
+    );
+    return LessonSpec.fromLegacyLesson(
+      legacyMatematik,
+      availabilityOverride: CurriculumAvailability.ready,
+      defaultTestCountsByTopic: _matematikTopicTestCounts,
+      fallbackTestCount: _gkFallbackCountsByLessonId['matematik'] ?? 4,
+    );
+  }
+
   static List<LessonSpec> _buildGyUpcomingLessons({
     Map<String, int>? questionCountOverrides,
     bool excludeTurkce = false,
@@ -382,20 +431,22 @@ abstract final class CurriculumRegistry {
 
   static ExamCurriculum _resolveBGrubu(ExamSelection selection) {
     final gkLessons = _buildGkLessons();
-    final activeLessons = [...gkLessons, _buildReadyLisansTurkceSpec()];
-    final upcomingLessons = _buildGyUpcomingLessons(excludeTurkce: true);
+    final activeLessons = [
+      ...gkLessons,
+      _buildReadyLisansTurkceSpec(),
+      _buildReadyMatematikSpec(),
+    ];
     return ExamCurriculum(
       scopeKey: selection.scopeKey,
       title: 'KPSS ${selection.educationLevel.label} (GY-GK)',
       summaryLabel: '6 ders · Genel Yetenek & Genel Kültür (120 Soru)',
       totalQuestions: 120,
       standardDurationMinutes: 130,
-      availability: CurriculumAvailability.partial,
-      activeSectionTitle: 'KPSS Genel Kültür + GY Türkçe (90 Soru)',
-      upcomingSectionTitle:
-          'KPSS Genel Yetenek · Matematik (30 Soru · Yakında)',
+      availability: CurriculumAvailability.ready,
+      activeSectionTitle: 'KPSS Genel Kültür & Genel Yetenek (120 Soru)',
+      upcomingSectionTitle: '',
       activeLessons: activeLessons,
-      upcomingLessons: upcomingLessons,
+      upcomingLessons: const [],
     );
   }
 

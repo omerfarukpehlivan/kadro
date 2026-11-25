@@ -136,8 +136,8 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // 5 / 62 Test Çözüldü (%8) görünmeli (Tarih dersinde toplam 62 test vardır)
-        expect(find.textContaining('5 / 62 Test Çözüldü (%8)'), findsOneWidget);
+        // 5 / 71 Test Çözüldü (%7) görünmeli (Tarih dersinde toplam 71 test vardır)
+        expect(find.textContaining('5 / 71 Test Çözüldü (%7)'), findsOneWidget);
       },
     );
   });
@@ -180,8 +180,8 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // 1/8 Test rozeti görünmeli (ve henüz hepsi bitmediği için PhosphorIconsBold.chartPieSlice bulunmalı)
-        expect(find.text('1/8 Test'), findsOneWidget);
+        // 1/9 Test rozeti görünmeli (ve henüz hepsi bitmediği için PhosphorIconsBold.chartPieSlice bulunmalı)
+        expect(find.text('1/9 Test'), findsOneWidget);
         expect(find.byIcon(PhosphorIconsBold.chartPieSlice), findsOneWidget);
 
         // Sol yuvarlak düğümde tik OLMAMALI (findsNothing)
@@ -268,8 +268,8 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      // İlk konu hiç çözülmediğinde 0/8 Test görünmeli
-      expect(find.text('0/8 Test'), findsWidgets);
+      // İlk konu hiç çözülmediğinde 0/9 Test görünmeli
+      expect(find.text('0/9 Test'), findsWidgets);
     });
 
     testWidgets(

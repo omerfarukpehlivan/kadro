@@ -379,6 +379,22 @@ class QuestionRepository {
       ('Anlatım Bozuklukları', 1),
       ('Sözel Mantık ve Muhakeme', 4),
     ],
+    'Matematik & Geometri': [
+      ('Temel Kavramlar ve Sayı Basamakları', 2),
+      ('Bölme-Bölünebilme ve EBOB-EKOK', 2),
+      ('Rasyonel ve Ondalık Sayılar', 2),
+      ('Basit Eşitsizlikler ve Mutlak Değer', 2),
+      ('Üslü ve Köklü İfadeler', 3),
+      ('Çarpanlara Ayırma ve Oran-Orantı', 2),
+      ('Denklem Çözme ve Sayı-Kesir Problemleri', 3),
+      ('Yaş, İşçi, Hareket, Yüzde ve Karışım Problemleri', 4),
+      ('Kümeler, Bağıntı-Fonksiyon ve Modüler Aritmetik', 2),
+      ('Permütasyon, Kombinasyon ve Olasılık', 1),
+      ('Sayısal Mantık ve Tablo-Grafik Yorumlama', 3),
+      ('Doğruda ve Üçgende Açılar, Üçgenler', 2),
+      ('Çokgenler, Dörtgenler ve Çember-Daire', 1),
+      ('Analitik Geometri ve Katı Cisimler', 1),
+    ],
   };
 
   /// E-KPSS İşitme-1 ve Zihinsel kitapçıklarında sadeleştirilmiş metin varyantını döndürür.
@@ -565,6 +581,75 @@ class QuestionRepository {
     return ranges;
   }
 
+  /// Deneme seçiminde zorlukları `1 -> 2 -> 3` yığını yerine
+  /// `[Orta(2), Kolay(1), Orta(2), Zor(3)]` (veya tek sıralı konularda
+  /// `[Orta(2), Zor(3), Kolay(1), Orta(2)]`) döngüsüyle taraklı sıralar (`TASK-176`).
+  static List<Question> _interleaveForMockExam(
+    List<Question> items, {
+    bool favorHardSlightly = false,
+  }) {
+    if (items.length <= 1) return items;
+    final easy = <Question>[];
+    final medium = <Question>[];
+    final hard = <Question>[];
+    for (final q in items) {
+      if (q.difficultyLevel == 1) {
+        easy.add(q);
+      } else if (q.difficultyLevel == 3) {
+        hard.add(q);
+      } else {
+        medium.add(q);
+      }
+    }
+    final pattern = favorHardSlightly ? const [2, 3, 1, 2] : const [2, 1, 2, 3];
+    final result = <Question>[];
+    var ei = 0;
+    var mi = 0;
+    var hi = 0;
+    var step = 0;
+    while (ei < easy.length || mi < medium.length || hi < hard.length) {
+      final tier = pattern[step % pattern.length];
+      step += 1;
+      if (tier == 2 && mi < medium.length) {
+        result.add(medium[mi++]);
+      } else if (tier == 1 && ei < easy.length) {
+        result.add(easy[ei++]);
+      } else if (tier == 3 && hi < hard.length) {
+        result.add(hard[hi++]);
+      } else if (mi < medium.length) {
+        result.add(medium[mi++]);
+      } else if (ei < easy.length) {
+        result.add(easy[ei++]);
+      } else if (hi < hard.length) {
+        result.add(hard[hi++]);
+      }
+    }
+    return result;
+  }
+
+  /// Ön Lisans / Ortaöğretim denemelerinde kolay+orta havuzunu `[Orta, Kolay]`
+  /// dengesiyle tarar; zor tavanı korurken tüm denemenin yalnızca kolaydan oluşmasını önler.
+  static List<Question> _interleaveEasyMedium(List<Question> items) {
+    if (items.length <= 1) return items;
+    final easy = <Question>[];
+    final medium = <Question>[];
+    for (final q in items) {
+      if (q.difficultyLevel == 1) {
+        easy.add(q);
+      } else if (q.difficultyLevel != 3) {
+        medium.add(q);
+      }
+    }
+    final result = <Question>[];
+    var ei = 0;
+    var mi = 0;
+    while (ei < easy.length || mi < medium.length) {
+      if (mi < medium.length) result.add(medium[mi++]);
+      if (ei < easy.length) result.add(easy[ei++]);
+    }
+    return result;
+  }
+
   List<Question> _pickSectionQuestions({
     required List<Question> pool,
     required ExamSectionSpec section,
@@ -596,11 +681,16 @@ class QuestionRepository {
     if (quotas != null &&
         section.topicFilter == null &&
         standardQuotaTotal == targetCount) {
-      for (final quota in quotas) {
-        final topicItems = available
+      for (var qIdx = 0; qIdx < quotas.length; qIdx++) {
+        final quota = quotas[qIdx];
+        final rawTopicItems = available
             .where((q) => q.topic == quota.$1 && !pickedIds.contains(q.id))
             .toList();
-        if (topicItems.isEmpty) continue;
+        if (rawTopicItems.isEmpty) continue;
+        final topicItems = _interleaveForMockExam(
+          rawTopicItems,
+          favorHardSlightly: qIdx.isOdd,
+        );
         final offset = ((mockNumber - 1) * quota.$2) % topicItems.length;
         final takeCount = math.min(quota.$2, topicItems.length);
         for (var i = 0; i < takeCount; i++) {
@@ -616,7 +706,11 @@ class QuestionRepository {
       for (final q in available) {
         byTopic.putIfAbsent(q.topic, () => <Question>[]).add(q);
       }
-      final topicQueues = byTopic.values.toList();
+      final topicEntries = byTopic.values.toList();
+      final topicQueues = <List<Question>>[
+        for (var i = 0; i < topicEntries.length; i++)
+          _interleaveForMockExam(topicEntries[i], favorHardSlightly: i.isOdd),
+      ];
       final topicCursors = List<int>.generate(topicQueues.length, (i) {
         final qList = topicQueues[i];
         return ((mockNumber - 1) * 2) % qList.length;
@@ -648,15 +742,17 @@ class QuestionRepository {
       }
     }
 
-    // Kotadan eksik kalan olursa dersin diğer konularından tamamla.
+    // Kotadan eksik kalan olursa dersin diğer konularından karma zorlukla tamamla.
     if (picked.length < targetCount) {
-      final offset = ((mockNumber - 1) * 3) % available.length;
+      final interleavedPool = _interleaveForMockExam(available);
+      final offset = ((mockNumber - 1) * 3) % interleavedPool.length;
       for (
         var i = 0;
-        i < available.length && picked.length < targetCount;
+        i < interleavedPool.length && picked.length < targetCount;
         i++
       ) {
-        final candidate = available[(offset + i) % available.length];
+        final candidate =
+            interleavedPool[(offset + i) % interleavedPool.length];
         if (pickedIds.add(candidate.id)) {
           picked.add(candidate);
         }
@@ -698,18 +794,11 @@ class QuestionRepository {
       }
     }
 
-    // Kolay+orta (1..2) soruları öne, zor (3) soruları arkaya alarak tavanı aşmadan
-    // doğal konu dağılımıyla seçim yapılmasını sağlar.
+    // Kolay+orta (1..2) soruları `[Orta, Kolay]` dengesiyle öne, zor (3) soruları
+    // arkaya alarak tavanı aşmadan doğal konu ve zorluk dağılımıyla seçim sağlar.
     List<Question> prioritizeEasyMedium(List<Question> items) {
-      final easyMedium = <Question>[];
-      final hard = <Question>[];
-      for (final item in items) {
-        if (item.difficultyLevel == 3) {
-          hard.add(item);
-        } else {
-          easyMedium.add(item);
-        }
-      }
+      final easyMedium = _interleaveEasyMedium(items);
+      final hard = items.where((q) => q.difficultyLevel == 3).toList();
       return [...easyMedium, ...hard];
     }
 
@@ -725,9 +814,7 @@ class QuestionRepository {
             .toList();
         if (rawTopicItems.isEmpty) continue;
 
-        final easyMediumTopic = rawTopicItems
-            .where((q) => q.difficultyLevel != 3)
-            .toList();
+        final easyMediumTopic = _interleaveEasyMedium(rawTopicItems);
         final hardTopic = rawTopicItems
             .where((q) => q.difficultyLevel == 3)
             .toList();

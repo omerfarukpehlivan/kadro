@@ -60,7 +60,7 @@ void main() {
       }
     });
 
-    test('kpss_lessons defaultTopicTestCount Güncel Bilgiler konuları için 4 dönmeli', () {
+    test('kpss_lessons defaultTopicTestCount Güncel Bilgiler konuları için 8 dönmeli', () {
       const topics = [
         'Türkiye ve Dünya Gündemi',
         'Kültür, Sanat ve Edebiyat',
@@ -73,8 +73,8 @@ void main() {
       for (final topic in topics) {
         expect(
           defaultTopicTestCount('Güncel Bilgiler', topic),
-          equals(4),
-          reason: '$topic için test sayısı 4 olmalıdır (4x10=40 soru)',
+          equals(8),
+          reason: '$topic için test sayısı 8 olmalıdır (8x10=80 soru)',
         );
       }
     });

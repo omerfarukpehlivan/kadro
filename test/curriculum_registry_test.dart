@@ -22,29 +22,37 @@ void main() {
   });
 
   group('CurriculumRegistry & ExamCurriculum Birim Testleri', () {
-    test('Varsayılan Lisans B Grubu müfredatı 120 soru, 130 dk ve 223 test (152 GK + 71 Türkçe) döner', () {
+    test('Varsayılan Lisans B Grubu müfredatı 120 soru, 130 dk ve 348 test (218 GK + 71 Türkçe + 59 Matematik) döner', () {
       final curriculum = CurriculumRegistry.resolve(ExamSelection.initial);
 
       expect(curriculum.scopeKey, 'lisans_gygk');
       expect(curriculum.title, 'KPSS Lisans (GY-GK)');
       expect(curriculum.totalQuestions, 120);
       expect(curriculum.standardDurationMinutes, 130);
-      expect(curriculum.availability, CurriculumAvailability.partial);
-      expect(curriculum.activeLessons.length, 5);
-      expect(curriculum.upcomingLessons.length, 1);
-      expect(curriculum.totalTestCount, 223);
-      expect(totalCurriculumTestCount, 223);
-      expect(defaultTopicTestCount('Tarih', 'Osmanlı Kültür ve Uygarlığı'), 12);
+      expect(curriculum.availability, CurriculumAvailability.ready);
+      expect(curriculum.activeLessons.length, 6);
+      expect(curriculum.upcomingLessons, isEmpty);
+      expect(curriculum.totalTestCount, 348);
+      expect(totalCurriculumTestCount, 348);
+      expect(defaultTopicTestCount('Tarih', 'Osmanlı Kültür ve Uygarlığı'), 13);
+      expect(defaultTopicTestCount('Tarih', 'Çağdaş Türk ve Dünya Tarihi'), 12);
       expect(
-        defaultTopicTestCount('Coğrafya', 'Madenler ve Enerji Kaynaklar'),
+        defaultTopicTestCount('Coğrafya', 'Madenler ve Enerji Kaynakları'),
         6,
       );
-      expect(defaultTopicTestCount('Vatandaşlık', 'İdare Hukuku'), 5);
+      expect(defaultTopicTestCount('Vatandaşlık', 'İdare Hukuku'), 11);
       expect(
         defaultTopicTestCount('Güncel Bilgiler', 'UNESCO Miras Listesi'),
-        4,
+        8,
       );
       expect(defaultTopicTestCount('Türkçe', 'Paragrafta Anlam ve Yapı'), 31);
+      expect(
+        defaultTopicTestCount(
+          'Matematik & Geometri',
+          'Yaş, İşçi, Hareket, Yüzde ve Karışım Problemleri',
+        ),
+        7,
+      );
     });
 
     test('B Grubu Tam GY-GK 120 soru ve 130 dk müfredatı çözer', () {
@@ -59,11 +67,11 @@ void main() {
       expect(curriculum.title, 'KPSS Ön Lisans (GY-GK)');
       expect(curriculum.totalQuestions, 120);
       expect(curriculum.standardDurationMinutes, 130);
-      expect(curriculum.availability, CurriculumAvailability.partial);
+      expect(curriculum.availability, CurriculumAvailability.ready);
       expect(curriculum.allLessons.length, 6);
     });
 
-    test('TASK-165 & TASK-167: B Grubu üç düzeyde de (Lisans, Ön Lisans, Ortaöğretim) Türkçe aktif (71 test, 11 konu), E-KPSS Yakında', () {
+    test('TASK-165, TASK-167 & TASK-174: B Grubu üç düzeyde de Türkçe (71 test) ve Matematik & Geometri (59 test) aktif, E-KPSS Yakında', () {
       const lisansGyGk = ExamSelection(
         family: KpssExamFamily.bGrubu,
         educationLevel: EducationLevel.lisans,
@@ -71,16 +79,13 @@ void main() {
       );
       final lisansCurriculum = CurriculumRegistry.resolve(lisansGyGk);
 
-      expect(lisansCurriculum.activeLessons.length, 5);
-      expect(lisansCurriculum.upcomingLessons.length, 1);
+      expect(lisansCurriculum.activeLessons.length, 6);
+      expect(lisansCurriculum.upcomingLessons, isEmpty);
       expect(
         lisansCurriculum.activeSectionTitle,
-        'KPSS Genel Kültür + GY Türkçe (90 Soru)',
+        'KPSS Genel Kültür & Genel Yetenek (120 Soru)',
       );
-      expect(
-        lisansCurriculum.upcomingSectionTitle,
-        'KPSS Genel Yetenek · Matematik (30 Soru · Yakında)',
-      );
+      expect(lisansCurriculum.upcomingSectionTitle, isEmpty);
 
       final activeTurkce = lisansCurriculum.activeLessons.firstWhere(
         (l) => l.name == 'Türkçe',
@@ -91,13 +96,16 @@ void main() {
       expect(activeTurkce.totalTestCount, 71);
       expect(activeTurkce.testCountForTopic('Paragrafta Anlam ve Yapı'), 31);
       expect(activeTurkce.testCountForTopic('Sözel Mantık ve Muhakeme'), 7);
-      expect(
-        lisansCurriculum.upcomingLessons.single.name,
-        'Matematik & Geometri',
-      );
-      expect(lisansCurriculum.upcomingLessons.single.isComingSoon, isTrue);
 
-      // Ön Lisans ve Ortaöğretim B Grubu -> 4 GK + Türkçe aktif (5 ders), Matematik Yakında
+      final activeMatematik = lisansCurriculum.activeLessons.firstWhere(
+        (l) => l.name == 'Matematik & Geometri',
+      );
+      expect(activeMatematik.isComingSoon, isFalse);
+      expect(activeMatematik.badgeText, isNull);
+      expect(activeMatematik.topics.length, 14);
+      expect(activeMatematik.totalTestCount, 59);
+
+      // Ön Lisans ve Ortaöğretim B Grubu -> 6 dersin tamamı aktif, Matematik 59 test
       for (final edu in [EducationLevel.onlisans, EducationLevel.ortaogretim]) {
         final subSelection = ExamSelection(
           family: KpssExamFamily.bGrubu,
@@ -105,21 +113,23 @@ void main() {
           bGroupProfile: BGroupProfile.fullGyGk,
         );
         final subCurriculum = CurriculumRegistry.resolve(subSelection);
-        expect(subCurriculum.activeLessons.length, 5);
-        expect(subCurriculum.upcomingLessons.length, 1);
+        expect(subCurriculum.activeLessons.length, 6);
+        expect(subCurriculum.upcomingLessons, isEmpty);
         expect(
           subCurriculum.activeSectionTitle,
-          'KPSS Genel Kültür + GY Türkçe (90 Soru)',
+          'KPSS Genel Kültür & Genel Yetenek (120 Soru)',
         );
-        expect(
-          subCurriculum.upcomingSectionTitle,
-          'KPSS Genel Yetenek · Matematik (30 Soru · Yakında)',
-        );
+        expect(subCurriculum.upcomingSectionTitle, isEmpty);
         final subTurkce = subCurriculum.activeLessons.firstWhere(
           (l) => l.name == 'Türkçe',
         );
         expect(subTurkce.isComingSoon, isFalse);
         expect(subTurkce.totalTestCount, 71);
+        final subMatematik = subCurriculum.activeLessons.firstWhere(
+          (l) => l.name == 'Matematik & Geometri',
+        );
+        expect(subMatematik.isComingSoon, isFalse);
+        expect(subMatematik.totalTestCount, 59);
       }
 
       // E-KPSS -> Türkçe hâlâ upcoming ve comingSoon
@@ -293,6 +303,7 @@ void main() {
           'Vatandaşlık',
           'Güncel Bilgiler',
           'Türkçe',
+          'Matematik & Geometri',
           'Alan Hukuk',
         ]);
       },

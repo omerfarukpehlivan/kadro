@@ -91,7 +91,7 @@ void main() {
         expect(find.text('130 dakika'), findsOneWidget);
         expect(find.text('Net hesabı'), findsOneWidget);
         expect(find.text('4 yanlış 1 doğruyu götürür'), findsOneWidget);
-        expect(find.text('Matematik Havuzu Yakında'), findsWidgets);
+        expect(find.text('Tam GY-GK Denemesi Başlat'), findsWidgets);
 
         // Hazır deneme paketleri
         expect(find.text('Hazır Deneme Paketleri'), findsOneWidget);

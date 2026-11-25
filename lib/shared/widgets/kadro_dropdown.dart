@@ -24,6 +24,16 @@ class KadroDropdown<T> extends StatefulWidget {
   final bool enabled;
   final bool isCompact;
 
+  /// Seçeneğin kilitli/devre dışı olup olmadığını belirler (`TASK-179`).
+  final bool Function(T item)? isItemDisabled;
+
+  /// Kilitli bir seçeneğe basıldığında `onChanged` yerine tetiklenen geri çağırım.
+  final ValueChanged<T>? onDisabledItemTap;
+
+  /// Açılır liste satırının sağ tarafına ek rozet/ikon yerleştirmek için opsiyonel oluşturucu.
+  final Widget? Function(T item, bool isCurrent, bool isDisabled)?
+  itemTrailingBuilder;
+
   const KadroDropdown({
     super.key,
     required this.value,
@@ -37,6 +47,9 @@ class KadroDropdown<T> extends StatefulWidget {
     this.hint,
     this.alignEnd = false,
     this.enabled = true,
+    this.isItemDisabled,
+    this.onDisabledItemTap,
+    this.itemTrailingBuilder,
   }) : isCompact = false;
 
   /// Kart başlıkları ve satır içi filtreler için kompakt hap dropdown varyantı.
@@ -51,6 +64,9 @@ class KadroDropdown<T> extends StatefulWidget {
     this.leadingIcon,
     this.hint,
     this.enabled = true,
+    this.isItemDisabled,
+    this.onDisabledItemTap,
+    this.itemTrailingBuilder,
   }) : label = null,
        alignEnd = false,
        isCompact = true;
@@ -226,22 +242,34 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>>
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: widget.items
                               .map((item) {
-                                final isCurrent = item == widget.value;
+                                final isDisabled =
+                                    widget.isItemDisabled?.call(item) ?? false;
+                                final isCurrent =
+                                    !isDisabled && item == widget.value;
                                 final itemLabel = widget.itemLabelBuilder(item);
                                 final itemStyle = textTheme.bodyMedium
                                     ?.copyWith(
-                                      color: isCurrent
+                                      color: isDisabled
+                                          ? colorScheme.onSurfaceVariant
+                                          : isCurrent
                                           ? colorScheme.primary
                                           : colorScheme.onSurface,
                                       fontWeight: isCurrent
                                           ? FontWeight.w700
                                           : FontWeight.w500,
                                     );
+                                final customTrailing = widget
+                                    .itemTrailingBuilder
+                                    ?.call(item, isCurrent, isDisabled);
 
                                 return InkWell(
                                   key: widget.itemKeyBuilder?.call(item),
                                   onTap: () {
                                     _closeMenu(immediate: true);
+                                    if (isDisabled) {
+                                      widget.onDisabledItemTap?.call(item);
+                                      return;
+                                    }
                                     widget.onChanged(item);
                                   },
                                   child: Container(
@@ -252,6 +280,8 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>>
                                     color: isCurrent
                                         ? colorScheme.primaryContainer
                                               .withAlpha(70)
+                                        : isDisabled
+                                        ? colorScheme.surfaceContainerLow
                                         : null,
                                     child: Row(
                                       children: [
@@ -263,12 +293,22 @@ class _KadroDropdownState<T> extends State<KadroDropdown<T>>
                                             style: itemStyle,
                                           ),
                                         ),
-                                        if (isCurrent) ...[
+                                        if (customTrailing != null) ...[
+                                          const SizedBox(width: 8),
+                                          customTrailing,
+                                        ] else if (isCurrent) ...[
                                           const SizedBox(width: 8),
                                           PhosphorIcon(
                                             PhosphorIconsBold.check,
                                             size: 15,
                                             color: colorScheme.primary,
+                                          ),
+                                        ] else if (isDisabled) ...[
+                                          const SizedBox(width: 8),
+                                          PhosphorIcon(
+                                            PhosphorIconsRegular.lock,
+                                            size: 15,
+                                            color: colorScheme.onSurfaceVariant,
                                           ),
                                         ],
                                       ],
